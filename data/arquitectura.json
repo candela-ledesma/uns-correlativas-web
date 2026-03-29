@@ -1,1168 +1,1472 @@
 [
   {
-    "id": 3942,
+    "id": "3942",
     "nombre": "TALLER DE ARQUITECTURA I",
-    "año": "Primer",
+    "año": "Primer Año",
     "cuatrimestre": "Anual",
-    "correlativas": {}
+    "horas": "96",
+    "correlativas": {},
+    "optativa": false
   },
   {
-    "id": 4719,
+    "id": "4719",
     "nombre": "HISTORIA DEL ARTE Y LA CULTURA",
-    "año": "Primer",
-    "cuatrimestre": "Primer",
-    "correlativas": {}
+    "año": "Primer Año",
+    "cuatrimestre": "Primer Cuatrimestre",
+    "horas": "96",
+    "correlativas": {},
+    "optativa": false
   },
   {
-    "id": 8118,
+    "id": "8118",
     "nombre": "MATEMATICA I ARQ",
-    "año": "Primer",
-    "cuatrimestre": "Primer",
-    "correlativas": {}
+    "año": "Primer Año",
+    "cuatrimestre": "Primer Cuatrimestre",
+    "horas": "64",
+    "correlativas": {},
+    "optativa": false
   },
   {
-    "id": 5488,
+    "id": "5488",
     "nombre": "SISTEMAS DE REPRESENTACION I ARQ",
-    "año": "Primer",
-    "cuatrimestre": "Primer",
-    "correlativas": {}
+    "año": "Primer Año",
+    "cuatrimestre": "Primer Cuatrimestre",
+    "horas": "96",
+    "correlativas": {},
+    "optativa": false
   },
   {
-    "id": 3059,
+    "id": "3059",
     "nombre": "FISICA ARQ",
-    "año": "Primer",
-    "cuatrimestre": "Segundo",
-    "correlativas": {}
+    "año": "Primer Año",
+    "cuatrimestre": "Segundo Cuatrimestre",
+    "horas": "96",
+    "correlativas": {
+      "8118": {
+        "cursada": "Cursada",
+        "rendir": "Aprobada"
+      }
+    },
+    "optativa": false
   },
   {
-    "id": 8119,
+    "id": "8119",
     "nombre": "MATEMATICA II ARQ",
-    "año": "Primer",
-    "cuatrimestre": "Segundo",
-    "correlativas": {}
+    "año": "Primer Año",
+    "cuatrimestre": "Segundo Cuatrimestre",
+    "horas": "64",
+    "correlativas": {
+      "8118": {
+        "cursada": "Cursada",
+        "rendir": "Aprobada"
+      }
+    },
+    "optativa": false
   },
   {
-    "id": 5489,
+    "id": "5489",
     "nombre": "SISTEMAS DE REPRESENTACION II ARQ",
-    "año": "Primer",
-    "cuatrimestre": "Segundo",
-    "correlativas": {}
+    "año": "Primer Año",
+    "cuatrimestre": "Segundo Cuatrimestre",
+    "horas": "96",
+    "correlativas": {
+      "5488": {
+        "cursada": "Cursada",
+        "rendir": "Aprobada"
+      }
+    },
+    "optativa": false
   },
   {
-    "id": 3943,
+    "id": "3943",
     "nombre": "TALLER DE ARQUITECTURA II",
-    "año": "Segundo",
+    "año": "Segundo Año",
     "cuatrimestre": "Anual",
+    "horas": "96",
+    "correlativas": {
+      "3942": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
+      "4719": {
+        "cursada": "Cursada",
+        "rendir": "Aprobada"
+      }
+    },
+    "optativa": false
+  },
+  {
+    "id": "4607",
+    "nombre": "FUNDAMENTOS FILOSOFICOS DEL ESPACIO",
+    "año": "Segundo Año",
+    "cuatrimestre": "Primer Cuatrimestre",
+    "horas": "96",
     "correlativas": {
       "4719": {
-        "para_cursar": "cursada",
-        "para_rendir": "aprobada"
+        "cursada": "Cursada",
+        "rendir": "Aprobada"
       }
-    }
+    },
+    "optativa": false
   },
   {
-    "id": 4607,
-    "nombre": "FUNDAMENTOS FILOSOFICOS DEL ESPACIO",
-    "año": "Segundo",
-    "cuatrimestre": "Primer",
-    "correlativas": {}
-  },
-  {
-    "id": 3751,
+    "id": "3751",
     "nombre": "HISTORIA DE LA ARQUITECTURA I",
-    "año": "Segundo",
-    "cuatrimestre": "Primer",
-    "correlativas": {}
+    "año": "Segundo Año",
+    "cuatrimestre": "Primer Cuatrimestre",
+    "horas": "96",
+    "correlativas": {
+      "4719": {
+        "cursada": "Cursada",
+        "rendir": "Aprobada"
+      }
+    },
+    "optativa": false
   },
   {
-    "id": 3820,
+    "id": "3820",
     "nombre": "MORFOLOGIA I",
-    "año": "Segundo",
-    "cuatrimestre": "Primer",
+    "año": "Segundo Año",
+    "cuatrimestre": "Primer Cuatrimestre",
+    "horas": "96",
     "correlativas": {
+      "5488": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
       "5489": {
-        "para_cursar": "cursada",
-        "para_rendir": "aprobada"
+        "cursada": "Cursada",
+        "rendir": "Aprobada"
       }
-    }
+    },
+    "optativa": false
   },
   {
-    "id": 5076,
+    "id": "5076",
     "nombre": "CONSTRUCCIONES I",
-    "año": "Segundo",
-    "cuatrimestre": "Segundo",
+    "año": "Segundo Año",
+    "cuatrimestre": "Segundo Cuatrimestre",
+    "horas": "96",
     "correlativas": {
+      "3059": {
+        "cursada": "Cursada",
+        "rendir": "Aprobada"
+      },
       "5489": {
-        "para_cursar": "cursada",
-        "para_rendir": "aprobada"
+        "cursada": "Cursada",
+        "rendir": "Aprobada"
       }
-    }
+    },
+    "optativa": false
   },
   {
-    "id": 5205,
+    "id": "5205",
     "nombre": "ESTRUCTURAS I",
-    "año": "Segundo",
-    "cuatrimestre": "Segundo",
-    "correlativas": {}
-  },
-  {
-    "id": 5287,
-    "nombre": "INSTALACIONES I",
-    "año": "Segundo",
-    "cuatrimestre": "Segundo",
+    "año": "Segundo Año",
+    "cuatrimestre": "Segundo Cuatrimestre",
+    "horas": "96",
     "correlativas": {
-      "5489": {
-        "para_cursar": "cursada",
-        "para_rendir": "aprobada"
+      "3059": {
+        "cursada": "Cursada",
+        "rendir": "Aprobada"
       }
-    }
+    },
+    "optativa": false
   },
   {
-    "id": 3944,
-    "nombre": "TALLER DE ARQUITECTURA III",
-    "año": "Tercer",
-    "cuatrimestre": "Anual",
+    "id": "5287",
+    "nombre": "INSTALACIONES I",
+    "año": "Segundo Año",
+    "cuatrimestre": "Segundo Cuatrimestre",
+    "horas": "64",
     "correlativas": {
+      "3059": {
+        "cursada": "Cursada",
+        "rendir": "Aprobada"
+      },
+      "5489": {
+        "cursada": "Cursada",
+        "rendir": "Aprobada"
+      }
+    },
+    "optativa": false
+  },
+  {
+    "id": "3944",
+    "nombre": "TALLER DE ARQUITECTURA III",
+    "año": "Tercer Año",
+    "cuatrimestre": "Anual",
+    "horas": "256",
+    "correlativas": {
+      "3059": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
       "3943": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "5488": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "5489": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "8118": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "8119": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       }
-    }
+    },
+    "optativa": false
   },
   {
-    "id": 5077,
+    "id": "5077",
     "nombre": "CONSTRUCCIONES II",
-    "año": "Tercer",
-    "cuatrimestre": "Primer",
+    "año": "Tercer Año",
+    "cuatrimestre": "Primer Cuatrimestre",
+    "horas": "96",
     "correlativas": {
+      "3059": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
       "3942": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "5076": {
-        "para_cursar": "cursada",
-        "para_rendir": "aprobada"
+        "cursada": "Cursada",
+        "rendir": "Aprobada"
       },
       "5488": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "5489": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "8118": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "8119": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       }
-    }
+    },
+    "optativa": false
   },
   {
-    "id": 5206,
+    "id": "5206",
     "nombre": "ESTRUCTURAS II",
-    "año": "Tercer",
-    "cuatrimestre": "Primer",
+    "año": "Tercer Año",
+    "cuatrimestre": "Primer Cuatrimestre",
+    "horas": "96",
     "correlativas": {
+      "3059": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
       "3942": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "5205": {
-        "para_cursar": "cursada",
-        "para_rendir": "aprobada"
+        "cursada": "Cursada",
+        "rendir": "Aprobada"
       },
       "5488": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "5489": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "8118": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "8119": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       }
-    }
+    },
+    "optativa": false
   },
   {
-    "id": 5288,
+    "id": "5288",
     "nombre": "INSTALACIONES II",
-    "año": "Tercer",
-    "cuatrimestre": "Primer",
+    "año": "Tercer Año",
+    "cuatrimestre": "Primer Cuatrimestre",
+    "horas": "64",
     "correlativas": {
+      "3059": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
       "3942": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "5287": {
-        "para_cursar": "cursada",
-        "para_rendir": "aprobada"
+        "cursada": "Cursada",
+        "rendir": "Aprobada"
       },
       "5488": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "5489": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "8118": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "8119": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       }
-    }
+    },
+    "optativa": false
   },
   {
-    "id": 3752,
+    "id": "3752",
     "nombre": "HISTORIA DE LA ARQUITECTURA II",
-    "año": "Tercer",
-    "cuatrimestre": "Segundo",
+    "año": "Tercer Año",
+    "cuatrimestre": "Segundo Cuatrimestre",
+    "horas": "96",
+    "correlativas": {
+      "3059": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
+      "3751": {
+        "cursada": "Cursada",
+        "rendir": "Aprobada"
+      },
+      "3942": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
+      "5488": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
+      "5489": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
+      "8118": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
+      "8119": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      }
+    },
+    "optativa": false
+  },
+  {
+    "id": "3821",
+    "nombre": "MORFOLOGIA II",
+    "año": "Tercer Año",
+    "cuatrimestre": "Segundo Cuatrimestre",
+    "horas": "96",
+    "correlativas": {
+      "3059": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
+      "3820": {
+        "cursada": "Cursada",
+        "rendir": "Aprobada"
+      },
+      "3942": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
+      "5488": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
+      "5489": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
+      "8118": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
+      "8119": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      }
+    },
+    "optativa": false
+  },
+  {
+    "id": "2405",
+    "nombre": "SOCIOLOGIA URBANA",
+    "año": "Tercer Año",
+    "cuatrimestre": "Segundo Cuatrimestre",
+    "horas": "64",
+    "correlativas": {
+      "3059": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
+      "3942": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
+      "5488": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
+      "5489": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
+      "8118": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
+      "8119": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      }
+    },
+    "optativa": false
+  },
+  {
+    "id": "3945",
+    "nombre": "TALLER DE ARQUITECTURA IV",
+    "año": "Cuarto Año",
+    "cuatrimestre": "Anual",
+    "horas": "256",
     "correlativas": {
       "3751": {
-        "para_cursar": "cursada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
-      "3942": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
-      "5488": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
-      "5489": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
-      "8118": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
-      "8119": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      }
-    }
-  },
-  {
-    "id": 3821,
-    "nombre": "MORFOLOGIA II",
-    "año": "Tercer",
-    "cuatrimestre": "Segundo",
-    "correlativas": {
       "3820": {
-        "para_cursar": "cursada",
-        "para_rendir": "aprobada"
-      },
-      "3942": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
-      "5488": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
-      "5489": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
-      "8118": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
-      "8119": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      }
-    }
-  },
-  {
-    "id": 2405,
-    "nombre": "SOCIOLOGIA URBANA",
-    "año": "Tercer",
-    "cuatrimestre": "Segundo",
-    "correlativas": {
-      "3942": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
-      "5488": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
-      "5489": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
-      "8118": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
-      "8119": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      }
-    }
-  },
-  {
-    "id": 3945,
-    "nombre": "TALLER DE ARQUITECTURA IV",
-    "año": "Cuarto",
-    "cuatrimestre": "Anual",
-    "correlativas": {
-      "3820": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "3944": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "4607": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "5076": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "5205": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "5287": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
-      "2201": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      }
+    },
+    "optativa": false
+  },
+  {
+    "id": "5207",
+    "nombre": "ESTRUCTURAS III",
+    "año": "Cuarto Año",
+    "cuatrimestre": "Primer Cuatrimestre",
+    "horas": "",
+    "correlativas": {
       "3751": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
+      "3820": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "3943": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
+      "4607": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
+      "5076": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
+      "5205": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "5206": {
-        "para_cursar": "cursada",
-        "para_rendir": "aprobada"
+        "cursada": "Cursada",
+        "rendir": "Aprobada"
+      },
+      "5287": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       }
-    }
+    },
+    "optativa": false
   },
   {
-    "id": 3863,
+    "id": "3863",
     "nombre": "PLANIFICACION URBANA I",
-    "año": "Cuarto",
-    "cuatrimestre": "Primer",
+    "año": "Cuarto Año",
+    "cuatrimestre": "Primer Cuatrimestre",
+    "horas": "96",
+    "correlativas": {
+      "2405": {
+        "cursada": "Cursada",
+        "rendir": "Aprobada"
+      },
+      "3751": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
+      "3820": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
+      "3943": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
+      "4607": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
+      "5076": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
+      "5205": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
+      "5287": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      }
+    },
+    "optativa": false
+  },
+  {
+    "id": "5361",
+    "nombre": "PRODUCCION DE OBRAS",
+    "año": "Cuarto Año",
+    "cuatrimestre": "Primer Cuatrimestre",
+    "horas": "64",
     "correlativas": {
       "3751": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "3820": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "3943": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "4607": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "5076": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
-      "5205": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
-      "5287": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
-      "2201": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      }
-    }
-  },
-  {
-    "id": 5361,
-    "nombre": "PRODUCCION DE OBRAS",
-    "año": "Cuarto",
-    "cuatrimestre": "Primer",
-    "correlativas": {
-      "3820": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
-      "3943": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
-      "4607": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
-      "5076": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "5077": {
-        "para_cursar": "cursada",
-        "para_rendir": "aprobada"
+        "cursada": "Cursada",
+        "rendir": "Aprobada"
       },
       "5205": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "5287": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "5288": {
-        "para_cursar": "cursada",
-        "para_rendir": "aprobada"
-      },
-      "2201": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Cursada",
+        "rendir": "Aprobada"
       }
-    }
+    },
+    "optativa": false
   },
   {
-    "id": 2016,
+    "id": "2016",
     "nombre": "ANALISIS DE PROYECTOS DE INVERSION ARQ",
-    "año": "Cuarto",
-    "cuatrimestre": "Segundo",
+    "año": "Cuarto Año",
+    "cuatrimestre": "Segundo Cuatrimestre",
+    "horas": "64",
     "correlativas": {
+      "3751": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
       "3820": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "3943": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "4607": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "5076": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "5205": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "5287": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "5361": {
-        "para_cursar": "cursada",
-        "para_rendir": "aprobada"
-      },
-      "2201": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Cursada",
+        "rendir": "Aprobada"
       }
-    }
+    },
+    "optativa": false
   },
   {
-    "id": 3753,
+    "id": "3753",
     "nombre": "HISTORIA DE LA ARQUITECTURA III",
-    "año": "Cuarto",
-    "cuatrimestre": "Segundo",
+    "año": "Cuarto Año",
+    "cuatrimestre": "Segundo Cuatrimestre",
+    "horas": "96",
     "correlativas": {
+      "3751": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
       "3752": {
-        "para_cursar": "cursada",
-        "para_rendir": "aprobada"
+        "cursada": "Cursada",
+        "rendir": "Aprobada"
       },
       "3820": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "3943": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "4607": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "5076": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "5205": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "5287": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
-      "2201": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       }
-    }
+    },
+    "optativa": false
   },
   {
-    "id": 3864,
+    "id": "3864",
     "nombre": "PLANIFICACION URBANA II",
-    "año": "Cuarto",
-    "cuatrimestre": "Segundo",
+    "año": "Cuarto Año",
+    "cuatrimestre": "Segundo Cuatrimestre",
+    "horas": "96",
     "correlativas": {
+      "3751": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
       "3820": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "3863": {
-        "para_cursar": "cursada",
-        "para_rendir": "aprobada"
+        "cursada": "Cursada",
+        "rendir": "Aprobada"
       },
       "3943": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "4607": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "5076": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "5205": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "5287": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
-      "2201": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       }
-    }
+    },
+    "optativa": false
   },
   {
-    "id": 3946,
+    "id": "3946",
     "nombre": "TALLER DE ARQUITECTURA V",
-    "año": "Quinto",
+    "año": "Quinto Año",
     "cuatrimestre": "Anual",
+    "horas": "256",
     "correlativas": {
+      "2405": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
       "3752": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "3821": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "3864": {
-        "para_cursar": "cursada",
-        "para_rendir": "aprobada"
+        "cursada": "Cursada",
+        "rendir": "Aprobada"
       },
       "3945": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "5077": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "5206": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "5288": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
-      "2201": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      }
+    },
+    "optativa": false
+  },
+  {
+    "id": "5194",
+    "nombre": "GESTION LABORAL Y AMBIENTAL",
+    "año": "Quinto Año",
+    "cuatrimestre": "Primer Cuatrimestre",
+    "horas": "",
+    "correlativas": {
       "2405": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
+      "3752": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
+      "3821": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "3944": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
+      "5077": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
+      "5206": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
+      "5288": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "5361": {
-        "para_cursar": "cursada",
-        "para_rendir": "aprobada"
+        "cursada": "Cursada",
+        "rendir": "Aprobada"
       }
-    }
+    },
+    "optativa": false
   },
   {
-    "id": 3937,
+    "id": "3937",
     "nombre": "TALLER DE ARQUITECTURA CONTEMPORANEA",
-    "año": "Quinto",
-    "cuatrimestre": "Primer",
+    "año": "Quinto Año",
+    "cuatrimestre": "Primer Cuatrimestre",
+    "horas": "96",
     "correlativas": {
+      "2405": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
       "3752": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "3753": {
-        "para_cursar": "cursada",
-        "para_rendir": "aprobada"
+        "cursada": "Cursada",
+        "rendir": "Aprobada"
       },
       "3821": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "3944": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "5077": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "5206": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "5288": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
-      "2201": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      }
+    },
+    "optativa": false
+  },
+  {
+    "id": "5208",
+    "nombre": "ESTRUCTURAS IV",
+    "año": "Quinto Año",
+    "cuatrimestre": "Segundo Cuatrimestre",
+    "horas": "",
+    "correlativas": {
       "2405": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
+      "3752": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
+      "3821": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
+      "3944": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
+      "5077": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
+      "5206": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "5207": {
-        "para_cursar": "cursada",
-        "para_rendir": "aprobada"
-      }
-    }
-  },
-  {
-    "id": 9072,
-    "nombre": "LEGISLACION PROFESIONAL ARQ",
-    "año": "Quinto",
-    "cuatrimestre": "Segundo",
-    "correlativas": {
-      "3752": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
-      "3821": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
-      "3944": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
-      "5077": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
-      "5206": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Cursada",
+        "rendir": "Aprobada"
       },
       "5288": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
-      "2201": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       }
-    }
+    },
+    "optativa": false
   },
   {
-    "id": 3845,
-    "nombre": "ORDENAMIENTO TERRITORIAL",
-    "año": "Quinto",
-    "cuatrimestre": "Segundo",
+    "id": "9072",
+    "nombre": "LEGISLACION PROFESIONAL ARQ",
+    "año": "Quinto Año",
+    "cuatrimestre": "Segundo Cuatrimestre",
+    "horas": "96",
     "correlativas": {
+      "2405": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
       "3752": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "3821": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
+      "3944": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
+      "5077": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
+      "5206": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
+      "5288": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      }
+    },
+    "optativa": false
+  },
+  {
+    "id": "3845",
+    "nombre": "ORDENAMIENTO TERRITORIAL",
+    "año": "Quinto Año",
+    "cuatrimestre": "Segundo Cuatrimestre",
+    "horas": "128",
+    "correlativas": {
+      "2405": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
+      "3752": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
+      "3821": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "3863": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "3864": {
-        "para_cursar": "cursada",
-        "para_rendir": "aprobada"
+        "cursada": "Cursada",
+        "rendir": "Aprobada"
       },
       "3944": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "5077": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "5206": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "5288": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
-      "2201": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       }
-    }
+    },
+    "optativa": false
   },
   {
-    "id": 1851,
+    "id": "1851",
     "nombre": "RESPONSABILIDAD SOCIAL",
-    "año": "Quinto",
-    "cuatrimestre": "Segundo",
+    "año": "Quinto Año",
+    "cuatrimestre": "Segundo Cuatrimestre",
+    "horas": "64",
     "correlativas": {
+      "2405": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
       "3752": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "3821": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "3944": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "5077": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "5206": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "5288": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
-      "2201": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       }
-    }
+    },
+    "optativa": false
   },
   {
-    "id": 2146,
+    "id": "3975",
+    "nombre": "TRABAJO FINAL DE CARRERA",
+    "año": "Quinto Año",
+    "cuatrimestre": "Segundo Cuatrimestre",
+    "horas": "",
+    "correlativas": {},
+    "optativa": false
+  },
+  {
+    "id": "2146",
     "nombre": "ECONOMIA DEL ARTE Y LA CULTURA",
-    "año": "Quinto",
-    "cuatrimestre": "Segundo",
+    "año": "Quinto Año",
+    "cuatrimestre": "Segundo Cuatrimestre",
+    "horas": "64",
     "correlativas": {
+      "2405": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
       "3752": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "3821": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "3944": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "5077": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "5206": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "5288": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
-      "2201": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       }
-    }
+    },
+    "optativa": false
   },
   {
-    "id": 2371,
+    "id": "2371",
     "nombre": "SEMINARIO DE INNOVACION, CREATIVIDAD Y EMPRENDEDORISMO",
-    "año": "Quinto",
-    "cuatrimestre": "Segundo",
+    "año": "Quinto Año",
+    "cuatrimestre": "Segundo Cuatrimestre",
+    "horas": "64",
     "correlativas": {
+      "2405": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
       "3752": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "3821": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "3944": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "5077": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "5206": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "5288": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
-      "2201": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       }
-    }
+    },
+    "optativa": false
   },
   {
-    "id": 2710,
+    "id": "2710",
     "nombre": "FUENTES ALTERNATIVAS DE ENERGIA",
-    "año": "Quinto",
-    "cuatrimestre": "Segundo",
+    "año": "Quinto Año",
+    "cuatrimestre": "Segundo Cuatrimestre",
+    "horas": "96",
     "correlativas": {
+      "2405": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
       "3752": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "3821": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "3944": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "5077": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "5206": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "5288": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
-      "2201": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       }
-    }
+    },
+    "optativa": false
   },
   {
-    "id": 3521,
+    "id": "3521",
     "nombre": "BIOGEOGRAFIA CULTURAL",
-    "año": "Quinto",
-    "cuatrimestre": "Segundo",
+    "año": "Quinto Año",
+    "cuatrimestre": "Segundo Cuatrimestre",
+    "horas": "96",
     "correlativas": {
+      "2405": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
       "3752": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "3821": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "3944": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "5077": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "5206": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "5288": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
-      "2201": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       }
-    }
+    },
+    "optativa": false
   },
   {
-    "id": 3543,
+    "id": "3543",
     "nombre": "CARTOGRAFIA APLICADA",
-    "año": "Quinto",
-    "cuatrimestre": "Segundo",
+    "año": "Quinto Año",
+    "cuatrimestre": "Segundo Cuatrimestre",
+    "horas": "96",
     "correlativas": {
+      "2405": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
       "3752": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "3821": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "3944": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "5077": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "5206": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "5288": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
-      "2201": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       }
-    }
+    },
+    "optativa": false
   },
   {
-    "id": 3659,
+    "id": "3659",
     "nombre": "GEOGRAFIA URBANA",
-    "año": "Quinto",
-    "cuatrimestre": "Segundo",
+    "año": "Quinto Año",
+    "cuatrimestre": "Segundo Cuatrimestre",
+    "horas": "96",
     "correlativas": {
+      "2405": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
       "3752": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "3821": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "3944": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "5077": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "5206": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "5288": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
-      "2201": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       }
-    }
+    },
+    "optativa": false
   },
   {
-    "id": 3724,
+    "id": "3724",
     "nombre": "GESTION DEL PATRIMONIO URBANO",
-    "año": "Quinto",
-    "cuatrimestre": "Segundo",
+    "año": "Quinto Año",
+    "cuatrimestre": "Segundo Cuatrimestre",
+    "horas": "96",
     "correlativas": {
+      "2405": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
       "3752": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "3821": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "3944": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "5077": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "5206": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       },
       "5288": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
-      "2201": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
-      "2405": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       }
-    }
+    },
+    "optativa": false
   },
   {
-    "id": 3892,
+    "id": "3785",
+    "nombre": "LA INTERVENCION ARQUITECTONICA EN CONTEXTOS PATRIMONIALES",
+    "año": "Quinto Año",
+    "cuatrimestre": "Segundo Cuatrimestre",
+    "horas": "",
+    "correlativas": {
+      "2405": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
+      "3752": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
+      "3821": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
+      "3944": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
+      "5077": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
+      "5206": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
+      "5288": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      }
+    },
+    "optativa": false
+  },
+  {
+    "id": "3892",
     "nombre": "PERCEPCION Y VALORACION SOCIAL DEL PAISAJE",
-    "año": "Quinto",
-    "cuatrimestre": "Segundo",
+    "año": "Quinto Año",
+    "cuatrimestre": "Segundo Cuatrimestre",
+    "horas": "64",
     "correlativas": {
-      "3752": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
-      "3821": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
-      "3944": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
-      "5077": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
-      "5206": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
-      "5288": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      }
-    }
-  },
-  {
-    "id": 3903,
-    "nombre": "SEMINARIO: GESTION DE RECURSOS NATURALES Y MEDIO AMBIENTE",
-    "año": "Quinto",
-    "cuatrimestre": "Segundo",
-    "correlativas": {
-      "3752": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
-      "3821": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
-      "3944": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
-      "5077": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
-      "5206": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
-      "5288": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
-      "2201": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      }
-    }
-  },
-  {
-    "id": 3959,
-    "nombre": "TELEDETECCION Y SIG",
-    "año": "Quinto",
-    "cuatrimestre": "Segundo",
-    "correlativas": {
-      "3752": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
-      "3821": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
-      "3944": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
-      "5077": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
-      "5206": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
-      "5288": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
-      "2201": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
       "2405": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
+      "3752": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
+      "3821": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
+      "3944": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
+      "5077": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
+      "5206": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
+      "5288": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
       }
-    }
+    },
+    "optativa": false
+  },
+  {
+    "id": "3959",
+    "nombre": "TELEDETECCION Y SIG",
+    "año": "Quinto Año",
+    "cuatrimestre": "Segundo Cuatrimestre",
+    "horas": "96",
+    "correlativas": {
+      "2405": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
+      "3752": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
+      "3821": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
+      "3944": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
+      "5077": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
+      "5206": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
+      "5288": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      }
+    },
+    "optativa": false
+  },
+  {
+    "id": "858",
+    "nombre": "AMBIENTE E INTERPRETACION DEL PAISAJE ARQ",
+    "año": "Quinto Año",
+    "cuatrimestre": "Segundo Cuatrimestre",
+    "horas": "60",
+    "correlativas": {
+      "2405": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
+      "3752": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
+      "3821": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
+      "3944": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
+      "5077": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
+      "5206": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      },
+      "5288": {
+        "cursada": "Aprobada",
+        "rendir": "Aprobada"
+      }
+    },
+    "optativa": false
+  },
+  {
+    "id": "4804",
+    "nombre": "SUFICIENCIA DE IDIOMA INGLES ARQ",
+    "año": "Quinto Año",
+    "cuatrimestre": "Segundo Cuatrimestre",
+    "horas": "",
+    "correlativas": {},
+    "optativa": false
   }
 ]
