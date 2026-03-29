@@ -2,6 +2,7 @@ import pdfplumber
 import re
 from pathlib import Path
 import json
+from core.correlativas import simular_aprobar
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 PDF_PATH = BASE_DIR / "pdf" / "arquitectura.pdf"
@@ -87,20 +88,13 @@ def detectar_correlativas(linea):
 def main():
     texto = extraer_texto(PDF_PATH)
     
-    print(texto[:2000])
-
     materias = detectar_materias(texto)
-
-    # imprimir materias
-    for m in materias:
-        print(m)
 
     # asegurar que la carpeta existe y guardar JSON
     OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
     with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
         json.dump(materias, f, indent=2, ensure_ascii=False)
-
-    print("\nJSON guardado en:", OUTPUT_PATH)
+    
 
 
 if __name__ == "__main__":
