@@ -1,0 +1,1222 @@
+[
+  {
+    "id": 3942,
+    "nombre": "TALLER DE ARQUITECTURA I",
+    "correlativas": {}
+  },
+  {
+    "id": 4719,
+    "nombre": "HISTORIA DEL ARTE Y LA CULTURA",
+    "correlativas": {}
+  },
+  {
+    "id": 8118,
+    "nombre": "MATEMATICA I ARQ",
+    "correlativas": {}
+  },
+  {
+    "id": 5488,
+    "nombre": "SISTEMAS DE REPRESENTACION I ARQ",
+    "correlativas": {}
+  },
+  {
+    "id": 3059,
+    "nombre": "FISICA ARQ",
+    "correlativas": {
+      "8118": {
+        "para_cursar": "cursada",
+        "para_rendir": "aprobada"
+      }
+    }
+  },
+  {
+    "id": 8119,
+    "nombre": "MATEMATICA II ARQ",
+    "correlativas": {
+      "8118": {
+        "para_cursar": "cursada",
+        "para_rendir": "aprobada"
+      }
+    }
+  },
+  {
+    "id": 5489,
+    "nombre": "SISTEMAS DE REPRESENTACION II ARQ",
+    "correlativas": {
+      "5488": {
+        "para_cursar": "cursada",
+        "para_rendir": "aprobada"
+      }
+    }
+  },
+  {
+    "id": 3943,
+    "nombre": "TALLER DE ARQUITECTURA II",
+    "correlativas": {
+      "3942": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "4719": {
+        "para_cursar": "cursada",
+        "para_rendir": "aprobada"
+      }
+    }
+  },
+  {
+    "id": 4607,
+    "nombre": "FUNDAMENTOS FILOSOFICOS DEL ESPACIO",
+    "correlativas": {
+      "4719": {
+        "para_cursar": "cursada",
+        "para_rendir": "aprobada"
+      }
+    }
+  },
+  {
+    "id": 3751,
+    "nombre": "HISTORIA DE LA ARQUITECTURA I",
+    "correlativas": {
+      "4719": {
+        "para_cursar": "cursada",
+        "para_rendir": "aprobada"
+      }
+    }
+  },
+  {
+    "id": 3820,
+    "nombre": "MORFOLOGIA I",
+    "correlativas": {
+      "5488": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5489": {
+        "para_cursar": "cursada",
+        "para_rendir": "aprobada"
+      }
+    }
+  },
+  {
+    "id": 5076,
+    "nombre": "CONSTRUCCIONES I",
+    "correlativas": {
+      "3059": {
+        "para_cursar": "cursada",
+        "para_rendir": "aprobada"
+      },
+      "5489": {
+        "para_cursar": "cursada",
+        "para_rendir": "aprobada"
+      }
+    }
+  },
+  {
+    "id": 5205,
+    "nombre": "ESTRUCTURAS I",
+    "correlativas": {
+      "3059": {
+        "para_cursar": "cursada",
+        "para_rendir": "aprobada"
+      }
+    }
+  },
+  {
+    "id": 5287,
+    "nombre": "INSTALACIONES I",
+    "correlativas": {
+      "3059": {
+        "para_cursar": "cursada",
+        "para_rendir": "aprobada"
+      },
+      "5489": {
+        "para_cursar": "cursada",
+        "para_rendir": "aprobada"
+      }
+    }
+  },
+  {
+    "id": 3944,
+    "nombre": "TALLER DE ARQUITECTURA III",
+    "correlativas": {
+      "3059": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "3943": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5488": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5489": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "8118": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "8119": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      }
+    }
+  },
+  {
+    "id": 5077,
+    "nombre": "CONSTRUCCIONES II",
+    "correlativas": {
+      "3059": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "3942": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5076": {
+        "para_cursar": "cursada",
+        "para_rendir": "aprobada"
+      },
+      "5488": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5489": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "8118": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "8119": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      }
+    }
+  },
+  {
+    "id": 5206,
+    "nombre": "ESTRUCTURAS II",
+    "correlativas": {
+      "3059": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "3942": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5205": {
+        "para_cursar": "cursada",
+        "para_rendir": "aprobada"
+      },
+      "5488": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5489": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "8118": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "8119": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      }
+    }
+  },
+  {
+    "id": 5288,
+    "nombre": "INSTALACIONES II",
+    "correlativas": {
+      "3059": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "3942": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5287": {
+        "para_cursar": "cursada",
+        "para_rendir": "aprobada"
+      },
+      "5488": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5489": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "8118": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "8119": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      }
+    }
+  },
+  {
+    "id": 3752,
+    "nombre": "HISTORIA DE LA ARQUITECTURA II",
+    "correlativas": {
+      "3059": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "3751": {
+        "para_cursar": "cursada",
+        "para_rendir": "aprobada"
+      },
+      "3942": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5488": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5489": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "8118": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "8119": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      }
+    }
+  },
+  {
+    "id": 3821,
+    "nombre": "MORFOLOGIA II",
+    "correlativas": {
+      "3059": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "3820": {
+        "para_cursar": "cursada",
+        "para_rendir": "aprobada"
+      },
+      "3942": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5488": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5489": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "8118": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "8119": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      }
+    }
+  },
+  {
+    "id": 2405,
+    "nombre": "SOCIOLOGIA URBANA",
+    "correlativas": {
+      "3059": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "3942": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5488": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5489": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "8118": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "8119": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      }
+    }
+  },
+  {
+    "id": 3945,
+    "nombre": "TALLER DE ARQUITECTURA IV",
+    "correlativas": {
+      "3751": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "3820": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "3944": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "4607": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5076": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5205": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5287": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "2201": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "3943": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5206": {
+        "para_cursar": "cursada",
+        "para_rendir": "aprobada"
+      }
+    }
+  },
+  {
+    "id": 3863,
+    "nombre": "PLANIFICACION URBANA I",
+    "correlativas": {
+      "2405": {
+        "para_cursar": "cursada",
+        "para_rendir": "aprobada"
+      },
+      "3751": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "3820": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "3943": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "4607": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5076": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5205": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5287": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "2201": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      }
+    }
+  },
+  {
+    "id": 5361,
+    "nombre": "PRODUCCION DE OBRAS",
+    "correlativas": {
+      "3751": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "3820": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "3943": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "4607": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5076": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5077": {
+        "para_cursar": "cursada",
+        "para_rendir": "aprobada"
+      },
+      "5205": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5287": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5288": {
+        "para_cursar": "cursada",
+        "para_rendir": "aprobada"
+      },
+      "2201": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      }
+    }
+  },
+  {
+    "id": 2016,
+    "nombre": "ANALISIS DE PROYECTOS DE INVERSION ARQ",
+    "correlativas": {
+      "3751": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "3820": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "3943": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "4607": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5076": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5205": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5287": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5361": {
+        "para_cursar": "cursada",
+        "para_rendir": "aprobada"
+      },
+      "2201": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      }
+    }
+  },
+  {
+    "id": 3753,
+    "nombre": "HISTORIA DE LA ARQUITECTURA III",
+    "correlativas": {
+      "3751": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "3752": {
+        "para_cursar": "cursada",
+        "para_rendir": "aprobada"
+      },
+      "3820": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "3943": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "4607": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5076": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5205": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5287": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "2201": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      }
+    }
+  },
+  {
+    "id": 3864,
+    "nombre": "PLANIFICACION URBANA II",
+    "correlativas": {
+      "3751": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "3820": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "3863": {
+        "para_cursar": "cursada",
+        "para_rendir": "aprobada"
+      },
+      "3943": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "4607": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5076": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5205": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5287": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "2201": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      }
+    }
+  },
+  {
+    "id": 3946,
+    "nombre": "TALLER DE ARQUITECTURA V",
+    "correlativas": {
+      "2405": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "3752": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "3821": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "3864": {
+        "para_cursar": "cursada",
+        "para_rendir": "aprobada"
+      },
+      "3945": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5077": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5206": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5288": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "2201": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "3944": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5361": {
+        "para_cursar": "cursada",
+        "para_rendir": "aprobada"
+      }
+    }
+  },
+  {
+    "id": 3937,
+    "nombre": "TALLER DE ARQUITECTURA CONTEMPORANEA",
+    "correlativas": {
+      "2405": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "3752": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "3753": {
+        "para_cursar": "cursada",
+        "para_rendir": "aprobada"
+      },
+      "3821": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "3944": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5077": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5206": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5288": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "2201": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5207": {
+        "para_cursar": "cursada",
+        "para_rendir": "aprobada"
+      }
+    }
+  },
+  {
+    "id": 9072,
+    "nombre": "LEGISLACION PROFESIONAL ARQ",
+    "correlativas": {
+      "2405": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "3752": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "3821": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "3944": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5077": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5206": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5288": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "2201": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      }
+    }
+  },
+  {
+    "id": 3845,
+    "nombre": "ORDENAMIENTO TERRITORIAL",
+    "correlativas": {
+      "2405": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "3752": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "3821": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "3863": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "3864": {
+        "para_cursar": "cursada",
+        "para_rendir": "aprobada"
+      },
+      "3944": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5077": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5206": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5288": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "2201": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      }
+    }
+  },
+  {
+    "id": 1851,
+    "nombre": "RESPONSABILIDAD SOCIAL",
+    "correlativas": {
+      "2405": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "3752": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "3821": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "3944": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5077": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5206": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5288": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "2201": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      }
+    }
+  },
+  {
+    "id": 2146,
+    "nombre": "ECONOMIA DEL ARTE Y LA CULTURA",
+    "correlativas": {
+      "2405": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "3752": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "3821": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "3944": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5077": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5206": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5288": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "2201": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      }
+    }
+  },
+  {
+    "id": 2371,
+    "nombre": "SEMINARIO DE INNOVACION, CREATIVIDAD Y EMPRENDEDORISMO",
+    "correlativas": {
+      "2405": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "3752": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "3821": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "3944": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5077": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5206": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5288": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "2201": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      }
+    }
+  },
+  {
+    "id": 2710,
+    "nombre": "FUENTES ALTERNATIVAS DE ENERGIA",
+    "correlativas": {
+      "2405": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "3752": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "3821": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "3944": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5077": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5206": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5288": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "2201": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      }
+    }
+  },
+  {
+    "id": 3521,
+    "nombre": "BIOGEOGRAFIA CULTURAL",
+    "correlativas": {
+      "2405": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "3752": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "3821": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "3944": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5077": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5206": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5288": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "2201": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      }
+    }
+  },
+  {
+    "id": 3543,
+    "nombre": "CARTOGRAFIA APLICADA",
+    "correlativas": {
+      "2405": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "3752": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "3821": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "3944": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5077": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5206": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5288": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "2201": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      }
+    }
+  },
+  {
+    "id": 3659,
+    "nombre": "GEOGRAFIA URBANA",
+    "correlativas": {
+      "2405": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "3752": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "3821": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "3944": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5077": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5206": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5288": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "2201": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      }
+    }
+  },
+  {
+    "id": 3724,
+    "nombre": "GESTION DEL PATRIMONIO URBANO",
+    "correlativas": {
+      "2405": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "3752": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "3821": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "3944": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5077": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5206": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5288": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "2201": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      }
+    }
+  },
+  {
+    "id": 3892,
+    "nombre": "PERCEPCION Y VALORACION SOCIAL DEL PAISAJE",
+    "correlativas": {
+      "2405": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "3752": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "3821": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "3944": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5077": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5206": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5288": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      }
+    }
+  },
+  {
+    "id": 3903,
+    "nombre": "SEMINARIO: GESTION DE RECURSOS NATURALES Y MEDIO AMBIENTE",
+    "correlativas": {
+      "2405": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "3752": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "3821": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "3944": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5077": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5206": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5288": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "2201": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      }
+    }
+  },
+  {
+    "id": 3959,
+    "nombre": "TELEDETECCION Y SIG",
+    "correlativas": {
+      "2405": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "3752": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "3821": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "3944": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5077": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5206": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "5288": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "2201": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      }
+    }
+  }
+]
