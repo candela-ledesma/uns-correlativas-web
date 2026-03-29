@@ -2,61 +2,58 @@
   {
     "id": 3942,
     "nombre": "TALLER DE ARQUITECTURA I",
+    "año": "Primer",
+    "cuatrimestre": "Anual",
     "correlativas": {}
   },
   {
     "id": 4719,
     "nombre": "HISTORIA DEL ARTE Y LA CULTURA",
+    "año": "Primer",
+    "cuatrimestre": "Primer",
     "correlativas": {}
   },
   {
     "id": 8118,
     "nombre": "MATEMATICA I ARQ",
+    "año": "Primer",
+    "cuatrimestre": "Primer",
     "correlativas": {}
   },
   {
     "id": 5488,
     "nombre": "SISTEMAS DE REPRESENTACION I ARQ",
+    "año": "Primer",
+    "cuatrimestre": "Primer",
     "correlativas": {}
   },
   {
     "id": 3059,
     "nombre": "FISICA ARQ",
-    "correlativas": {
-      "8118": {
-        "para_cursar": "cursada",
-        "para_rendir": "aprobada"
-      }
-    }
+    "año": "Primer",
+    "cuatrimestre": "Segundo",
+    "correlativas": {}
   },
   {
     "id": 8119,
     "nombre": "MATEMATICA II ARQ",
-    "correlativas": {
-      "8118": {
-        "para_cursar": "cursada",
-        "para_rendir": "aprobada"
-      }
-    }
+    "año": "Primer",
+    "cuatrimestre": "Segundo",
+    "correlativas": {}
   },
   {
     "id": 5489,
     "nombre": "SISTEMAS DE REPRESENTACION II ARQ",
-    "correlativas": {
-      "5488": {
-        "para_cursar": "cursada",
-        "para_rendir": "aprobada"
-      }
-    }
+    "año": "Primer",
+    "cuatrimestre": "Segundo",
+    "correlativas": {}
   },
   {
     "id": 3943,
     "nombre": "TALLER DE ARQUITECTURA II",
+    "año": "Segundo",
+    "cuatrimestre": "Anual",
     "correlativas": {
-      "3942": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
       "4719": {
         "para_cursar": "cursada",
         "para_rendir": "aprobada"
@@ -66,31 +63,23 @@
   {
     "id": 4607,
     "nombre": "FUNDAMENTOS FILOSOFICOS DEL ESPACIO",
-    "correlativas": {
-      "4719": {
-        "para_cursar": "cursada",
-        "para_rendir": "aprobada"
-      }
-    }
+    "año": "Segundo",
+    "cuatrimestre": "Primer",
+    "correlativas": {}
   },
   {
     "id": 3751,
     "nombre": "HISTORIA DE LA ARQUITECTURA I",
-    "correlativas": {
-      "4719": {
-        "para_cursar": "cursada",
-        "para_rendir": "aprobada"
-      }
-    }
+    "año": "Segundo",
+    "cuatrimestre": "Primer",
+    "correlativas": {}
   },
   {
     "id": 3820,
     "nombre": "MORFOLOGIA I",
+    "año": "Segundo",
+    "cuatrimestre": "Primer",
     "correlativas": {
-      "5488": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
       "5489": {
         "para_cursar": "cursada",
         "para_rendir": "aprobada"
@@ -100,11 +89,9 @@
   {
     "id": 5076,
     "nombre": "CONSTRUCCIONES I",
+    "año": "Segundo",
+    "cuatrimestre": "Segundo",
     "correlativas": {
-      "3059": {
-        "para_cursar": "cursada",
-        "para_rendir": "aprobada"
-      },
       "5489": {
         "para_cursar": "cursada",
         "para_rendir": "aprobada"
@@ -114,21 +101,16 @@
   {
     "id": 5205,
     "nombre": "ESTRUCTURAS I",
-    "correlativas": {
-      "3059": {
-        "para_cursar": "cursada",
-        "para_rendir": "aprobada"
-      }
-    }
+    "año": "Segundo",
+    "cuatrimestre": "Segundo",
+    "correlativas": {}
   },
   {
     "id": 5287,
     "nombre": "INSTALACIONES I",
+    "año": "Segundo",
+    "cuatrimestre": "Segundo",
     "correlativas": {
-      "3059": {
-        "para_cursar": "cursada",
-        "para_rendir": "aprobada"
-      },
       "5489": {
         "para_cursar": "cursada",
         "para_rendir": "aprobada"
@@ -138,11 +120,9 @@
   {
     "id": 3944,
     "nombre": "TALLER DE ARQUITECTURA III",
+    "año": "Tercer",
+    "cuatrimestre": "Anual",
     "correlativas": {
-      "3059": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
       "3943": {
         "para_cursar": "aprobada",
         "para_rendir": "aprobada"
@@ -168,11 +148,9 @@
   {
     "id": 5077,
     "nombre": "CONSTRUCCIONES II",
+    "año": "Tercer",
+    "cuatrimestre": "Primer",
     "correlativas": {
-      "3059": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
       "3942": {
         "para_cursar": "aprobada",
         "para_rendir": "aprobada"
@@ -202,11 +180,9 @@
   {
     "id": 5206,
     "nombre": "ESTRUCTURAS II",
+    "año": "Tercer",
+    "cuatrimestre": "Primer",
     "correlativas": {
-      "3059": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
       "3942": {
         "para_cursar": "aprobada",
         "para_rendir": "aprobada"
@@ -236,11 +212,9 @@
   {
     "id": 5288,
     "nombre": "INSTALACIONES II",
+    "año": "Tercer",
+    "cuatrimestre": "Primer",
     "correlativas": {
-      "3059": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
       "3942": {
         "para_cursar": "aprobada",
         "para_rendir": "aprobada"
@@ -270,11 +244,9 @@
   {
     "id": 3752,
     "nombre": "HISTORIA DE LA ARQUITECTURA II",
+    "año": "Tercer",
+    "cuatrimestre": "Segundo",
     "correlativas": {
-      "3059": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
       "3751": {
         "para_cursar": "cursada",
         "para_rendir": "aprobada"
@@ -304,11 +276,9 @@
   {
     "id": 3821,
     "nombre": "MORFOLOGIA II",
+    "año": "Tercer",
+    "cuatrimestre": "Segundo",
     "correlativas": {
-      "3059": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
       "3820": {
         "para_cursar": "cursada",
         "para_rendir": "aprobada"
@@ -338,11 +308,9 @@
   {
     "id": 2405,
     "nombre": "SOCIOLOGIA URBANA",
+    "año": "Tercer",
+    "cuatrimestre": "Segundo",
     "correlativas": {
-      "3059": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
       "3942": {
         "para_cursar": "aprobada",
         "para_rendir": "aprobada"
@@ -368,11 +336,9 @@
   {
     "id": 3945,
     "nombre": "TALLER DE ARQUITECTURA IV",
+    "año": "Cuarto",
+    "cuatrimestre": "Anual",
     "correlativas": {
-      "3751": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
       "3820": {
         "para_cursar": "aprobada",
         "para_rendir": "aprobada"
@@ -401,6 +367,10 @@
         "para_cursar": "aprobada",
         "para_rendir": "aprobada"
       },
+      "3751": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
       "3943": {
         "para_cursar": "aprobada",
         "para_rendir": "aprobada"
@@ -414,11 +384,9 @@
   {
     "id": 3863,
     "nombre": "PLANIFICACION URBANA I",
+    "año": "Cuarto",
+    "cuatrimestre": "Primer",
     "correlativas": {
-      "2405": {
-        "para_cursar": "cursada",
-        "para_rendir": "aprobada"
-      },
       "3751": {
         "para_cursar": "aprobada",
         "para_rendir": "aprobada"
@@ -456,11 +424,9 @@
   {
     "id": 5361,
     "nombre": "PRODUCCION DE OBRAS",
+    "año": "Cuarto",
+    "cuatrimestre": "Primer",
     "correlativas": {
-      "3751": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
       "3820": {
         "para_cursar": "aprobada",
         "para_rendir": "aprobada"
@@ -502,11 +468,9 @@
   {
     "id": 2016,
     "nombre": "ANALISIS DE PROYECTOS DE INVERSION ARQ",
+    "año": "Cuarto",
+    "cuatrimestre": "Segundo",
     "correlativas": {
-      "3751": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
       "3820": {
         "para_cursar": "aprobada",
         "para_rendir": "aprobada"
@@ -544,11 +508,9 @@
   {
     "id": 3753,
     "nombre": "HISTORIA DE LA ARQUITECTURA III",
+    "año": "Cuarto",
+    "cuatrimestre": "Segundo",
     "correlativas": {
-      "3751": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
       "3752": {
         "para_cursar": "cursada",
         "para_rendir": "aprobada"
@@ -586,11 +548,9 @@
   {
     "id": 3864,
     "nombre": "PLANIFICACION URBANA II",
+    "año": "Cuarto",
+    "cuatrimestre": "Segundo",
     "correlativas": {
-      "3751": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
       "3820": {
         "para_cursar": "aprobada",
         "para_rendir": "aprobada"
@@ -628,11 +588,9 @@
   {
     "id": 3946,
     "nombre": "TALLER DE ARQUITECTURA V",
+    "año": "Quinto",
+    "cuatrimestre": "Anual",
     "correlativas": {
-      "2405": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
       "3752": {
         "para_cursar": "aprobada",
         "para_rendir": "aprobada"
@@ -665,6 +623,10 @@
         "para_cursar": "aprobada",
         "para_rendir": "aprobada"
       },
+      "2405": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
       "3944": {
         "para_cursar": "aprobada",
         "para_rendir": "aprobada"
@@ -678,11 +640,9 @@
   {
     "id": 3937,
     "nombre": "TALLER DE ARQUITECTURA CONTEMPORANEA",
+    "año": "Quinto",
+    "cuatrimestre": "Primer",
     "correlativas": {
-      "2405": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
       "3752": {
         "para_cursar": "aprobada",
         "para_rendir": "aprobada"
@@ -715,6 +675,10 @@
         "para_cursar": "aprobada",
         "para_rendir": "aprobada"
       },
+      "2405": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
       "5207": {
         "para_cursar": "cursada",
         "para_rendir": "aprobada"
@@ -724,11 +688,9 @@
   {
     "id": 9072,
     "nombre": "LEGISLACION PROFESIONAL ARQ",
+    "año": "Quinto",
+    "cuatrimestre": "Segundo",
     "correlativas": {
-      "2405": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
       "3752": {
         "para_cursar": "aprobada",
         "para_rendir": "aprobada"
@@ -762,11 +724,9 @@
   {
     "id": 3845,
     "nombre": "ORDENAMIENTO TERRITORIAL",
+    "año": "Quinto",
+    "cuatrimestre": "Segundo",
     "correlativas": {
-      "2405": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
       "3752": {
         "para_cursar": "aprobada",
         "para_rendir": "aprobada"
@@ -808,11 +768,9 @@
   {
     "id": 1851,
     "nombre": "RESPONSABILIDAD SOCIAL",
+    "año": "Quinto",
+    "cuatrimestre": "Segundo",
     "correlativas": {
-      "2405": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
       "3752": {
         "para_cursar": "aprobada",
         "para_rendir": "aprobada"
@@ -846,11 +804,9 @@
   {
     "id": 2146,
     "nombre": "ECONOMIA DEL ARTE Y LA CULTURA",
+    "año": "Quinto",
+    "cuatrimestre": "Segundo",
     "correlativas": {
-      "2405": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
       "3752": {
         "para_cursar": "aprobada",
         "para_rendir": "aprobada"
@@ -884,11 +840,9 @@
   {
     "id": 2371,
     "nombre": "SEMINARIO DE INNOVACION, CREATIVIDAD Y EMPRENDEDORISMO",
+    "año": "Quinto",
+    "cuatrimestre": "Segundo",
     "correlativas": {
-      "2405": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
       "3752": {
         "para_cursar": "aprobada",
         "para_rendir": "aprobada"
@@ -922,11 +876,9 @@
   {
     "id": 2710,
     "nombre": "FUENTES ALTERNATIVAS DE ENERGIA",
+    "año": "Quinto",
+    "cuatrimestre": "Segundo",
     "correlativas": {
-      "2405": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
       "3752": {
         "para_cursar": "aprobada",
         "para_rendir": "aprobada"
@@ -960,11 +912,9 @@
   {
     "id": 3521,
     "nombre": "BIOGEOGRAFIA CULTURAL",
+    "año": "Quinto",
+    "cuatrimestre": "Segundo",
     "correlativas": {
-      "2405": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
       "3752": {
         "para_cursar": "aprobada",
         "para_rendir": "aprobada"
@@ -998,11 +948,9 @@
   {
     "id": 3543,
     "nombre": "CARTOGRAFIA APLICADA",
+    "año": "Quinto",
+    "cuatrimestre": "Segundo",
     "correlativas": {
-      "2405": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
       "3752": {
         "para_cursar": "aprobada",
         "para_rendir": "aprobada"
@@ -1036,11 +984,9 @@
   {
     "id": 3659,
     "nombre": "GEOGRAFIA URBANA",
+    "año": "Quinto",
+    "cuatrimestre": "Segundo",
     "correlativas": {
-      "2405": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
       "3752": {
         "para_cursar": "aprobada",
         "para_rendir": "aprobada"
@@ -1074,11 +1020,9 @@
   {
     "id": 3724,
     "nombre": "GESTION DEL PATRIMONIO URBANO",
+    "año": "Quinto",
+    "cuatrimestre": "Segundo",
     "correlativas": {
-      "2405": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
       "3752": {
         "para_cursar": "aprobada",
         "para_rendir": "aprobada"
@@ -1106,17 +1050,19 @@
       "2201": {
         "para_cursar": "aprobada",
         "para_rendir": "aprobada"
+      },
+      "2405": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
       }
     }
   },
   {
     "id": 3892,
     "nombre": "PERCEPCION Y VALORACION SOCIAL DEL PAISAJE",
+    "año": "Quinto",
+    "cuatrimestre": "Segundo",
     "correlativas": {
-      "2405": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
       "3752": {
         "para_cursar": "aprobada",
         "para_rendir": "aprobada"
@@ -1146,11 +1092,9 @@
   {
     "id": 3903,
     "nombre": "SEMINARIO: GESTION DE RECURSOS NATURALES Y MEDIO AMBIENTE",
+    "año": "Quinto",
+    "cuatrimestre": "Segundo",
     "correlativas": {
-      "2405": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
       "3752": {
         "para_cursar": "aprobada",
         "para_rendir": "aprobada"
@@ -1184,11 +1128,9 @@
   {
     "id": 3959,
     "nombre": "TELEDETECCION Y SIG",
+    "año": "Quinto",
+    "cuatrimestre": "Segundo",
     "correlativas": {
-      "2405": {
-        "para_cursar": "aprobada",
-        "para_rendir": "aprobada"
-      },
       "3752": {
         "para_cursar": "aprobada",
         "para_rendir": "aprobada"
@@ -1214,6 +1156,10 @@
         "para_rendir": "aprobada"
       },
       "2201": {
+        "para_cursar": "aprobada",
+        "para_rendir": "aprobada"
+      },
+      "2405": {
         "para_cursar": "aprobada",
         "para_rendir": "aprobada"
       }

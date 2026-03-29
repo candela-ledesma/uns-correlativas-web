@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Plan de Estudios </title>
+<style>
+  body { font-family: Arial, sans-serif; margin: 20px; }
+  h1 { text-align: center; }
+  h2 { margin-top: 20px; }
+  h3 { margin: 8px 0 4px 0; font-weight: 600; }
+  .materia { display: flex; align-items: center; margin: 5px 0; padding: 5px; border-radius: 4px; }
+  .materia span { flex: 1; }
+  .no-cursada { background-color: #f0f0f0; }
+  .cursada { background-color: #a0c4ff; }
+  .aprobada { background-color: #90ee90; }
+  .disponible { background-color: #fff176; }
+  select { margin-left: 10px; }
+  button { margin: 10px 5px 20px 0; padding: 10px 20px; font-size: 16px; }
+  .badge { margin-left:8px; padding:2px 6px; border-radius:4px; background:#ddd; font-size:12px; }
+</style>
+</head>
+<body>
+
+<h1>Plan de Estudios</h1>
+
+<div>
+  <button id="btn-calcular">Calcular disponibles</button>
+  <button id="btn-filtrar-no">Mostrar no cursadas</button>
+  <button id="btn-filtrar-disp">Mostrar disponibles</button>
+  <button id="btn-todas">Mostrar todas</button>
+
+  <label style="margin-left:12px">Cuatrimestre:
+    <select id="filtro-cuat">
+      <option value="all">Todos</option>
+      <option value="Primer">Primer</option>
+      <option value="Segundo">Segundo</option>
+      <option value="Anual">Anual</option>
+    </select>
+  </label>
+</div>
+
+<div id="materias-container"></div>
+
+<script>
+const container = document.getElementById('materias-container');
+const params = new URLSearchParams(location.search);
+const dataPath = params.get('json') || '../data/arquitectura.json';
+
+let materias = [];
+const estadoMaterias = {}; // solo contiene materias marcadas: 'cursada' o 'aprobada'
+let disponibles = new Set();
+
+const añosOrden = ['Primer','Segundo','Tercer','Cuarto','Quinto','Sexto'];
+const cuatriOrden = ['Primer','Segundo','Anual'];
+
+function calcularDisponibles() {
+  disponibles = new Set();
+  materias.forEach(m => {
+    const idStr = String(m.id);
+    let ok = true;
+    for (const corId in (m.correlativas || {})) {
+      const req = (m.correlativas[corId].para_cursar || "").toLowerCase();
+      const estadoReq = estadoMaterias[String(corId)];
+      if (req === "cursada" && !(estadoReq === "cursada" || estadoReq === "aprobada")) {
+        ok = false; break;
+      }
+      if (req === "aprobada" && estadoReq !== "aprobada") {
+        ok = false; break;
+      }
+    }
+    if (ok && estadoMaterias[idStr] === undefined) disponibles.add(idStr);
+  });
+}
+
+function renderMaterias(filtro = null) {
+  container.innerHTML = "";
+  // construir estructura año -> cuatrimestre -> [materias]
+  const byYear = {};
+  materias.forEach(m => {
+    const año = (m.año && String(m.año).trim()) || 'Sin año';
+    const cuat = (m.cuatrimestre && String(m.cuatrimestre).trim()) || 'Anual';
+    if (!byYear[año]) byYear[año] = {};
+    if (!byYear[año][cuat]) byYear[año][cuat] = [];
+    byYear[año][cuat].push(m);
+  });
+
+  const filtroCu = document.getElementById('filtro-cuat').value;
+
+  // iterar años en orden definido (mostrar sólo los presentes)
+  añosOrden.concat(Object.keys(byYear).filter(a=>!añosOrden.includes(a))).forEach(año => {
+    if (!byYear[año]) return;
+    const añoSection = document.createElement('div');
+    const h2 = document.createElement('h2');
+    h2.textContent = `Año ${año}`;
+    añoSection.appendChild(h2);
+
+    // iterar cuatrimestres en orden definido
+    cuatriOrden.concat(Object.keys(byYear[año]).filter(c=>!cuatriOrden.includes(c))).forEach(cuat => {
+      const lista = byYear[año][cuat];
+      if (!lista || lista.length === 0) return;
+      if (filtroCu !== 'all' && filtroCu !== cuat) return;
+
+      const h3 = document.createElement('h3');
+      h3.textContent = `Cuatrimestre: ${cuat}`;
+      añoSection.appendChild(h3);
+
+      lista.forEach(m => {
+        const idStr = String(m.id);
+        const estado = estadoMaterias[idStr] || null;
+        let clase = "no-cursada";
+        if (estado === "cursada") clase = "cursada";
+        else if (estado === "aprobada") clase = "aprobada";
+        else if (disponibles.has(idStr)) clase = "disponible";
+
+        if (filtro && filtro !== clase) return;
+
+        const div = document.createElement('div');
+        div.className = `materia ${clase}`;
+        div.id = `materia-${idStr}`;
+        div.innerHTML = `
+          <span>${m.nombre} <span class="badge">Cuatr.: ${cuat}</span></span>
+          <select data-id="${idStr}">
+            <option value="" ${estado === null ? "selected" : ""}>No marcada</option>
+            <option value="cursada" ${estado === "cursada" ? "selected" : ""}>Cursada</option>
+            <option value="aprobada" ${estado === "aprobada" ? "selected" : ""}>Aprobada</option>
+          </select>
+        `;
+        añoSection.appendChild(div);
+      });
+    });
+
+    container.appendChild(añoSection);
+  });
+}
+
+container.addEventListener('change', e => {
+  if (e.target.tagName === 'SELECT') {
+    const id = e.target.dataset.id;
+    const val = e.target.value;
+    if (val === "") delete estadoMaterias[id];
+    else estadoMaterias[id] = val;
+    calcularDisponibles();
+    renderMaterias();
+  }
+});
+
+document.getElementById('btn-calcular').addEventListener('click', () => { calcularDisponibles(); renderMaterias(); });
+document.getElementById('btn-filtrar-no').addEventListener('click', () => { calcularDisponibles(); renderMaterias("no-cursada"); });
+document.getElementById('btn-filtrar-disp').addEventListener('click', () => { calcularDisponibles(); renderMaterias("disponible"); });
+document.getElementById('btn-todas').addEventListener('click', () => { calcularDisponibles(); renderMaterias(); });
+document.getElementById('filtro-cuat').addEventListener('change', () => { renderMaterias(); });
+
+// cargar JSON dinámicamente
+fetch(dataPath).then(r => {
+  if (!r.ok) throw new Error("No se pudo cargar " + dataPath);
+  return r.json();
+}).then(data => {
+  materias = data;
+  calcularDisponibles();
+  renderMaterias();
+}).catch(err => {
+  container.innerHTML = `<p style="color:red">Error cargando materias: ${err.message}</p>`;
+});
+</script>
+
+</body>
+</html>
