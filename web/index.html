@@ -25,21 +25,6 @@
 
 <h1>Plan de Estudios</h1>
 
-<div>
-  <button id="btn-calcular">Calcular disponibles</button>
-  <button id="btn-filtrar-no">Mostrar no cursadas</button>
-  <button id="btn-filtrar-disp">Mostrar disponibles</button>
-  <button id="btn-todas">Mostrar todas</button>
-
-  <label style="margin-left:12px">Cuatrimestre:
-    <select id="filtro-cuat">
-      <option value="all">Todos</option>
-      <option value="Primer">Primer</option>
-      <option value="Segundo">Segundo</option>
-      <option value="Anual">Anual</option>
-    </select>
-  </label>
-</div>
 
 <div id="materias-container"></div>
 
@@ -53,7 +38,28 @@ const estadoMaterias = {};
 let disponibles = new Set();
 
 const añosOrden = ['Primer','Segundo','Tercer','Cuarto','Quinto','Sexto'];
-const cuatriOrden = ['Primer','Segundo','Anual'];
+const cuatriOrden = ['Anual','Primer','Segundo'];
+
+function normalizeCuatr(v) {
+    if (!v) return 'Anual';
+    const s = String(v).trim().toLowerCase();
+    if (s.includes('anual') || s.includes('ambos') || s.includes('1-2') || s.includes('1 y 2')) return 'Anual';
+    if (s.startsWith('pri') || s === 'primero') return 'Primer';
+    if (s.startsWith('seg')) return 'Segundo';
+    return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
+function normalizeYear(v) {
+    if (!v) return 'Sin año';
+    const s = String(v).trim().toLowerCase();
+    if (s.startsWith('pri')) return 'Primer';
+    if (s.startsWith('seg')) return 'Segundo';
+    if (s.startsWith('ter')) return 'Tercer';
+    if (s.startsWith('cua') || s.startsWith('cuar')) return 'Cuarto';
+    if (s.startsWith('qui')) return 'Quinto';
+    if (s.startsWith('sex')) return 'Sexto';
+    return s.charAt(0).toUpperCase() + s.slice(1);
+}
 
 // calcular materias disponibles según correlativas
 function calcularDisponibles() {
@@ -61,15 +67,17 @@ function calcularDisponibles() {
   materias.forEach(m => {
     const idStr = String(m.id);
     let ok = true;
+    // comprobar cada correlativa de la materia
     for (const corId in (m.correlativas || {})) {
       const req = (m.correlativas[corId].para_cursar || "").toLowerCase();
       const estadoReq = estadoMaterias[String(corId)];
       if (req === "cursada" && !(estadoReq === "cursada" || estadoReq === "aprobada")) { ok = false; break; }
       if (req === "aprobada" && estadoReq !== "aprobada") { ok = false; break; }
     }
-    if(ok && estadoMaterias[idStr] === undefined) disponibles.add(idStr);
+    if (ok && estadoMaterias[idStr] === undefined) disponibles.add(idStr);
   });
 }
+
 
 // alternar estado de la materia al hacer clic
 function toggleEstado(id) {
@@ -86,26 +94,31 @@ function renderMaterias(filtro = null) {
   container.innerHTML = "";
   const byYear = {};
   materias.forEach(m => {
-    const año = (m.año && String(m.año).trim()) || 'Sin año';
-    const cuat = (m.cuatrimestre && String(m.cuatrimestre).trim()) || 'Anual';
+    const año = normalizeYear(m.año || m.ano || m.year);
+    const cuat = normalizeCuatr(m.cuatrimestre || m.cuatri || m.cuatrim || m.term);
     if(!byYear[año]) byYear[año] = {};
     if(!byYear[año][cuat]) byYear[año][cuat] = [];
     byYear[año][cuat].push(m);
   });
 
-  const filtroCu = document.getElementById('filtro-cuat').value;
+  const filtroCu = 'all';
 
   añosOrden.concat(Object.keys(byYear).filter(a=>!añosOrden.includes(a))).forEach(año=>{
     if(!byYear[año]) return;
     const añoSection = document.createElement('div');
-    const h2 = document.createElement('h2'); h2.textContent=`Año ${año}`; añoSection.appendChild(h2);
+    const h2 = document.createElement('h2');
+    h2.textContent = `${año} año`;
+    añoSection.appendChild(h2);
 
     cuatriOrden.concat(Object.keys(byYear[año]).filter(c=>!cuatriOrden.includes(c))).forEach(cuat=>{
       const lista = byYear[año][cuat];
       if(!lista || lista.length === 0) return;
       if(filtroCu !== 'all' && filtroCu !== cuat) return;
 
-      const h3 = document.createElement('h3'); h3.textContent=`Cuatrimestre: ${cuat}`; añoSection.appendChild(h3);
+        const h3 = document.createElement('h3');
+        // si es anual mostrar solo "Anual"
+        h3.textContent = (cuat === 'Anual') ? 'Anual' : `Cuatrimestre: ${cuat}`;
+        añoSection.appendChild(h3);
 
       lista.forEach(m=>{
         const idStr = String(m.id);
@@ -121,7 +134,7 @@ function renderMaterias(filtro = null) {
         const div = document.createElement('div');
         div.className = `materia ${clase}`;
         div.id = `materia-${idStr}`;
-        div.innerHTML = `<span>${m.nombre} <span class="badge">Cuatr.: ${cuat}</span></span>
+        div.innerHTML = `<span>${m.nombre}  </span></span>
                          <span class="materia-icon">${icon}</span>`;
         div.addEventListener('click', ()=>toggleEstado(idStr));
         añoSection.appendChild(div);
@@ -131,12 +144,6 @@ function renderMaterias(filtro = null) {
   });
 }
 
-// botones y filtro
-document.getElementById('btn-calcular').addEventListener('click', ()=>{ calcularDisponibles(); renderMaterias(); });
-document.getElementById('btn-filtrar-no').addEventListener('click', ()=>{ calcularDisponibles(); renderMaterias("no-cursada"); });
-document.getElementById('btn-filtrar-disp').addEventListener('click', ()=>{ calcularDisponibles(); renderMaterias("disponible"); });
-document.getElementById('btn-todas').addEventListener('click', ()=>{ calcularDisponibles(); renderMaterias(); });
-document.getElementById('filtro-cuat').addEventListener('change', ()=>{ renderMaterias(); });
 
 // cargar JSON
 fetch(dataPath).then(r=>{
