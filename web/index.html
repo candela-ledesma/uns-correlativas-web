@@ -23,7 +23,13 @@
 </head>
 <body>
 
+<script src="https://unpkg.com/cytoscape@3.27.0/dist/cytoscape.min.js"></script>
+<script src="./script.js"></script>
+
 <h1>Plan de Estudios</h1>
+
+<h2>Grafo de correlativas</h2>
+<div id="grafo"></div>
 
 
 <div id="materias-container"></div>
@@ -153,6 +159,9 @@ fetch(dataPath).then(r=>{
   materias = data;
   calcularDisponibles();
   renderMaterias();
+
+  crearVisualizacion(materias);
+
 }).catch(err=>{
   container.innerHTML = `<p style="color:red">Error cargando materias: ${err.message}</p>`;
 });
