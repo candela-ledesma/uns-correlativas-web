@@ -109,3 +109,17 @@ h1{
 .materia.aprobada{
     background:#cce5ff;
 }
+
+.materia.bloqueada{
+    background:#eee;
+    color:#777;
+    cursor:not-allowed;
+    position:relative;
+}
+
+.materia.bloqueada::after{
+    content:"🔒";
+    position:absolute;
+    right:10px;
+    top:10px;
+}
