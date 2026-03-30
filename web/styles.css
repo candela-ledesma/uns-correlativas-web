@@ -1,7 +1,111 @@
-#grafo {
-  width: 100%;
-  height: 600px;
-  border: 1px solid #ccc;
-  margin-top: 20px;
-  border-radius: 8px;
+body{
+    font-family: system-ui, Arial, sans-serif;
+    background:#f5f7fb;
+    margin:0;
+    padding:40px;
+}
+
+h1{
+    margin-bottom:30px;
+}
+
+.año{
+    margin-bottom:40px;
+}
+
+.año h2{
+    border-bottom:2px solid #ddd;
+    padding-bottom:6px;
+}
+
+.cuatrimestre{
+    margin-top:20px;
+}
+
+.cuatrimestre h3{
+    margin-bottom:10px;
+    color:#444;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(220px,1fr));
+    gap:10px;
+}
+
+.materia{
+    background:white;
+    border:1px solid #ddd;
+    border-radius:8px;
+    padding:12px;
+    cursor:pointer;
+    transition:all .15s ease;
+}
+
+.materia:hover{
+    transform:translateY(-2px);
+    box-shadow:0 4px 10px rgba(0,0,0,.08);
+}
+
+.materia.cursada{
+    background:#fff3cd;
+}
+
+.materia.aprobada{
+    background:#cce5ff;
+}body{
+    font-family: system-ui, Arial, sans-serif;
+    background:#f5f7fb;
+    margin:0;
+    padding:40px;
+}
+
+h1{
+    margin-bottom:30px;
+}
+
+.año{
+    margin-bottom:40px;
+}
+
+.año h2{
+    border-bottom:2px solid #ddd;
+    padding-bottom:6px;
+}
+
+.cuatrimestre{
+    margin-top:20px;
+}
+
+.cuatrimestre h3{
+    margin-bottom:10px;
+    color:#444;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(220px,1fr));
+    gap:10px;
+}
+
+.materia{
+    background:white;
+    border:1px solid #ddd;
+    border-radius:8px;
+    padding:12px;
+    cursor:pointer;
+    transition:all .15s ease;
+}
+
+.materia:hover{
+    transform:translateY(-2px);
+    box-shadow:0 4px 10px rgba(0,0,0,.08);
+}
+
+.materia.cursada{
+    background:#fff3cd;
+}
+
+.materia.aprobada{
+    background:#cce5ff;
 }

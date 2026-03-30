@@ -1,73 +1,142 @@
-function construirGrafo(materias){
+document.addEventListener("DOMContentLoaded", () => {
 
-  const nodes = materias.map(m => ({
-    data: {
-      id: String(m.id),
-      label: m.nombre
+const container = document.getElementById("materias-container");
+
+let materias = [];
+
+const estadoMaterias = JSON.parse(localStorage.getItem("estadoMaterias")) || {};
+
+
+async function cargarMaterias(){
+
+    try{
+
+        const res = await fetch("/api/materias");
+        const data = await res.json();
+
+        console.log("Materias:", data); // para debug
+
+        materias = data;
+
+        renderMaterias();
+
+    }catch(err){
+
+        console.error("Error cargando materias:", err);
+
     }
-  }));
 
-  const edges = [];
-
-  materias.forEach(m=>{
-    for(const corId in (m.correlativas || {})){
-      edges.push({
-        data:{
-          source: String(corId),
-          target: String(m.id)
-        }
-      });
-    }
-  });
-
-  return {nodes, edges};
 }
 
-function crearVisualizacion(materias){
 
-  const {nodes, edges} = construirGrafo(materias);
+function renderMaterias(){
 
-  const cy = cytoscape({
-    container: document.getElementById('grafo'),
+    container.innerHTML = "";
 
-    elements: [
-      ...nodes,
-      ...edges
-    ],
+    const años = {};
 
-    style: [
-      {
-        selector: 'node',
-        style: {
-          'label': 'data(label)',
-          'background-color': '#666',
-          'text-valign': 'center',
-          'text-halign': 'center',
-          'color': '#fff',
-          'font-size': '10px',
-          'width': '40px',
-          'height': '40px'
+    materias.forEach(m => {
+
+        if(!años[m.año])
+            años[m.año] = {};
+
+        if(!años[m.año][m.cuatrimestre])
+            años[m.año][m.cuatrimestre] = [];
+
+        años[m.año][m.cuatrimestre].push(m);
+
+    });
+
+    for(const año in años){
+
+        const añoDiv = document.createElement("div");
+        añoDiv.className = "año";
+
+        const tituloAño = document.createElement("h2");
+        tituloAño.textContent = año;
+        añoDiv.appendChild(tituloAño);
+
+        for(const cuatri in años[año]){
+
+            const cuatriDiv = document.createElement("div");
+            cuatriDiv.className = "cuatrimestre";
+
+            const tituloC = document.createElement("h3");
+            tituloC.textContent = cuatri;
+
+            const grid = document.createElement("div");
+            grid.className = "grid";
+
+            años[año][cuatri].forEach(materia => {
+
+                const div = document.createElement("div");
+                div.className = "materia";
+
+                const estado = estadoMaterias[materia.id];
+
+                if(estado === "cursada") div.classList.add("cursada");
+                if(estado === "aprobada") div.classList.add("aprobada");
+
+                div.textContent = `${materia.nombre}`;
+
+                div.addEventListener("click", () =>
+                    toggleEstado(materia.id)
+                );
+
+                grid.appendChild(div);
+
+            });
+
+            cuatriDiv.appendChild(tituloC);
+            cuatriDiv.appendChild(grid);
+
+            añoDiv.appendChild(cuatriDiv);
+
         }
-      },
 
-      {
-        selector: 'edge',
-        style: {
-          'width': 2,
-          'line-color': '#ccc',
-          'target-arrow-color': '#ccc',
-          'target-arrow-shape': 'triangle',
-          'curve-style': 'bezier'
-        }
-      }
-    ],
+        container.appendChild(añoDiv);
 
-    layout: {
-      name: 'breadthfirst',
-      directed: true,
-      padding: 10
     }
 
-  });
+}
+
+
+function toggleEstado(id){
+
+    const estado = estadoMaterias[id];
+
+    if(!estado)
+        estadoMaterias[id] = "cursada";
+
+    else if(estado === "cursada")
+        estadoMaterias[id] = "aprobada";
+
+    else
+        delete estadoMaterias[id];
+
+    localStorage.setItem(
+        "estadoMaterias",
+        JSON.stringify(estadoMaterias)
+    );
+
+    renderMaterias();
 
 }
+
+
+document.getElementById("reset-btn").addEventListener("click", () => {
+
+    localStorage.removeItem("estadoMaterias");
+
+    for(const key in estadoMaterias){
+        delete estadoMaterias[key];
+    }
+
+    renderMaterias();
+
+});
+
+
+cargarMaterias();
+
+});

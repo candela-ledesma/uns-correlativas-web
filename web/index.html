@@ -1,170 +1,23 @@
 <!DOCTYPE html>
-<html lang="es">
+<html>
+
 <head>
 <meta charset="UTF-8">
 <title>Plan de Estudios</title>
-<style>
-  body { font-family: Arial, sans-serif; margin: 20px; background:#f9f9f9; }
-  h1 { text-align: center; margin-bottom:30px; }
-  h2 { margin-top: 30px; border-bottom:1px solid #ccc; padding-bottom:5px; }
-  h3 { margin:15px 0 5px; font-weight:600; color:#333; }
-  .materia { display:flex; align-items:center; justify-content:space-between; margin:5px 0;
-             padding:10px; border-radius:6px; cursor:pointer; transition:0.2s; }
-  .materia:hover { transform:scale(1.02); }
-  .no-cursada { background-color: #f0f0f0; }
-  .cursada { background-color: #a0c4ff; }
-  .aprobada { background-color: #90ee90; }
-  .disponible { background-color: #fff176; }
-  .badge { margin-left:6px; padding:2px 6px; border-radius:4px; background:#ddd; font-size:12px; }
-  .materia-icon { margin-left:10px; font-size:18px; }
-  button { margin:10px 5px 20px 0; padding:10px 20px; font-size:16px; border:none; border-radius:6px; cursor:pointer; transition:0.2s; }
-  button:hover { opacity:0.85; }
-</style>
-</head>
-<body>
 
-<script src="https://unpkg.com/cytoscape@3.27.0/dist/cytoscape.min.js"></script>
-<script src="./script.js"></script>
+<link rel="stylesheet" href="/static/styles.css">
+
+</head>
+
+<body>
 
 <h1>Plan de Estudios</h1>
 
-<h2>Grafo de correlativas</h2>
-<div id="grafo"></div>
-
+<button id="reset-btn">Reiniciar</button>
 
 <div id="materias-container"></div>
 
-<script>
-const container = document.getElementById('materias-container');
-const params = new URLSearchParams(location.search);
-const dataPath = params.get('json') || '/api/materias';
+<script src="/static/script.js"></script>
 
-let materias = [];
-const estadoMaterias = {};
-let disponibles = new Set();
-
-const añosOrden = ['Primer','Segundo','Tercer','Cuarto','Quinto','Sexto'];
-const cuatriOrden = ['Anual','Primer','Segundo'];
-
-function normalizeCuatr(v) {
-    if (!v) return 'Anual';
-    const s = String(v).trim().toLowerCase();
-    if (s.includes('anual') || s.includes('ambos') || s.includes('1-2') || s.includes('1 y 2')) return 'Anual';
-    if (s.startsWith('pri') || s === 'primero') return 'Primer';
-    if (s.startsWith('seg')) return 'Segundo';
-    return s.charAt(0).toUpperCase() + s.slice(1);
-}
-
-function normalizeYear(v) {
-    if (!v) return 'Sin año';
-    const s = String(v).trim().toLowerCase();
-    if (s.startsWith('pri')) return 'Primer';
-    if (s.startsWith('seg')) return 'Segundo';
-    if (s.startsWith('ter')) return 'Tercer';
-    if (s.startsWith('cua') || s.startsWith('cuar')) return 'Cuarto';
-    if (s.startsWith('qui')) return 'Quinto';
-    if (s.startsWith('sex')) return 'Sexto';
-    return s.charAt(0).toUpperCase() + s.slice(1);
-}
-
-// calcular materias disponibles según correlativas
-function calcularDisponibles() {
-  disponibles = new Set();
-  materias.forEach(m => {
-    const idStr = String(m.id);
-    let ok = true;
-    // comprobar cada correlativa de la materia
-    for (const corId in (m.correlativas || {})) {
-      const req = (m.correlativas[corId].para_cursar || "").toLowerCase();
-      const estadoReq = estadoMaterias[String(corId)];
-      if (req === "cursada" && !(estadoReq === "cursada" || estadoReq === "aprobada")) { ok = false; break; }
-      if (req === "aprobada" && estadoReq !== "aprobada") { ok = false; break; }
-    }
-    if (ok && estadoMaterias[idStr] === undefined) disponibles.add(idStr);
-  });
-}
-
-
-// alternar estado de la materia al hacer clic
-function toggleEstado(id) {
-  const current = estadoMaterias[id] || "";
-  if (current === "") estadoMaterias[id] = "cursada";
-  else if (current === "cursada") estadoMaterias[id] = "aprobada";
-  else delete estadoMaterias[id];
-  calcularDisponibles();
-  renderMaterias();
-}
-
-// renderizar materias organizadas por año y cuatrimestre
-function renderMaterias(filtro = null) {
-  container.innerHTML = "";
-  const byYear = {};
-  materias.forEach(m => {
-    const año = normalizeYear(m.año || m.ano || m.year);
-    const cuat = normalizeCuatr(m.cuatrimestre || m.cuatri || m.cuatrim || m.term);
-    if(!byYear[año]) byYear[año] = {};
-    if(!byYear[año][cuat]) byYear[año][cuat] = [];
-    byYear[año][cuat].push(m);
-  });
-
-  const filtroCu = 'all';
-
-  añosOrden.concat(Object.keys(byYear).filter(a=>!añosOrden.includes(a))).forEach(año=>{
-    if(!byYear[año]) return;
-    const añoSection = document.createElement('div');
-    const h2 = document.createElement('h2');
-    h2.textContent = `${año} año`;
-    añoSection.appendChild(h2);
-
-    cuatriOrden.concat(Object.keys(byYear[año]).filter(c=>!cuatriOrden.includes(c))).forEach(cuat=>{
-      const lista = byYear[año][cuat];
-      if(!lista || lista.length === 0) return;
-      if(filtroCu !== 'all' && filtroCu !== cuat) return;
-
-        const h3 = document.createElement('h3');
-        // si es anual mostrar solo "Anual"
-        h3.textContent = (cuat === 'Anual') ? 'Anual' : `Cuatrimestre: ${cuat}`;
-        añoSection.appendChild(h3);
-
-      lista.forEach(m=>{
-        const idStr = String(m.id);
-        const estado = estadoMaterias[idStr] || null;
-        let clase = "no-cursada";
-        let icon = "";
-        if(estado === "cursada") { clase = "cursada"; icon="✔️"; }
-        else if(estado === "aprobada") { clase = "aprobada"; icon="🎓"; }
-        else if(disponibles.has(idStr)) clase = "disponible";
-
-        if(filtro && filtro !== clase) return;
-
-        const div = document.createElement('div');
-        div.className = `materia ${clase}`;
-        div.id = `materia-${idStr}`;
-        div.innerHTML = `<span>${m.nombre}  </span></span>
-                         <span class="materia-icon">${icon}</span>`;
-        div.addEventListener('click', ()=>toggleEstado(idStr));
-        añoSection.appendChild(div);
-      });
-    });
-    container.appendChild(añoSection);
-  });
-}
-
-
-// cargar JSON
-fetch(dataPath).then(r=>{
-  if(!r.ok) throw new Error("No se pudo cargar " + dataPath);
-  return r.json();
-}).then(data=>{
-  materias = data;
-  calcularDisponibles();
-  renderMaterias();
-
-  crearVisualizacion(materias);
-
-}).catch(err=>{
-  container.innerHTML = `<p style="color:red">Error cargando materias: ${err.message}</p>`;
-});
-</script>
 </body>
 </html>
