@@ -1,7 +1,8 @@
 import MateriaCard from "@/components/MateriaCard";
 import { agruparMaterias } from "@/lib/agruparMaterias";
 import { separarMaterias } from "@/lib/separarMaterias";
-import { PlanData } from "./types/plan";
+import { Materia, PlanData } from "./types/plan";
+
 
 async function getMaterias(): Promise<PlanData> {
   const res = await fetch("http://localhost:3000/api/materias", {
@@ -15,10 +16,51 @@ async function getMaterias(): Promise<PlanData> {
   return res.json();
 }
 
+function renderGrupo(
+  titulo: string,
+  materias: Materia[],
+  prefijoKey: string
+) {
+  if (materias.length === 0) return null;
+
+  return (
+    <section
+      key={prefijoKey}
+      style={{
+        marginTop: "32px",
+        padding: "20px",
+        backgroundColor: "#fff",
+        borderRadius: "12px",
+      }}
+    >
+      <h2 style={{ marginBottom: "16px" }}>{titulo}</h2>
+
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
+          gap: "14px",
+        }}
+      >
+        {materias.map((materia, index) => (
+          <MateriaCard
+            key={`${prefijoKey}-${materia.id}-${index}`}
+            materia={materia}
+          />
+        ))}
+      </div>
+    </section>
+  );
+}
+
 export default async function HomePage() {
   const data = await getMaterias();
 
-  const { normales, optativas, idiomas } = separarMaterias(data.materias);
+  const { normales, optativas, idiomas, seminarios } = separarMaterias(
+    data.materias,
+    data.agrupadores
+  );
+
   const agrupadas = agruparMaterias(normales);
 
   return (
@@ -57,55 +99,28 @@ export default async function HomePage() {
         </section>
       ))}
 
-      {optativas.length > 0 && (
-        <section
-          style={{
-            marginTop: "48px",
-            padding: "20px",
-            backgroundColor: "#fff",
-            borderRadius: "12px",
-          }}
-        >
-          <h2 style={{ marginBottom: "16px" }}>Optativas (G2324)</h2>
+      {data.agrupadores
+        .filter((a) => a.tipo === "optativa_grupo")
+        .map((grupo) =>
+          renderGrupo(
+            grupo.nombre,
+            optativas.filter((m) => m.grupo_opcion === grupo.id),
+            `opt-${grupo.id}`
+          )
+        )}
 
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
-              gap: "14px",
-            }}
-          >
-            {optativas.map((materia, index) => (
-              <MateriaCard key={`opt-${materia.id}-${index}`} materia={materia} />
-            ))}
-          </div>
-        </section>
-      )}
+      {data.agrupadores
+        .filter((a) => a.tipo === "idioma_grupo")
+        .map((grupo) =>
+          renderGrupo(
+            grupo.nombre,
+            idiomas.filter((m) => m.grupo_opcion === grupo.id),
+            `idioma-${grupo.id}`
+          )
+        )}
 
-      {idiomas.length > 0 && (
-        <section
-          style={{
-            marginTop: "32px",
-            padding: "20px",
-            backgroundColor: "#fff",
-            borderRadius: "12px",
-          }}
-        >
-          <h2 style={{ marginBottom: "16px" }}>Idioma para Arquitectura (I2201)</h2>
-
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
-              gap: "14px",
-            }}
-          >
-            {idiomas.map((materia, index) => (
-              <MateriaCard key={`idioma-${materia.id}-${index}`} materia={materia} />
-            ))}
-          </div>
-        </section>
-      )}
+      {seminarios.length > 0 &&
+        renderGrupo("Seminarios", seminarios, "seminarios")}
     </main>
   );
 }
