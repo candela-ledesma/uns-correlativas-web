@@ -15,3 +15,4 @@ export function agruparMaterias(materias: Materia[]) {
 
   return agrupadas;
 }
+
