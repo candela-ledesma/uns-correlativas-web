@@ -10,7 +10,9 @@ export type Materia = {
   cuatrimestre: string | null;
   horas: string;
   tipo: string;
-  categoria: "normal" | "optativa" | "idioma" | "seminario";
+  categoria: "normal" | "optativa";
+  grupo_opcion: string | null;
+  subtipo: string | null;
   correlativas: Record<string, Requisito>;
 };
 

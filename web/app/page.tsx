@@ -18,10 +18,7 @@ async function getMaterias(): Promise<PlanData> {
 export default async function HomePage() {
   const data = await getMaterias();
 
-  const { normales, optativas, idiomas, seminarios } = separarMaterias(
-    data.materias
-  );
-
+  const { normales, optativas, idiomas } = separarMaterias(data.materias);
   const agrupadas = agruparMaterias(normales);
 
   return (
@@ -69,7 +66,7 @@ export default async function HomePage() {
             borderRadius: "12px",
           }}
         >
-          <h2 style={{ marginBottom: "16px" }}>Materias Optativas</h2>
+          <h2 style={{ marginBottom: "16px" }}>Optativas (G2324)</h2>
 
           <div
             style={{
@@ -94,7 +91,7 @@ export default async function HomePage() {
             borderRadius: "12px",
           }}
         >
-          <h2 style={{ marginBottom: "16px" }}>Idiomas</h2>
+          <h2 style={{ marginBottom: "16px" }}>Idioma para Arquitectura (I2201)</h2>
 
           <div
             style={{
@@ -105,34 +102,6 @@ export default async function HomePage() {
           >
             {idiomas.map((materia, index) => (
               <MateriaCard key={`idioma-${materia.id}-${index}`} materia={materia} />
-            ))}
-          </div>
-        </section>
-      )}
-
-      {seminarios.length > 0 && (
-        <section
-          style={{
-            marginTop: "32px",
-            padding: "20px",
-            backgroundColor: "#fff",
-            borderRadius: "12px",
-          }}
-        >
-          <h2 style={{ marginBottom: "16px" }}>Seminarios</h2>
-
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
-              gap: "14px",
-            }}
-          >
-            {seminarios.map((materia, index) => (
-              <MateriaCard
-                key={`seminario-${materia.id}-${index}`}
-                materia={materia}
-              />
             ))}
           </div>
         </section>
