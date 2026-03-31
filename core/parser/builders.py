@@ -3,7 +3,17 @@
     #agrupador
     #correlativa
 
-def crear_materia(id_, nombre, año, cuatrimestre, horas="", tipo="materia"):
+def crear_materia(
+    id_,
+    nombre,
+    año,
+    cuatrimestre,
+    horas="",
+    tipo="materia",
+    categoria="normal",
+    grupo_opcion=None,
+    subtipo=None
+):
     return {
         "id": str(id_),
         "nombre": nombre.strip(),
@@ -11,6 +21,9 @@ def crear_materia(id_, nombre, año, cuatrimestre, horas="", tipo="materia"):
         "cuatrimestre": cuatrimestre,
         "horas": str(horas).strip() if horas else "",
         "tipo": tipo,
+        "categoria": categoria,
+        "grupo_opcion": grupo_opcion,
+        "subtipo": subtipo,
         "correlativas": {}
     }
 

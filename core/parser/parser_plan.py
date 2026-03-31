@@ -9,6 +9,8 @@ from .patterns import (
     PATRON_CORRELATIVA_UN_ESTADO,
     PATRON_CORRELATIVA_UN_ESTADO_SOLO
 )
+from .categorizer import detectar_categoria_y_subtipo
+from .grupo_detector import detectar_tipo_agrupador, es_linea_agrupador
 
 
 def extraer_correlativas_de_linea(linea):
@@ -33,7 +35,7 @@ def limpiar_linea_materia(linea):
     return linea
 
 
-def parsear_linea_materia(linea, año_actual, cuatrimestre_actual):
+def parsear_linea_materia(linea, año_actual, cuatrimestre_actual, seccion_actual=None, grupo_actual=None):
     correlativas = extraer_correlativas_de_linea(linea)
     linea_limpia = limpiar_linea_materia(linea)
 
@@ -51,18 +53,22 @@ def parsear_linea_materia(linea, año_actual, cuatrimestre_actual):
     if nombre.lower() in {"aprobada", "cursada", "regular"}:
         return None
 
+    categoria, subtipo = detectar_categoria_y_subtipo(nombre, grupo_actual)
+
     materia = crear_materia(
         id_=codigo,
         nombre=nombre,
         año=año_actual,
         cuatrimestre=cuatrimestre_actual,
-        horas=horas
+        horas=horas,
+        categoria=categoria,
+        grupo_opcion=grupo_actual,
+        subtipo=subtipo
     )
 
     materia["correlativas"].update(correlativas)
 
     return materia
-
 
 def detectar_materias_generico(texto):
     materias = []
@@ -128,9 +134,35 @@ def detectar_materias_generico(texto):
                 agrupadores_index[codigo] = agrupador
 
             continue
+        
+        agrupador_info = es_linea_agrupador(linea, seccion_actual)
+        if agrupador_info:
+            codigo = agrupador_info["codigo"]
+            nombre = agrupador_info["nombre"]
+            tipo_agrupador = agrupador_info["tipo"]
+
+            grupo_actual = codigo
+
+            if tipo_agrupador == "idioma_grupo":
+                seccion_actual = "idiomas"
+            elif tipo_agrupador == "seminario_grupo":
+                seccion_actual = "seminarios"
+
+            if codigo not in agrupadores_index:
+                agrupador = crear_agrupador(codigo, nombre, tipo_agrupador)
+                agrupadores.append(agrupador)
+                agrupadores_index[codigo] = agrupador
+
+            continue
 
         if tipo == "materia":
-            materia = parsear_linea_materia(linea, año_actual, cuatrimestre_actual)
+            materia = parsear_linea_materia(
+                linea,
+                año_actual,
+                cuatrimestre_actual,
+                seccion_actual,
+                grupo_actual
+            )
             if materia:
                 materias.append(materia)
                 materias_index[materia["id"]] = materia

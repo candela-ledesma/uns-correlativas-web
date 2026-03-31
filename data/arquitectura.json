@@ -7,6 +7,9 @@
       "cuatrimestre": "Anual",
       "horas": "96",
       "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
       "correlativas": {}
     },
     {
@@ -16,6 +19,9 @@
       "cuatrimestre": "Primer Cuatrimestre",
       "horas": "96",
       "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
       "correlativas": {}
     },
     {
@@ -25,6 +31,9 @@
       "cuatrimestre": "Primer Cuatrimestre",
       "horas": "64",
       "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
       "correlativas": {}
     },
     {
@@ -34,6 +43,9 @@
       "cuatrimestre": "Primer Cuatrimestre",
       "horas": "96",
       "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
       "correlativas": {}
     },
     {
@@ -43,6 +55,9 @@
       "cuatrimestre": "Segundo Cuatrimestre",
       "horas": "96",
       "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
       "correlativas": {
         "8118": {
           "para_cursar": "cursada",
@@ -57,6 +72,9 @@
       "cuatrimestre": "Segundo Cuatrimestre",
       "horas": "64",
       "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
       "correlativas": {
         "8118": {
           "para_cursar": "cursada",
@@ -71,6 +89,9 @@
       "cuatrimestre": "Segundo Cuatrimestre",
       "horas": "96",
       "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
       "correlativas": {
         "5488": {
           "para_cursar": "cursada",
@@ -85,6 +106,9 @@
       "cuatrimestre": "Anual",
       "horas": "96",
       "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
       "correlativas": {
         "3942": {
           "para_cursar": "aprobada",
@@ -103,6 +127,9 @@
       "cuatrimestre": "Primer Cuatrimestre",
       "horas": "96",
       "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
       "correlativas": {
         "4719": {
           "para_cursar": "cursada",
@@ -117,6 +144,9 @@
       "cuatrimestre": "Primer Cuatrimestre",
       "horas": "96",
       "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
       "correlativas": {
         "4719": {
           "para_cursar": "cursada",
@@ -131,6 +161,9 @@
       "cuatrimestre": "Primer Cuatrimestre",
       "horas": "96",
       "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
       "correlativas": {
         "5488": {
           "para_cursar": "aprobada",
@@ -149,6 +182,9 @@
       "cuatrimestre": "Segundo Cuatrimestre",
       "horas": "96",
       "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
       "correlativas": {
         "3059": {
           "para_cursar": "cursada",
@@ -167,6 +203,9 @@
       "cuatrimestre": "Segundo Cuatrimestre",
       "horas": "96",
       "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
       "correlativas": {
         "3059": {
           "para_cursar": "cursada",
@@ -181,6 +220,9 @@
       "cuatrimestre": "Segundo Cuatrimestre",
       "horas": "64",
       "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
       "correlativas": {
         "3059": {
           "para_cursar": "cursada",
@@ -199,6 +241,9 @@
       "cuatrimestre": "Anual",
       "horas": "256",
       "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
       "correlativas": {
         "3059": {
           "para_cursar": "aprobada",
@@ -233,6 +278,9 @@
       "cuatrimestre": "Primer Cuatrimestre",
       "horas": "96",
       "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
       "correlativas": {
         "3059": {
           "para_cursar": "aprobada",
@@ -271,6 +319,9 @@
       "cuatrimestre": "Primer Cuatrimestre",
       "horas": "96",
       "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
       "correlativas": {
         "3059": {
           "para_cursar": "aprobada",
@@ -309,6 +360,9 @@
       "cuatrimestre": "Primer Cuatrimestre",
       "horas": "64",
       "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
       "correlativas": {
         "3059": {
           "para_cursar": "aprobada",
@@ -347,6 +401,9 @@
       "cuatrimestre": "Segundo Cuatrimestre",
       "horas": "96",
       "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
       "correlativas": {
         "3059": {
           "para_cursar": "aprobada",
@@ -385,6 +442,9 @@
       "cuatrimestre": "Segundo Cuatrimestre",
       "horas": "",
       "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": "idioma",
       "correlativas": {}
     },
     {
@@ -394,6 +454,9 @@
       "cuatrimestre": "Segundo Cuatrimestre",
       "horas": "96",
       "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
       "correlativas": {
         "3059": {
           "para_cursar": "aprobada",
@@ -432,6 +495,9 @@
       "cuatrimestre": "Segundo Cuatrimestre",
       "horas": "64",
       "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
       "correlativas": {
         "3059": {
           "para_cursar": "aprobada",
@@ -466,6 +532,9 @@
       "cuatrimestre": "Anual",
       "horas": "256",
       "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
       "correlativas": {
         "3751": {
           "para_cursar": "aprobada",
@@ -508,6 +577,9 @@
       "cuatrimestre": "Primer Cuatrimestre",
       "horas": "",
       "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
       "correlativas": {
         "3751": {
           "para_cursar": "aprobada",
@@ -554,6 +626,9 @@
       "cuatrimestre": "Primer Cuatrimestre",
       "horas": "96",
       "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
       "correlativas": {
         "2405": {
           "para_cursar": "cursada",
@@ -600,6 +675,9 @@
       "cuatrimestre": "Primer Cuatrimestre",
       "horas": "64",
       "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
       "correlativas": {
         "3751": {
           "para_cursar": "aprobada",
@@ -650,6 +728,9 @@
       "cuatrimestre": "Segundo Cuatrimestre",
       "horas": "64",
       "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
       "correlativas": {
         "3751": {
           "para_cursar": "aprobada",
@@ -696,6 +777,9 @@
       "cuatrimestre": "Segundo Cuatrimestre",
       "horas": "96",
       "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
       "correlativas": {
         "3751": {
           "para_cursar": "aprobada",
@@ -742,6 +826,9 @@
       "cuatrimestre": "Segundo Cuatrimestre",
       "horas": "96",
       "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
       "correlativas": {
         "3751": {
           "para_cursar": "aprobada",
@@ -788,6 +875,9 @@
       "cuatrimestre": "Anual",
       "horas": "256",
       "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
       "correlativas": {
         "2405": {
           "para_cursar": "aprobada",
@@ -834,6 +924,9 @@
       "cuatrimestre": "Primer Cuatrimestre",
       "horas": "",
       "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
       "correlativas": {
         "2405": {
           "para_cursar": "aprobada",
@@ -880,6 +973,9 @@
       "cuatrimestre": "Primer Cuatrimestre",
       "horas": "96",
       "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
       "correlativas": {
         "2405": {
           "para_cursar": "aprobada",
@@ -926,6 +1022,9 @@
       "cuatrimestre": "Segundo Cuatrimestre",
       "horas": "",
       "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
       "correlativas": {
         "2405": {
           "para_cursar": "aprobada",
@@ -972,6 +1071,9 @@
       "cuatrimestre": "Segundo Cuatrimestre",
       "horas": "96",
       "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
       "correlativas": {
         "2405": {
           "para_cursar": "aprobada",
@@ -1014,6 +1116,9 @@
       "cuatrimestre": "Segundo Cuatrimestre",
       "horas": "128",
       "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
       "correlativas": {
         "2405": {
           "para_cursar": "aprobada",
@@ -1064,6 +1169,9 @@
       "cuatrimestre": "Segundo Cuatrimestre",
       "horas": "",
       "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
       "correlativas": {
         "2405": {
           "para_cursar": null,
@@ -1106,6 +1214,9 @@
       "cuatrimestre": "Segundo Cuatrimestre",
       "horas": "64",
       "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
       "correlativas": {
         "2405": {
           "para_cursar": "aprobada",
@@ -1148,6 +1259,9 @@
       "cuatrimestre": "Segundo Cuatrimestre",
       "horas": "",
       "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
       "correlativas": {
         "3894": {
           "para_cursar": null,
@@ -1166,6 +1280,9 @@
       "cuatrimestre": "Segundo Cuatrimestre",
       "horas": "64",
       "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G2324",
+      "subtipo": null,
       "correlativas": {
         "2405": {
           "para_cursar": "aprobada",
@@ -1208,6 +1325,9 @@
       "cuatrimestre": "Segundo Cuatrimestre",
       "horas": "64",
       "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G2324",
+      "subtipo": "seminario",
       "correlativas": {
         "2405": {
           "para_cursar": "aprobada",
@@ -1250,6 +1370,9 @@
       "cuatrimestre": "Segundo Cuatrimestre",
       "horas": "96",
       "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G2324",
+      "subtipo": null,
       "correlativas": {
         "2405": {
           "para_cursar": "aprobada",
@@ -1292,6 +1415,9 @@
       "cuatrimestre": "Segundo Cuatrimestre",
       "horas": "96",
       "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G2324",
+      "subtipo": null,
       "correlativas": {
         "2405": {
           "para_cursar": "aprobada",
@@ -1334,6 +1460,9 @@
       "cuatrimestre": "Segundo Cuatrimestre",
       "horas": "96",
       "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G2324",
+      "subtipo": null,
       "correlativas": {
         "2405": {
           "para_cursar": "aprobada",
@@ -1376,6 +1505,9 @@
       "cuatrimestre": "Segundo Cuatrimestre",
       "horas": "96",
       "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G2324",
+      "subtipo": null,
       "correlativas": {
         "2405": {
           "para_cursar": "aprobada",
@@ -1418,6 +1550,9 @@
       "cuatrimestre": "Segundo Cuatrimestre",
       "horas": "96",
       "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G2324",
+      "subtipo": null,
       "correlativas": {
         "2405": {
           "para_cursar": "aprobada",
@@ -1460,6 +1595,9 @@
       "cuatrimestre": "Segundo Cuatrimestre",
       "horas": "",
       "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G2324",
+      "subtipo": null,
       "correlativas": {
         "2405": {
           "para_cursar": "aprobada",
@@ -1502,6 +1640,9 @@
       "cuatrimestre": "Segundo Cuatrimestre",
       "horas": "",
       "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G2324",
+      "subtipo": null,
       "correlativas": {
         "2405": {
           "para_cursar": "aprobada",
@@ -1544,6 +1685,9 @@
       "cuatrimestre": "Segundo Cuatrimestre",
       "horas": "64",
       "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G2324",
+      "subtipo": null,
       "correlativas": {
         "2405": {
           "para_cursar": "aprobada",
@@ -1582,6 +1726,9 @@
       "cuatrimestre": "Segundo Cuatrimestre",
       "horas": "64",
       "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G2324",
+      "subtipo": "seminario",
       "correlativas": {
         "2405": {
           "para_cursar": "aprobada",
@@ -1624,6 +1771,9 @@
       "cuatrimestre": "Segundo Cuatrimestre",
       "horas": "96",
       "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G2324",
+      "subtipo": null,
       "correlativas": {
         "2405": {
           "para_cursar": "aprobada",
@@ -1660,21 +1810,15 @@
       }
     },
     {
-      "id": "I2201",
-      "nombre": "Idioma de Arquitectura, plan 2016 v2",
-      "año": "Quinto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "",
-      "tipo": "materia",
-      "correlativas": {}
-    },
-    {
       "id": "4804",
       "nombre": "SUFICIENCIA DE IDIOMA INGLES ARQ",
       "año": "Quinto Año",
       "cuatrimestre": "Segundo Cuatrimestre",
       "horas": "",
       "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "I2201",
+      "subtipo": "idioma",
       "correlativas": {}
     }
   ],
@@ -1695,8 +1839,14 @@
         "3841",
         "3892",
         "3903",
-        "3959",
-        "I2201",
+        "3959"
+      ]
+    },
+    {
+      "id": "I2201",
+      "nombre": "Idioma de Arquitectura, plan 2016 v2",
+      "tipo": "idioma_grupo",
+      "opciones": [
         "4804"
       ]
     }
