@@ -15,6 +15,7 @@ function renderGrupo(
   prefijoKey: string,
   grupoId: string,
   estados: Record<string, EstadoMateria>,
+  todasLasMaterias: Materia[],
   onToggle: (materia: Materia) => void
 ) {
   if (materias.length === 0) return null;
@@ -41,7 +42,7 @@ function renderGrupo(
       >
         {materias.map((materia, index) => {
           const estado = estados[materia.id] || "no_cursada";
-          const habilitada = estaHabilitada(materia, estados);
+          const habilitada = estaHabilitada(materia, estados, todasLasMaterias);
           const bloqueada = estado === "no_cursada" && !habilitada;
 
           return (
@@ -138,7 +139,7 @@ export default function PlanViewer({ data }: { data: PlanData }) {
                 {materias.map((materia, index) => {
                 const esAgrupador = idsAgrupadores.has(materia.id);
 
-                const habilitada = estaHabilitada(materia, estados);
+                const habilitada = estaHabilitada(materia, estados, data.materias);
 
                 const estado = esAgrupador
                   ? estadoAgrupador(materia.id, data.materias, estados)
@@ -151,7 +152,7 @@ export default function PlanViewer({ data }: { data: PlanData }) {
                     key={`${materia.id}-${index}`}
                     materia={materia}
                     estado={estado}
-                    habilitada={estaHabilitada(materia, estados)}
+                    habilitada={habilitada}
                     bloqueada={bloqueada}
                     onClick={() => toggleMateria(materia)}
                   />
@@ -172,6 +173,7 @@ export default function PlanViewer({ data }: { data: PlanData }) {
             `opt-${grupo.id}`,
             grupo.id,
             estados,
+            data.materias,
             toggleMateria
           )
         )}
@@ -185,6 +187,7 @@ export default function PlanViewer({ data }: { data: PlanData }) {
             `idioma-${grupo.id}`,
             grupo.id,
             estados,
+            data.materias,
             toggleMateria
           )
         )}
@@ -196,6 +199,7 @@ export default function PlanViewer({ data }: { data: PlanData }) {
           "seminarios",
           "seminarios",
           estados,
+          data.materias,
           toggleMateria
         )
         }
