@@ -6,7 +6,7 @@ import { agruparMaterias } from "@/lib/agruparMaterias";
 import { separarMaterias } from "@/lib/separarMaterias";
 import { estaHabilitada, EstadoMateria } from "@/lib/evaluarCorrelativas";
 import { estadoAgrupador, siguienteEstado } from "@/lib/estadoMaterias";
-import { PlanData, Materia } from "../app/types/plan";
+import { PlanData, Materia} from "../app/types/plan";
 
 
 function renderGrupo(
@@ -98,6 +98,7 @@ export default function PlanViewer({ data }: { data: PlanData }) {
     });
   }
   
+  
 
   return (
     <main
@@ -109,7 +110,15 @@ export default function PlanViewer({ data }: { data: PlanData }) {
         minHeight: "100vh",
       }}
     >
-      <h1 style={{ marginBottom: "24px" }}>UNS Correlativas</h1>
+      <h1 style={{ marginBottom: "8px" }}>
+        {data.plan?.carrera ?? "Sin carrera"}
+      </h1>
+      <p style={{ margin: 0, color: "#555" }}>
+        {data.plan?.universidad ?? ""}
+      </p>
+      <p style={{ marginTop: "4px", color: "#777" }}>
+        {data.plan?.codigo_plan ?? ""}
+      </p>
 
       {Object.entries(agrupadas).map(([anio, cuatrimestres]) => (
         <section key={anio} style={{ marginBottom: "40px" }}>

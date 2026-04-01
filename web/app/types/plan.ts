@@ -23,7 +23,14 @@ export type Agrupador = {
   opciones: string[];
 };
 
+export type PlanInfo = {
+  carrera: string;
+  universidad: string;
+  codigo_plan: string;
+};
+
 export type PlanData = {
+  plan: PlanInfo;
   materias: Materia[];
   agrupadores: Agrupador[];
 };

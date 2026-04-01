@@ -1,4 +1,9 @@
 {
+  "plan": {
+    "carrera": "Arquitectura",
+    "universidad": "Universidad Nacional del Sur",
+    "codigo_plan": "Plan 2016 - Versión 2"
+  },
   "materias": [
     {
       "id": "3942",
