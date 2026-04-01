@@ -39,15 +39,22 @@ function renderGrupo(
           gap: "14px",
         }}
       >
-        {materias.map((materia, index) => (
-          <MateriaCard
-            key={`${materia.id}-${index}`}
-            materia={materia}
-            estado={estados[materia.id] || "no_cursada"}
-            habilitada={estaHabilitada(materia, estados)}
-            onClick={() => onToggle(materia)}
-          />
-        ))}
+        {materias.map((materia, index) => {
+          const estado = estados[materia.id] || "no_cursada";
+          const habilitada = estaHabilitada(materia, estados);
+          const bloqueada = estado === "no_cursada" && !habilitada;
+
+          return (
+            <MateriaCard
+              key={`${materia.id}-${index}`}
+              materia={materia}
+              estado={estado}
+              habilitada={habilitada}
+              bloqueada={bloqueada}
+              onClick={() => onToggle(materia)}
+            />
+          );
+        })}
       </div>
     </section>
   );
@@ -62,6 +69,7 @@ export default function PlanViewer({ data }: { data: PlanData }) {
   );
 
   const agrupadas = useMemo(() => agruparMaterias(normales), [normales]);
+
 
   const idsAgrupadores = useMemo(
     () => new Set(data.agrupadores.map((a) => a.id)),
@@ -121,9 +129,13 @@ export default function PlanViewer({ data }: { data: PlanData }) {
                 {materias.map((materia, index) => {
                 const esAgrupador = idsAgrupadores.has(materia.id);
 
+                const habilitada = estaHabilitada(materia, estados);
+
                 const estado = esAgrupador
                   ? estadoAgrupador(materia.id, data.materias, estados)
                   : estados[materia.id] || "no_cursada";
+
+                const bloqueada = estado === "no_cursada" && !habilitada;
 
                 return (
                   <MateriaCard
@@ -131,6 +143,7 @@ export default function PlanViewer({ data }: { data: PlanData }) {
                     materia={materia}
                     estado={estado}
                     habilitada={estaHabilitada(materia, estados)}
+                    bloqueada={bloqueada}
                     onClick={() => toggleMateria(materia)}
                   />
                 );
