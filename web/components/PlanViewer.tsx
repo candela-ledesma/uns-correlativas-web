@@ -5,25 +5,23 @@ import MateriaCard from "@/components/MateriaCard";
 import { agruparMaterias } from "@/lib/agruparMaterias";
 import { separarMaterias } from "@/lib/separarMaterias";
 import { estaHabilitada, EstadoMateria } from "@/lib/evaluarCorrelativas";
+import { estadoAgrupador, siguienteEstado } from "@/lib/estadoMaterias";
 import { PlanData, Materia } from "../app/types/plan";
 
-function siguienteEstado(actual: EstadoMateria): EstadoMateria {
-  if (actual === "no_cursada") return "cursada";
-  if (actual === "cursada") return "aprobada";
-  return "no_cursada";
-}
 
 function renderGrupo(
   titulo: string,
   materias: Materia[],
+  prefijoKey: string,
+  grupoId: string,
   estados: Record<string, EstadoMateria>,
-  onToggle: (id: string) => void,
-  prefijoKey: string
+  onToggle: (materia: Materia) => void
 ) {
   if (materias.length === 0) return null;
 
   return (
     <section
+      id={`grupo-${grupoId}`}
       key={prefijoKey}
       style={{
         marginTop: "32px",
@@ -43,11 +41,11 @@ function renderGrupo(
       >
         {materias.map((materia, index) => (
           <MateriaCard
-            key={`${prefijoKey}-${materia.id}-${index}`}
+            key={`${materia.id}-${index}`}
             materia={materia}
             estado={estados[materia.id] || "no_cursada"}
             habilitada={estaHabilitada(materia, estados)}
-            onClick={() => onToggle(materia.id)}
+            onClick={() => onToggle(materia)}
           />
         ))}
       </div>
@@ -65,15 +63,33 @@ export default function PlanViewer({ data }: { data: PlanData }) {
 
   const agrupadas = useMemo(() => agruparMaterias(normales), [normales]);
 
-  function toggleMateria(id: string) {
+  const idsAgrupadores = useMemo(
+    () => new Set(data.agrupadores.map((a) => a.id)),
+    [data.agrupadores]
+  );
+
+  function irAGrupo(idGrupo: string) {
+    const elemento = document.getElementById(`grupo-${idGrupo}`);
+    if (elemento) {
+      elemento.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }
+
+  function toggleMateria(materia: Materia) {
+    if (idsAgrupadores.has(materia.id)) {
+      irAGrupo(materia.id);
+      return;
+    }
+
     setEstados((prev) => {
-      const actual = prev[id] || "no_cursada";
+      const actual = prev[materia.id] || "no_cursada";
       return {
         ...prev,
-        [id]: siguienteEstado(actual),
+        [materia.id]: siguienteEstado(actual),
       };
     });
   }
+  
 
   return (
     <main
@@ -102,15 +118,23 @@ export default function PlanViewer({ data }: { data: PlanData }) {
                   gap: "14px",
                 }}
               >
-                {materias.map((materia, index) => (
+                {materias.map((materia, index) => {
+                const esAgrupador = idsAgrupadores.has(materia.id);
+
+                const estado = esAgrupador
+                  ? estadoAgrupador(materia.id, data.materias, estados)
+                  : estados[materia.id] || "no_cursada";
+
+                return (
                   <MateriaCard
                     key={`${materia.id}-${index}`}
                     materia={materia}
-                    estado={estados[materia.id] || "no_cursada"}
+                    estado={estado}
                     habilitada={estaHabilitada(materia, estados)}
-                    onClick={() => toggleMateria(materia.id)}
+                    onClick={() => toggleMateria(materia)}
                   />
-                ))}
+                );
+              })}
               </div>
             </div>
           ))}
@@ -123,9 +147,10 @@ export default function PlanViewer({ data }: { data: PlanData }) {
           renderGrupo(
             grupo.nombre,
             optativas.filter((m) => m.grupo_opcion === grupo.id),
+            `opt-${grupo.id}`,
+            grupo.id,
             estados,
-            toggleMateria,
-            `opt-${grupo.id}`
+            toggleMateria
           )
         )}
 
@@ -135,14 +160,23 @@ export default function PlanViewer({ data }: { data: PlanData }) {
           renderGrupo(
             grupo.nombre,
             idiomas.filter((m) => m.grupo_opcion === grupo.id),
+            `idioma-${grupo.id}`,
+            grupo.id,
             estados,
-            toggleMateria,
-            `idioma-${grupo.id}`
+            toggleMateria
           )
         )}
 
       {seminarios.length > 0 &&
-        renderGrupo("Seminarios", seminarios, estados, toggleMateria, "seminarios")}
+        renderGrupo(
+          "Seminarios",
+          seminarios,
+          "seminarios",
+          "seminarios",
+          estados,
+          toggleMateria
+        )
+        }
     </main>
   );
 }
