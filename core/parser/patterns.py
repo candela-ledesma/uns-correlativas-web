@@ -1,5 +1,3 @@
-#Centraliza todos los regex.
-
 import re
 
 PATRON_ANIO = re.compile(

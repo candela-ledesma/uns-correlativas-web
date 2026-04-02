@@ -3,6 +3,7 @@ import path from "path";
 
 export async function GET() {
   try {
+    //esta consuminedo de la api?
     const filePath = path.join(process.cwd(), "data", "arquitectura.json");
     const fileContent = await readFile(filePath, "utf-8");
     const data = JSON.parse(fileContent);

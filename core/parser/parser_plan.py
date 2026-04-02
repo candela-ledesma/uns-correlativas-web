@@ -2,16 +2,15 @@
 from .classifiers import clasificar_linea
 from .normalizers import normalizar_anio, normalizar_cuatrimestre
 from .builders import crear_materia, crear_agrupador, crear_requisito
-from .patterns import PATRON_MATERIA, PATRON_CORRELATIVA, PATRON_GRUPO
 from .patterns import (
     PATRON_MATERIA,
     PATRON_CORRELATIVA,
     PATRON_CORRELATIVA_UN_ESTADO,
-    PATRON_CORRELATIVA_UN_ESTADO_SOLO
+    PATRON_GRUPO
 )
 from .categorizer import detectar_categoria_y_subtipo
-from .grupo_detector import detectar_tipo_agrupador, es_linea_agrupador
-
+from .grupo_detector import es_linea_agrupador
+import re
 
 def extraer_correlativas_de_linea(linea):
     correlativas = {}
@@ -48,7 +47,17 @@ def parsear_linea_materia(linea, año_actual, cuatrimestre_actual, seccion_actua
     horas = (match.group(3) or "").strip()
 
     if codigo.upper().startswith("G"):
-        return None
+        return crear_materia(
+            id_=codigo,
+            nombre=nombre,
+            año=año_actual,
+            cuatrimestre=cuatrimestre_actual,
+            horas=horas,
+            tipo="agrupador_requisito",
+            categoria="normal",
+            grupo_opcion=None,
+            subtipo=None
+        )
 
     if nombre.lower() in {"aprobada", "cursada", "regular"}:
         return None
@@ -70,7 +79,33 @@ def parsear_linea_materia(linea, año_actual, cuatrimestre_actual, seccion_actua
 
     return materia
 
+def extraer_info_plan(texto):
+    carrera = None
+    universidad = None
+    codigo_plan = None
+
+    lineas = [l.strip() for l in texto.splitlines() if l.strip()]
+
+    for linea in lineas[:80]:
+        linea_limpia = " ".join(linea.split())
+
+        if "UNIVERSIDAD NACIONAL DEL SUR" in linea_limpia.upper():
+            universidad = "Universidad Nacional del Sur"
+
+        match = re.search(r'(.+?)\.\s*\((Plan[^)]+)\)', linea_limpia, re.IGNORECASE)
+        if match:
+            carrera = match.group(1).strip().title()
+            codigo_plan = match.group(2).strip()
+            break
+
+    return {
+        "carrera": carrera or "Carrera desconocida",
+        "universidad": universidad or "Universidad Nacional del Sur",
+        "codigo_plan": codigo_plan or "Plan desconocido"
+    }
+
 def detectar_materias_generico(texto):
+    info_plan = extraer_info_plan(texto)
     materias = []
     agrupadores = []
 
@@ -173,14 +208,12 @@ def detectar_materias_generico(texto):
 
         if tipo == "correlativa" and materias:
             materia_actual = materias[-1]
-            print("ULTIMA MATERIA:", materia_actual["id"], materia_actual["nombre"])
-            print("LINEA CORRELATIVA:", linea)
             correlativas = extraer_correlativas_de_linea(linea)
-            print("EXTRAIDAS:", correlativas)
             materia_actual["correlativas"].update(correlativas)
             continue
 
     return {
-        "materias": materias,
-        "agrupadores": agrupadores
-    }
+    "plan": info_plan,
+    "materias": materias,
+    "agrupadores": agrupadores
+}

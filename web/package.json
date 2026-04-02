@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test": "vitest",
+    "test:watch": "vitest --watch"
   },
   "dependencies": {
     "next": "16.2.1",
@@ -23,4 +25,5 @@
     "tailwindcss": "^4",
     "typescript": "^5"
   }
+
 }

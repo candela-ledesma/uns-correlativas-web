@@ -1,9 +1,3 @@
-#Limpia texto basura del PDF:
-    #headers repetidos
-    #líneas vacías
-    #columnas cortadas
-    #“Carga”, “Horaria”, etc.
-    
 import re
 
 BASURA_EXACTA = {

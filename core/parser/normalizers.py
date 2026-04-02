@@ -1,7 +1,3 @@
-#Normaliza textos:
-    #PRIMER AÑO → Primer Año
-    #Cuatrimestre: Segundo → Segundo Cuatrimestre
-
 def normalizar_anio(linea):
     mapa = {
         "PRIMER AÑO": "Primer Año",
