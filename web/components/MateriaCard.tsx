@@ -1,11 +1,10 @@
 "use client";
 
+import { ButtonHTMLAttributes } from "react";
 import { Materia } from "../app/types/plan";
+import { EstadoMateria } from "../lib/evaluarCorrelativas";
 
-
-type EstadoMateria = "no_cursada" | "cursada" | "aprobada";
-
-type Props = {
+type Props = ButtonHTMLAttributes<HTMLButtonElement> & {
   materia: Materia;
   estado: EstadoMateria;
   habilitada: boolean;
@@ -19,6 +18,7 @@ export default function MateriaCard({
   habilitada,
   bloqueada,
   onClick,
+  ...rest
 }: Props) {
   let backgroundColor = "#fff";
   let opacity = 1;
@@ -36,6 +36,7 @@ export default function MateriaCard({
 
   return (
     <button
+      {...rest}
       onClick={bloqueada ? undefined : onClick}
       disabled={bloqueada}
       style={{
@@ -52,6 +53,9 @@ export default function MateriaCard({
     >
       <div style={{ fontWeight: 700, marginBottom: "6px" }}>{materia.nombre}</div>
       <div style={{ fontSize: "14px", color: "#555" }}>Código: {materia.id}</div>
+
+      <p>Estado: {estado}</p>
+      <p>{habilitada ? "Habilitada" : "Bloqueada"}</p>
 
       {materia.horas && (
         <div style={{ fontSize: "14px", color: "#555", marginTop: "4px" }}>
