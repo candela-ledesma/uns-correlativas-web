@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 
-test("una materia cambia de estado al hacer click", async ({ page }) => {
+test("una materia avanza de no cursada a cursada y aprobada", async ({ page }) => {
     await page.goto("/");
 
     const materia = page.getByTestId("materia-8118");
@@ -14,5 +14,5 @@ test("una materia cambia de estado al hacer click", async ({ page }) => {
     await expect(materia).toHaveAttribute("data-estado", "aprobada");
 
     await materia.click();
-    await expect(materia).toHaveAttribute("data-estado", "no_cursada");
+    await expect(materia).toHaveAttribute("data-estado", "aprobada");
 });
