@@ -4,6 +4,10 @@ import { EstadoMateria } from "@/lib/evaluarCorrelativas";
 export function siguienteEstado(actual: EstadoMateria): EstadoMateria {
   if (actual === "no_cursada") return "cursada";
   if (actual === "cursada") return "aprobada";
+  return "aprobada";
+}
+
+export function resetEstado(): EstadoMateria {
   return "no_cursada";
 }
 

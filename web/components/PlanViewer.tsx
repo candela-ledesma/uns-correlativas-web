@@ -6,6 +6,9 @@ import AnioSection from "@/components/AnioSection";
 import GrupoMaterias from "@/components/GrupoMaterias";
 import { usePlanState } from "@/hooks/usePlanState";
 import { usePlanStructure } from "@/hooks/usePlanStructure";
+import { getMateriaViewModel } from "@/lib/materiaViewModel";
+import { calcularProgresoPlan } from "@/lib/calcularProgresoPlan";
+
 
 type Props = {
   data: PlanData;
@@ -27,33 +30,46 @@ export default function PlanViewer({ data }: Props) {
     isHydrated,
   } = usePlanState(idsAgrupadores);
 
+  const titulo = data.plan.carrera;
 
-  const titulo = data.plan?.carrera || "Plan de estudios";
-  const subtitulo = [
-    data.plan?.universidad,
-    data.plan?.codigo_plan,
-  ]
-    .filter(Boolean)
-    .join(" — ");
+  const subtitulo = `Plan ${data.plan.universidad} ${data.plan.codigo_plan}`;
 
-    if (!isHydrated) {
-      return (
-        <main style={{ maxWidth: "1200px", margin: "0 auto", padding: "24px" }}>
-          <PlanHeader
-            titulo={titulo}
-            subtitulo={subtitulo}
-            onReset={resetMaterias}
-          />
-          <p>Cargando plan...</p>
-        </main>
-      );
-    }
+  const total = data.materias.length;
 
+  const aprobadas = Object.values(estados).filter(
+  (estado) => estado === "aprobada"
+  ).length;
+
+  const cursadas = Object.values(estados).filter(
+  (estado) => estado === "cursada"
+  ).length;
+
+  const disponibles = data.materias.filter((materia) => {
+  const vm = getMateriaViewModel({
+    materia,
+    estados,
+    todasLasMaterias: data.materias,
+    idsAgrupadores,
+  });
+
+  return vm.habilitada && vm.estado === "no_cursada";
+}).length;
+
+const progreso = calcularProgresoPlan(
+  data.materias,
+  data.agrupadores,
+  estados,
+  disponibles
+);
   return (
     <main style={{ maxWidth: "1200px", margin: "0 auto", padding: "24px" }}>
       <PlanHeader
         titulo={titulo}
         subtitulo={subtitulo}
+        aprobadas={progreso.aprobadas}
+        cursadas={progreso.cursadas}
+        disponibles={progreso.disponibles}
+        total={progreso.total}
         onReset={resetMaterias}
       />
 
