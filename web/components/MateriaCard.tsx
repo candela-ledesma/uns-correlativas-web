@@ -55,7 +55,6 @@ export default function MateriaCard({
       <div style={{ fontSize: "14px", color: "#555" }}>Código: {materia.id}</div>
 
       <p>Estado: {estado}</p>
-      <p>{habilitada ? "Habilitada" : "Bloqueada"}</p>
 
       {materia.horas && (
         <div style={{ fontSize: "14px", color: "#555", marginTop: "4px" }}>
