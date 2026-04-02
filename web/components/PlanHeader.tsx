@@ -105,6 +105,30 @@ function StatCard({
             )}
         </div>
 
+        <a
+            href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Abrir easter egg en YouTube"
+            style={{
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                width: "36px",
+                height: "36px",
+                borderRadius: "999px",
+                border: "1px solid #d1d5db",
+                background: "#ffffff",
+                color: "#374151",
+                textDecoration: "none",
+                fontSize: "14px",
+                cursor: "pointer",
+                boxShadow: "0 1px 4px rgba(0,0,0,0.04)",
+            }}
+          >
+            😬
+          </a>
+
         {onReset && (
             <button
             type="button"
