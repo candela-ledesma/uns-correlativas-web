@@ -5,6 +5,28 @@ import path from "path";
 import PlanViewer from "@/components/PlanViewer";
 import PlanStatus from "@/components/PlanStatus";
 import { getCarreraById } from "@/lib/carreras";
+import type { Metadata } from "next";
+
+export async function generateMetadata({
+    params,
+    }: {
+    params: Promise<{ carrera: string }>;
+    }): Promise<Metadata> {
+    const { carrera } = await params;
+    const carreraData = getCarreraById(carrera);
+
+    if (!carreraData) {
+    return {
+        title: "Carrera no encontrada | Planes de estudio UNS",
+    };
+    }
+
+    return {
+    title: `${carreraData.nombre} | Planes de estudio UNS`,
+    description: `Plan de estudios y correlativas de ${carreraData.nombre}.`,
+    };
+}
+
 
 type PlanLoadResult =
     | {
