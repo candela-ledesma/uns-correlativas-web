@@ -9,7 +9,6 @@ import { usePlanStructure } from "@/hooks/usePlanStructure";
 import { getMateriaViewModel } from "@/lib/materiaViewModel";
 import { calcularProgresoPlan } from "@/lib/calcularProgresoPlan";
 
-
 type Props = {
   data: PlanData;
 };
@@ -23,34 +22,39 @@ export default function PlanViewer({ data }: Props) {
     idsAgrupadores,
   } = usePlanStructure(data);
 
+  const agrupadores = data.agrupadores || [];
+
+  const idiomaGroup = agrupadores.find((a) => a.tipo === "idioma_grupo");
+  const optativaGroup = agrupadores.find((a) => a.tipo === "optativa_grupo");
+  const seminarioGroup = agrupadores.find((a) => a.tipo === "seminario_grupo");
+
   const {
     estados,
     toggleMateria,
     resetMaterias,
-    isHydrated,
-  } = usePlanState(idsAgrupadores);
+  } = usePlanState(agrupadores);
 
   const titulo = data.plan.carrera;
-
   const subtitulo = `Plan ${data.plan.universidad} ${data.plan.codigo_plan}`;
 
   const disponibles = data.materias.filter((materia) => {
-  const vm = getMateriaViewModel({
-    materia,
+    const vm = getMateriaViewModel({
+      materia,
+      estados,
+      todasLasMaterias: data.materias,
+      idsAgrupadores,
+    });
+
+    return vm.habilitada && vm.estado === "no_cursada";
+  }).length;
+
+  const progreso = calcularProgresoPlan(
+    data.materias,
+    data.agrupadores,
     estados,
-    todasLasMaterias: data.materias,
-    idsAgrupadores,
-  });
+    disponibles
+  );
 
-  return vm.habilitada && vm.estado === "no_cursada";
-}).length;
-
-const progreso = calcularProgresoPlan(
-  data.materias,
-  data.agrupadores,
-  estados,
-  disponibles
-);
   return (
     <main style={{ maxWidth: "1200px", margin: "0 auto", padding: "24px" }}>
       <PlanHeader
@@ -75,35 +79,41 @@ const progreso = calcularProgresoPlan(
         />
       ))}
 
-      <GrupoMaterias
-        titulo="Idiomas"
-        grupoId="I2201"
-        materias={idiomas}
-        estados={estados}
-        todasLasMaterias={data.materias}
-        idsAgrupadores={idsAgrupadores}
-        onToggle={toggleMateria}
-      />
+      {idiomas.length > 0 && idiomaGroup && (
+        <GrupoMaterias
+          titulo="Idiomas"
+          grupoId={idiomaGroup.id}
+          materias={idiomas}
+          estados={estados}
+          todasLasMaterias={data.materias}
+          idsAgrupadores={idsAgrupadores}
+          onToggle={toggleMateria}
+        />
+      )}
 
-      <GrupoMaterias
-        titulo="Seminarios"
-        grupoId="seminarios"
-        materias={seminarios}
-        estados={estados}
-        todasLasMaterias={data.materias}
-        idsAgrupadores={idsAgrupadores}
-        onToggle={toggleMateria}
-      />
+      {seminarios.length > 0 && (
+        <GrupoMaterias
+          titulo="Seminarios"
+          grupoId={seminarioGroup?.id ?? "seminarios"}
+          materias={seminarios}
+          estados={estados}
+          todasLasMaterias={data.materias}
+          idsAgrupadores={idsAgrupadores}
+          onToggle={toggleMateria}
+        />
+      )}
 
-      <GrupoMaterias
-        titulo="Materias optativas"
-        grupoId="G2324"
-        materias={optativas}
-        estados={estados}
-        todasLasMaterias={data.materias}
-        idsAgrupadores={idsAgrupadores}
-        onToggle={toggleMateria}
-      />
+      {optativas.length > 0 && optativaGroup && (
+        <GrupoMaterias
+          titulo="Materias optativas"
+          grupoId={optativaGroup.id}
+          materias={optativas}
+          estados={estados}
+          todasLasMaterias={data.materias}
+          idsAgrupadores={idsAgrupadores}
+          onToggle={toggleMateria}
+        />
+      )}
     </main>
   );
 }

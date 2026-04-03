@@ -30,6 +30,7 @@ export default function GrupoMaterias({
     return (
     <section
         id={`grupo-${grupoId}`}
+        className="scroll-mt-24"
         data-testid={`grupo-${grupoId}`}
         style={{ marginTop: "36px" }}
     >

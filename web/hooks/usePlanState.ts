@@ -1,17 +1,18 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Materia } from "@/app/types/plan";
-import { EstadoMateria } from "@/lib/evaluarCorrelativas";
+import type { Materia, Agrupador } from "@/app/types/plan";
+import type { EstadoMateria } from "@/lib/evaluarCorrelativas";
 import { siguienteEstado } from "@/lib/estadoMaterias";
 import {
-  loadPlanState,
-  savePlanState,
-  clearPlanState,
+    loadPlanState,
+    savePlanState,
+    clearPlanState,
 } from "@/lib/planStorage";
 import { scrollToGroup } from "@/lib/scrollToGroup";
+import { getScrollTargetId } from "@/lib/getScrollTargetId";
 
-export function usePlanState(idsAgrupadores: Set<string>) {
+export function usePlanState(agrupadores: Agrupador[]) {
     const [estados, setEstados] = useState<Record<string, EstadoMateria>>({});
     const [isHydrated, setIsHydrated] = useState(false);
 
@@ -26,8 +27,10 @@ export function usePlanState(idsAgrupadores: Set<string>) {
     }, [estados, isHydrated]);
 
     function toggleMateria(materia: Materia) {
-    if (idsAgrupadores.has(materia.id)) {
-        scrollToGroup(materia.id);
+    const targetId = getScrollTargetId(materia, agrupadores);
+
+    if (targetId) {
+        scrollToGroup(targetId);
         return;
     }
 

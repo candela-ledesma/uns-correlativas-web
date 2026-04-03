@@ -3,53 +3,84 @@ import { notFound } from "next/navigation";
 import { promises as fs } from "fs";
 import path from "path";
 import PlanViewer from "@/components/PlanViewer";
+import PlanStatus from "@/components/PlanStatus";
 import { getCarreraById } from "@/lib/carreras";
 
-async function getPlanData(carreraId: string) {
-  const carrera = getCarreraById(carreraId);
-  if (!carrera) return null;
+type PlanLoadResult =
+    | { status: "ok"; carrera: { id: string; nombre: string; jsonFile: string }; data: any }
+    | { status: "unavailable"; carrera: { id: string; nombre: string; jsonFile: string } }
+    | { status: "invalid"; carrera: { id: string; nombre: string; jsonFile: string } };
 
-  try {
+async function getPlanData(carreraId: string): Promise<PlanLoadResult | null> {
+    const carrera = getCarreraById(carreraId);
+    if (!carrera) return null;
+
+    try {
     const filePath = path.join(process.cwd(), "data", carrera.jsonFile);
     const fileContents = await fs.readFile(filePath, "utf8");
+
     return {
-      carrera,
-      data: JSON.parse(fileContents),
+        status: "ok",
+        carrera,
+        data: JSON.parse(fileContents),
     };
-  } catch (error) {
+    } catch (error: any) {
+    if (error?.code === "ENOENT") {
+        return { status: "unavailable", carrera };
+    }
+
     console.error("Error leyendo plan:", error);
-    return null;
-  }
-}
+    return { status: "invalid", carrera };
+    }
+    }
 
-export default async function Page({
-  params,
-}: {
-  params: Promise<{ carrera: string }>;
-}) {
-  const { carrera: carreraId } = await params;
-  const result = await getPlanData(carreraId);
+    export default async function Page({
+    params,
+    }: {
+    params: Promise<{ carrera: string }>;
+    }) {
+    const { carrera: carreraId } = await params;
+    const result = await getPlanData(carreraId);
 
-  if (!result) {
+    if (!result) {
     notFound();
-  }
+    }
 
-  const { carrera, data } = result;
+    if (result.status === "unavailable") {
+    return (
+        <PlanStatus
+        titulo={result.carrera.nombre}
+        mensaje="Este plan todavía no está cargado en la aplicación."
+        />
+    );
+    }
 
-  return (
+    if (result.status === "invalid") {
+    return (
+        <PlanStatus
+        titulo={result.carrera.nombre}
+        mensaje="Hubo un problema al cargar este plan."
+        variant="error"
+        />
+    );
+    }
+
+    const { carrera, data } = result;
+
+    return (
     <main className="min-h-screen bg-zinc-50 px-6 py-10">
-      <div className="mx-auto max-w-7xl">
+        <div className="mx-auto max-w-7xl">
         <Link
-          href="/"
-          className="mb-4 inline-block text-sm font-medium text-blue-600 hover:underline"
+            href="/"
+            className="mb-4 inline-block text-sm font-medium text-blue-600 hover:underline"
         >
-          ← Volver al inicio
+            ← Volver al inicio
         </Link>
 
         <h1 className="mb-8 text-3xl font-bold">{carrera.nombre}</h1>
 
         <PlanViewer data={data} />
-      </div>
+        </div>
     </main>
-  );
+    );
 }

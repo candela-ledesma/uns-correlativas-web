@@ -3,6 +3,7 @@
 import { ButtonHTMLAttributes } from "react";
 import { Materia } from "../app/types/plan";
 import { EstadoMateria } from "../lib/evaluarCorrelativas";
+import { scrollToGroup } from "@/lib/scrollToGroup";
 
 type Props = ButtonHTMLAttributes<HTMLButtonElement> & {
   materia: Materia;
