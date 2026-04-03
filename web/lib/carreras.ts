@@ -5,6 +5,7 @@ export type CarreraConfig = {
     nombre: string;
     descripcion: string;
     jsonFile: string;
+    disponible?: boolean;
 };
 
 export const CARRERAS: CarreraConfig[] = [
@@ -13,18 +14,23 @@ export const CARRERAS: CarreraConfig[] = [
     nombre: "Arquitectura",
     descripcion: "Plan de estudios y correlativas.",
     jsonFile: "arquitectura.json",
+    disponible: true,
     },
     {
     id: "filosofia",
     nombre: "Filosofía",
     descripcion: "Plan de estudios y correlativas.",
     jsonFile: "filosofia.json",
+    disponible: false,
+
     },
     {
     id: "bioquimica",
     nombre: "Bioquímica",
     descripcion: "Plan de estudios y correlativas.",
     jsonFile: "bioquimica.json",
+    disponible: true,
+
     },
 ];
 

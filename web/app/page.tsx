@@ -1,34 +1,62 @@
 import Link from "next/link";
 import { CARRERAS } from "@/lib/carreras";
+import styles from "./page.module.css";
 
 export default function HomePage() {
   return (
-    <main className="min-h-screen bg-zinc-50 text-zinc-900">
-      <section className="mx-auto max-w-5xl px-6 py-16">
-        <div className="mb-12 text-center">
-          <h1 className="text-4xl font-bold tracking-tight">
-            Planes de estudio UNS
-          </h1>
-          <p className="mt-4 text-lg text-zinc-600">
-            Seleccioná una carrera para ver su plan.
+    <main className={styles.page}>
+      <section className={styles.container}>
+        <div className={styles.hero}>
+          <span className={styles.badge}>Universidad Nacional del Sur</span>
+
+          <h1 className={styles.title}>Planes de estudio y correlativas</h1>
+
+          <p className={styles.subtitle}>
+            Elegí una carrera para ver su plan, marcar materias cursadas o
+            aprobadas y descubrir cuáles tenés habilitadas.
           </p>
         </div>
 
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {CARRERAS.map((carrera) => (
-            <Link
-              key={carrera.id}
-              href={`/planes/${carrera.id}`}
-              className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
-            >
-              <h2 className="text-2xl font-semibold">{carrera.nombre}</h2>
-              <p className="mt-2 text-zinc-600">{carrera.descripcion}</p>
-              <div className="mt-4 text-sm font-medium text-blue-600">
-                Ver plan →
-              </div>
-            </Link>
-          ))}
+        <div className={styles.grid}>
+          {CARRERAS.map((carrera) => {
+            const disponible = carrera.disponible !== false;
+
+            return (
+              <Link
+                key={carrera.id}
+                href={`/planes/${carrera.id}`}
+                className={styles.card}
+              >
+                <div className={styles.cardTopBar} />
+
+                <div className={styles.cardHeader}>
+                  <div className={styles.iconBox}>🎓</div>
+
+                  <span
+                    className={`${styles.status} ${
+                      disponible ? styles.statusAvailable : styles.statusSoon
+                    }`}
+                  >
+                    {disponible ? "Disponible" : "Próximamente"}
+                  </span>
+                </div>
+
+                <h2 className={styles.cardTitle}>{carrera.nombre}</h2>
+
+                <p className={styles.cardDescription}>{carrera.descripcion}</p>
+
+                <div className={styles.cardFooter}>
+                  <span className={styles.cardFooterText}>
+                    {disponible ? "Ver plan" : "Más adelante"}
+                  </span>
+
+                  <span className={styles.arrow}>→</span>
+                </div>
+              </Link>
+            );
+          })}
         </div>
+
       </section>
     </main>
   );
