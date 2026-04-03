@@ -1,7 +1,8 @@
 import { test, expect } from "@playwright/test";
+import { gotoArquitectura } from "./helpers";
 
 test("reset limpia los estados", async ({ page }) => {
-  await page.goto("/");
+  await gotoArquitectura(page);
 
   const materia = page.getByTestId("materia-8118");
   const resetBtn = page.getByTestId("reset-btn");

@@ -1,4 +1,6 @@
 import { test, expect } from "@playwright/test";
+import { gotoArquitectura } from "./helpers";
+
 
 test("aprobar ingles habilita una materia que depende de idioma", async ({ page }) => {
     await page.addInitScript(() => {
@@ -16,7 +18,7 @@ test("aprobar ingles habilita una materia que depende de idioma", async ({ page 
     );
     });
 
-    await page.goto("/");
+    await gotoArquitectura(page);
 
     const tallerIV = page.getByTestId("materia-3945");
     await expect(tallerIV).toHaveAttribute("data-habilitada", "no");
