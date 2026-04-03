@@ -34,16 +34,6 @@ export default function PlanViewer({ data }: Props) {
 
   const subtitulo = `Plan ${data.plan.universidad} ${data.plan.codigo_plan}`;
 
-  const total = data.materias.length;
-
-  const aprobadas = Object.values(estados).filter(
-  (estado) => estado === "aprobada"
-  ).length;
-
-  const cursadas = Object.values(estados).filter(
-  (estado) => estado === "cursada"
-  ).length;
-
   const disponibles = data.materias.filter((materia) => {
   const vm = getMateriaViewModel({
     materia,
