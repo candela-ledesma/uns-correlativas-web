@@ -1,17 +1,5 @@
 import Link from "next/link";
-
-const carreras = [
-  {
-    id: "arquitectura",
-    nombre: "Arquitectura",
-    descripcion: "Plan de estudios y correlativas.",
-  },
-  {
-    id: "filosofia",
-    nombre: "Filosofía",
-    descripcion: "Plan de estudios y correlativas.",
-  },
-];
+import { CARRERAS } from "@/lib/carreras";
 
 export default function HomePage() {
   return (
@@ -26,8 +14,8 @@ export default function HomePage() {
           </p>
         </div>
 
-        <div className="grid gap-6 sm:grid-cols-2">
-          {carreras.map((carrera) => (
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {CARRERAS.map((carrera) => (
             <Link
               key={carrera.id}
               href={`/planes/${carrera.id}`}
