@@ -1,9 +1,17 @@
-export function scrollToGroup(idGrupo: string) {
-    const elemento = document.getElementById(`grupo-${idGrupo}`);
+export function scrollToGroup(groupId: string) {
+    const targetId = `grupo-${groupId}`;
+    const el = document.getElementById(targetId);
 
-    if (!elemento) return;
+    console.log("scrollToGroup", {
+    groupId,
+    targetId,
+    found: !!el,
+    element: el,
+    });
 
-    elemento.scrollIntoView({
+    if (!el) return;
+
+    el.scrollIntoView({
     behavior: "smooth",
     block: "start",
     });
