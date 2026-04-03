@@ -26,12 +26,16 @@ export default function AnioSection({
     onToggle,
     }: Props) {
     return (
-    <section style={{ marginBottom: "40px" }}>
-        <h2 style={{ marginBottom: "20px" }}>{anio}</h2>
+    <section className="mb-10">
+        <h2 className="mb-5 text-4xl font-bold tracking-tight text-zinc-900">
+        {anio}
+        </h2>
 
         {Object.entries(cuatrimestres).map(([cuatrimestre, materias]) => (
-        <div key={cuatrimestre} style={{ marginBottom: "28px" }}>
-            <h3 style={{ marginBottom: "14px" }}>{cuatrimestre}</h3>
+        <div key={cuatrimestre} className="mb-7">
+            <h3 className="mb-4 text-2xl font-semibold tracking-tight text-zinc-900">
+            {cuatrimestre}
+            </h3>
 
             <MateriasGrid>
             {materias.map((materia) => {

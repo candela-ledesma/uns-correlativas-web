@@ -7,9 +7,19 @@ import PlanStatus from "@/components/PlanStatus";
 import { getCarreraById } from "@/lib/carreras";
 
 type PlanLoadResult =
-    | { status: "ok"; carrera: { id: string; nombre: string; jsonFile: string }; data: any }
-    | { status: "unavailable"; carrera: { id: string; nombre: string; jsonFile: string } }
-    | { status: "invalid"; carrera: { id: string; nombre: string; jsonFile: string } };
+    | {
+        status: "ok";
+        carrera: { id: string; nombre: string; jsonFile: string };
+        data: any;
+    }
+    | {
+        status: "unavailable";
+        carrera: { id: string; nombre: string; jsonFile: string };
+    }
+    | {
+        status: "invalid";
+        carrera: { id: string; nombre: string; jsonFile: string };
+    };
 
 async function getPlanData(carreraId: string): Promise<PlanLoadResult | null> {
     const carrera = getCarreraById(carreraId);
@@ -70,7 +80,7 @@ async function getPlanData(carreraId: string): Promise<PlanLoadResult | null> {
     return (
     <main className="min-h-screen bg-zinc-50 px-6 py-10">
         <div className="mx-auto max-w-7xl">
-            <div className="mb-8">
+        <div className="mb-6">
             <Link
             href="/"
             className="inline-flex items-center gap-2 rounded-full border border-zinc-200 bg-white px-4 py-2 text-sm font-medium text-zinc-700 shadow-sm transition hover:border-zinc-300 hover:bg-zinc-50 hover:text-zinc-900"
@@ -78,9 +88,9 @@ async function getPlanData(carreraId: string): Promise<PlanLoadResult | null> {
             <span aria-hidden="true">←</span>
             <span>Volver al inicio</span>
             </Link>
+        </div>
 
-            <PlanViewer data={data} />
-            </div>
+        <PlanViewer data={data} />
         </div>
     </main>
     );

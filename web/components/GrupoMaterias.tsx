@@ -7,59 +7,60 @@ import { EstadoMateria } from "@/lib/evaluarCorrelativas";
 import { getMateriaViewModel } from "@/lib/materiaViewModel";
 
 type Props = {
-    titulo: string;
-    grupoId: string;
-    materias: Materia[];
-    estados: Record<string, EstadoMateria>;
-    todasLasMaterias: Materia[];
-    idsAgrupadores: Set<string>;
-    onToggle: (materia: Materia) => void;
+  titulo: string;
+  grupoId: string;
+  materias: Materia[];
+  estados: Record<string, EstadoMateria>;
+  todasLasMaterias: Materia[];
+  idsAgrupadores: Set<string>;
+  onToggle: (materia: Materia) => void;
 };
 
 export default function GrupoMaterias({
-    titulo,
-    grupoId,
-    materias,
-    estados,
-    todasLasMaterias,
-    idsAgrupadores,
-    onToggle,
-    }: Props) {
-    if (materias.length === 0) return null;
+  titulo,
+  grupoId,
+  materias,
+  estados,
+  todasLasMaterias,
+  idsAgrupadores,
+  onToggle,
+}: Props) {
+  if (materias.length === 0) return null;
 
-    return (
+  return (
     <section
-        id={`grupo-${grupoId}`}
-        className="scroll-mt-24"
-        data-testid={`grupo-${grupoId}`}
-        style={{ marginTop: "36px" }}
+      id={`grupo-${grupoId}`}
+      data-testid={`grupo-${grupoId}`}
+      className="mt-9 scroll-mt-24"
     >
-        <h2 style={{ marginBottom: "16px" }}>{titulo}</h2>
+      <h2 className="mb-4 text-3xl font-bold tracking-tight text-zinc-900">
+        {titulo}
+      </h2>
 
-        <MateriasGrid>
+      <MateriasGrid>
         {materias.map((materia) => {
-            const vm = getMateriaViewModel({
+          const vm = getMateriaViewModel({
             materia,
             estados,
             todasLasMaterias,
             idsAgrupadores,
-            });
+          });
 
-            return (
+          return (
             <MateriaCard
-                key={materia.id}
-                data-testid={vm.testId}
-                data-estado={vm.dataEstado}
-                data-habilitada={vm.dataHabilitada}
-                materia={materia}
-                estado={vm.estado}
-                habilitada={vm.habilitada}
-                bloqueada={vm.bloqueada}
-                onClick={() => onToggle(materia)}
+              key={materia.id}
+              data-testid={vm.testId}
+              data-estado={vm.dataEstado}
+              data-habilitada={vm.dataHabilitada}
+              materia={materia}
+              estado={vm.estado}
+              habilitada={vm.habilitada}
+              bloqueada={vm.bloqueada}
+              onClick={() => onToggle(materia)}
             />
-            );
+          );
         })}
-        </MateriasGrid>
+      </MateriasGrid>
     </section>
-    );
+  );
 }

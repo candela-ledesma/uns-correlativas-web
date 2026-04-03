@@ -28,11 +28,7 @@ export default function PlanViewer({ data }: Props) {
   const optativaGroup = agrupadores.find((a) => a.tipo === "optativa_grupo");
   const seminarioGroup = agrupadores.find((a) => a.tipo === "seminario_grupo");
 
-  const {
-    estados,
-    toggleMateria,
-    resetMaterias,
-  } = usePlanState(agrupadores);
+  const { estados, toggleMateria, resetMaterias } = usePlanState(agrupadores);
 
   const titulo = data.plan.carrera;
   const subtitulo = `Plan ${data.plan.universidad} ${data.plan.codigo_plan}`;
@@ -56,7 +52,7 @@ export default function PlanViewer({ data }: Props) {
   );
 
   return (
-    <main style={{ maxWidth: "1200px", margin: "0 auto", padding: "24px" }}>
+    <main className="mx-auto max-w-7xl px-6 py-6">
       <PlanHeader
         titulo={titulo}
         subtitulo={subtitulo}

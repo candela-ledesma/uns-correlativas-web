@@ -3,7 +3,6 @@
 import { ButtonHTMLAttributes } from "react";
 import { Materia } from "../app/types/plan";
 import { EstadoMateria } from "../lib/evaluarCorrelativas";
-import { scrollToGroup } from "@/lib/scrollToGroup";
 
 type Props = ButtonHTMLAttributes<HTMLButtonElement> & {
   materia: Materia;
@@ -20,76 +19,50 @@ function getEstadoLabel(estado: EstadoMateria, bloqueada: boolean) {
   return "Disponible";
 }
 
-function getCardStyles(
+function getCardClassName(
   estado: EstadoMateria,
   habilitada: boolean,
   bloqueada: boolean
 ) {
+  const base =
+    "w-full rounded-2xl border p-4 text-left shadow-sm transition duration-150 focus:outline-none focus:ring-4 focus:ring-blue-700/30";
+
   if (bloqueada) {
-    return {
-      backgroundColor: "#f1f1f1",
-      borderColor: "#dddddd",
-      opacity: 0.75,
-    };
+    return `${base} cursor-not-allowed border-zinc-200 bg-zinc-100 opacity-75`;
   }
 
   if (estado === "aprobada") {
-    return {
-      backgroundColor: "#dff7df",
-      borderColor: "#9fd69f",
-      opacity: 1,
-    };
+    return `${base} cursor-pointer border-green-300 bg-green-100 hover:-translate-y-0.5 hover:shadow-md`;
   }
 
   if (estado === "cursada") {
-    return {
-      backgroundColor: "#e3efff",
-      borderColor: "#a9c5f5",
-      opacity: 1,
-    };
+    return `${base} cursor-pointer border-blue-300 bg-blue-100 hover:-translate-y-0.5 hover:shadow-md`;
   }
 
   if (habilitada) {
-    return {
-      backgroundColor: "#fff6cc",
-      borderColor: "#e7d78a",
-      opacity: 1,
-    };
+    return `${base} cursor-pointer border-yellow-300 bg-yellow-100 hover:-translate-y-0.5 hover:shadow-md`;
   }
 
-  return {
-    backgroundColor: "#ffffff",
-    borderColor: "#dddddd",
-    opacity: 1,
-  };
+  return `${base} cursor-pointer border-zinc-200 bg-white hover:-translate-y-0.5 hover:shadow-md`;
 }
 
-function getBadgeStyles(estado: EstadoMateria, bloqueada: boolean) {
+function getBadgeClassName(estado: EstadoMateria, bloqueada: boolean) {
+  const base =
+    "inline-flex items-center justify-center whitespace-nowrap rounded-full px-3 py-1 text-xs font-bold";
+
   if (estado === "aprobada") {
-    return {
-      backgroundColor: "#bde8bd",
-      color: "#1f5f1f",
-    };
+    return `${base} bg-green-200 text-green-800`;
   }
 
   if (estado === "cursada") {
-    return {
-      backgroundColor: "#cfe0ff",
-      color: "#1f4d8f",
-    };
+    return `${base} bg-blue-200 text-blue-800`;
   }
 
   if (bloqueada) {
-    return {
-      backgroundColor: "#e2e2e2",
-      color: "#666666",
-    };
+    return `${base} bg-zinc-200 text-zinc-500`;
   }
 
-  return {
-    backgroundColor: "#f6e7a8",
-    color: "#6b5600",
-  };
+  return `${base} bg-yellow-200 text-yellow-800`;
 }
 
 export default function MateriaCard({
@@ -101,8 +74,6 @@ export default function MateriaCard({
   ...rest
 }: Props) {
   const estadoLabel = getEstadoLabel(estado, bloqueada);
-  const cardStyles = getCardStyles(estado, habilitada, bloqueada);
-  const badgeStyles = getBadgeStyles(estado, bloqueada);
 
   const ariaLabel = `${materia.nombre}. Código ${materia.id}. Estado ${estadoLabel}. ${
     materia.horas ? `Carga horaria ${materia.horas} horas.` : ""
@@ -115,87 +86,21 @@ export default function MateriaCard({
       onClick={bloqueada ? undefined : onClick}
       disabled={bloqueada}
       aria-label={ariaLabel}
-      style={{
-        border: `1px solid ${cardStyles.borderColor}`,
-        borderRadius: "16px",
-        padding: "16px",
-        backgroundColor: cardStyles.backgroundColor,
-        boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
-        textAlign: "left",
-        cursor: bloqueada ? "not-allowed" : "pointer",
-        width: "100%",
-        opacity: cardStyles.opacity,
-        transition:
-          "transform 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease",
-      }}
-      onMouseEnter={(e) => {
-        if (!bloqueada) {
-          e.currentTarget.style.transform = "translateY(-1px)";
-          e.currentTarget.style.boxShadow = "0 6px 18px rgba(0,0,0,0.08)";
-        }
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.transform = "translateY(0)";
-        e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.05)";
-      }}
-      onFocus={(e) => {
-        e.currentTarget.style.outline = "3px solid #1d4ed8";
-        e.currentTarget.style.outlineOffset = "2px";
-      }}
-      onBlur={(e) => {
-        e.currentTarget.style.outline = "none";
-      }}
+      className={getCardClassName(estado, habilitada, bloqueada)}
     >
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "flex-start",
-          gap: "12px",
-        }}
-      >
-        <div style={{ minWidth: 0 }}>
-          <div
-            style={{
-              fontWeight: 700,
-              fontSize: "16px",
-              lineHeight: 1.3,
-              color: "#1f1f1f",
-              marginBottom: "8px",
-              textWrap: "balance",
-            }}
-          >
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <div className="mb-2 text-base font-bold leading-5 text-zinc-900 [text-wrap:balance]">
             {materia.nombre}
           </div>
 
-          <div
-            style={{
-              fontSize: "14px",
-              color: "#555",
-              display: "flex",
-              flexWrap: "wrap",
-              gap: "8px",
-            }}
-          >
+          <div className="flex flex-wrap gap-2 text-sm text-zinc-600">
             <span>Código {materia.id}</span>
             {materia.horas && <span>• {materia.horas} hs</span>}
           </div>
         </div>
 
-        <span
-          aria-hidden="true"
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            justifyContent: "center",
-            whiteSpace: "nowrap",
-            borderRadius: "999px",
-            padding: "6px 10px",
-            fontSize: "12px",
-            fontWeight: 700,
-            ...badgeStyles,
-          }}
-        >
+        <span aria-hidden="true" className={getBadgeClassName(estado, bloqueada)}>
           {estadoLabel}
         </span>
       </div>
