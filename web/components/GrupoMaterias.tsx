@@ -2,7 +2,7 @@
 
 import MateriaCard from "@/components/MateriaCard";
 import MateriasGrid from "@/components/MateriasGrid";
-import { Materia } from "@/app/types/plan";
+import { Agrupador, Materia } from "@/app/types/plan";
 import { EstadoMateria } from "@/lib/evaluarCorrelativas";
 import { getMateriaViewModel } from "@/lib/materiaViewModel";
 
@@ -12,8 +12,9 @@ type Props = {
   materias: Materia[];
   estados: Record<string, EstadoMateria>;
   todasLasMaterias: Materia[];
+  agrupadores: Agrupador[];
   idsAgrupadores: Set<string>;
-  onToggle: (materia: Materia) => void;
+  onToggle: (materia: Materia, grupoId?: string) => void;
 };
 
 export default function GrupoMaterias({
@@ -22,18 +23,13 @@ export default function GrupoMaterias({
   materias,
   estados,
   todasLasMaterias,
+  agrupadores,
   idsAgrupadores,
   onToggle,
 }: Props) {
-  if (materias.length === 0) return null;
-
   return (
-    <section
-      id={`grupo-${grupoId}`}
-      data-testid={`grupo-${grupoId}`}
-      className="mt-9 scroll-mt-24"
-    >
-      <h2 className="mb-4 text-3xl font-bold tracking-tight text-zinc-900">
+    <section id={`grupo-${grupoId}`} className="mb-10 scroll-mt-24">
+      <h2 className="mb-5 text-3xl font-bold tracking-tight text-zinc-900">
         {titulo}
       </h2>
 
@@ -43,12 +39,14 @@ export default function GrupoMaterias({
             materia,
             estados,
             todasLasMaterias,
+            agrupadores,
             idsAgrupadores,
+            grupoIdRender: grupoId,
           });
 
           return (
             <MateriaCard
-              key={materia.id}
+              key={`${grupoId}-${materia.id}`}
               data-testid={vm.testId}
               data-estado={vm.dataEstado}
               data-habilitada={vm.dataHabilitada}
@@ -56,7 +54,7 @@ export default function GrupoMaterias({
               estado={vm.estado}
               habilitada={vm.habilitada}
               bloqueada={vm.bloqueada}
-              onClick={() => onToggle(materia)}
+              onClick={() => onToggle(materia, grupoId)}
             />
           );
         })}

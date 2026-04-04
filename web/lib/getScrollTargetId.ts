@@ -4,6 +4,10 @@ export function getScrollTargetId(
     materia: Materia,
     agrupadores: Agrupador[]
 ): string | null {
-    const found = agrupadores.find((g) => g.id === materia.id);
-    return found ? found.id : null;
+    const materiaId = String(materia.id);
+    const esAgrupador = agrupadores.some((a) => String(a.id) === materiaId);
+
+    if (!esAgrupador) return null;
+
+    return `grupo-${materiaId}`;
 }

@@ -4,9 +4,9 @@ import { separarMaterias } from "@/lib/separarMaterias";
 import { PlanData } from "@/app/types/plan";
 
 export function usePlanStructure(data: PlanData) {
-    const { normales, optativas, idiomas, seminarios } = useMemo(
-    () => separarMaterias(data.materias, data.agrupadores),
-    [data]
+    const { normales } = useMemo(
+    () => separarMaterias(data.materias),
+    [data.materias]
     );
 
     const agrupadas = useMemo(() => agruparMaterias(normales), [normales]);
@@ -18,9 +18,6 @@ export function usePlanStructure(data: PlanData) {
 
     return {
     normales,
-    optativas,
-    idiomas,
-    seminarios,
     agrupadas,
     idsAgrupadores,
     };

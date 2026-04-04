@@ -1,4 +1,5 @@
-import { Materia } from "../app/types/plan";
+import { Agrupador, Materia } from "../app/types/plan";
+import { getEstadoKey } from "@/lib/estadoKey";
 
 export type EstadoMateria = "no_cursada" | "cursada" | "aprobada";
 
@@ -17,40 +18,44 @@ function cumpleNivel(estado: EstadoMateria, requisito: string | null) {
 }
 
 export function estadoAgrupador(
-  idGrupo: string,
-  materias: Materia[],
+  agrupadorId: string,
+  agrupadores: Agrupador[],
   estados: Record<string, EstadoMateria>
 ): EstadoMateria {
-  const opciones = materias.filter((m) => m.grupo_opcion === idGrupo);
-
-  const algunaAprobada = opciones.some(
-    (m) => (estados[m.id] || "no_cursada") === "aprobada"
+  const agrupador = agrupadores.find(
+    (a) => String(a.id) === String(agrupadorId)
   );
-  if (algunaAprobada) return "aprobada";
 
-  const algunaCursada = opciones.some(
-    (m) => (estados[m.id] || "no_cursada") === "cursada"
-  );
-  if (algunaCursada) return "cursada";
+  if (!agrupador) return "no_cursada";
 
+  const estadosOpciones = agrupador.opciones.map((id) => {
+    const fakeMateria = { id: String(id) } as Materia;
+    return estados[getEstadoKey(fakeMateria, agrupadorId)] || "no_cursada";
+  });
+
+  if (estadosOpciones.includes("aprobada")) return "aprobada";
+  if (estadosOpciones.includes("cursada")) return "cursada";
   return "no_cursada";
 }
 
 export function estaHabilitada(
   materia: Materia,
   estados: Record<string, EstadoMateria>,
-  materias: Materia[]
+  materias: Materia[],
+  agrupadores: Agrupador[],
+  grupoIdRender?: string
 ) {
   const correlativas = materia.correlativas || {};
+  const idsAgrupadores = new Set(agrupadores.map((a) => String(a.id)));
 
   for (const corId of Object.keys(correlativas)) {
     const requisito = correlativas[corId];
-
-    const esAgrupador = materias.some((m) => m.grupo_opcion === corId);
+    const esAgrupador = idsAgrupadores.has(String(corId));
 
     const estado = esAgrupador
-      ? estadoAgrupador(corId, materias, estados)
-      : (estados[corId] || "no_cursada");
+      ? estadoAgrupador(String(corId), agrupadores, estados)
+      : (estados[getEstadoKey({ id: String(corId) } as Materia, grupoIdRender)] ||
+          "no_cursada");
 
     if (!cumpleNivel(estado, requisito.para_cursar)) {
       return false;

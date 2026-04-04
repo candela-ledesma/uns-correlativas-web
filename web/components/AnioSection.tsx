@@ -2,7 +2,7 @@
 
 import MateriaCard from "@/components/MateriaCard";
 import MateriasGrid from "@/components/MateriasGrid";
-import { Materia } from "@/app/types/plan";
+import { Agrupador, Materia } from "@/app/types/plan";
 import { EstadoMateria } from "@/lib/evaluarCorrelativas";
 import { getMateriaViewModel } from "@/lib/materiaViewModel";
 
@@ -13,6 +13,7 @@ type Props = {
     cuatrimestres: CuatrimestresMap;
     estados: Record<string, EstadoMateria>;
     todasLasMaterias: Materia[];
+    agrupadores: Agrupador[];
     idsAgrupadores: Set<string>;
     onToggle: (materia: Materia) => void;
 };
@@ -22,6 +23,7 @@ export default function AnioSection({
     cuatrimestres,
     estados,
     todasLasMaterias,
+    agrupadores,
     idsAgrupadores,
     onToggle,
     }: Props) {
@@ -43,6 +45,7 @@ export default function AnioSection({
                 materia,
                 estados,
                 todasLasMaterias,
+                agrupadores,
                 idsAgrupadores,
                 });
 

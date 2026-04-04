@@ -14,21 +14,17 @@ export function calcularProgresoPlan(
     agrupadores: Agrupador[],
     estados: Record<string, EstadoMateria>,
     disponibles: number
-    ): ResultadoProgreso {
-    const idsAgrupadores = new Set(agrupadores.map((a) => a.id));
-    const idsOpciones = new Set(
-    materias
-        .filter((m) => m.grupo_opcion)
-        .map((m) => m.id)
-    );
+): ResultadoProgreso {
+    const idsAgrupadores = new Set(agrupadores.map((a) => String(a.id)));
 
     let total = 0;
     let aprobadas = 0;
     let cursadas = 0;
 
     for (const materia of materias) {
-    const esAgrupador = idsAgrupadores.has(materia.id);
-    const esOpcionDeGrupo = idsOpciones.has(materia.id);
+    const materiaId = String(materia.id);
+    const esAgrupador = idsAgrupadores.has(materiaId);
+    const esOpcionDeGrupo = materia.categoria === "optativa";
 
     if (esOpcionDeGrupo) {
         continue;
@@ -37,12 +33,12 @@ export function calcularProgresoPlan(
     total += 1;
 
     if (esAgrupador) {
-        const estado = estadoAgrupador(materia.id, materias, estados);
+        const estado = estadoAgrupador(materiaId, agrupadores, estados);
 
         if (estado === "aprobada") aprobadas += 1;
         else if (estado === "cursada") cursadas += 1;
     } else {
-        const estado = estados[materia.id] || "no_cursada";
+        const estado = estados[materiaId] || "no_cursada";
 
         if (estado === "aprobada") aprobadas += 1;
         else if (estado === "cursada") cursadas += 1;

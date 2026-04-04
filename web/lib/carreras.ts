@@ -1,4 +1,4 @@
-export type CarreraId = "arquitectura" | "filosofia" | "bioquimica";
+export type CarreraId = "arquitectura" | "lic_computacion" | "bioquimica";
 
 export type CarreraConfig = {
     id: CarreraId;
@@ -17,11 +17,11 @@ export const CARRERAS: CarreraConfig[] = [
     disponible: true,
     },
     {
-    id: "filosofia",
-    nombre: "Filosofía",
+    id: "lic_computacion",
+    nombre: "Licenciatura en Ciencias de la Computación",
     descripcion: "Plan de estudios y correlativas.",
-    jsonFile: "filosofia.json",
-    disponible: false,
+    jsonFile: "lic_computacion.json",
+    disponible: true,
 
     },
     {

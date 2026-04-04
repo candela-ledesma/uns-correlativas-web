@@ -1,6 +1,6 @@
 "use client";
 
-import { PlanData } from "@/app/types/plan";
+import { PlanData, Materia } from "@/app/types/plan";
 import PlanHeader from "@/components/PlanHeader";
 import AnioSection from "@/components/AnioSection";
 import GrupoMaterias from "@/components/GrupoMaterias";
@@ -16,17 +16,26 @@ type Props = {
 export default function PlanViewer({ data }: Props) {
   const {
     agrupadas,
-    optativas,
-    idiomas,
-    seminarios,
     idsAgrupadores,
   } = usePlanStructure(data);
 
   const agrupadores = data.agrupadores || [];
+  const materiasPorId = new Map(
+    data.materias.map((m) => [String(m.id), m])
+  );
 
-  const idiomaGroup = agrupadores.find((a) => a.tipo === "idioma_grupo");
-  const optativaGroup = agrupadores.find((a) => a.tipo === "optativa_grupo");
-  const seminarioGroup = agrupadores.find((a) => a.tipo === "seminario_grupo");
+  const gruposIdiomas = agrupadores.filter((a) => a.tipo === "idioma_grupo");
+  const gruposOptativas = agrupadores.filter((a) => a.tipo === "optativa_grupo");
+  const gruposSeminarios = agrupadores.filter((a) => a.tipo === "seminario_grupo");
+
+  const obtenerMateriasDeGrupo = (grupoId: string): Materia[] => {
+    const grupo = agrupadores.find((a) => a.id === grupoId);
+    if (!grupo) return [];
+
+    return grupo.opciones
+      .map((id) => materiasPorId.get(String(id)))
+      .filter((m): m is Materia => Boolean(m));
+  };
 
   const { estados, toggleMateria, resetMaterias } = usePlanState(agrupadores);
 
@@ -38,6 +47,7 @@ export default function PlanViewer({ data }: Props) {
       materia,
       estados,
       todasLasMaterias: data.materias,
+      agrupadores: data.agrupadores,
       idsAgrupadores,
     });
 
@@ -70,46 +80,68 @@ export default function PlanViewer({ data }: Props) {
           cuatrimestres={cuatrimestres}
           estados={estados}
           todasLasMaterias={data.materias}
+          agrupadores={data.agrupadores}
           idsAgrupadores={idsAgrupadores}
           onToggle={toggleMateria}
         />
       ))}
 
-      {idiomas.length > 0 && idiomaGroup && (
-        <GrupoMaterias
-          titulo="Idiomas"
-          grupoId={idiomaGroup.id}
-          materias={idiomas}
-          estados={estados}
-          todasLasMaterias={data.materias}
-          idsAgrupadores={idsAgrupadores}
-          onToggle={toggleMateria}
-        />
-      )}
+      {gruposIdiomas.map((grupo) => {
+        const materias = obtenerMateriasDeGrupo(grupo.id);
+        if (materias.length === 0) return null;
 
-      {seminarios.length > 0 && (
-        <GrupoMaterias
-          titulo="Seminarios"
-          grupoId={seminarioGroup?.id ?? "seminarios"}
-          materias={seminarios}
-          estados={estados}
-          todasLasMaterias={data.materias}
-          idsAgrupadores={idsAgrupadores}
-          onToggle={toggleMateria}
-        />
-      )}
+        return (
+          <GrupoMaterias
+            key={grupo.id}
+            titulo={grupo.nombre}
+            grupoId={grupo.id}
+            materias={materias}
+            estados={estados}
+            todasLasMaterias={data.materias}
+            agrupadores={data.agrupadores}
+            idsAgrupadores={idsAgrupadores}
+            onToggle={toggleMateria}
+          />
+        );
+      })}
 
-      {optativas.length > 0 && optativaGroup && (
-        <GrupoMaterias
-          titulo="Materias optativas"
-          grupoId={optativaGroup.id}
-          materias={optativas}
-          estados={estados}
-          todasLasMaterias={data.materias}
-          idsAgrupadores={idsAgrupadores}
-          onToggle={toggleMateria}
-        />
-      )}
+      {gruposSeminarios.map((grupo) => {
+        const materias = obtenerMateriasDeGrupo(grupo.id);
+        if (materias.length === 0) return null;
+
+        return (
+          <GrupoMaterias
+            key={grupo.id}
+            titulo={grupo.nombre}
+            grupoId={grupo.id}
+            materias={materias}
+            estados={estados}
+            todasLasMaterias={data.materias}
+            agrupadores={data.agrupadores}
+            idsAgrupadores={idsAgrupadores}
+            onToggle={toggleMateria}
+          />
+        );
+      })}
+
+      {gruposOptativas.map((grupo) => {
+        const materias = obtenerMateriasDeGrupo(grupo.id);
+        if (materias.length === 0) return null;
+
+        return (
+          <GrupoMaterias
+            key={grupo.id}
+            titulo={`${grupo.nombre} (${grupo.id})`}
+            grupoId={grupo.id}
+            materias={materias}
+            estados={estados}
+            todasLasMaterias={data.materias}
+            agrupadores={data.agrupadores}
+            idsAgrupadores={idsAgrupadores}
+            onToggle={toggleMateria}
+          />
+        );
+      })}
     </main>
   );
 }
