@@ -54,8 +54,7 @@ export function estaHabilitada(
 
     const estado = esAgrupador
       ? estadoAgrupador(String(corId), agrupadores, estados)
-      : (estados[getEstadoKey({ id: String(corId) } as Materia, grupoIdRender)] ||
-          "no_cursada");
+      : (estados[String(corId)] || "no_cursada");
 
     if (!cumpleNivel(estado, requisito.para_cursar)) {
       return false;
