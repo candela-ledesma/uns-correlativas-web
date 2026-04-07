@@ -1,25 +1,89 @@
 "use client";
 
+import { useMemo, useState } from "react";
 import { PlanData, Materia } from "@/app/types/plan";
 import PlanHeader from "@/components/PlanHeader";
+import PlanFilters from "@/components/PlanFilters";
 import AnioSection from "@/components/AnioSection";
 import GrupoMaterias from "@/components/GrupoMaterias";
 import { usePlanState } from "@/hooks/usePlanState";
 import { usePlanStructure } from "@/hooks/usePlanStructure";
 import { getMateriaViewModel } from "@/lib/materiaViewModel";
 import { calcularProgresoPlan } from "@/lib/calcularProgresoPlan";
+import { filtrarMaterias, type FiltrosPlan } from "@/lib/filtrarMaterias";
 
 type Props = {
   data: PlanData;
 };
 
+function agruparPorAnioYCuatrimestre(materias: Materia[]) {
+  const resultado: Record<string, Record<string, Materia[]>> = {};
+
+  for (const materia of materias) {
+    const anio = materia.año || "Sin año";
+    const cuatrimestre = materia.cuatrimestre || "Sin cuatrimestre";
+
+    if (!resultado[anio]) {
+      resultado[anio] = {};
+    }
+
+    if (!resultado[anio][cuatrimestre]) {
+      resultado[anio][cuatrimestre] = [];
+    }
+
+    resultado[anio][cuatrimestre].push(materia);
+  }
+
+  return resultado;
+}
+
 export default function PlanViewer({ data }: Props) {
-  const { agrupadas, idsAgrupadores } = usePlanStructure(data);
+  const { idsAgrupadores } = usePlanStructure(data);
 
   const agrupadores = data.agrupadores || [];
   const materiasPorId = new Map(
     data.materias.map((m) => [String(m.id), m])
   );
+
+  const [filtros, setFiltros] = useState<FiltrosPlan>({
+    anio: "todos",
+    cuatrimestre: "todos",
+    estado: "todas",
+  });
+
+  const { estados, toggleMateria, resetMaterias, isHydrated } =
+    usePlanState(data.materias, agrupadores);
+
+  const titulo = data.plan.carrera;
+  const subtitulo = `Plan ${data.plan.universidad} ${data.plan.codigo_plan}`;
+
+  const anios = useMemo(() => {
+    return Array.from(
+      new Set(data.materias.map((m) => m.año).filter(Boolean))
+    ) as string[];
+  }, [data.materias]);
+
+  const cuatrimestres = useMemo(() => {
+    return Array.from(
+      new Set(data.materias.map((m) => m.cuatrimestre).filter(Boolean))
+    ) as string[];
+  }, [data.materias]);
+
+  const materiasFiltradas = useMemo(() => {
+    return filtrarMaterias({
+      materias: data.materias,
+      estados,
+      agrupadores,
+      idsAgrupadores,
+      filtros,
+    });
+  }, [data.materias, estados, agrupadores, idsAgrupadores, filtros]);
+
+  const agrupadas = useMemo(() => {
+    return agruparPorAnioYCuatrimestre(
+      materiasFiltradas.filter((m) => !idsAgrupadores.has(String(m.id)))
+    );
+  }, [materiasFiltradas, idsAgrupadores]);
 
   const gruposIdiomas = agrupadores.filter((a) => a.tipo === "idioma_grupo");
   const gruposOptativas = agrupadores.filter((a) => a.tipo === "optativa_grupo");
@@ -31,21 +95,16 @@ export default function PlanViewer({ data }: Props) {
 
     return grupo.opciones
       .map((id) => materiasPorId.get(String(id)))
-      .filter((m): m is Materia => Boolean(m));
+      .filter((m): m is Materia => Boolean(m))
+      .filter((m) => materiasFiltradas.some((mf) => String(mf.id) === String(m.id)));
   };
-
-  const { estados, toggleMateria, resetMaterias, isHydrated } =
-    usePlanState(data.materias, agrupadores);
-
-  const titulo = data.plan.carrera;
-  const subtitulo = `Plan ${data.plan.universidad} ${data.plan.codigo_plan}`;
 
   const disponibles = data.materias.filter((materia) => {
     const vm = getMateriaViewModel({
       materia,
       estados,
       todasLasMaterias: data.materias,
-      agrupadores: data.agrupadores,
+      agrupadores,
       idsAgrupadores,
     });
 
@@ -54,10 +113,12 @@ export default function PlanViewer({ data }: Props) {
 
   const progreso = calcularProgresoPlan(
     data.materias,
-    data.agrupadores,
+    agrupadores,
     estados,
     disponibles
   );
+
+  if (!isHydrated) return null;
 
   return (
     <main className="mx-auto max-w-7xl px-6 py-6">
@@ -71,14 +132,21 @@ export default function PlanViewer({ data }: Props) {
         onReset={resetMaterias}
       />
 
-      {Object.entries(agrupadas).map(([anio, cuatrimestres]) => (
+      <PlanFilters
+        filtros={filtros}
+        onChange={setFiltros}
+        anios={anios}
+        cuatrimestres={cuatrimestres}
+      />
+
+      {Object.entries(agrupadas).map(([anio, cuatrimestresMap]) => (
         <AnioSection
           key={anio}
           anio={anio}
-          cuatrimestres={cuatrimestres}
+          cuatrimestres={cuatrimestresMap}
           estados={estados}
           todasLasMaterias={data.materias}
-          agrupadores={data.agrupadores}
+          agrupadores={agrupadores}
           idsAgrupadores={idsAgrupadores}
           onToggle={toggleMateria}
         />
@@ -96,7 +164,7 @@ export default function PlanViewer({ data }: Props) {
             materias={materias}
             estados={estados}
             todasLasMaterias={data.materias}
-            agrupadores={data.agrupadores}
+            agrupadores={agrupadores}
             idsAgrupadores={idsAgrupadores}
             onToggle={toggleMateria}
           />
@@ -115,7 +183,7 @@ export default function PlanViewer({ data }: Props) {
             materias={materias}
             estados={estados}
             todasLasMaterias={data.materias}
-            agrupadores={data.agrupadores}
+            agrupadores={agrupadores}
             idsAgrupadores={idsAgrupadores}
             onToggle={toggleMateria}
           />
@@ -134,7 +202,7 @@ export default function PlanViewer({ data }: Props) {
             materias={materias}
             estados={estados}
             todasLasMaterias={data.materias}
-            agrupadores={data.agrupadores}
+            agrupadores={agrupadores}
             idsAgrupadores={idsAgrupadores}
             onToggle={toggleMateria}
           />
