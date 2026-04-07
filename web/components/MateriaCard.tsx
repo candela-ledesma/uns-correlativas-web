@@ -35,19 +35,15 @@ function getCardClassName(
   const base =
     "w-full rounded-2xl border p-4 text-left shadow-sm transition duration-150 focus:outline-none focus:ring-4 focus:ring-blue-700/30";
 
-  if (!puedeClickear) {
-    return `${base} cursor-not-allowed border-zinc-200 bg-zinc-100 opacity-75`;
-  }
-
   if (estado === "aprobada") {
-    return `${base} cursor-pointer border-green-300 bg-green-100 hover:-translate-y-0.5 hover:shadow-md`;
+    return `${base} cursor-not-allowed border-green-300 bg-green-100 opacity-90`;
   }
 
   if (estado === "cursada") {
-    return `${base} cursor-pointer border-blue-300 bg-blue-100 hover:-translate-y-0.5 hover:shadow-md`;
+    return `${base} cursor-not-allowed border-blue-300 bg-blue-100 opacity-90`;
   }
 
-  if (bloqueada) {
+  if (!puedeClickear || bloqueada) {
     return `${base} cursor-not-allowed border-zinc-200 bg-zinc-100 opacity-75`;
   }
 

@@ -115,9 +115,8 @@ export function getMateriaViewModel({
     bloqueadaPorMateriaRepetida;
 
   const puedeClickear =
-    estado === "cursada" ||
-    estado === "aprobada" ||
-    !bloqueada;
+  estado === "cursada" ||
+  (estado === "no_cursada" && !bloqueada);
 
   return {
     esAgrupador,
