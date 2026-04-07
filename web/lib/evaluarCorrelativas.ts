@@ -3,6 +3,8 @@ import { getEstadoKey } from "@/lib/estadoKey";
 
 export type EstadoMateria = "no_cursada" | "cursada" | "aprobada";
 
+type TipoCorrelativa = "para_cursar" | "para_rendir";
+
 function cumpleNivel(estado: EstadoMateria, requisito: string | null) {
   if (!requisito) return true;
 
@@ -38,11 +40,12 @@ export function estadoAgrupador(
   return "no_cursada";
 }
 
-export function estaHabilitada(
+export function cumpleCorrelativas(
   materia: Materia,
   estados: Record<string, EstadoMateria>,
   materias: Materia[],
   agrupadores: Agrupador[],
+  tipo: TipoCorrelativa,
   grupoIdRender?: string
 ) {
   const correlativas = materia.correlativas || {};
@@ -54,12 +57,46 @@ export function estaHabilitada(
 
     const estado = esAgrupador
       ? estadoAgrupador(String(corId), agrupadores, estados)
-      : (estados[String(corId)] || "no_cursada");
+      : estados[String(corId)] || "no_cursada";
 
-    if (!cumpleNivel(estado, requisito.para_cursar)) {
+    if (!cumpleNivel(estado, requisito[tipo])) {
       return false;
     }
   }
 
   return true;
+}
+
+export function estaHabilitadaParaCursar(
+  materia: Materia,
+  estados: Record<string, EstadoMateria>,
+  materias: Materia[],
+  agrupadores: Agrupador[],
+  grupoIdRender?: string
+) {
+  return cumpleCorrelativas(
+    materia,
+    estados,
+    materias,
+    agrupadores,
+    "para_cursar",
+    grupoIdRender
+  );
+}
+
+export function estaHabilitadaParaAprobar(
+  materia: Materia,
+  estados: Record<string, EstadoMateria>,
+  materias: Materia[],
+  agrupadores: Agrupador[],
+  grupoIdRender?: string
+) {
+  return cumpleCorrelativas(
+    materia,
+    estados,
+    materias,
+    agrupadores,
+    "para_rendir",
+    grupoIdRender
+  );
 }

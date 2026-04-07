@@ -52,7 +52,9 @@ export default function GrupoMaterias({
               data-habilitada={vm.dataHabilitada}
               materia={materia}
               estado={vm.estado}
-              habilitada={vm.habilitada}
+              puedeCursar={vm.puedeCursar}
+              puedeAprobar={vm.puedeAprobar}
+              puedeClickear={vm.puedeClickear}
               bloqueada={vm.bloqueada}
               onClick={() => onToggle(materia, grupoId)}
             />

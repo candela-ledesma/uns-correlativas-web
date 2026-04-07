@@ -1,7 +1,8 @@
 import { Agrupador, Materia } from "@/app/types/plan";
 import {
   EstadoMateria,
-  estaHabilitada,
+  estaHabilitadaParaCursar,
+  estaHabilitadaParaAprobar,
   estadoAgrupador,
 } from "@/lib/evaluarCorrelativas";
 import { getEstadoKey } from "@/lib/estadoKey";
@@ -18,41 +19,44 @@ type Params = {
 export type MateriaViewModel = {
   esAgrupador: boolean;
   estado: EstadoMateria;
-  habilitada: boolean;
+  puedeCursar: boolean;
+  puedeAprobar: boolean;
+  puedeClickear: boolean;
   bloqueada: boolean;
   bloqueadaPorGrupo: boolean;
   testId: string;
   dataEstado: EstadoMateria;
   dataHabilitada: "si" | "no";
+  dataPuedeAprobar: "si" | "no";
 };
 
 function grupoYaElegido(
-    materia: Materia,
-    estados: Record<string, EstadoMateria>,
-    grupoIdRender?: string
+  materia: Materia,
+  estados: Record<string, EstadoMateria>,
+  grupoIdRender?: string
 ) {
-    if (!grupoIdRender) return false;
+  if (!grupoIdRender) return false;
 
-    const materiaId = String(materia.id);
+  const materiaId = String(materia.id);
 
-    return Object.entries(estados).some(([key, estado]) => {
+  return Object.entries(estados).some(([key, estado]) => {
     if (!key.startsWith(`${grupoIdRender}::`)) return false;
     if (key === `${grupoIdRender}::${materiaId}`) return false;
 
     return estado === "cursada" || estado === "aprobada";
-    });
+  });
 }
 
 function materiaElegidaEnOtroGrupo(
-    materia: Materia,
-    estados: Record<string, EstadoMateria>,
-    grupoIdRender?: string
-    ) {
-    if (!grupoIdRender) return false;
+  materia: Materia,
+  estados: Record<string, EstadoMateria>,
+  grupoIdRender?: string
+) {
+  if (!grupoIdRender) return false;
 
-    const materiaId = String(materia.id);
+  const materiaId = String(materia.id);
 
-    return Object.entries(estados).some(([key, estado]) => {
+  return Object.entries(estados).some(([key, estado]) => {
     if (!key.includes("::")) return false;
 
     const [otroGrupoId, otroMateriaId] = key.split("::");
@@ -61,55 +65,71 @@ function materiaElegidaEnOtroGrupo(
     if (otroMateriaId !== materiaId) return false;
 
     return estado === "cursada" || estado === "aprobada";
-    });
-    }
+  });
+}
 
-    export function getMateriaViewModel({
-    materia,
-    estados,
-    todasLasMaterias,
-    agrupadores,
-    idsAgrupadores,
-    grupoIdRender,
-    }: Params): MateriaViewModel {
-    const materiaId = String(materia.id);
-    const esAgrupador = idsAgrupadores.has(materiaId);
+export function getMateriaViewModel({
+  materia,
+  estados,
+  todasLasMaterias,
+  agrupadores,
+  idsAgrupadores,
+  grupoIdRender,
+}: Params): MateriaViewModel {
+  const materiaId = String(materia.id);
+  const esAgrupador = idsAgrupadores.has(materiaId);
 
-    const estado = esAgrupador
+  const estado = esAgrupador
     ? estadoAgrupador(materiaId, agrupadores, estados)
     : estados[getEstadoKey(materia, grupoIdRender)] || "no_cursada";
 
-    const habilitada = estaHabilitada(
+  const puedeCursar = estaHabilitadaParaCursar(
     materia,
     estados,
     todasLasMaterias,
     agrupadores,
     grupoIdRender
-    );
+  );
 
-    const bloqueadaPorGrupo =
+  const puedeAprobar = estaHabilitadaParaAprobar(
+    materia,
+    estados,
+    todasLasMaterias,
+    agrupadores,
+    grupoIdRender
+  );
+
+  const bloqueadaPorGrupo =
     !esAgrupador &&
     estado === "no_cursada" &&
     grupoYaElegido(materia, estados, grupoIdRender);
 
-    const bloqueadaPorMateriaRepetida =
+  const bloqueadaPorMateriaRepetida =
     !esAgrupador &&
     estado === "no_cursada" &&
     materiaElegidaEnOtroGrupo(materia, estados, grupoIdRender);
 
-    const bloqueada =
-    (!habilitada && estado === "no_cursada" && !esAgrupador) ||
+  const bloqueada =
+    (!puedeCursar && estado === "no_cursada" && !esAgrupador) ||
     bloqueadaPorGrupo ||
     bloqueadaPorMateriaRepetida;
 
-    return {
+  const puedeClickear =
+    estado === "cursada" ||
+    estado === "aprobada" ||
+    !bloqueada;
+
+  return {
     esAgrupador,
     estado,
-    habilitada,
+    puedeCursar,
+    puedeAprobar,
+    puedeClickear,
     bloqueada,
     bloqueadaPorGrupo,
     testId: `materia-${grupoIdRender ? `${grupoIdRender}-` : ""}${materia.id}`,
     dataEstado: estado,
-    dataHabilitada: habilitada ? "si" : "no",
-    };
+    dataHabilitada: puedeCursar ? "si" : "no",
+    dataPuedeAprobar: puedeAprobar ? "si" : "no",
+  };
 }

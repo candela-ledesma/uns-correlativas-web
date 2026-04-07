@@ -14,10 +14,7 @@ type Props = {
 };
 
 export default function PlanViewer({ data }: Props) {
-  const {
-    agrupadas,
-    idsAgrupadores,
-  } = usePlanStructure(data);
+  const { agrupadas, idsAgrupadores } = usePlanStructure(data);
 
   const agrupadores = data.agrupadores || [];
   const materiasPorId = new Map(
@@ -37,7 +34,8 @@ export default function PlanViewer({ data }: Props) {
       .filter((m): m is Materia => Boolean(m));
   };
 
-  const { estados, toggleMateria, resetMaterias } = usePlanState(agrupadores);
+  const { estados, toggleMateria, resetMaterias, isHydrated } =
+    usePlanState(data.materias, agrupadores);
 
   const titulo = data.plan.carrera;
   const subtitulo = `Plan ${data.plan.universidad} ${data.plan.codigo_plan}`;
@@ -51,7 +49,7 @@ export default function PlanViewer({ data }: Props) {
       idsAgrupadores,
     });
 
-    return vm.habilitada && vm.estado === "no_cursada";
+    return vm.puedeCursar && vm.estado === "no_cursada";
   }).length;
 
   const progreso = calcularProgresoPlan(

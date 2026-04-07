@@ -7,13 +7,20 @@ import { EstadoMateria } from "../lib/evaluarCorrelativas";
 type Props = ButtonHTMLAttributes<HTMLButtonElement> & {
   materia: Materia;
   estado: EstadoMateria;
-  habilitada: boolean;
+  puedeCursar: boolean;
+  puedeAprobar: boolean;
+  puedeClickear: boolean;
   bloqueada: boolean;
   onClick: () => void;
 };
 
-function getEstadoLabel(estado: EstadoMateria, bloqueada: boolean) {
+function getEstadoLabel(
+  estado: EstadoMateria,
+  bloqueada: boolean,
+  puedeAprobar: boolean
+) {
   if (estado === "aprobada") return "Aprobada";
+  if (estado === "cursada" && puedeAprobar) return "Cursada";
   if (estado === "cursada") return "Cursada";
   if (bloqueada) return "Bloqueada";
   return "Disponible";
@@ -21,13 +28,14 @@ function getEstadoLabel(estado: EstadoMateria, bloqueada: boolean) {
 
 function getCardClassName(
   estado: EstadoMateria,
-  habilitada: boolean,
-  bloqueada: boolean
+  puedeCursar: boolean,
+  bloqueada: boolean,
+  puedeClickear: boolean
 ) {
   const base =
     "w-full rounded-2xl border p-4 text-left shadow-sm transition duration-150 focus:outline-none focus:ring-4 focus:ring-blue-700/30";
 
-  if (bloqueada) {
+  if (!puedeClickear) {
     return `${base} cursor-not-allowed border-zinc-200 bg-zinc-100 opacity-75`;
   }
 
@@ -39,19 +47,31 @@ function getCardClassName(
     return `${base} cursor-pointer border-blue-300 bg-blue-100 hover:-translate-y-0.5 hover:shadow-md`;
   }
 
-  if (habilitada) {
+  if (bloqueada) {
+    return `${base} cursor-not-allowed border-zinc-200 bg-zinc-100 opacity-75`;
+  }
+
+  if (puedeCursar) {
     return `${base} cursor-pointer border-yellow-300 bg-yellow-100 hover:-translate-y-0.5 hover:shadow-md`;
   }
 
   return `${base} cursor-pointer border-zinc-200 bg-white hover:-translate-y-0.5 hover:shadow-md`;
 }
 
-function getBadgeClassName(estado: EstadoMateria, bloqueada: boolean) {
+function getBadgeClassName(
+  estado: EstadoMateria,
+  bloqueada: boolean,
+  puedeAprobar: boolean
+) {
   const base =
     "inline-flex items-center justify-center whitespace-nowrap rounded-full px-3 py-1 text-xs font-bold";
 
   if (estado === "aprobada") {
     return `${base} bg-green-200 text-green-800`;
+  }
+
+  if (estado === "cursada" && puedeAprobar) {
+    return `${base} bg-blue-200 text-blue-800`;
   }
 
   if (estado === "cursada") {
@@ -68,12 +88,14 @@ function getBadgeClassName(estado: EstadoMateria, bloqueada: boolean) {
 export default function MateriaCard({
   materia,
   estado,
-  habilitada,
+  puedeCursar,
+  puedeAprobar,
+  puedeClickear,
   bloqueada,
   onClick,
   ...rest
 }: Props) {
-  const estadoLabel = getEstadoLabel(estado, bloqueada);
+  const estadoLabel = getEstadoLabel(estado, bloqueada, puedeAprobar);
 
   const ariaLabel = `${materia.nombre}. Código ${materia.id}. Estado ${estadoLabel}. ${
     materia.horas ? `Carga horaria ${materia.horas} horas.` : ""
@@ -83,10 +105,15 @@ export default function MateriaCard({
     <button
       {...rest}
       type="button"
-      onClick={bloqueada ? undefined : onClick}
-      disabled={bloqueada}
+      onClick={puedeClickear ? onClick : undefined}
+      disabled={!puedeClickear}
       aria-label={ariaLabel}
-      className={getCardClassName(estado, habilitada, bloqueada)}
+      className={getCardClassName(
+        estado,
+        puedeCursar,
+        bloqueada,
+        puedeClickear
+      )}
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
@@ -100,7 +127,10 @@ export default function MateriaCard({
           </div>
         </div>
 
-        <span aria-hidden="true" className={getBadgeClassName(estado, bloqueada)}>
+        <span
+          aria-hidden="true"
+          className={getBadgeClassName(estado, bloqueada, puedeAprobar)}
+        >
           {estadoLabel}
         </span>
       </div>

@@ -15,7 +15,7 @@ type Props = {
     todasLasMaterias: Materia[];
     agrupadores: Agrupador[];
     idsAgrupadores: Set<string>;
-    onToggle: (materia: Materia) => void;
+    onToggle: (materia: Materia, grupoId?: string) => void;
 };
 
 export default function AnioSection({
@@ -57,10 +57,12 @@ export default function AnioSection({
                     data-habilitada={vm.dataHabilitada}
                     materia={materia}
                     estado={vm.estado}
-                    habilitada={vm.habilitada}
+                    puedeCursar={vm.puedeCursar}
+                    puedeAprobar={vm.puedeAprobar}
+                    puedeClickear={vm.puedeClickear}
                     bloqueada={vm.bloqueada}
                     onClick={() => onToggle(materia)}
-                />
+                    />
                 );
             })}
             </MateriasGrid>
