@@ -7,7 +7,14 @@ export default function HomePage() {
     <main className={styles.page}>
       <section className={styles.container}>
         <div className={styles.hero}>
-          <span className={styles.badge}>Universidad Nacional del Sur</span>
+          <a
+          href="https://www.uns.edu.ar/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex rounded-full border border-zinc-200 bg-white px-5 py-2 text-sm font-semibold text-zinc-700 shadow-sm transition hover:bg-zinc-50 hover:text-zinc-900"
+        >
+          Universidad Nacional del Sur
+        </a>
 
           <h1 className={styles.title}>Planes de estudio y correlativas</h1>
 
