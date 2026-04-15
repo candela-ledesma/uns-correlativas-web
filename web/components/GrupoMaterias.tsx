@@ -15,6 +15,7 @@ type Props = {
   agrupadores: Agrupador[];
   idsAgrupadores: Set<string>;
   onToggle: (materia: Materia, grupoId?: string) => void;
+  onUndo: (materia: Materia, grupoId?: string) => void;
 };
 
 export default function GrupoMaterias({
@@ -26,6 +27,7 @@ export default function GrupoMaterias({
   agrupadores,
   idsAgrupadores,
   onToggle,
+  onUndo,
 }: Props) {
   return (
     <section id={`grupo-${grupoId}`} className="mb-10 scroll-mt-24">
@@ -56,7 +58,9 @@ export default function GrupoMaterias({
               puedeAprobar={vm.puedeAprobar}
               puedeClickear={vm.puedeClickear}
               bloqueada={vm.bloqueada}
-              onClick={() => onToggle(materia, grupoId)}
+              onToggle={() => onToggle(materia, grupoId)}
+              onUndo={() => onUndo(materia, grupoId)}
+              undoTestId={`${vm.testId}-undo`}
             />
           );
         })}

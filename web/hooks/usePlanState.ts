@@ -69,46 +69,65 @@ export function usePlanState(
     const estadoKey = getEstadoKey(materia, grupoId);
 
     setEstados((prev) => {
-  const actual = prev[estadoKey] || "no_cursada";
+      const actual = prev[estadoKey] || "no_cursada";
 
-  if (actual === "no_cursada") {
-    const puedeCursar = estaHabilitadaParaCursar(
-      materia,
-      prev,
-      materias,
-      agrupadores,
-      grupoId
-    );
+      if (actual === "no_cursada") {
+        const puedeCursar = estaHabilitadaParaCursar(
+          materia,
+          prev,
+          materias,
+          agrupadores,
+          grupoId
+        );
 
-    if (!puedeCursar) return prev;
+        if (!puedeCursar) return prev;
 
-    return {
-      ...prev,
-      [estadoKey]: "cursada",
-    };
+        return {
+          ...prev,
+          [estadoKey]: "cursada",
+        };
+      }
+
+      if (actual === "cursada") {
+        const puedeAprobar = estaHabilitadaParaAprobar(
+          materia,
+          prev,
+          materias,
+          agrupadores,
+          grupoId
+        );
+
+        if (!puedeAprobar) return prev;
+
+        return {
+          ...prev,
+          [estadoKey]: "aprobada",
+        };
+      }
+
+      return prev;
+    });
   }
 
-  if (actual === "cursada") {
-    const puedeAprobar = estaHabilitadaParaAprobar(
-      materia,
-      prev,
-      materias,
-      agrupadores,
-      grupoId
-    );
+  function deshacerMateria(materia: Materia, grupoId?: string) {
+    const estadoKey = getEstadoKey(materia, grupoId);
 
-    if (!puedeAprobar) return prev;
+    setEstados((prev) => {
+      const actual = prev[estadoKey] || "no_cursada";
 
-    return {
-      ...prev,
-      [estadoKey]: "aprobada",
-    };
-  }
+      if (actual === "no_cursada") return prev;
 
-  return prev;
-});
+      if (actual === "aprobada") {
+        return {
+          ...prev,
+          [estadoKey]: "cursada",
+        };
+      }
 
-
+      const next = { ...prev };
+      delete next[estadoKey];
+      return next;
+    });
   }
 
   function resetMaterias() {
@@ -120,6 +139,7 @@ export function usePlanState(
     estados,
     setEstados,
     toggleMateria,
+    deshacerMateria,
     resetMaterias,
     isHydrated,
   };

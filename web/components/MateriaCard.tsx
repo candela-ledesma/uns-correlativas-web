@@ -1,17 +1,19 @@
 "use client";
 
-import { ButtonHTMLAttributes } from "react";
+import { HTMLAttributes, KeyboardEvent, MouseEvent } from "react";
 import { Materia } from "../app/types/plan";
 import { EstadoMateria } from "../lib/evaluarCorrelativas";
 
-type Props = ButtonHTMLAttributes<HTMLButtonElement> & {
+type Props = HTMLAttributes<HTMLDivElement> & {
   materia: Materia;
   estado: EstadoMateria;
   puedeCursar: boolean;
   puedeAprobar: boolean;
   puedeClickear: boolean;
   bloqueada: boolean;
-  onClick: () => void;
+  onToggle: () => void;
+  onUndo?: () => void;
+  undoTestId?: string;
 };
 
 function getEstadoLabel(
@@ -88,28 +90,51 @@ export default function MateriaCard({
   puedeAprobar,
   puedeClickear,
   bloqueada,
-  onClick,
+  onToggle,
+  onUndo,
+  undoTestId,
   ...rest
 }: Props) {
   const estadoLabel = getEstadoLabel(estado, bloqueada, puedeAprobar);
+  const canUndo = estado !== "no_cursada" && Boolean(onUndo);
+  const puedeInteractuar = puedeClickear || canUndo;
 
   const ariaLabel = `${materia.nombre}. Código ${materia.id}. Estado ${estadoLabel}. ${
     materia.horas ? `Carga horaria ${materia.horas} horas.` : ""
   }`;
 
+  function handleCardClick() {
+    if (!puedeClickear) return;
+    onToggle();
+  }
+
+  function handleCardKeyDown(event: KeyboardEvent<HTMLDivElement>) {
+    if (!puedeClickear) return;
+    if (event.key !== "Enter" && event.key !== " ") return;
+
+    event.preventDefault();
+    onToggle();
+  }
+
+  function handleUndoClick(event: MouseEvent<HTMLButtonElement>) {
+    event.stopPropagation();
+    onUndo?.();
+  }
+
   return (
-    <button
+    <div
       {...rest}
-      type="button"
-      onClick={puedeClickear ? onClick : undefined}
-      disabled={!puedeClickear}
+      role={puedeClickear ? "button" : undefined}
+      tabIndex={puedeClickear ? 0 : undefined}
+      onClick={handleCardClick}
+      onKeyDown={handleCardKeyDown}
       aria-label={ariaLabel}
-      className={getCardClassName(
+      className={`group ${getCardClassName(
         estado,
         puedeCursar,
         bloqueada,
-        puedeClickear
-      )}
+        puedeInteractuar
+      )}`}
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
@@ -130,6 +155,19 @@ export default function MateriaCard({
           {estadoLabel}
         </span>
       </div>
-    </button>
+
+      <div className="mt-3 flex items-center gap-2">
+        {canUndo && (
+          <button
+            type="button"
+            data-testid={undoTestId}
+            onClick={handleUndoClick}
+            className="invisible pointer-events-none rounded-lg border border-zinc-300 bg-white px-3 py-1.5 text-sm font-semibold text-zinc-900 opacity-0 transition duration-150 hover:bg-zinc-50 group-hover:visible group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:visible group-focus-within:pointer-events-auto group-focus-within:opacity-100 focus-visible:visible focus-visible:pointer-events-auto focus-visible:opacity-100"
+          >
+            Deshacer
+          </button>
+        )}
+      </div>
+    </div>
   );
 }

@@ -16,6 +16,7 @@ type Props = {
     agrupadores: Agrupador[];
     idsAgrupadores: Set<string>;
     onToggle: (materia: Materia, grupoId?: string) => void;
+    onUndo: (materia: Materia, grupoId?: string) => void;
 };
 
 export default function AnioSection({
@@ -26,6 +27,7 @@ export default function AnioSection({
     agrupadores,
     idsAgrupadores,
     onToggle,
+    onUndo,
     }: Props) {
     return (
     <section className="mb-10">
@@ -61,7 +63,9 @@ export default function AnioSection({
                     puedeAprobar={vm.puedeAprobar}
                     puedeClickear={vm.puedeClickear}
                     bloqueada={vm.bloqueada}
-                    onClick={() => onToggle(materia)}
+                    onToggle={() => onToggle(materia)}
+                    onUndo={() => onUndo(materia)}
+                    undoTestId={`${vm.testId}-undo`}
                     />
                 );
             })}

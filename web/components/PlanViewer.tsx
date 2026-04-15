@@ -51,7 +51,13 @@ export default function PlanViewer({ data }: Props) {
     estado: "todas",
   });
 
-  const { estados, toggleMateria, resetMaterias, isHydrated } =
+  const {
+    estados,
+    toggleMateria,
+    deshacerMateria,
+    resetMaterias,
+    isHydrated,
+  } =
     usePlanState(data.materias, agrupadores);
 
   const titulo = data.plan.carrera;
@@ -149,6 +155,7 @@ export default function PlanViewer({ data }: Props) {
           agrupadores={agrupadores}
           idsAgrupadores={idsAgrupadores}
           onToggle={toggleMateria}
+          onUndo={deshacerMateria}
         />
       ))}
 
@@ -167,6 +174,7 @@ export default function PlanViewer({ data }: Props) {
             agrupadores={agrupadores}
             idsAgrupadores={idsAgrupadores}
             onToggle={toggleMateria}
+            onUndo={deshacerMateria}
           />
         );
       })}
@@ -186,6 +194,7 @@ export default function PlanViewer({ data }: Props) {
             agrupadores={agrupadores}
             idsAgrupadores={idsAgrupadores}
             onToggle={toggleMateria}
+            onUndo={deshacerMateria}
           />
         );
       })}
@@ -205,6 +214,7 @@ export default function PlanViewer({ data }: Props) {
             agrupadores={agrupadores}
             idsAgrupadores={idsAgrupadores}
             onToggle={toggleMateria}
+            onUndo={deshacerMateria}
           />
         );
       })}
