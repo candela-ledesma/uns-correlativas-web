@@ -44,13 +44,93 @@ function agruparPorAnioYCuatrimestre(materias: Materia[]) {
   return resultado;
 }
 
+type PunteroGrupo = {
+  grupoId: string;
+  nombre: string;
+};
+
+function construirPunterosGruposPorAnioYCuatrimestre(
+  materiasFiltradas: Materia[],
+  agrupadores: PlanData["agrupadores"],
+  materiasPorId: Map<string, Materia>
+) {
+  const resultado: Record<string, Record<string, PunteroGrupo[]>> = {};
+  const vistos = new Set<string>();
+
+  for (const materia of materiasFiltradas) {
+    const grupoId = materia.grupo_opcion;
+    if (!grupoId) continue;
+
+    const grupo = agrupadores.find((a) => String(a.id) === String(grupoId));
+    if (!grupo) continue;
+
+    if (
+      grupo.tipo !== "optativa_grupo" &&
+      grupo.tipo !== "idioma_grupo" &&
+      grupo.tipo !== "seminario_grupo"
+    ) {
+      continue;
+    }
+
+    // El cuatrimestre/año del puntero debe ser el del agrupador (Gxxxx / Ixxxx / etc),
+    // porque en algunos PDFs las opciones vienen con slots inconsistentes.
+    const placeholder = materiasPorId.get(String(grupoId));
+    const anio = placeholder?.año ?? materia.año ?? "Sin año";
+    const cuatrimestre =
+      placeholder?.cuatrimestre ?? materia.cuatrimestre ?? "Sin cuatrimestre";
+
+    if (!resultado[anio]) resultado[anio] = {};
+    if (!resultado[anio][cuatrimestre]) resultado[anio][cuatrimestre] = [];
+
+    const clave = `${anio}::${cuatrimestre}::${grupoId}`;
+    if (vistos.has(clave)) continue;
+    vistos.add(clave);
+
+    resultado[anio][cuatrimestre].push({
+      grupoId: String(grupoId),
+      nombre: grupo.nombre,
+    });
+  }
+
+  return resultado;
+}
+
+function combinarSeccionesPorAnioYCuatrimestre(
+  materiasAgrupadas: Record<string, Record<string, Materia[]>>,
+  punteros: Record<string, Record<string, PunteroGrupo[]>>
+) {
+  const anios = new Set([
+    ...Object.keys(materiasAgrupadas),
+    ...Object.keys(punteros),
+  ]);
+
+  const resultado: Record<string, Record<string, Materia[]>> = {};
+
+  for (const anio of anios) {
+    const cuatrimestresMaterias = materiasAgrupadas[anio] || {};
+    const cuatrimestresPunteros = punteros[anio] || {};
+    const cuatrimestres = new Set([
+      ...Object.keys(cuatrimestresMaterias),
+      ...Object.keys(cuatrimestresPunteros),
+    ]);
+
+    resultado[anio] = {};
+
+    for (const cuatrimestre of cuatrimestres) {
+      resultado[anio][cuatrimestre] = cuatrimestresMaterias[cuatrimestre] || [];
+    }
+  }
+
+  return resultado;
+}
+
 export default function PlanViewer({ data }: Props) {
   const { idsAgrupadores } = usePlanStructure(data);
 
   const agrupadores = data.agrupadores || [];
-  const materiasPorId = new Map(
-    data.materias.map((m) => [String(m.id), m])
-  );
+  const materiasPorId = useMemo(() => {
+    return new Map(data.materias.map((m) => [String(m.id), m]));
+  }, [data.materias]);
 
   const [filtros, setFiltros] = useState<FiltrosPlan>({
     ...FILTROS_INICIALES,
@@ -99,11 +179,46 @@ export default function PlanViewer({ data }: Props) {
     });
   }, [data.materias, estados, agrupadores, idsAgrupadores, filtros]);
 
+  const agrupadorTipoPorId = useMemo(() => {
+    return new Map(agrupadores.map((a) => [String(a.id), a.tipo]));
+  }, [agrupadores]);
+
   const agrupadas = useMemo(() => {
     return agruparPorAnioYCuatrimestre(
-      materiasFiltradas.filter((m) => !idsAgrupadores.has(String(m.id)))
+      materiasFiltradas.filter((m) => {
+        if (m.grupo_opcion) return false;
+
+        const id = String(m.id);
+        const esAgrupador = idsAgrupadores.has(id);
+
+        if (!esAgrupador) return true;
+
+        // Mostrar el agrupador en su cuatrimestre (Optativas/Idiomas/Seminarios)
+        // como "puntero" dentro del cronograma.
+        const tipo = agrupadorTipoPorId.get(id);
+        return (
+          tipo === "optativa_grupo" ||
+          tipo === "idioma_grupo" ||
+          tipo === "seminario_grupo"
+        );
+      })
     );
-  }, [materiasFiltradas, idsAgrupadores]);
+  }, [materiasFiltradas, idsAgrupadores, agrupadorTipoPorId]);
+
+  const punterosPorAnioYCuatrimestre = useMemo(() => {
+    return construirPunterosGruposPorAnioYCuatrimestre(
+      materiasFiltradas,
+      agrupadores,
+      materiasPorId
+    );
+  }, [materiasFiltradas, agrupadores, materiasPorId]);
+
+  const seccionesPorAnioYCuatrimestre = useMemo(() => {
+    return combinarSeccionesPorAnioYCuatrimestre(
+      agrupadas,
+      punterosPorAnioYCuatrimestre
+    );
+  }, [agrupadas, punterosPorAnioYCuatrimestre]);
 
   const gruposIdiomas = agrupadores.filter((a) => a.tipo === "idioma_grupo");
   const gruposOptativas = agrupadores.filter((a) => a.tipo === "optativa_grupo");
@@ -161,11 +276,12 @@ export default function PlanViewer({ data }: Props) {
         cuatrimestres={cuatrimestres}
       />
 
-      {Object.entries(agrupadas).map(([anio, cuatrimestresMap]) => (
+      {Object.entries(seccionesPorAnioYCuatrimestre).map(([anio, cuatrimestresMap]) => (
         <AnioSection
           key={anio}
           anio={anio}
           cuatrimestres={cuatrimestresMap}
+          punterosCuatrimestre={punterosPorAnioYCuatrimestre[anio] || {}}
           estados={estados}
           todasLasMaterias={data.materias}
           agrupadores={agrupadores}
