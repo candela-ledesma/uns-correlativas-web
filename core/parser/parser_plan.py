@@ -106,6 +106,7 @@ def extraer_info_plan(texto):
 
 def detectar_materias_generico(texto):
     info_plan = extraer_info_plan(texto)
+
     materias = []
     agrupadores = []
 
@@ -116,6 +117,7 @@ def detectar_materias_generico(texto):
     cuatrimestre_actual = None
     seccion_actual = "normal"
     grupo_actual = None
+    materia_actual = None
 
     lineas = [l.strip() for l in texto.splitlines() if l.strip()]
 
@@ -136,13 +138,20 @@ def detectar_materias_generico(texto):
         if tipo == "seccion_optativas":
             seccion_actual = "optativas"
             grupo_actual = None
+            materia_actual = None
             continue
 
         if tipo == "seccion_idiomas":
             seccion_actual = "idiomas"
             grupo_actual = "IDIOMAS"
+            materia_actual = None
+
             if grupo_actual not in agrupadores_index:
-                agrupador = crear_agrupador("IDIOMAS", "Lenguas / Idiomas", "idioma_grupo")
+                agrupador = crear_agrupador(
+                    "IDIOMAS",
+                    "Lenguas / Idiomas",
+                    "idioma_grupo"
+                )
                 agrupadores.append(agrupador)
                 agrupadores_index[grupo_actual] = agrupador
             continue
@@ -150,8 +159,14 @@ def detectar_materias_generico(texto):
         if tipo == "seccion_seminarios":
             seccion_actual = "seminarios"
             grupo_actual = "SEMINARIOS"
+            materia_actual = None
+
             if grupo_actual not in agrupadores_index:
-                agrupador = crear_agrupador("SEMINARIOS", "Seminarios", "seminario_grupo")
+                agrupador = crear_agrupador(
+                    "SEMINARIOS",
+                    "Seminarios",
+                    "seminario_grupo"
+                )
                 agrupadores.append(agrupador)
                 agrupadores_index[grupo_actual] = agrupador
             continue
@@ -162,6 +177,7 @@ def detectar_materias_generico(texto):
             nombre = mg.group(2).strip() or f"Grupo {codigo}"
 
             grupo_actual = codigo
+            materia_actual = None
 
             if codigo not in agrupadores_index:
                 agrupador = crear_agrupador(codigo, nombre, "optativa_grupo")
@@ -169,7 +185,7 @@ def detectar_materias_generico(texto):
                 agrupadores_index[codigo] = agrupador
 
             continue
-        
+
         agrupador_info = es_linea_agrupador(linea, seccion_actual)
         if agrupador_info:
             codigo = agrupador_info["codigo"]
@@ -177,6 +193,7 @@ def detectar_materias_generico(texto):
             tipo_agrupador = agrupador_info["tipo"]
 
             grupo_actual = codigo
+            materia_actual = None
 
             if tipo_agrupador == "idioma_grupo":
                 seccion_actual = "idiomas"
@@ -191,29 +208,79 @@ def detectar_materias_generico(texto):
             continue
 
         if tipo == "materia":
-            materia = parsear_linea_materia(
+            materia_parseada = parsear_linea_materia(
                 linea,
                 año_actual,
                 cuatrimestre_actual,
                 seccion_actual,
                 grupo_actual
             )
-            if materia:
-                materias.append(materia)
-                materias_index[materia["id"]] = materia
+
+            if materia_parseada:
+                materia_id = str(materia_parseada["id"])
+                materia_parseada["id"] = materia_id
+
+                if materia_id not in materias_index:
+                    materias.append(materia_parseada)
+                    materias_index[materia_id] = materia_parseada
+                    materia_actual = materia_parseada
+                else:
+                    materia_existente = materias_index[materia_id]
+
+                    if not materia_existente.get("horas") and materia_parseada.get("horas"):
+                        materia_existente["horas"] = materia_parseada["horas"]
+
+                    if not materia_existente.get("año") and materia_parseada.get("año"):
+                        materia_existente["año"] = materia_parseada["año"]
+
+                    if (
+                        not materia_existente.get("cuatrimestre")
+                        and materia_parseada.get("cuatrimestre")
+                    ):
+                        materia_existente["cuatrimestre"] = materia_parseada["cuatrimestre"]
+
+                    if not materia_existente.get("subtipo") and materia_parseada.get("subtipo"):
+                        materia_existente["subtipo"] = materia_parseada["subtipo"]
+
+                    if (
+                        materia_existente.get("categoria") == "normal"
+                        and materia_parseada.get("categoria") != "normal"
+                    ):
+                        materia_existente["categoria"] = materia_parseada.get("categoria")
+
+                    if not materia_existente.get("grupo_opcion") and materia_parseada.get("grupo_opcion"):
+                        materia_existente["grupo_opcion"] = materia_parseada.get("grupo_opcion")
+
+                    if (
+                        materia_existente.get("tipo") == "materia"
+                        and materia_parseada.get("tipo") != "materia"
+                    ):
+                        materia_existente["tipo"] = materia_parseada.get("tipo")
+
+                    if materia_parseada.get("correlativas"):
+                        materia_existente["correlativas"].update(
+                            materia_parseada["correlativas"]
+                        )
+
+                    materia_actual = materia_existente
 
                 if grupo_actual is not None and grupo_actual in agrupadores_index:
-                    agrupadores_index[grupo_actual]["opciones"].append(materia["id"])
+                    opciones = agrupadores_index[grupo_actual]["opciones"]
+                    if materia_id not in opciones:
+                        opciones.append(materia_id)
+
             continue
 
-        if tipo == "correlativa" and materias:
-            materia_actual = materias[-1]
+        if tipo == "correlativa" and materia_actual is not None:
             correlativas = extraer_correlativas_de_linea(linea)
             materia_actual["correlativas"].update(correlativas)
             continue
 
+    for agrupador in agrupadores:
+        agrupador["opciones"] = list(dict.fromkeys(str(op) for op in agrupador["opciones"]))
+
     return {
-    "plan": info_plan,
-    "materias": materias,
-    "agrupadores": agrupadores
-}
+        "plan": info_plan,
+        "materias": materias,
+        "agrupadores": agrupadores
+    }

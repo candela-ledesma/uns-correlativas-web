@@ -737,7 +737,7 @@
       "horas": "50",
       "tipo": "materia",
       "categoria": "optativa",
-      "grupo_opcion": null,
+      "grupo_opcion": "G0654",
       "subtipo": null,
       "correlativas": {
         "1007": {
@@ -766,7 +766,7 @@
       "horas": "100",
       "tipo": "materia",
       "categoria": "optativa",
-      "grupo_opcion": null,
+      "grupo_opcion": "G0654",
       "subtipo": null,
       "correlativas": {
         "1050": {
@@ -795,7 +795,7 @@
       "horas": "96",
       "tipo": "materia",
       "categoria": "optativa",
-      "grupo_opcion": null,
+      "grupo_opcion": "G0654",
       "subtipo": null,
       "correlativas": {
         "1203": {
@@ -816,7 +816,7 @@
       "horas": "",
       "tipo": "materia",
       "categoria": "optativa",
-      "grupo_opcion": null,
+      "grupo_opcion": "G0654",
       "subtipo": null,
       "correlativas": {
         "1002": {
@@ -837,7 +837,7 @@
       "horas": "50",
       "tipo": "materia",
       "categoria": "optativa",
-      "grupo_opcion": null,
+      "grupo_opcion": "G0654",
       "subtipo": null,
       "correlativas": {
         "1262": {
@@ -858,7 +858,7 @@
       "horas": "50",
       "tipo": "materia",
       "categoria": "optativa",
-      "grupo_opcion": null,
+      "grupo_opcion": "G0654",
       "subtipo": null,
       "correlativas": {
         "1018": {
@@ -883,7 +883,7 @@
       "horas": "",
       "tipo": "materia",
       "categoria": "optativa",
-      "grupo_opcion": null,
+      "grupo_opcion": "G0654",
       "subtipo": null,
       "correlativas": {
         "1170": {
@@ -908,7 +908,7 @@
       "horas": "52",
       "tipo": "materia",
       "categoria": "optativa",
-      "grupo_opcion": null,
+      "grupo_opcion": "G0654",
       "subtipo": null,
       "correlativas": {
         "1291": {
@@ -933,7 +933,7 @@
       "horas": "50",
       "tipo": "materia",
       "categoria": "optativa",
-      "grupo_opcion": null,
+      "grupo_opcion": "G0654",
       "subtipo": null,
       "correlativas": {
         "I0654": {
@@ -950,7 +950,7 @@
       "horas": "",
       "tipo": "materia",
       "categoria": "optativa",
-      "grupo_opcion": null,
+      "grupo_opcion": "G0654",
       "subtipo": null,
       "correlativas": {
         "8170": {
@@ -971,7 +971,7 @@
       "horas": "96",
       "tipo": "materia",
       "categoria": "optativa",
-      "grupo_opcion": null,
+      "grupo_opcion": "G0654",
       "subtipo": null,
       "correlativas": {
         "4527": {
@@ -992,7 +992,7 @@
       "horas": "90",
       "tipo": "materia",
       "categoria": "optativa",
-      "grupo_opcion": null,
+      "grupo_opcion": "G0654",
       "subtipo": null,
       "correlativas": {
         "1441": {
@@ -1013,7 +1013,7 @@
       "horas": "",
       "tipo": "materia",
       "categoria": "optativa",
-      "grupo_opcion": null,
+      "grupo_opcion": "G0654",
       "subtipo": null,
       "correlativas": {
         "6012": {
@@ -1034,7 +1034,7 @@
       "horas": "50",
       "tipo": "materia",
       "categoria": "optativa",
-      "grupo_opcion": null,
+      "grupo_opcion": "G0654",
       "subtipo": null,
       "correlativas": {
         "8170": {
@@ -1055,7 +1055,7 @@
       "horas": "",
       "tipo": "materia",
       "categoria": "optativa",
-      "grupo_opcion": null,
+      "grupo_opcion": "I0654",
       "subtipo": "idioma",
       "correlativas": {}
     }
