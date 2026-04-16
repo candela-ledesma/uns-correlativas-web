@@ -17,6 +17,7 @@ type Props = {
 };
 
 const FILTROS_INICIALES: FiltrosPlan = {
+  codigo: "",
   anio: "todos",
   cuatrimestre: "todos",
   estado: "todas",
@@ -55,7 +56,8 @@ export default function PlanViewer({ data }: Props) {
     ...FILTROS_INICIALES,
   });
 
-  const canResetFiltros = filtros.anio !== FILTROS_INICIALES.anio
+  const canResetFiltros = filtros.codigo !== FILTROS_INICIALES.codigo
+    || filtros.anio !== FILTROS_INICIALES.anio
     || filtros.cuatrimestre !== FILTROS_INICIALES.cuatrimestre
     || filtros.estado !== FILTROS_INICIALES.estado;
 

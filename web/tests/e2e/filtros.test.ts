@@ -39,6 +39,11 @@ async function filtrarPorEstado(page: Page, estado: string) {
   await page.getByTestId("filtro-estado").selectOption(estado);
 }
 
+async function filtrarPorCodigo(page: Page, codigo: string) {
+  await abrirFiltros(page);
+  await page.getByTestId("filtro-codigo").fill(codigo);
+}
+
 async function filtrarPorAnio(page: Page, anio: string) {
   await abrirFiltros(page);
   await page.getByTestId("filtro-anio").selectOption(anio);
@@ -125,13 +130,29 @@ test("filtra por cuatrimestre", async ({ page }) => {
   await expect(materia(page, "7713")).not.toBeVisible();
 });
 
+test("filtra por codigo de materia", async ({ page }) => {
+  await filtrarPorCodigo(page, "5793");
+
+  await expect(materia(page, "5793")).toBeVisible();
+  await expect(materia(page, "5912")).not.toBeVisible();
+});
+
+test("filtra por nombre de materia", async ({ page }) => {
+  await filtrarPorCodigo(page, "algebra");
+
+  await expect(materia(page, "5912")).toBeVisible();
+  await expect(materia(page, "5793")).not.toBeVisible();
+});
+
 test("restaura los filtros al estado inicial", async ({ page }) => {
+  await filtrarPorCodigo(page, "5793");
   await filtrarPorAnio(page, "Primer Año");
   await filtrarPorCuatrimestre(page, "Primer Cuatrimestre");
   await filtrarPorEstado(page, "aprobadas");
 
   await page.getByTestId("reset-filtros-btn").click();
 
+  await expect(page.getByTestId("filtro-codigo")).toHaveValue("");
   await expect(page.getByTestId("filtro-anio")).toHaveValue("todos");
   await expect(page.getByTestId("filtro-cuatrimestre")).toHaveValue("todos");
   await expect(page.getByTestId("filtro-estado")).toHaveValue("todas");

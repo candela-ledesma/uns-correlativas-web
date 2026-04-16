@@ -10,6 +10,7 @@ export type EstadoFiltro =
   | "bloqueadas";
 
 export type FiltrosPlan = {
+  codigo: string;
   anio: string;
   cuatrimestre: string;
   estado: EstadoFiltro;
@@ -22,6 +23,14 @@ type Params = {
   idsAgrupadores: Set<string>;
   filtros: FiltrosPlan;
 };
+
+function normalizarTextoBusqueda(valor: string) {
+  return valor
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim();
+}
 
 export function filtrarMaterias({
   materias,
@@ -41,6 +50,16 @@ export function filtrarMaterias({
 
     if (filtros.anio !== "todos" && materia.año !== filtros.anio) {
       return false;
+    }
+
+    const busqueda = normalizarTextoBusqueda(filtros.codigo);
+    if (busqueda !== "") {
+      const idMateria = normalizarTextoBusqueda(String(materia.id));
+      const nombreMateria = normalizarTextoBusqueda(materia.nombre);
+      const coincide =
+        idMateria.includes(busqueda) || nombreMateria.includes(busqueda);
+
+      if (!coincide) return false;
     }
 
     if (

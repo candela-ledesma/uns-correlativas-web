@@ -59,7 +59,20 @@ export default function PlanFilters({
       </div>
 
       {mostrarFiltros && (
-      <div className="mt-4 grid gap-4 md:grid-cols-3">
+      <div className="mt-4 grid gap-4 md:grid-cols-4">
+        <label className="flex flex-col gap-1 text-sm text-zinc-700">
+          <span>Código o nombre</span>
+          <input
+            data-testid="filtro-codigo"
+            className="rounded-xl border border-zinc-300 px-3 py-2"
+            type="search"
+            inputMode="numeric"
+            placeholder="Ej: 5793 o Análisis"
+            value={filtros.codigo}
+            onChange={(e) => actualizar("codigo", e.target.value)}
+          />
+        </label>
+
         <label className="flex flex-col gap-1 text-sm text-zinc-700">
           <span>Año</span>
           <select
