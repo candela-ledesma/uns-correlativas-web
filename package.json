@@ -4,5 +4,10 @@
     "@types/node": "^25.5.0",
     "vitest": "^4.1.2"
   },
-  "scripts": {}
+  "scripts": {
+    "build": "npm install --prefix web && npm run build --prefix web",
+    "dev": "npm run dev --prefix web",
+    "start": "npm run start --prefix web",
+    "test:e2e": "npm run test:e2e --prefix web"
+  }
 }

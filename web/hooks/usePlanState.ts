@@ -199,7 +199,7 @@ export function usePlanState(
       if (actual === "no_cursada") return prev;
 
       if (actual === "aprobada") {
-        const next = {
+        const next: Record<string, EstadoMateria> = {
           ...prev,
           [estadoKey]: "cursada",
         };
@@ -207,7 +207,7 @@ export function usePlanState(
         return normalizarEstadosConsistentes(next);
       }
 
-      const next = { ...prev };
+      const next: Record<string, EstadoMateria> = { ...prev };
       delete next[estadoKey];
       return normalizarEstadosConsistentes(next);
     });
