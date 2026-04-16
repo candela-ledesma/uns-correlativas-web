@@ -34,7 +34,9 @@ test("una materia aprobada queda aprobada y deshabilitada", async ({ page }) => 
   await marcarAprobada(rpa);
 
   await expect(rpa).toHaveAttribute("data-estado", "aprobada");
-  await expect(rpa).toBeDisabled();
+
+  await rpa.click();
+  await expect(rpa).toHaveAttribute("data-estado", "aprobada");
 });
 
 test("IPOO no puede pasar a aprobada si RPA y Elementos no están aprobadas", async ({ page }) => {
@@ -72,14 +74,18 @@ test("una materia aprobada queda deshabilitada para nuevos clicks", async ({ pag
 
   await marcarAprobada(rpa);
 
-  await expect(rpa).toBeDisabled();
+  await rpa.click();
+  await expect(rpa).toHaveAttribute("data-estado", "aprobada");
 });
 
 test("una materia bloqueada no cambia de estado al hacer click", async ({ page }) => {
   const tc = materia(page, "7949"); // Teoría de la Computabilidad
 
   await expect(tc).toHaveAttribute("data-estado", "no_cursada");
-  await expect(tc).toBeDisabled();
+  await expect(tc).toHaveAttribute("data-habilitada", "no");
+
+  await tc.click();
+  await expect(tc).toHaveAttribute("data-estado", "no_cursada");
 });
 
 test("una materia disponible pasa a cursada", async ({ page }) => {

@@ -1,60 +1,42 @@
 import { describe, it, expect } from "vitest";
 import {
-  estaHabilitada,
   estadoAgrupador,
   EstadoMateria,
+  estaHabilitadaParaCursar,
 } from "../lib/evaluarCorrelativas";
-import { Materia } from "../app/types/plan";
+import type { Agrupador, Materia } from "../app/types/plan";
 
 function estadosAprobados(ids: string[]): Record<string, EstadoMateria> {
   return Object.fromEntries(ids.map((id) => [id, "aprobada"]));
 }
 
 describe("estadoAgrupador", () => {
-  const materias: Materia[] = [
+  const agrupadores: Agrupador[] = [
     {
       id: "I2201",
       nombre: "Idioma de Arquitectura",
-      año: "Tercer Año",
-      cuatrimestre: "Segundo Cuatrimestre",
-      horas: "",
-      tipo: "agrupador_requisito",
-      categoria: "normal",
-      grupo_opcion: null,
-      subtipo: "idioma",
-      correlativas: {},
-    },
-    {
-      id: "4804",
-      nombre: "SUFICIENCIA DE IDIOMA INGLES ARQ",
-      año: "Quinto Año",
-      cuatrimestre: "Segundo Cuatrimestre",
-      horas: "",
-      tipo: "materia",
-      categoria: "optativa",
-      grupo_opcion: "I2201",
-      subtipo: "idioma",
-      correlativas: {},
+      tipo: "idioma_grupo",
+      opciones: ["4804"],
     },
   ];
 
   it("devuelve no_cursada si ninguna opción fue marcada", () => {
     const estados = {};
-    expect(estadoAgrupador("I2201", materias, estados)).toBe("no_cursada");
+    expect(estadoAgrupador("I2201", agrupadores, estados)).toBe("no_cursada");
   });
 
   it("devuelve cursada si una opción está cursada", () => {
     const estados: Record<string, EstadoMateria> = {
-      "4804": "cursada",
+      "I2201::4804": "cursada",
     };
-    expect(estadoAgrupador("I2201", materias, estados)).toBe("cursada");
+    expect(estadoAgrupador("I2201", agrupadores, estados)).toBe("cursada");
   });
 
   it("devuelve aprobada si una opción está aprobada", () => {
     const estados: Record<string, EstadoMateria> = {
-      "4804": "aprobada",
+      "I2201::4804": "aprobada",
     };
-    expect(estadoAgrupador("I2201", materias, estados)).toBe("aprobada");
+    expect(estadoAgrupador("I2201", agrupadores, estados)).toBe("aprobada");
   });
 });
 
@@ -303,13 +285,24 @@ describe("estaHabilitada", () => {
     },
   ];
 
+  const agrupadores: Agrupador[] = [
+    {
+      id: "I2201",
+      nombre: "Idioma de Arquitectura",
+      tipo: "idioma_grupo",
+      opciones: ["4804"],
+    },
+  ];
+
   it("habilita Fisica con Matematica I cursada", () => {
     const estados: Record<string, EstadoMateria> = {
       "8118": "cursada",
     };
 
     const fisica = materias.find((m) => m.id === "3059")!;
-    expect(estaHabilitada(fisica, estados, materias)).toBe(true);
+    expect(estaHabilitadaParaCursar(fisica, estados, materias, agrupadores)).toBe(
+      true
+    );
   });
 
   it("no habilita Taller II si Taller I está solo cursada", () => {
@@ -319,7 +312,9 @@ describe("estaHabilitada", () => {
     };
 
     const tallerII = materias.find((m) => m.id === "3943")!;
-    expect(estaHabilitada(tallerII, estados, materias)).toBe(false);
+    expect(
+      estaHabilitadaParaCursar(tallerII, estados, materias, agrupadores)
+    ).toBe(false);
   });
 
   it("habilita Taller II si Taller I está aprobada e Historia cursada", () => {
@@ -329,7 +324,9 @@ describe("estaHabilitada", () => {
     };
 
     const tallerII = materias.find((m) => m.id === "3943")!;
-    expect(estaHabilitada(tallerII, estados, materias)).toBe(true);
+    expect(
+      estaHabilitadaParaCursar(tallerII, estados, materias, agrupadores)
+    ).toBe(true);
   });
 
   it("habilita Morfologia I solo con 5488 aprobada y 5489 cursada", () => {
@@ -339,7 +336,9 @@ describe("estaHabilitada", () => {
     };
 
     const morfologia = materias.find((m) => m.id === "3820")!;
-    expect(estaHabilitada(morfologia, estados, materias)).toBe(true);
+    expect(
+      estaHabilitadaParaCursar(morfologia, estados, materias, agrupadores)
+    ).toBe(true);
   });
 
   it("no habilita Morfologia I si 5488 está solo cursada", () => {
@@ -349,7 +348,9 @@ describe("estaHabilitada", () => {
     };
 
     const morfologia = materias.find((m) => m.id === "3820")!;
-    expect(estaHabilitada(morfologia, estados, materias)).toBe(false);
+    expect(
+      estaHabilitadaParaCursar(morfologia, estados, materias, agrupadores)
+    ).toBe(false);
   });
 
   it("no habilita Taller IV si falta idioma", () => {
@@ -364,7 +365,9 @@ describe("estaHabilitada", () => {
     ]);
 
     const tallerIV = materias.find((m) => m.id === "3945")!;
-    expect(estaHabilitada(tallerIV, estados, materias)).toBe(false);
+    expect(
+      estaHabilitadaParaCursar(tallerIV, estados, materias, agrupadores)
+    ).toBe(false);
   });
 
   it("habilita Taller IV cuando 4804 aprobada satisface I2201", () => {
@@ -376,10 +379,13 @@ describe("estaHabilitada", () => {
       "5076",
       "5205",
       "5287",
-      "4804",
     ]);
 
+    estados["I2201::4804"] = "aprobada";
+
     const tallerIV = materias.find((m) => m.id === "3945")!;
-    expect(estaHabilitada(tallerIV, estados, materias)).toBe(true);
+    expect(
+      estaHabilitadaParaCursar(tallerIV, estados, materias, agrupadores)
+    ).toBe(true);
   });
 });
