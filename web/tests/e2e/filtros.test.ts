@@ -8,6 +8,16 @@ async function resetEstado(page: Page) {
   await page.reload();
 }
 
+async function abrirFiltros(page: Page) {
+  const toggle = page.getByTestId("toggle-filtros-btn");
+  await expect(toggle).toBeVisible();
+
+  const expandido = await toggle.getAttribute("aria-expanded");
+  if (expandido === "true") return;
+
+  await toggle.click();
+}
+
 function materia(page: Page, id: string): Locator {
   return page.getByTestId(`materia-${id}`);
 }
@@ -25,14 +35,17 @@ async function marcarAprobada(card: Locator) {
 }
 
 async function filtrarPorEstado(page: Page, estado: string) {
+  await abrirFiltros(page);
   await page.getByTestId("filtro-estado").selectOption(estado);
 }
 
 async function filtrarPorAnio(page: Page, anio: string) {
+  await abrirFiltros(page);
   await page.getByTestId("filtro-anio").selectOption(anio);
 }
 
 async function filtrarPorCuatrimestre(page: Page, cuatrimestre: string) {
+  await abrirFiltros(page);
   await page.getByTestId("filtro-cuatrimestre").selectOption(cuatrimestre);
 }
 
@@ -110,4 +123,16 @@ test("filtra por cuatrimestre", async ({ page }) => {
 
   await expect(materia(page, "5551")).not.toBeVisible();
   await expect(materia(page, "7713")).not.toBeVisible();
+});
+
+test("restaura los filtros al estado inicial", async ({ page }) => {
+  await filtrarPorAnio(page, "Primer Año");
+  await filtrarPorCuatrimestre(page, "Primer Cuatrimestre");
+  await filtrarPorEstado(page, "aprobadas");
+
+  await page.getByTestId("reset-filtros-btn").click();
+
+  await expect(page.getByTestId("filtro-anio")).toHaveValue("todos");
+  await expect(page.getByTestId("filtro-cuatrimestre")).toHaveValue("todos");
+  await expect(page.getByTestId("filtro-estado")).toHaveValue("todas");
 });

@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+
 type Props = {
     titulo: string;
     subtitulo?: string;
@@ -36,6 +38,7 @@ export default function PlanHeader({
     total,
     onReset,
 }: Props) {
+    const [mostrarProgreso, setMostrarProgreso] = useState(false);
   const porcentaje = total > 0 ? Math.round((aprobadas / total) * 100) : 0;
 
     return (
@@ -72,9 +75,20 @@ export default function PlanHeader({
                 Reiniciar progreso
             </button>
             )}
+
+            <button
+            type="button"
+            data-testid="toggle-progreso-btn"
+            aria-expanded={mostrarProgreso}
+            onClick={() => setMostrarProgreso((prev) => !prev)}
+            className="rounded-xl border border-zinc-300 bg-white px-4 py-2.5 font-semibold text-zinc-900 shadow-sm transition hover:bg-zinc-50"
+            >
+            {mostrarProgreso ? "Ocultar progreso" : "Mostrar progreso"}
+            </button>
         </div>
         </div>
 
+        {mostrarProgreso && (
         <div className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
         <div className="mb-4 flex flex-wrap items-center justify-between gap-4">
             <div>
@@ -105,6 +119,7 @@ export default function PlanHeader({
             <StatCard label="Disponibles" value={disponibles} />
         </div>
         </div>
+        )}
     </header>
     );
 }

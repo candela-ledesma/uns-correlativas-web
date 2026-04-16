@@ -16,6 +16,12 @@ type Props = {
   data: PlanData;
 };
 
+const FILTROS_INICIALES: FiltrosPlan = {
+  anio: "todos",
+  cuatrimestre: "todos",
+  estado: "todas",
+};
+
 function agruparPorAnioYCuatrimestre(materias: Materia[]) {
   const resultado: Record<string, Record<string, Materia[]>> = {};
 
@@ -46,10 +52,16 @@ export default function PlanViewer({ data }: Props) {
   );
 
   const [filtros, setFiltros] = useState<FiltrosPlan>({
-    anio: "todos",
-    cuatrimestre: "todos",
-    estado: "todas",
+    ...FILTROS_INICIALES,
   });
+
+  const canResetFiltros = filtros.anio !== FILTROS_INICIALES.anio
+    || filtros.cuatrimestre !== FILTROS_INICIALES.cuatrimestre
+    || filtros.estado !== FILTROS_INICIALES.estado;
+
+  function resetFiltros() {
+    setFiltros({ ...FILTROS_INICIALES });
+  }
 
   const {
     estados,
@@ -141,6 +153,8 @@ export default function PlanViewer({ data }: Props) {
       <PlanFilters
         filtros={filtros}
         onChange={setFiltros}
+        onReset={resetFiltros}
+        canReset={canResetFiltros}
         anios={anios}
         cuatrimestres={cuatrimestres}
       />

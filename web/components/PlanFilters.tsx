@@ -1,10 +1,13 @@
 "use client";
 
+import { useState } from "react";
 import type { EstadoFiltro, FiltrosPlan } from "@/lib/filtrarMaterias";
 
 type Props = {
   filtros: FiltrosPlan;
   onChange: (filtros: FiltrosPlan) => void;
+  onReset?: () => void;
+  canReset?: boolean;
   anios: string[];
   cuatrimestres: string[];
 };
@@ -12,9 +15,13 @@ type Props = {
 export default function PlanFilters({
   filtros,
   onChange,
+  onReset,
+  canReset = false,
   anios,
   cuatrimestres,
 }: Props) {
+  const [mostrarFiltros, setMostrarFiltros] = useState(false);
+
   function actualizar<K extends keyof FiltrosPlan>(campo: K, valor: FiltrosPlan[K]) {
     onChange({
       ...filtros,
@@ -24,9 +31,35 @@ export default function PlanFilters({
 
   return (
     <section className="mb-8 rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
-      <div className="mb-3 text-sm font-semibold text-zinc-700">Filtros</div>
+      <div className="flex items-center justify-between gap-3">
+        <div className="text-sm font-semibold text-zinc-700">Filtros</div>
+        <div className="flex items-center gap-2">
+          {onReset && (
+            <button
+              type="button"
+              data-testid="reset-filtros-btn"
+              onClick={onReset}
+              disabled={!canReset}
+              className="rounded-lg border border-zinc-300 bg-white px-3 py-1.5 text-sm font-semibold text-zinc-800 transition hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Restaurar filtros
+            </button>
+          )}
 
-      <div className="grid gap-4 md:grid-cols-3">
+          <button
+            type="button"
+            data-testid="toggle-filtros-btn"
+            aria-expanded={mostrarFiltros}
+            onClick={() => setMostrarFiltros((prev) => !prev)}
+            className="rounded-lg border border-zinc-300 bg-white px-3 py-1.5 text-sm font-semibold text-zinc-800 transition hover:bg-zinc-50"
+          >
+            {mostrarFiltros ? "Ocultar filtros" : "Mostrar filtros"}
+          </button>
+        </div>
+      </div>
+
+      {mostrarFiltros && (
+      <div className="mt-4 grid gap-4 md:grid-cols-3">
         <label className="flex flex-col gap-1 text-sm text-zinc-700">
           <span>Año</span>
           <select
@@ -79,6 +112,7 @@ export default function PlanFilters({
           </select>
         </label>
       </div>
+      )}
     </section>
   );
 }
