@@ -5,6 +5,7 @@ import MateriasGrid from "@/components/MateriasGrid";
 import { Agrupador, Materia } from "@/app/types/plan";
 import { EstadoMateria } from "@/lib/evaluarCorrelativas";
 import { getMateriaViewModel } from "@/lib/materiaViewModel";
+import { obtenerCorrelativasMateria } from "@/lib/correlativasMateria";
 
 type CuatrimestresMap = Record<string, Materia[]>;
 
@@ -50,6 +51,12 @@ export default function AnioSection({
                 agrupadores,
                 idsAgrupadores,
                 });
+                                const correlativas = obtenerCorrelativasMateria(
+                                    materia,
+                                    todasLasMaterias,
+                                    agrupadores,
+                                    estados
+                                );
 
                 return (
                 <MateriaCard
@@ -66,6 +73,8 @@ export default function AnioSection({
                     onToggle={() => onToggle(materia)}
                     onUndo={() => onUndo(materia)}
                     undoTestId={`${vm.testId}-undo`}
+                    correlativas={correlativas}
+                    verCorrelativasTestId={`${vm.testId}-ver-correlativas`}
                     />
                 );
             })}

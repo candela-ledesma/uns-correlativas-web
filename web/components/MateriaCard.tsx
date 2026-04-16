@@ -1,8 +1,9 @@
 "use client";
 
-import { HTMLAttributes, KeyboardEvent, MouseEvent } from "react";
+import { HTMLAttributes, KeyboardEvent, MouseEvent, useState } from "react";
 import { Materia } from "../app/types/plan";
 import { EstadoMateria } from "../lib/evaluarCorrelativas";
+import type { CorrelativaDetalle } from "@/lib/correlativasMateria";
 
 type Props = HTMLAttributes<HTMLDivElement> & {
   materia: Materia;
@@ -14,7 +15,27 @@ type Props = HTMLAttributes<HTMLDivElement> & {
   onToggle: () => void;
   onUndo?: () => void;
   undoTestId?: string;
+  correlativas?: CorrelativaDetalle[];
+  verCorrelativasTestId?: string;
 };
+
+function getNivelLabel(nivel: string | null) {
+  if (!nivel) return "Sin requisito";
+  if (nivel === "aprobada") return "Aprobada";
+  if (nivel === "cursada") return "Cursada";
+  return nivel;
+}
+
+function getCumplimientoLabel(cumple: boolean) {
+  return cumple ? "Cumple" : "No cumple";
+}
+
+function getCumplimientoClassName(cumple: boolean) {
+  const base = "ml-2 inline-flex rounded-full px-2 py-0.5 text-[10px] font-bold";
+  return cumple
+    ? `${base} bg-green-100 text-green-700`
+    : `${base} bg-red-100 text-red-700`;
+}
 
 function getEstadoLabel(
   estado: EstadoMateria,
@@ -93,11 +114,15 @@ export default function MateriaCard({
   onToggle,
   onUndo,
   undoTestId,
+  correlativas = [],
+  verCorrelativasTestId,
   ...rest
 }: Props) {
+  const [mostrarCorrelativas, setMostrarCorrelativas] = useState(false);
   const estadoLabel = getEstadoLabel(estado, bloqueada, puedeAprobar);
   const canUndo = estado !== "no_cursada" && Boolean(onUndo);
   const puedeInteractuar = puedeClickear || canUndo;
+  const tieneCorrelativas = correlativas.length > 0;
 
   const ariaLabel = `${materia.nombre}. Código ${materia.id}. Estado ${estadoLabel}. ${
     materia.horas ? `Carga horaria ${materia.horas} horas.` : ""
@@ -119,6 +144,11 @@ export default function MateriaCard({
   function handleUndoClick(event: MouseEvent<HTMLButtonElement>) {
     event.stopPropagation();
     onUndo?.();
+  }
+
+  function handleCorrelativasClick(event: MouseEvent<HTMLButtonElement>) {
+    event.stopPropagation();
+    setMostrarCorrelativas((prev) => !prev);
   }
 
   return (
@@ -157,6 +187,17 @@ export default function MateriaCard({
       </div>
 
       <div className="mt-3 flex items-center gap-2">
+        {tieneCorrelativas && (
+          <button
+            type="button"
+            data-testid={verCorrelativasTestId}
+            onClick={handleCorrelativasClick}
+            className="rounded-lg border border-zinc-300 bg-white px-3 py-1.5 text-sm font-semibold text-zinc-900 transition hover:bg-zinc-50"
+          >
+            {mostrarCorrelativas ? "Ocultar correlativas" : "Ver correlativas"}
+          </button>
+        )}
+
         {canUndo && (
           <button
             type="button"
@@ -168,6 +209,42 @@ export default function MateriaCard({
           </button>
         )}
       </div>
+
+      {tieneCorrelativas && mostrarCorrelativas && (
+        <div
+          className="mt-3 rounded-xl border border-zinc-200 bg-white/70 p-3"
+          onClick={(event) => event.stopPropagation()}
+        >
+          <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-zinc-600">
+            Correlativas
+          </div>
+
+          <ul className="space-y-2">
+            {correlativas.map((correlativa) => (
+              <li
+                key={correlativa.id}
+                className="rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm"
+              >
+                <div className="font-semibold text-zinc-900">
+                  {correlativa.nombre} ({correlativa.id})
+                </div>
+                <div className="mt-1 text-xs text-zinc-600">
+                  Para cursar: {getNivelLabel(correlativa.paraCursar)}
+                  <span className={getCumplimientoClassName(correlativa.cumpleParaCursar)}>
+                    {getCumplimientoLabel(correlativa.cumpleParaCursar)}
+                  </span>
+                </div>
+                <div className="text-xs text-zinc-600">
+                  Para rendir: {getNivelLabel(correlativa.paraRendir)}
+                  <span className={getCumplimientoClassName(correlativa.cumpleParaRendir)}>
+                    {getCumplimientoLabel(correlativa.cumpleParaRendir)}
+                  </span>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 }

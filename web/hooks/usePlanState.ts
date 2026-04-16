@@ -54,6 +54,87 @@ export function usePlanState(
     savePlanState(estados);
   }, [estados, isHydrated]);
 
+  function getMateriaContextFromKey(estadoKey: string) {
+    if (estadoKey.includes("::")) {
+      const [grupoId, materiaId] = estadoKey.split("::");
+      const materia = materias.find((m) => String(m.id) === String(materiaId));
+
+      if (!materia) return null;
+      return { materia, grupoId };
+    }
+
+    const materia = materias.find((m) => String(m.id) === String(estadoKey));
+    if (!materia) return null;
+
+    return { materia, grupoId: undefined as string | undefined };
+  }
+
+  function normalizarEstadosConsistentes(
+    estadosIniciales: Record<string, EstadoMateria>
+  ) {
+    const normalizados = { ...estadosIniciales };
+    let huboCambios = true;
+
+    // Repite hasta estabilizar para cubrir cascadas (A invalida B, B invalida C).
+    while (huboCambios) {
+      huboCambios = false;
+
+      for (const [estadoKey, estado] of Object.entries(normalizados)) {
+        const contexto = getMateriaContextFromKey(estadoKey);
+        if (!contexto) continue;
+
+        const { materia, grupoId } = contexto;
+
+        if (estado === "cursada") {
+          const puedeSeguirCursada = estaHabilitadaParaCursar(
+            materia,
+            normalizados,
+            materias,
+            agrupadores,
+            grupoId
+          );
+
+          if (!puedeSeguirCursada) {
+            delete normalizados[estadoKey];
+            huboCambios = true;
+          }
+
+          continue;
+        }
+
+        if (estado === "aprobada") {
+          const puedeSeguirAprobada = estaHabilitadaParaAprobar(
+            materia,
+            normalizados,
+            materias,
+            agrupadores,
+            grupoId
+          );
+
+          if (puedeSeguirAprobada) continue;
+
+          const puedeQuedarCursada = estaHabilitadaParaCursar(
+            materia,
+            normalizados,
+            materias,
+            agrupadores,
+            grupoId
+          );
+
+          if (puedeQuedarCursada) {
+            normalizados[estadoKey] = "cursada";
+            huboCambios = true;
+          } else {
+            delete normalizados[estadoKey];
+            huboCambios = true;
+          }
+        }
+      }
+    }
+
+    return normalizados;
+  }
+
   function toggleMateria(materia: Materia, grupoId?: string) {
     const targetId = getScrollTargetId(materia, agrupadores);
 
@@ -118,15 +199,17 @@ export function usePlanState(
       if (actual === "no_cursada") return prev;
 
       if (actual === "aprobada") {
-        return {
+        const next = {
           ...prev,
           [estadoKey]: "cursada",
         };
+
+        return normalizarEstadosConsistentes(next);
       }
 
       const next = { ...prev };
       delete next[estadoKey];
-      return next;
+      return normalizarEstadosConsistentes(next);
     });
   }
 
