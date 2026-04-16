@@ -162,7 +162,7 @@ export default function MateriaCard({
             type="button"
             data-testid={undoTestId}
             onClick={handleUndoClick}
-            className="invisible pointer-events-none rounded-lg border border-zinc-300 bg-white px-3 py-1.5 text-sm font-semibold text-zinc-900 opacity-0 transition duration-150 hover:bg-zinc-50 group-hover:visible group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:visible group-focus-within:pointer-events-auto group-focus-within:opacity-100 focus-visible:visible focus-visible:pointer-events-auto focus-visible:opacity-100"
+            className="rounded-lg border border-zinc-300 bg-white px-3 py-1.5 text-sm font-semibold text-zinc-900 transition duration-150 hover:bg-zinc-50 md:invisible md:pointer-events-none md:opacity-0 md:group-hover:visible md:group-hover:pointer-events-auto md:group-hover:opacity-100 md:group-focus-within:visible md:group-focus-within:pointer-events-auto md:group-focus-within:opacity-100 md:focus-visible:visible md:focus-visible:pointer-events-auto md:focus-visible:opacity-100"
           >
             Deshacer
           </button>
