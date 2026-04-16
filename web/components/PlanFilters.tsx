@@ -10,6 +10,7 @@ type Props = {
   canReset?: boolean;
   anios: string[];
   cuatrimestres: string[];
+  orientaciones?: string[];
 };
 
 export default function PlanFilters({
@@ -19,6 +20,7 @@ export default function PlanFilters({
   canReset = false,
   anios,
   cuatrimestres,
+  orientaciones = [],
 }: Props) {
   const [mostrarFiltros, setMostrarFiltros] = useState(false);
 
@@ -59,7 +61,11 @@ export default function PlanFilters({
       </div>
 
       {mostrarFiltros && (
-      <div className="mt-4 grid gap-4 md:grid-cols-4">
+      <div
+        className={`mt-4 grid gap-4 ${
+          orientaciones.length > 0 ? "md:grid-cols-5" : "md:grid-cols-4"
+        }`}
+      >
         <label className="flex flex-col gap-1 text-sm text-zinc-700">
           <span>Código o nombre</span>
           <input
@@ -124,6 +130,25 @@ export default function PlanFilters({
             <option value="bloqueadas">Bloqueadas</option>
           </select>
         </label>
+
+        {orientaciones.length > 0 && (
+          <label className="flex flex-col gap-1 text-sm text-zinc-700">
+            <span>Orientación</span>
+            <select
+              data-testid="filtro-orientacion"
+              className="rounded-xl border border-zinc-300 px-3 py-2"
+              value={filtros.orientacion}
+              onChange={(e) => actualizar("orientacion", e.target.value)}
+            >
+              <option value="todas">Todas</option>
+              {orientaciones.map((orientacion) => (
+                <option key={orientacion} value={orientacion}>
+                  {orientacion}
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
       </div>
       )}
     </section>

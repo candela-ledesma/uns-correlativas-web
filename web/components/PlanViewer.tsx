@@ -21,7 +21,16 @@ const FILTROS_INICIALES: FiltrosPlan = {
   anio: "todos",
   cuatrimestre: "todos",
   estado: "todas",
+  orientacion: "todas",
 };
+
+function normalizarTexto(valor: string) {
+  return valor
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim();
+}
 
 function agruparPorAnioYCuatrimestre(materias: Materia[]) {
   const resultado: Record<string, Record<string, Materia[]>> = {};
@@ -139,7 +148,8 @@ export default function PlanViewer({ data }: Props) {
   const canResetFiltros = filtros.codigo !== FILTROS_INICIALES.codigo
     || filtros.anio !== FILTROS_INICIALES.anio
     || filtros.cuatrimestre !== FILTROS_INICIALES.cuatrimestre
-    || filtros.estado !== FILTROS_INICIALES.estado;
+    || filtros.estado !== FILTROS_INICIALES.estado
+    || filtros.orientacion !== FILTROS_INICIALES.orientacion;
 
   function resetFiltros() {
     setFiltros({ ...FILTROS_INICIALES });
@@ -168,6 +178,26 @@ export default function PlanViewer({ data }: Props) {
       new Set(data.materias.map((m) => m.cuatrimestre).filter(Boolean))
     ) as string[];
   }, [data.materias]);
+
+  const orientaciones = useMemo(() => {
+    const vistos = new Set<string>();
+    const resultado: string[] = [];
+
+    for (const agrupador of agrupadores) {
+      if (agrupador.tipo !== "optativa_grupo") continue;
+
+      const orientacion = agrupador.orientacion;
+      if (!orientacion) continue;
+
+      const clave = normalizarTexto(orientacion);
+      if (vistos.has(clave)) continue;
+      vistos.add(clave);
+
+      resultado.push(orientacion);
+    }
+
+    return resultado;
+  }, [agrupadores]);
 
   const materiasFiltradas = useMemo(() => {
     return filtrarMaterias({
@@ -274,6 +304,7 @@ export default function PlanViewer({ data }: Props) {
         canReset={canResetFiltros}
         anios={anios}
         cuatrimestres={cuatrimestres}
+        orientaciones={orientaciones}
       />
 
       {Object.entries(seccionesPorAnioYCuatrimestre).map(([anio, cuatrimestresMap]) => (

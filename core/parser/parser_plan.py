@@ -279,6 +279,15 @@ def detectar_materias_generico(texto):
     for agrupador in agrupadores:
         agrupador["opciones"] = list(dict.fromkeys(str(op) for op in agrupador["opciones"]))
 
+        if agrupador.get("tipo") == "optativa_grupo" and "orientacion" not in agrupador:
+            match = re.search(
+                r"orientaci[oó]n\s+([^,]+?)(?:,|$)",
+                agrupador.get("nombre", ""),
+                re.IGNORECASE,
+            )
+            if match:
+                agrupador["orientacion"] = match.group(1).strip()
+
     return {
         "plan": info_plan,
         "materias": materias,

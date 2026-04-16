@@ -14,6 +14,7 @@ export type FiltrosPlan = {
   anio: string;
   cuatrimestre: string;
   estado: EstadoFiltro;
+  orientacion: string;
 };
 
 type Params = {
@@ -40,6 +41,7 @@ export function filtrarMaterias({
   filtros,
 }: Params) {
   const materiasPorId = new Map(materias.map((m) => [String(m.id), m]));
+  const agrupadoresPorId = new Map(agrupadores.map((a) => [String(a.id), a]));
 
   return materias.filter((materia) => {
     const vm = getMateriaViewModel({
@@ -59,6 +61,31 @@ export function filtrarMaterias({
 
     const anioParaFiltro = placeholder?.año ?? materia.año;
     const cuatrimestreParaFiltro = placeholder?.cuatrimestre ?? materia.cuatrimestre;
+
+    if (filtros.orientacion !== "todas") {
+      const idMateria = String(materia.id);
+
+      const grupoIdParaOrientacion = materia.grupo_opcion
+        ? String(materia.grupo_opcion)
+        : idsAgrupadores.has(idMateria)
+          ? idMateria
+          : null;
+
+      const grupo = grupoIdParaOrientacion
+        ? agrupadoresPorId.get(grupoIdParaOrientacion)
+        : undefined;
+
+      const orientacionGrupo =
+        grupo?.tipo === "optativa_grupo" ? grupo.orientacion ?? null : null;
+
+      if (orientacionGrupo) {
+        const orientacionFiltro = normalizarTextoBusqueda(filtros.orientacion);
+        const orientacionMateria = normalizarTextoBusqueda(orientacionGrupo);
+        if (orientacionMateria !== orientacionFiltro) {
+          return false;
+        }
+      }
+    }
 
     if (filtros.anio !== "todos" && anioParaFiltro !== filtros.anio) {
       return false;

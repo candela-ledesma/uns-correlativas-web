@@ -21,6 +21,7 @@ export type Agrupador = {
   nombre: string;
   tipo: string;
   opciones: string[];
+  orientacion?: string | null;
 };
 
 export type PlanInfo = {
