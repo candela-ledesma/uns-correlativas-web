@@ -17,50 +17,42 @@ if (!process.env.NEXTAUTH_SECRET && process.env.AUTH_SECRET) {
 
 const allowDevLogin = process.env.AUTH_ENABLE_DEV_LOGIN !== "false";
 
-const providers = [];
+const providers = [
+  Credentials({
+    id: "dev-login",
+    name: "Dev Login",
+    credentials: {
+      email: { label: "Email", type: "email" },
+      role: { label: "Role", type: "text" },
+    },
+    authorize: async (credentials) => {
+      if (!allowDevLogin) return null;
 
-if (allowDevLogin) {
-  providers.push(
-    Credentials({
-      id: "dev-login",
-      name: "Dev Login",
-      credentials: {
-        email: { label: "Email", type: "email" },
-        role: { label: "Role", type: "text" },
-      },
-      authorize: async (credentials) => {
-        const email = String(credentials?.email ?? "").trim().toLowerCase();
-        if (!email) return null;
+      const email = String(credentials?.email ?? "").trim().toLowerCase();
+      if (!email) return null;
 
-        const requestedRole = String(credentials?.role ?? "USER").toUpperCase();
-        const role = isRole(requestedRole) ? requestedRole : "USER";
+      const requestedRole = String(credentials?.role ?? "USER").toUpperCase();
+      const role = isRole(requestedRole) ? requestedRole : "USER";
 
-        const user = await prisma.user.upsert({
-          where: { email },
-          update: { role },
-          create: {
-            email,
-            name: email.split("@")[0],
-            role,
-          },
-        });
+      const user = await prisma.user.upsert({
+        where: { email },
+        update: { role },
+        create: {
+          email,
+          name: email.split("@")[0],
+          role,
+        },
+      });
 
-        return {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          role: user.role,
-        };
-      },
-    })
-  );
-}
-
-if (providers.length === 0) {
-  throw new Error(
-    "No hay providers de autenticacion configurados. Configura al menos uno o evita AUTH_ENABLE_DEV_LOGIN=false"
-  );
-}
+      return {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+      };
+    },
+  }),
+];
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
