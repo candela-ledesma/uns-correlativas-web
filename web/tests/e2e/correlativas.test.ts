@@ -1,7 +1,8 @@
 import { test, expect } from "@playwright/test";
+import { gotoPlan } from "./helpers";
 
 test("muestra correlativas de una materia al presionar ver correlativas", async ({ page }) => {
-  await page.goto("/planes/lic_computacion");
+  await gotoPlan(page, "lic_computacion");
 
   const materiaIpoo = page.getByTestId("materia-7713");
   const botonVerCorrelativas = page.getByTestId("materia-7713-ver-correlativas");

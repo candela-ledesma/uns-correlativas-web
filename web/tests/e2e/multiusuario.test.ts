@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { dismissOnboardingIfPresent } from "./helpers";
 
 async function loginDev(
   page: Page,
@@ -22,6 +23,8 @@ test("login de desarrollo + sincronizacion de progreso por usuario", async ({ pa
     role: "USER",
     next: "/planes/arquitectura",
   });
+
+  await dismissOnboardingIfPresent(page);
 
   const materia = page.getByTestId("materia-8118");
 
@@ -60,6 +63,8 @@ test("se genera evento de auditoria al actualizar progreso", async ({ page }) =>
     role: "ADMIN",
     next: "/planes/arquitectura",
   });
+
+  await dismissOnboardingIfPresent(page);
 
   const materia = page.getByTestId("materia-8118");
   await materia.click();

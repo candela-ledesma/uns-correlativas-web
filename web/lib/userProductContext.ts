@@ -84,24 +84,44 @@ async function ensureEnrollmentBootstrap(userId: string) {
 }
 
 async function ensurePreferenceRow(userId: string, enrolledCareerIds: string[]) {
-  const preference = await prisma.userPreference.findUnique({
+  const defaultActiveCareerId = enrolledCareerIds[0] ?? null;
+
+  let preference = await prisma.userPreference.findUnique({
     where: { userId },
   });
+
+  if (!preference) {
+    try {
+      preference = await prisma.userPreference.create({
+        data: {
+          userId,
+          activeCareerId: defaultActiveCareerId,
+        },
+      });
+    } catch (error) {
+      const isUniqueRace =
+        typeof error === "object" &&
+        error !== null &&
+        "code" in error &&
+        error.code === "P2002";
+
+      if (!isUniqueRace) {
+        throw error;
+      }
+
+      preference = await prisma.userPreference.findUnique({
+        where: { userId },
+      });
+    }
+  }
+
+  if (!preference) {
+    throw new Error("No se pudo inicializar preferencias de usuario");
+  }
 
   const validActiveCareerId = preference?.activeCareerId
     ? sanitizeCarreraIds([preference.activeCareerId])[0] ?? null
     : null;
-
-  if (!preference) {
-    const created = await prisma.userPreference.create({
-      data: {
-        userId,
-        activeCareerId: enrolledCareerIds[0] ?? null,
-      },
-    });
-
-    return created;
-  }
 
   const activeExistsInEnrollments =
     validActiveCareerId !== null && enrolledCareerIds.includes(validActiveCareerId);
