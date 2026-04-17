@@ -12,9 +12,7 @@ export default function LoginActions({ callbackUrl, compact = false }: Props) {
   const [email, setEmail] = useState("tester@uns.local");
   const [role, setRole] = useState("USER");
   const [loading, setLoading] = useState(false);
-  const showDevLogin =
-    process.env.NEXT_PUBLIC_ENABLE_DEV_LOGIN === "true" ||
-    process.env.NODE_ENV !== "production";
+  const showDevLogin = process.env.NEXT_PUBLIC_ENABLE_DEV_LOGIN !== "false";
 
   const safeCallback = useMemo(() => {
     if (!callbackUrl.startsWith("/")) return "/perfil";

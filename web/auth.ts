@@ -15,9 +15,7 @@ if (!process.env.NEXTAUTH_SECRET && process.env.AUTH_SECRET) {
   process.env.NEXTAUTH_SECRET = process.env.AUTH_SECRET;
 }
 
-const allowDevLogin =
-  process.env.AUTH_ENABLE_DEV_LOGIN === "true" ||
-  process.env.NODE_ENV !== "production";
+const allowDevLogin = process.env.AUTH_ENABLE_DEV_LOGIN !== "false";
 
 const providers = [];
 
@@ -60,7 +58,7 @@ if (allowDevLogin) {
 
 if (providers.length === 0) {
   throw new Error(
-    "No hay providers de autenticacion configurados. Habilita AUTH_ENABLE_DEV_LOGIN=true"
+    "No hay providers de autenticacion configurados. Configura al menos uno o evita AUTH_ENABLE_DEV_LOGIN=false"
   );
 }
 
