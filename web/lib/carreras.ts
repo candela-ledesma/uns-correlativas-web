@@ -29,6 +29,12 @@ export const CARRERAS: CarreraConfig[] = [
         jsonFile: "arquitectura.json",
         disponible: true,
         },
+        {
+        versionId: "v2",
+        label: "Plan 2025",
+        jsonFile: "arquitectura_2025.json",
+        disponible: false,
+        },
     ],
     disponible: true,
     },

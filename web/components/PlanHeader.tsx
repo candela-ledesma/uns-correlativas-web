@@ -1,6 +1,19 @@
 "use client";
 
 import { useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+
+type VersionOption = {
+    versionId: string;
+    label: string;
+    disponible?: boolean;
+};
+
+type VersionSelectorConfig = {
+    selectedVersionId: string;
+    defaultVersionId: string;
+    options: VersionOption[];
+};
 
 type Props = {
     titulo: string;
@@ -10,6 +23,7 @@ type Props = {
     disponibles: number;
     total: number;
     onReset?: () => void;
+    versionSelector?: VersionSelectorConfig;
 };
 
 function StatCard({
@@ -37,9 +51,27 @@ export default function PlanHeader({
     disponibles,
     total,
     onReset,
+        versionSelector,
 }: Props) {
     const [mostrarProgreso, setMostrarProgreso] = useState(false);
+        const pathname = usePathname();
+        const router = useRouter();
+        const searchParams = useSearchParams();
+        const showVersionSelector = Boolean(
+        versionSelector && versionSelector.options.length > 1
+        );
   const porcentaje = total > 0 ? Math.round((aprobadas / total) * 100) : 0;
+
+        function updateVersion(versionId: string) {
+        if (!versionSelector) return;
+        if (versionId === versionSelector.selectedVersionId) return;
+
+        const params = new URLSearchParams(searchParams.toString());
+        params.set("v", versionId);
+
+        const query = params.toString();
+        router.push(query ? `${pathname}?${query}` : pathname);
+        }
 
     return (
     <header className="mb-9 grid gap-5">
@@ -55,6 +87,34 @@ export default function PlanHeader({
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
+            {showVersionSelector && versionSelector && (
+            <label className="inline-flex items-center gap-2 rounded-xl border border-zinc-300 bg-white px-3 py-2 shadow-sm">
+                <span className="text-sm font-medium text-zinc-600">Versión</span>
+                <select
+                data-testid="version-selector"
+                value={versionSelector.selectedVersionId}
+                onChange={(event) => updateVersion(event.target.value)}
+                className="rounded-md border border-zinc-300 bg-white px-2 py-1 text-sm font-medium text-zinc-900 outline-none transition focus:border-zinc-500"
+                >
+                {versionSelector.options.map((option) => {
+                    const isDisabled = option.disponible === false;
+
+                    return (
+                    <option
+                        key={option.versionId}
+                        value={option.versionId}
+                        disabled={isDisabled}
+                    >
+                        {isDisabled
+                        ? `${option.label} (próximamente)`
+                        : option.label}
+                    </option>
+                    );
+                })}
+                </select>
+            </label>
+            )}
+
             <a
             href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
             target="_blank"
