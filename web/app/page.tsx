@@ -2,9 +2,14 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { CARRERAS } from "@/lib/carreras";
-import HomeSessionPanel from "@/components/HomeSessionPanel";
 import styles from "./page.module.css";
+
+const HomeSessionPanel = dynamic(() => import("@/components/HomeSessionPanel"), {
+  ssr: false,
+  loading: () => <div className={styles.sessionSkeleton} aria-hidden="true" />, 
+});
 
 function normalizarTexto(valor: string) {
   return valor

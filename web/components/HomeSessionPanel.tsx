@@ -14,6 +14,8 @@ export default function HomeSessionPanel() {
   const [open, setOpen] = useState(false);
   const [summary, setSummary] = useState<UserSessionSummaryResponse | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const triggerClassName =
+    "inline-flex min-h-10 min-w-[178px] items-center justify-center gap-2 rounded-full border border-zinc-300 bg-white px-4 py-2 text-sm font-semibold text-zinc-800 shadow-sm transition hover:bg-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500";
 
   async function loadUserContext() {
     const response = await fetch("/api/perfil/resumen").catch(() => null);
@@ -84,7 +86,7 @@ export default function HomeSessionPanel() {
 
   if (status === "loading") {
     return (
-      <div className="inline-flex items-center gap-2 rounded-full border border-zinc-200 bg-white px-4 py-2 text-sm text-zinc-500 shadow-sm">
+      <div className={`${triggerClassName} border-zinc-200 text-zinc-500`}>
         Cargando sesion...
       </div>
     );
@@ -98,10 +100,12 @@ export default function HomeSessionPanel() {
           onClick={() => setOpen((prev) => !prev)}
           aria-expanded={open}
           aria-haspopup="dialog"
-          className="inline-flex items-center gap-2 rounded-full border border-zinc-300 bg-white px-4 py-2 text-sm font-semibold text-zinc-800 shadow-sm transition hover:bg-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+          className={triggerClassName}
         >
           Iniciar sesion
-          <span aria-hidden="true">{open ? "^" : "v"}</span>
+          <span aria-hidden="true" className="inline-block w-3 text-center">
+            {open ? "^" : "v"}
+          </span>
         </button>
 
         {open && (
@@ -136,13 +140,15 @@ export default function HomeSessionPanel() {
         onClick={() => setOpen((prev) => !prev)}
         aria-expanded={open}
         aria-haspopup="menu"
-        className="inline-flex items-center gap-2 rounded-full border border-zinc-300 bg-white px-4 py-2 text-sm font-semibold text-zinc-800 shadow-sm transition hover:bg-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+        className={triggerClassName}
       >
         <span className="max-w-[190px] truncate">{session.user.email}</span>
         <span className="rounded-full border border-zinc-300 bg-zinc-50 px-2 py-0.5 text-[11px] font-bold text-zinc-700">
           {session.user.role}
         </span>
-        <span aria-hidden="true">{open ? "^" : "v"}</span>
+        <span aria-hidden="true" className="inline-block w-3 text-center">
+          {open ? "^" : "v"}
+        </span>
       </button>
 
       {open && (
