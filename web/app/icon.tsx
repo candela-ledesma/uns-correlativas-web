@@ -17,8 +17,11 @@ export default function Icon() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          background: "linear-gradient(135deg, #1d4ed8 0%, #0f172a 100%)",
-          fontSize: 112,
+          background:
+            "radial-gradient(circle at 30% 30%, #60a5fa 0%, #1d4ed8 42%, #0f172a 100%)",
+          borderRadius: "28%",
+          boxShadow: "inset 0 0 0 14px rgba(255, 255, 255, 0.08)",
+          fontSize: 108,
           lineHeight: 1,
         }}
       >
