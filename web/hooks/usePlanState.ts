@@ -38,6 +38,8 @@ function materiaElegidaEnOtroGrupo(
 }
 
 export function usePlanState(
+  planId: string,
+  versionId: string,
   materias: Materia[],
   agrupadores: Agrupador[]
 ) {
@@ -45,14 +47,15 @@ export function usePlanState(
   const [isHydrated, setIsHydrated] = useState(false);
 
   useEffect(() => {
-    setEstados(loadPlanState());
+    setIsHydrated(false);
+    setEstados(loadPlanState(planId, versionId));
     setIsHydrated(true);
-  }, []);
+  }, [planId, versionId]);
 
   useEffect(() => {
     if (!isHydrated) return;
-    savePlanState(estados);
-  }, [estados, isHydrated]);
+    savePlanState(planId, versionId, estados);
+  }, [estados, isHydrated, planId, versionId]);
 
   function getMateriaContextFromKey(estadoKey: string) {
     if (estadoKey.includes("::")) {
@@ -215,7 +218,7 @@ export function usePlanState(
 
   function resetMaterias() {
     setEstados({});
-    clearPlanState();
+    clearPlanState(planId, versionId);
   }
 
   return {

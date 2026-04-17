@@ -162,10 +162,10 @@ export default function PlanViewer({ data }: Props) {
     resetMaterias,
     isHydrated,
   } =
-    usePlanState(data.materias, agrupadores);
+    usePlanState(data.plan.plan_id, data.plan.version_id, data.materias, agrupadores);
 
   const titulo = data.plan.carrera;
-  const subtitulo = `Plan ${data.plan.universidad} ${data.plan.codigo_plan}`;
+  const subtitulo = `Plan ${data.plan.universidad} ${data.plan.codigo_plan} · ${data.plan.version_id}`;
 
   const anios = useMemo(() => {
     return Array.from(

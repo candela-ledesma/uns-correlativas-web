@@ -1,10 +1,18 @@
 export type CarreraId = "arquitectura" | "lic_computacion" | "bioquimica" | "ing_civil";
 
+export type CarreraVersionConfig = {
+    versionId: string;
+    label: string;
+    jsonFile: string;
+    disponible?: boolean;
+};
+
 export type CarreraConfig = {
     id: CarreraId;
     nombre: string;
     descripcion: string;
-    jsonFile: string;
+    defaultVersionId: string;
+    versions: CarreraVersionConfig[];
     disponible?: boolean;
 };
 
@@ -13,14 +21,30 @@ export const CARRERAS: CarreraConfig[] = [
     id: "arquitectura",
     nombre: "Arquitectura",
     descripcion: "Plan de estudios y correlativas.",
-    jsonFile: "arquitectura.json",
+    defaultVersionId: "v1",
+    versions: [
+        {
+        versionId: "v1",
+        label: "Plan actual",
+        jsonFile: "arquitectura.json",
+        disponible: true,
+        },
+    ],
     disponible: true,
     },
     {
     id: "lic_computacion",
     nombre: "Licenciatura en Ciencias de la Computación",
     descripcion: "Plan de estudios y correlativas.",
-    jsonFile: "lic_computacion.json",
+    defaultVersionId: "v1",
+    versions: [
+        {
+        versionId: "v1",
+        label: "Plan actual",
+        jsonFile: "lic_computacion.json",
+        disponible: true,
+        },
+    ],
     disponible: true,
 
     },
@@ -28,7 +52,15 @@ export const CARRERAS: CarreraConfig[] = [
     id: "bioquimica",
     nombre: "Bioquímica",
     descripcion: "Plan de estudios y correlativas.",
-    jsonFile: "bioquimica.json",
+    defaultVersionId: "v1",
+    versions: [
+        {
+        versionId: "v1",
+        label: "Plan actual",
+        jsonFile: "bioquimica.json",
+        disponible: true,
+        },
+    ],
     disponible: true,
 
     },
@@ -36,7 +68,15 @@ export const CARRERAS: CarreraConfig[] = [
     id: "ing_civil",
     nombre: "Ingeniería Civil",
     descripcion: "Plan de estudios y correlativas.",
-    jsonFile: "ing_civil.json",
+    defaultVersionId: "v1",
+    versions: [
+        {
+        versionId: "v1",
+        label: "Plan actual",
+        jsonFile: "ing_civil.json",
+        disponible: true,
+        },
+    ],
     disponible: true,
 
     },
@@ -44,4 +84,24 @@ export const CARRERAS: CarreraConfig[] = [
 
 export function getCarreraById(id: string) {
     return CARRERAS.find((c) => c.id === id) ?? null;
+}
+
+export function getDefaultVersionForCarrera(carreraId: string): CarreraVersionConfig | null {
+    const carrera = getCarreraById(carreraId);
+    if (!carrera) return null;
+
+    return (
+    carrera.versions.find((v) => v.versionId === carrera.defaultVersionId) ?? null
+    );
+}
+
+export function getVersionForCarrera(
+    carreraId: string,
+    versionId: string | null
+): CarreraVersionConfig | null {
+    const carrera = getCarreraById(carreraId);
+    if (!carrera) return null;
+
+    const resolvedVersionId = versionId ?? carrera.defaultVersionId;
+    return carrera.versions.find((v) => v.versionId === resolvedVersionId) ?? null;
 }
