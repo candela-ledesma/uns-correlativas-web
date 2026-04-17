@@ -8,6 +8,7 @@
     "build": "npm install --prefix web && npm run build --prefix web",
     "dev": "npm run dev --prefix web",
     "start": "npm run start --prefix web",
-    "test:e2e": "npm run test:e2e --prefix web"
+    "test:e2e": "npm run test:e2e --prefix web",
+    "check:prod": "npm run check:prod --prefix web"
   }
 }

@@ -164,6 +164,12 @@ export default function PlanViewer({
   const onboardingStateKeyRef = useRef<string | null>(null);
   const planVisitKeyRef = useRef<string | null>(null);
 
+  const openOnboardingDeferred = () => {
+    window.requestAnimationFrame(() => {
+      setIsOnboardingOpen(true);
+    });
+  };
+
   const agrupadores = data.agrupadores || [];
   const materiasPorId = useMemo(() => {
     return new Map(data.materias.map((m) => [String(m.id), m]));
@@ -340,7 +346,7 @@ export default function PlanViewer({
     onboardingStateKeyRef.current = key;
 
     if (forceShowOnboarding) {
-      setIsOnboardingOpen(true);
+      openOnboardingDeferred();
 
       const params = new URLSearchParams(searchParams.toString());
       if (params.has("onboarding")) {
@@ -359,7 +365,7 @@ export default function PlanViewer({
           if (!payload) return;
 
           if (payload.shouldAutoShowOnboarding) {
-            setIsOnboardingOpen(true);
+            openOnboardingDeferred();
           }
         })
         .catch(() => undefined);
@@ -371,7 +377,7 @@ export default function PlanViewer({
       const guestState = window.localStorage.getItem("onboarding::guest::state");
 
       if (!guestState) {
-        setIsOnboardingOpen(true);
+        openOnboardingDeferred();
       }
     }
   }, [

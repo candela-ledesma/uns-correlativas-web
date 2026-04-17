@@ -307,3 +307,36 @@ El flujo actual consume `onboarding=1` en modo one-shot. Si reaparece, revisar l
 - Esquema DB: `web/prisma/schema.prisma`
 - Contrato parser: `core/parser/contract_validator.py`
 - Carga y validacion web: `web/lib/planDataLoader.ts`, `web/lib/planValidation.ts`
+
+## 17) Checklist de produccion
+
+Antes de publicar, usar este flujo:
+
+1. Preparar variables de entorno de produccion en `web/.env.local` (base: `web/.env.production.example`).
+2. Ejecutar chequeo integral:
+
+```bash
+npm run check:prod
+```
+
+3. Aplicar migraciones productivas:
+
+```bash
+cd web
+npm run prisma:deploy
+```
+
+4. Generar y levantar build:
+
+```bash
+cd web
+npm run build
+npm run start
+```
+
+Que valida `check:prod`:
+
+- consistencia de variables de auth y seguridad,
+- provider de autenticacion habilitado (Google o dev-login restringido),
+- validacion de datos publicados (bloquea issues criticos),
+- lint, tests unitarios y build de Next.js.

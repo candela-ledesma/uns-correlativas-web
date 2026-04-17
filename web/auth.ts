@@ -1,6 +1,7 @@
 import { getServerSession } from "next-auth/next";
 import type { NextAuthOptions } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
+import Google from "next-auth/providers/google";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
 import { createAuditEvent } from "@/lib/audit";
@@ -25,6 +26,10 @@ const allowDevRoleOverride =
   process.env.AUTH_ALLOW_DEV_ROLE_OVERRIDE === "true" ||
   (!isProduction && process.env.AUTH_ALLOW_DEV_ROLE_OVERRIDE !== "false");
 
+const hasGoogleProvider =
+  Boolean(process.env.AUTH_GOOGLE_CLIENT_ID) &&
+  Boolean(process.env.AUTH_GOOGLE_CLIENT_SECRET);
+
 const devLoginAllowlist = new Set(
   (process.env.AUTH_DEV_LOGIN_EMAIL_ALLOWLIST ?? "")
     .split(",")
@@ -37,45 +42,62 @@ function isAllowedDevEmail(email: string) {
   return devLoginAllowlist.has(email);
 }
 
-const providers = [
-  Credentials({
-    id: "dev-login",
-    name: "Dev Login",
-    credentials: {
-      email: { label: "Email", type: "email" },
-      role: { label: "Role", type: "text" },
-    },
-    authorize: async (credentials) => {
-      if (!allowDevLogin) return null;
+const providers: NonNullable<NextAuthOptions["providers"]> = [];
 
-      const email = String(credentials?.email ?? "").trim().toLowerCase();
-      if (!email) return null;
+if (hasGoogleProvider) {
+  providers.push(
+    Google({
+      clientId: process.env.AUTH_GOOGLE_CLIENT_ID as string,
+      clientSecret: process.env.AUTH_GOOGLE_CLIENT_SECRET as string,
+    }),
+  );
+}
 
-      if (!isAllowedDevEmail(email)) return null;
+if (allowDevLogin) {
+  providers.push(
+    Credentials({
+      id: "dev-login",
+      name: "Dev Login",
+      credentials: {
+        email: { label: "Email", type: "email" },
+        role: { label: "Role", type: "text" },
+      },
+      authorize: async (credentials) => {
+        const email = String(credentials?.email ?? "").trim().toLowerCase();
+        if (!email) return null;
 
-      const requestedRole = String(credentials?.role ?? "USER").toUpperCase();
-      const candidateRole = allowDevRoleOverride ? requestedRole : "USER";
-      const role = isRole(candidateRole) ? candidateRole : "USER";
+        if (!isAllowedDevEmail(email)) return null;
 
-      const user = await prisma.user.upsert({
-        where: { email },
-        update: { role },
-        create: {
-          email,
-          name: email.split("@")[0],
-          role,
-        },
-      });
+        const requestedRole = String(credentials?.role ?? "USER").toUpperCase();
+        const candidateRole = allowDevRoleOverride ? requestedRole : "USER";
+        const role = isRole(candidateRole) ? candidateRole : "USER";
 
-      return {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        role: user.role,
-      };
-    },
-  }),
-];
+        const user = await prisma.user.upsert({
+          where: { email },
+          update: { role },
+          create: {
+            email,
+            name: email.split("@")[0],
+            role,
+          },
+        });
+
+        return {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          role: user.role,
+        };
+      },
+    }),
+  );
+}
+
+if (providers.length === 0) {
+  throw new Error(
+    "No hay providers de autenticacion configurados. Configura Google o habilita AUTH_ENABLE_DEV_LOGIN=true",
+  );
+}
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),

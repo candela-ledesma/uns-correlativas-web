@@ -13,22 +13,15 @@ export default function HomeSessionPanel() {
   const { data: session, status } = useSession();
   const [open, setOpen] = useState(false);
   const [summary, setSummary] = useState<UserSessionSummaryResponse | null>(null);
-  const [contextLoading, setContextLoading] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   async function loadUserContext() {
-    setContextLoading(true);
-
     const response = await fetch("/api/perfil/resumen").catch(() => null);
 
-    if (!response?.ok) {
-      setContextLoading(false);
-      return;
-    }
+    if (!response?.ok) return null;
 
     const payload = (await response.json()) as UserSessionSummaryResponse;
-    setSummary(payload);
-    setContextLoading(false);
+    return payload;
   }
 
   useEffect(() => {
@@ -46,23 +39,36 @@ export default function HomeSessionPanel() {
   }, [open]);
 
   useEffect(() => {
-    setOpen(false);
-  }, [status]);
+    if (status !== "authenticated") return;
 
-  useEffect(() => {
-    if (status !== "authenticated") {
-      setSummary(null);
-      return;
-    }
+    let active = true;
 
-    void loadUserContext();
+    void (async () => {
+      const payload = await loadUserContext();
+      if (!active || !payload) return;
+      setSummary(payload);
+    })();
+
+    return () => {
+      active = false;
+    };
   }, [status]);
 
   useEffect(() => {
     if (!open) return;
     if (status !== "authenticated") return;
 
-    void loadUserContext();
+    let active = true;
+
+    void (async () => {
+      const payload = await loadUserContext();
+      if (!active || !payload) return;
+      setSummary(payload);
+    })();
+
+    return () => {
+      active = false;
+    };
   }, [open, status]);
 
   useEffect(() => {
@@ -150,10 +156,6 @@ export default function HomeSessionPanel() {
             Sesion iniciada como <span className="font-semibold">{session.user.email}</span>
           </p>
           <p className="mb-2 text-xs text-zinc-500">Rol: {session.user.role}</p>
-
-          {contextLoading && (
-            <p className="mb-3 text-xs text-zinc-500">Cargando contexto de carrera...</p>
-          )}
 
           {summary?.activeCareerName && (
             <div className="mb-3 rounded-xl border border-zinc-200 bg-zinc-50 p-3">

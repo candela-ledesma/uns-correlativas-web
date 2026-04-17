@@ -6,9 +6,14 @@ import { signIn } from "next-auth/react";
 type Props = {
   callbackUrl: string;
   compact?: boolean;
+  showGoogleLogin?: boolean;
 };
 
-export default function LoginActions({ callbackUrl, compact = false }: Props) {
+export default function LoginActions({
+  callbackUrl,
+  compact = false,
+  showGoogleLogin = false,
+}: Props) {
   const [email, setEmail] = useState("tester@uns.local");
   const [role, setRole] = useState("USER");
   const [loading, setLoading] = useState(false);
@@ -37,6 +42,14 @@ export default function LoginActions({ callbackUrl, compact = false }: Props) {
     });
   }
 
+  async function handleGoogleLogin() {
+    setLoading(true);
+
+    await signIn("google", {
+      callbackUrl: safeCallback,
+    });
+  }
+
   return (
     <div
       className={
@@ -45,6 +58,17 @@ export default function LoginActions({ callbackUrl, compact = false }: Props) {
           : "grid gap-4 rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm"
       }
     >
+      {showGoogleLogin && (
+        <button
+          type="button"
+          onClick={handleGoogleLogin}
+          disabled={loading}
+          className="rounded-md border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-800 transition hover:bg-zinc-50"
+        >
+          Continuar con Google
+        </button>
+      )}
+
       {showDevLogin && (
         <form
           className={
@@ -91,9 +115,9 @@ export default function LoginActions({ callbackUrl, compact = false }: Props) {
         </form>
       )}
 
-      {!showDevLogin && (
+      {!showDevLogin && !showGoogleLogin && (
         <p className="text-sm text-zinc-600">
-          El acceso por credenciales esta deshabilitado en este entorno.
+          No hay proveedores de autenticacion habilitados en este entorno.
         </p>
       )}
     </div>

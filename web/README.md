@@ -11,6 +11,8 @@ npm run start
 npm run lint
 npm test -- --run
 npm run test:e2e
+npm run check:prod:env
+npm run check:prod
 ```
 
 ## Multiusuario (Incremento 5)
@@ -45,6 +47,8 @@ NEXT_PUBLIC_ALLOW_DEV_ROLE_OVERRIDE="true"
 AUTH_DEV_LOGIN_EMAIL_ALLOWLIST=""
 ```
 
+Para produccion, usar como base `web/.env.production.example`.
+
 En produccion, el login de desarrollo queda deshabilitado por defecto salvo habilitacion explicita.
 
 Para endurecer al maximo en produccion:
@@ -64,6 +68,27 @@ NEXT_PUBLIC_ENABLE_DEV_LOGIN="true"
 AUTH_ALLOW_DEV_ROLE_OVERRIDE="false"
 NEXT_PUBLIC_ALLOW_DEV_ROLE_OVERRIDE="false"
 AUTH_DEV_LOGIN_EMAIL_ALLOWLIST="admin@uns.local"
+```
+
+### Preflight de produccion
+
+Antes del deploy ejecutar:
+
+```bash
+npm run check:prod
+```
+
+Incluye:
+
+- validacion de variables criticas (`DATABASE_URL`, `NEXTAUTH_URL`, secretos, flags),
+- verificacion de provider de autenticacion habilitado,
+- validacion de datos (`validate:data`, bloquea solo issues criticos),
+- lint, tests unitarios y build.
+
+Si queres bloquear tambien warnings de datos, ejecutar adicionalmente:
+
+```bash
+npm run validate:data:strict
 ```
 
 ### Base de datos, migraciones y seed

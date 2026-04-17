@@ -11,10 +11,16 @@ const AVAILABLE_CARRERA_IDS = CARRERAS
   .filter((carrera) => carrera.disponible !== false)
   .map((carrera) => carrera.id);
 
-const CARRERA_ORDER = new Map(
+type CarreraId = (typeof AVAILABLE_CARRERA_IDS)[number];
+
+const CARRERA_ORDER = new Map<CarreraId, number>(
   AVAILABLE_CARRERA_IDS.map((id, index) => [id, index])
 );
-const AVAILABLE_CARRERA_SET = new Set(AVAILABLE_CARRERA_IDS);
+const AVAILABLE_CARRERA_SET = new Set<CarreraId>(AVAILABLE_CARRERA_IDS);
+
+function isAvailableCarreraId(carreraId: string): carreraId is CarreraId {
+  return AVAILABLE_CARRERA_SET.has(carreraId as CarreraId);
+}
 
 function parseMetadata(raw: string | null) {
   if (!raw) return null;
@@ -36,11 +42,11 @@ function safeJsonStringify(value: unknown) {
   }
 }
 
-function sanitizeCarreraIds(carreraIds: string[]) {
+function sanitizeCarreraIds(carreraIds: string[]): CarreraId[] {
   const unique = Array.from(new Set(carreraIds));
 
   return unique
-    .filter((carreraId) => AVAILABLE_CARRERA_SET.has(carreraId as (typeof AVAILABLE_CARRERA_IDS)[number]))
+    .filter(isAvailableCarreraId)
     .sort((a, b) => (CARRERA_ORDER.get(a) ?? Number.MAX_SAFE_INTEGER) - (CARRERA_ORDER.get(b) ?? Number.MAX_SAFE_INTEGER));
 }
 
