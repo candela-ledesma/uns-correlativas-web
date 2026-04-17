@@ -4,18 +4,33 @@ import HomeSessionPanel from "@/components/HomeSessionPanel";
 import styles from "./page.module.css";
 
 export default function HomePage() {
+  const totalCarreras = CARRERAS.length;
+  const carrerasDisponibles = CARRERAS.filter(
+    (carrera) => carrera.disponible !== false,
+  ).length;
+
   return (
     <main className={styles.page}>
       <section className={styles.container}>
+        <div className={styles.topBar}>
+          <div className={styles.brandPill}>
+            <span className={styles.brandDot} aria-hidden="true" />
+            UNS Correlativas
+          </div>
+          <div className={styles.topActions}>
+            <HomeSessionPanel />
+          </div>
+        </div>
+
         <div className={styles.hero}>
           <a
-          href="https://www.uns.edu.ar/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex rounded-full border border-zinc-200 bg-white px-5 py-2 text-sm font-semibold text-zinc-700 shadow-sm transition hover:bg-zinc-50 hover:text-zinc-900"
-        >
-          Universidad Nacional del Sur
-        </a>
+            href="https://www.uns.edu.ar/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={styles.unsLink}
+          >
+            Universidad Nacional del Sur
+          </a>
 
           <h1 className={styles.title}>Planes de estudio y correlativas</h1>
 
@@ -24,11 +39,17 @@ export default function HomePage() {
             aprobadas y descubrir cuáles tenés habilitadas.
           </p>
 
-          <HomeSessionPanel />
+          <div className={styles.quickMeta}>
+            <p>
+              {carrerasDisponibles} de {totalCarreras} carreras disponibles
+            </p>
+            <span aria-hidden="true">•</span>
+            <p>Progreso sincronizado por cuenta</p>
+          </div>
         </div>
 
         <div className={styles.grid}>
-          {CARRERAS.map((carrera) => {
+          {CARRERAS.map((carrera, index) => {
             const disponible = carrera.disponible !== false;
 
             return (
@@ -36,6 +57,9 @@ export default function HomePage() {
                 key={carrera.id}
                 href={`/planes/${carrera.id}`}
                 className={styles.card}
+                style={{
+                  animationDelay: `${index * 70}ms`,
+                }}
               >
                 <div className={styles.cardTopBar} />
 
@@ -66,7 +90,6 @@ export default function HomePage() {
             );
           })}
         </div>
-
       </section>
     </main>
   );

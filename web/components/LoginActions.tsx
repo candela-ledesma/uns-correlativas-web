@@ -5,9 +5,10 @@ import { signIn } from "next-auth/react";
 
 type Props = {
   callbackUrl: string;
+  compact?: boolean;
 };
 
-export default function LoginActions({ callbackUrl }: Props) {
+export default function LoginActions({ callbackUrl, compact = false }: Props) {
   const [email, setEmail] = useState("tester@uns.local");
   const [role, setRole] = useState("USER");
   const [loading, setLoading] = useState(false);
@@ -32,9 +33,22 @@ export default function LoginActions({ callbackUrl }: Props) {
   }
 
   return (
-    <div className="grid gap-4 rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm">
+    <div
+      className={
+        compact
+          ? "grid gap-3"
+          : "grid gap-4 rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm"
+      }
+    >
       {showDevLogin && (
-        <form className="grid gap-3 rounded-xl border border-zinc-200 p-4" onSubmit={handleDevLogin}>
+        <form
+          className={
+            compact
+              ? "grid gap-3 rounded-xl border border-zinc-200 bg-zinc-50/60 p-3"
+              : "grid gap-3 rounded-xl border border-zinc-200 p-4"
+          }
+          onSubmit={handleDevLogin}
+        >
           <h2 className="text-sm font-semibold text-zinc-800">Acceso de desarrollo (tests)</h2>
           <input
             data-testid="dev-login-email"

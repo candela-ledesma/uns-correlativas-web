@@ -1,6 +1,17 @@
 import "./globals.css";
 import type { Metadata } from "next";
+import { Manrope, Sora } from "next/font/google";
 import Providers from "@/app/providers";
+
+const manrope = Manrope({
+  subsets: ["latin"],
+  variable: "--font-body",
+});
+
+const sora = Sora({
+  subsets: ["latin"],
+  variable: "--font-heading",
+});
 
 export const metadata: Metadata = {
   title: {
@@ -17,7 +28,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es" data-scroll-behavior="smooth">
-      <body>
+      <body className={`${manrope.variable} ${sora.variable}`}>
         <Providers>{children}</Providers>
       </body>
     </html>
