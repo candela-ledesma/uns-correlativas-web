@@ -12,7 +12,14 @@ export default function LoginActions({ callbackUrl, compact = false }: Props) {
   const [email, setEmail] = useState("tester@uns.local");
   const [role, setRole] = useState("USER");
   const [loading, setLoading] = useState(false);
-  const showDevLogin = process.env.NEXT_PUBLIC_ENABLE_DEV_LOGIN !== "false";
+  const isProduction = process.env.NODE_ENV === "production";
+  const showDevLogin =
+    process.env.NEXT_PUBLIC_ENABLE_DEV_LOGIN === "true" ||
+    (!isProduction && process.env.NEXT_PUBLIC_ENABLE_DEV_LOGIN !== "false");
+  const allowDevRoleOverride =
+    process.env.NEXT_PUBLIC_ALLOW_DEV_ROLE_OVERRIDE === "true" ||
+    (!isProduction &&
+      process.env.NEXT_PUBLIC_ALLOW_DEV_ROLE_OVERRIDE !== "false");
 
   const safeCallback = useMemo(() => {
     if (!callbackUrl.startsWith("/")) return "/perfil";
@@ -25,7 +32,7 @@ export default function LoginActions({ callbackUrl, compact = false }: Props) {
 
     await signIn("dev-login", {
       email,
-      role,
+      role: allowDevRoleOverride ? role : "USER",
       callbackUrl: safeCallback,
     });
   }
@@ -57,16 +64,22 @@ export default function LoginActions({ callbackUrl, compact = false }: Props) {
             placeholder="usuario@uns.local"
             required
           />
-          <select
-            data-testid="dev-login-role"
-            value={role}
-            onChange={(event) => setRole(event.target.value)}
-            className="rounded-md border border-zinc-300 px-3 py-2 text-sm"
-          >
-            <option value="USER">USER</option>
-            <option value="MODERATOR">MODERATOR</option>
-            <option value="ADMIN">ADMIN</option>
-          </select>
+          {allowDevRoleOverride ? (
+            <select
+              data-testid="dev-login-role"
+              value={role}
+              onChange={(event) => setRole(event.target.value)}
+              className="rounded-md border border-zinc-300 px-3 py-2 text-sm"
+            >
+              <option value="USER">USER</option>
+              <option value="MODERATOR">MODERATOR</option>
+              <option value="ADMIN">ADMIN</option>
+            </select>
+          ) : (
+            <p className="text-xs text-zinc-600">
+              El rol se fija en USER en este entorno.
+            </p>
+          )}
           <button
             data-testid="dev-login-submit"
             type="submit"

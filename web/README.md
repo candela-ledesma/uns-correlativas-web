@@ -40,9 +40,31 @@ ADMIN_SEED_EMAIL="admin@uns.local"
 # Solo desarrollo/tests
 AUTH_ENABLE_DEV_LOGIN="true"
 NEXT_PUBLIC_ENABLE_DEV_LOGIN="true"
+AUTH_ALLOW_DEV_ROLE_OVERRIDE="true"
+NEXT_PUBLIC_ALLOW_DEV_ROLE_OVERRIDE="true"
+AUTH_DEV_LOGIN_EMAIL_ALLOWLIST=""
 ```
 
-Para deshabilitar el login por credenciales en produccion, setea ambas variables en `false`.
+En produccion, el login de desarrollo queda deshabilitado por defecto salvo habilitacion explicita.
+
+Para endurecer al maximo en produccion:
+
+```bash
+AUTH_ENABLE_DEV_LOGIN="false"
+NEXT_PUBLIC_ENABLE_DEV_LOGIN="false"
+AUTH_ALLOW_DEV_ROLE_OVERRIDE="false"
+NEXT_PUBLIC_ALLOW_DEV_ROLE_OVERRIDE="false"
+```
+
+Si por soporte temporal necesitás habilitar dev-login en produccion, recomendacion minima:
+
+```bash
+AUTH_ENABLE_DEV_LOGIN="true"
+NEXT_PUBLIC_ENABLE_DEV_LOGIN="true"
+AUTH_ALLOW_DEV_ROLE_OVERRIDE="false"
+NEXT_PUBLIC_ALLOW_DEV_ROLE_OVERRIDE="false"
+AUTH_DEV_LOGIN_EMAIL_ALLOWLIST="admin@uns.local"
+```
 
 ### Base de datos, migraciones y seed
 

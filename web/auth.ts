@@ -15,7 +15,27 @@ if (!process.env.NEXTAUTH_SECRET && process.env.AUTH_SECRET) {
   process.env.NEXTAUTH_SECRET = process.env.AUTH_SECRET;
 }
 
-const allowDevLogin = process.env.AUTH_ENABLE_DEV_LOGIN !== "false";
+const isProduction = process.env.NODE_ENV === "production";
+
+const allowDevLogin =
+  process.env.AUTH_ENABLE_DEV_LOGIN === "true" ||
+  (!isProduction && process.env.AUTH_ENABLE_DEV_LOGIN !== "false");
+
+const allowDevRoleOverride =
+  process.env.AUTH_ALLOW_DEV_ROLE_OVERRIDE === "true" ||
+  (!isProduction && process.env.AUTH_ALLOW_DEV_ROLE_OVERRIDE !== "false");
+
+const devLoginAllowlist = new Set(
+  (process.env.AUTH_DEV_LOGIN_EMAIL_ALLOWLIST ?? "")
+    .split(",")
+    .map((value) => value.trim().toLowerCase())
+    .filter(Boolean),
+);
+
+function isAllowedDevEmail(email: string) {
+  if (devLoginAllowlist.size === 0) return true;
+  return devLoginAllowlist.has(email);
+}
 
 const providers = [
   Credentials({
@@ -31,8 +51,11 @@ const providers = [
       const email = String(credentials?.email ?? "").trim().toLowerCase();
       if (!email) return null;
 
+      if (!isAllowedDevEmail(email)) return null;
+
       const requestedRole = String(credentials?.role ?? "USER").toUpperCase();
-      const role = isRole(requestedRole) ? requestedRole : "USER";
+      const candidateRole = allowDevRoleOverride ? requestedRole : "USER";
+      const role = isRole(candidateRole) ? candidateRole : "USER";
 
       const user = await prisma.user.upsert({
         where: { email },
