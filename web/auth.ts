@@ -94,8 +94,19 @@ if (allowDevLogin) {
 }
 
 if (providers.length === 0) {
-  throw new Error(
-    "No hay providers de autenticacion configurados. Configura Google o habilita AUTH_ENABLE_DEV_LOGIN=true",
+  providers.push(
+    Credentials({
+      id: "disabled-login",
+      name: "Disabled Login",
+      credentials: {
+        email: { label: "Email", type: "email" },
+      },
+      authorize: async () => null,
+    }),
+  );
+
+  console.warn(
+    "No hay providers de autenticacion configurados. La autenticacion quedara deshabilitada hasta configurar Google o AUTH_ENABLE_DEV_LOGIN=true.",
   );
 }
 
