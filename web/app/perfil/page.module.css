@@ -134,6 +134,154 @@
   color: #292524;
 }
 
+.sectionBlock {
+  display: grid;
+  gap: 12px;
+}
+
+.sectionBlock + .sectionBlock {
+  margin-top: 18px;
+}
+
+.sectionHeadingRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.mutedTag {
+  border-radius: 999px;
+  border: 1px solid #d6d3d1;
+  background: #fafaf9;
+  color: #57534e;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 4px 10px;
+}
+
+.errorBanner {
+  margin: 0;
+  border-radius: 12px;
+  border: 1px solid #fecaca;
+  background: #fef2f2;
+  color: #b91c1c;
+  padding: 10px 12px;
+  font-size: 0.86rem;
+  font-weight: 600;
+}
+
+.contextGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.contextCard {
+  border-radius: 16px;
+  border: 1px solid #e7e5e4;
+  background: #fff;
+  padding: 14px;
+  display: grid;
+  gap: 8px;
+}
+
+.contextLabel {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: #78716c;
+}
+
+.select {
+  border-radius: 10px;
+  border: 1px solid #d6d3d1;
+  padding: 8px 10px;
+  font-size: 0.9rem;
+  color: #1c1917;
+  background: #fff;
+}
+
+.contextDescription {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #57534e;
+  line-height: 1.4;
+}
+
+.contextAction {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  border-radius: 10px;
+  border: 1px solid #d6d3d1;
+  background: #fafaf9;
+  color: #1f2937;
+  text-decoration: none;
+  font-size: 0.84rem;
+  font-weight: 700;
+  padding: 7px 12px;
+}
+
+.contextAction:hover {
+  background: #f5f5f4;
+}
+
+.enrollmentList {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.enrollmentItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #e7e5e4;
+  border-radius: 12px;
+  padding: 10px 12px;
+  background: #fff;
+  color: #292524;
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.inlineActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.actionButton,
+.actionButtonSecondary {
+  border-radius: 10px;
+  border: 1px solid #d6d3d1;
+  padding: 8px 12px;
+  font-size: 0.84rem;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.actionButton {
+  background: #111827;
+  color: #fff;
+  border-color: #111827;
+}
+
+.actionButtonSecondary {
+  background: #fff;
+  color: #1f2937;
+}
+
+.actionButtonSecondary:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
 .actions {
   display: grid;
   gap: 14px;
@@ -195,6 +343,45 @@
   transform: translateX(2px);
 }
 
+.emptyState {
+  margin: 0;
+  border-radius: 12px;
+  border: 1px dashed #d6d3d1;
+  padding: 14px;
+  font-size: 0.88rem;
+  color: #57534e;
+}
+
+.activityList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 8px;
+}
+
+.activityItem {
+  border-radius: 12px;
+  border: 1px solid #e7e5e4;
+  background: #fff;
+  padding: 10px 12px;
+  display: grid;
+  gap: 4px;
+}
+
+.activityText {
+  margin: 0;
+  color: #1f2937;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.activityDate {
+  margin: 0;
+  color: #78716c;
+  font-size: 0.78rem;
+}
+
 @keyframes fadeLift {
   from {
     opacity: 0;
@@ -245,6 +432,11 @@
   }
 
   .actionGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .contextGrid,
+  .enrollmentList {
     grid-template-columns: 1fr;
   }
 }

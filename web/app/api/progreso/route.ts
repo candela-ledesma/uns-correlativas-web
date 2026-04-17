@@ -2,7 +2,9 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { auth } from "@/auth";
 import { createAuditEvent } from "@/lib/audit";
+import { getCarreraById } from "@/lib/carreras";
 import { getProgressSnapshot, upsertProgressSnapshot } from "@/lib/progressRepository";
+import { createUserActivity } from "@/lib/userProductContext";
 import {
   resolveProgressSnapshotLww,
   sanitizeProgressState,
@@ -25,6 +27,37 @@ const resetSchema = z.object({
 
 function unauthorized() {
   return NextResponse.json({ error: "No autenticado" }, { status: 401 });
+}
+
+function normalizeMateriaState(value: string | undefined) {
+  return value ?? "no_cursada";
+}
+
+function collectStateChanges(
+  previous: Record<string, string>,
+  next: Record<string, string>
+) {
+  const changedKeys = new Set([
+    ...Object.keys(previous),
+    ...Object.keys(next),
+  ]);
+
+  const changes: Array<{ materiaKey: string; fromState: string; toState: string }> = [];
+
+  for (const materiaKey of changedKeys) {
+    const fromState = normalizeMateriaState(previous[materiaKey]);
+    const toState = normalizeMateriaState(next[materiaKey]);
+
+    if (fromState === toState) continue;
+
+    changes.push({
+      materiaKey,
+      fromState,
+      toState,
+    });
+  }
+
+  return changes;
 }
 
 export async function GET(request: Request) {
@@ -108,6 +141,26 @@ export async function PUT(request: Request) {
       after: resolution.snapshot.state,
       reason: reason ?? "Actualizacion de progreso",
     });
+
+    const changes = collectStateChanges(remoteSnapshot.state, resolution.snapshot.state);
+    const careerId = getCarreraById(planId) ? planId : null;
+
+    if (changes.length > 0) {
+      await Promise.all(
+        changes.map((change) =>
+          createUserActivity({
+            userId: session.user.id,
+            type: "MATERIA_STATUS_CHANGED",
+            careerId,
+            planId,
+            versionId,
+            materiaKey: change.materiaKey,
+            fromState: change.fromState,
+            toState: change.toState,
+          })
+        )
+      );
+    }
   }
 
   return NextResponse.json({
@@ -160,6 +213,29 @@ export async function DELETE(request: Request) {
     after: {},
     reason: reason ?? "Reinicio de progreso",
   });
+
+  const careerId = getCarreraById(planId) ? planId : null;
+  const changes = collectStateChanges(previous.state, {});
+
+  if (changes.length > 0) {
+    await Promise.all(
+      changes.map((change) =>
+        createUserActivity({
+          userId: session.user.id,
+          type: "MATERIA_STATUS_CHANGED",
+          careerId,
+          planId,
+          versionId,
+          materiaKey: change.materiaKey,
+          fromState: change.fromState,
+          toState: change.toState,
+          metadata: {
+            source: "reset",
+          },
+        })
+      )
+    );
+  }
 
   return NextResponse.json({
     state: {},

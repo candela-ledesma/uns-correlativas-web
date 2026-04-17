@@ -4,11 +4,32 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
 import LoginActions from "@/components/LoginActions";
+import {
+  buildPlanHref,
+  type UserProductContextResponse,
+} from "@/lib/userProductContextTypes";
 
 export default function HomeSessionPanel() {
   const { data: session, status } = useSession();
   const [open, setOpen] = useState(false);
+  const [userContext, setUserContext] = useState<UserProductContextResponse | null>(null);
+  const [contextLoading, setContextLoading] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  async function loadUserContext() {
+    setContextLoading(true);
+
+    const response = await fetch("/api/perfil/contexto").catch(() => null);
+
+    if (!response?.ok) {
+      setContextLoading(false);
+      return;
+    }
+
+    const payload = (await response.json()) as UserProductContextResponse;
+    setUserContext(payload);
+    setContextLoading(false);
+  }
 
   useEffect(() => {
     if (!open) return;
@@ -27,6 +48,22 @@ export default function HomeSessionPanel() {
   useEffect(() => {
     setOpen(false);
   }, [status]);
+
+  useEffect(() => {
+    if (status !== "authenticated") {
+      setUserContext(null);
+      return;
+    }
+
+    void loadUserContext();
+  }, [status]);
+
+  useEffect(() => {
+    if (!open) return;
+    if (status !== "authenticated") return;
+
+    void loadUserContext();
+  }, [open, status]);
 
   useEffect(() => {
     function handleEscape(event: KeyboardEvent) {
@@ -78,6 +115,17 @@ export default function HomeSessionPanel() {
     );
   }
 
+  const activeCareerId = userContext?.activeCareerId;
+  const activeCareer = activeCareerId
+    ? userContext?.careers.find((career) => career.id === activeCareerId)
+    : null;
+  const activeLastPlan = activeCareerId
+    ? userContext?.lastPlanByCareer[activeCareerId]
+    : undefined;
+  const quickPlanHref = activeCareerId
+    ? buildPlanHref(activeCareerId, activeLastPlan)
+    : "/";
+
   return (
     <div ref={containerRef} className="relative">
       <button
@@ -104,7 +152,29 @@ export default function HomeSessionPanel() {
           <p className="mb-1 text-sm text-zinc-700">
             Sesion iniciada como <span className="font-semibold">{session.user.email}</span>
           </p>
-          <p className="mb-3 text-xs text-zinc-500">Rol: {session.user.role}</p>
+          <p className="mb-2 text-xs text-zinc-500">Rol: {session.user.role}</p>
+
+          {contextLoading && (
+            <p className="mb-3 text-xs text-zinc-500">Cargando contexto de carrera...</p>
+          )}
+
+          {activeCareer && (
+            <div className="mb-3 rounded-xl border border-zinc-200 bg-zinc-50 p-3">
+              <p className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
+                Carrera activa
+              </p>
+              <p className="mt-1 text-sm font-semibold text-zinc-800">
+                {activeCareer.nombre}
+              </p>
+              <Link
+                href={quickPlanHref}
+                onClick={() => setOpen(false)}
+                className="mt-2 inline-flex rounded-md border border-zinc-300 bg-white px-3 py-1.5 text-xs font-medium text-zinc-800"
+              >
+                Abrir ultimo plan
+              </Link>
+            </div>
+          )}
 
           <div className="flex flex-wrap items-center gap-2">
             <Link

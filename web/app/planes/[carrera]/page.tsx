@@ -35,11 +35,13 @@ export async function generateMetadata({
     searchParams,
     }: {
     params: Promise<{ carrera: string }>;
-    searchParams?: Promise<{ v?: string | string[] }>;
+    searchParams?: Promise<{ v?: string | string[]; onboarding?: string | string[] }>;
     }) {
     const { carrera: carreraId } = await params;
     const resolvedSearchParams = searchParams ? await searchParams : {};
     const requestedVersionId = normalizeSearchParam(resolvedSearchParams.v);
+    const onboardingParam = normalizeSearchParam(resolvedSearchParams.onboarding);
+    const forceShowOnboarding = onboardingParam === "1" || onboardingParam === "true";
     const result = await loadPlanData(carreraId, requestedVersionId);
 
     if (result.status === "not-found") {
@@ -100,7 +102,9 @@ export async function generateMetadata({
 
         <PlanViewer
             data={data}
+            carreraId={carreraId}
             versionLabel={result.version.label}
+            forceShowOnboarding={forceShowOnboarding}
             versionOptions={result.carrera.versions}
             defaultVersionId={result.carrera.defaultVersionId}
         />
