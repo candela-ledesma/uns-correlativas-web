@@ -8,6 +8,14 @@ import { createAuditEvent } from "@/lib/audit";
 import { isRole } from "@/lib/authz";
 import { Role } from "@/lib/roles";
 
+if (!process.env.NEXTAUTH_URL && process.env.AUTH_URL) {
+  process.env.NEXTAUTH_URL = process.env.AUTH_URL;
+}
+
+if (!process.env.NEXTAUTH_SECRET && process.env.AUTH_SECRET) {
+  process.env.NEXTAUTH_SECRET = process.env.AUTH_SECRET;
+}
+
 const hasGoogleProvider =
   Boolean(process.env.AUTH_GOOGLE_CLIENT_ID) &&
   Boolean(process.env.AUTH_GOOGLE_CLIENT_SECRET);
@@ -78,6 +86,7 @@ if (providers.length === 0) {
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
+  secret: process.env.NEXTAUTH_SECRET ?? process.env.AUTH_SECRET,
   session: {
     strategy: "jwt",
   },

@@ -1,8 +1,6 @@
 "use client";
 
-import Link from "next/link";
 import { useState } from "react";
-import { signOut, useSession } from "next-auth/react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 type VersionOption = {
@@ -89,7 +87,6 @@ export default function PlanHeader({
     versionSelector,
 }: Props) {
     const [mostrarProgreso, setMostrarProgreso] = useState(false);
-    const { data: session, status } = useSession();
     const pathname = usePathname();
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -107,7 +104,6 @@ export default function PlanHeader({
     );
 
     const porcentaje = total > 0 ? Math.round((aprobadas / total) * 100) : 0;
-    const callbackUrl = pathname || "/";
 
     function updateVersion(versionId: string) {
         if (!versionSelector) return;
@@ -133,45 +129,6 @@ export default function PlanHeader({
 
                 <div className="flex flex-wrap items-center gap-3">
                     <SyncBadge syncStatus={syncStatus} />
-
-                    {status === "authenticated" && session.user ? (
-                        <div className="flex flex-wrap items-center gap-2 rounded-xl border border-zinc-300 bg-white px-3 py-2 text-xs text-zinc-700 shadow-sm">
-                            <span>{session.user.email}</span>
-                            <span className="rounded-full border border-zinc-300 px-2 py-0.5 font-semibold">
-                                {session.user.role}
-                            </span>
-                            <Link href="/perfil" className="font-semibold text-zinc-900 underline">
-                                Perfil
-                            </Link>
-                            {session.user.role === "MODERATOR" || session.user.role === "ADMIN" ? (
-                                <Link href="/moderacion" className="font-semibold text-zinc-900 underline">
-                                    Moderacion
-                                </Link>
-                            ) : null}
-                            {session.user.role === "ADMIN" ? (
-                                <Link href="/admin" className="font-semibold text-zinc-900 underline">
-                                    Admin
-                                </Link>
-                            ) : null}
-                            <button
-                                type="button"
-                                onClick={() => signOut({ callbackUrl })}
-                                className="rounded-md border border-zinc-300 px-2 py-1 font-semibold text-zinc-700"
-                            >
-                                Salir
-                            </button>
-                        </div>
-                    ) : (
-                        <button
-                            type="button"
-                            onClick={() =>
-                                router.push(`/login?next=${encodeURIComponent(callbackUrl)}`)
-                            }
-                            className="rounded-xl border border-zinc-300 bg-white px-4 py-2.5 font-semibold text-zinc-900 shadow-sm transition hover:bg-zinc-50"
-                        >
-                            Iniciar sesion
-                        </button>
-                    )}
 
                     {showVersionSelector && versionSelector && (
                         <label className="inline-flex items-center gap-2 rounded-xl border border-zinc-300 bg-white px-3 py-2 shadow-sm">

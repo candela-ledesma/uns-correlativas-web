@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { CARRERAS } from "@/lib/carreras";
+import HomeSessionPanel from "@/components/HomeSessionPanel";
 import styles from "./page.module.css";
 
 export default function HomePage() {
@@ -22,6 +23,8 @@ export default function HomePage() {
             Elegí una carrera para ver su plan, marcar materias cursadas o
             aprobadas y descubrir cuáles tenés habilitadas.
           </p>
+
+          <HomeSessionPanel />
         </div>
 
         <div className={styles.grid}>
