@@ -14,6 +14,13 @@ import { filtrarMaterias, type FiltrosPlan } from "@/lib/filtrarMaterias";
 
 type Props = {
   data: PlanData;
+  versionLabel: string;
+  defaultVersionId: string;
+  versionOptions: {
+    versionId: string;
+    label: string;
+    disponible?: boolean;
+  }[];
 };
 
 const FILTROS_INICIALES: FiltrosPlan = {
@@ -133,7 +140,12 @@ function combinarSeccionesPorAnioYCuatrimestre(
   return resultado;
 }
 
-export default function PlanViewer({ data }: Props) {
+export default function PlanViewer({
+  data,
+  versionLabel,
+  defaultVersionId,
+  versionOptions,
+}: Props) {
   const { idsAgrupadores } = usePlanStructure(data);
 
   const agrupadores = data.agrupadores || [];
@@ -165,7 +177,7 @@ export default function PlanViewer({ data }: Props) {
     usePlanState(data.plan.plan_id, data.plan.version_id, data.materias, agrupadores);
 
   const titulo = data.plan.carrera;
-  const subtitulo = `Plan ${data.plan.universidad} ${data.plan.codigo_plan} · ${data.plan.version_id}`;
+  const subtitulo = `Plan ${data.plan.universidad} ${data.plan.codigo_plan} · ${versionLabel} (${data.plan.version_id})`;
 
   const anios = useMemo(() => {
     return Array.from(
@@ -295,6 +307,11 @@ export default function PlanViewer({ data }: Props) {
         disponibles={progreso.disponibles}
         total={progreso.total}
         onReset={resetMaterias}
+        versionSelector={{
+          selectedVersionId: data.plan.version_id,
+          defaultVersionId,
+          options: versionOptions,
+        }}
       />
 
       <PlanFilters

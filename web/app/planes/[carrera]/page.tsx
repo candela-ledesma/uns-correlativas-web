@@ -5,6 +5,7 @@ import path from "path";
 import PlanViewer from "@/components/PlanViewer";
 import PlanStatus from "@/components/PlanStatus";
 import { getCarreraById, getVersionForCarrera } from "@/lib/carreras";
+import type { CarreraVersionConfig } from "@/lib/carreras";
 import type { PlanData } from "@/app/types/plan";
 import type { Metadata } from "next";
 
@@ -32,7 +33,12 @@ export async function generateMetadata({
 type PlanLoadResult =
     | {
         status: "ok";
-        carrera: { id: string; nombre: string };
+        carrera: {
+        id: string;
+        nombre: string;
+        defaultVersionId: string;
+        versions: Pick<CarreraVersionConfig, "versionId" | "label" | "disponible">[];
+        };
         version: { versionId: string; label: string; jsonFile: string };
         data: PlanData;
     }
@@ -99,7 +105,16 @@ async function getPlanData(
 
     return {
         status: "ok",
-        carrera: { id: carrera.id, nombre: carrera.nombre },
+        carrera: {
+        id: carrera.id,
+        nombre: carrera.nombre,
+        defaultVersionId: carrera.defaultVersionId,
+        versions: carrera.versions.map((item) => ({
+            versionId: item.versionId,
+            label: item.label,
+            disponible: item.disponible,
+        })),
+        },
         version,
         data,
     };
@@ -163,7 +178,12 @@ async function getPlanData(
             </Link>
         </div>
 
-        <PlanViewer data={data} />
+        <PlanViewer
+            data={data}
+            versionLabel={result.version.label}
+            versionOptions={result.carrera.versions}
+            defaultVersionId={result.carrera.defaultVersionId}
+        />
         </div>
     </main>
     );
