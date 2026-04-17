@@ -25,10 +25,17 @@ const estadoLabelMap: Record<string, string> = {
 };
 
 function toLocalDate(value: string) {
-  return new Intl.DateTimeFormat("es-AR", {
+  const formatted = new Intl.DateTimeFormat("es-AR", {
     dateStyle: "short",
     timeStyle: "short",
   }).format(new Date(value));
+
+  // Intl puede devolver espacios no separables distintos entre runtimes
+  // (Node vs navegador), lo que genera hydration mismatch en texto.
+  return formatted
+    .replace(/\u00A0|\u202F/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 function getMateriaCode(materiaKey: string | null) {
