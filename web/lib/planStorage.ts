@@ -1,13 +1,41 @@
 import { EstadoMateria } from "@/lib/evaluarCorrelativas";
+import { getDefaultVersionForCarrera } from "@/lib/carreras";
 
-const STORAGE_KEY = "estadoMaterias";
+const STORAGE_KEY_PREFIX = "estadoMaterias";
+const LEGACY_STORAGE_KEY = "estadoMaterias";
 
-export function loadPlanState(): Record<string, EstadoMateria> {
+function getStorageKey(planId: string, versionId: string) {
+    return `${STORAGE_KEY_PREFIX}::${planId}::${versionId}`;
+}
+
+export function loadPlanState(
+    planId: string,
+    versionId: string
+): Record<string, EstadoMateria> {
     if (typeof window === "undefined") return {};
 
-    const saved = localStorage.getItem(STORAGE_KEY);
+        const key = getStorageKey(planId, versionId);
+        const saved = localStorage.getItem(key);
 
-    if (!saved) return {};
+        if (!saved) {
+        const defaultVersion = getDefaultVersionForCarrera(planId)?.versionId ?? null;
+
+        if (defaultVersion && defaultVersion === versionId) {
+            const legacy = localStorage.getItem(LEGACY_STORAGE_KEY);
+            if (legacy) {
+                try {
+                    const parsed = JSON.parse(legacy);
+                    localStorage.setItem(key, JSON.stringify(parsed));
+                    localStorage.removeItem(LEGACY_STORAGE_KEY);
+                    return parsed;
+                } catch {
+                    return {};
+                }
+            }
+        }
+
+        return {};
+        }
 
     try {
     return JSON.parse(saved);
@@ -16,14 +44,18 @@ export function loadPlanState(): Record<string, EstadoMateria> {
     }
     }
 
-export function savePlanState(estados: Record<string, EstadoMateria>) {
+export function savePlanState(
+    planId: string,
+    versionId: string,
+    estados: Record<string, EstadoMateria>
+) {
 if (typeof window === "undefined") return;
 
-localStorage.setItem(STORAGE_KEY, JSON.stringify(estados));
+localStorage.setItem(getStorageKey(planId, versionId), JSON.stringify(estados));
 }
 
-export function clearPlanState() {
+export function clearPlanState(planId: string, versionId: string) {
 if (typeof window === "undefined") return;
 
-localStorage.removeItem(STORAGE_KEY);
+localStorage.removeItem(getStorageKey(planId, versionId));
 }

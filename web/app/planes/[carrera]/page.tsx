@@ -4,7 +4,8 @@ import { promises as fs } from "fs";
 import path from "path";
 import PlanViewer from "@/components/PlanViewer";
 import PlanStatus from "@/components/PlanStatus";
-import { getCarreraById } from "@/lib/carreras";
+import { getCarreraById, getVersionForCarrera } from "@/lib/carreras";
+import type { PlanData } from "@/app/types/plan";
 import type { Metadata } from "next";
 
 export async function generateMetadata({
@@ -31,48 +32,98 @@ export async function generateMetadata({
 type PlanLoadResult =
     | {
         status: "ok";
-        carrera: { id: string; nombre: string; jsonFile: string };
-        data: any;
+        carrera: { id: string; nombre: string };
+        version: { versionId: string; label: string; jsonFile: string };
+        data: PlanData;
     }
     | {
         status: "unavailable";
-        carrera: { id: string; nombre: string; jsonFile: string };
+        carrera: { id: string; nombre: string };
     }
     | {
         status: "invalid";
-        carrera: { id: string; nombre: string; jsonFile: string };
+        carrera: { id: string; nombre: string };
     };
 
-async function getPlanData(carreraId: string): Promise<PlanLoadResult | null> {
+function normalizeSearchParam(value: string | string[] | undefined) {
+    if (!value) return null;
+    if (Array.isArray(value)) return value[0] ?? null;
+    return value;
+}
+
+function ensurePlanIdentity(
+    raw: unknown,
+    carreraId: string,
+    versionId: string
+): PlanData | null {
+    if (!raw || typeof raw !== "object") return null;
+
+    const data = raw as Record<string, any>;
+    if (!data.plan || typeof data.plan !== "object") return null;
+
+    const plan = data.plan as Record<string, any>;
+
+    if (plan.plan_id && String(plan.plan_id) !== String(carreraId)) return null;
+    if (plan.version_id && String(plan.version_id) !== String(versionId)) return null;
+
+    plan.plan_id = carreraId;
+    plan.version_id = versionId;
+
+    return data as PlanData;
+}
+
+async function getPlanData(
+    carreraId: string,
+    requestedVersionId: string | null
+): Promise<PlanLoadResult | null> {
     const carrera = getCarreraById(carreraId);
     if (!carrera) return null;
 
+    const version = getVersionForCarrera(carreraId, requestedVersionId);
+    if (!version || version.disponible === false) {
+    return {
+        status: "unavailable",
+        carrera: { id: carrera.id, nombre: carrera.nombre },
+    };
+    }
+
     try {
-    const filePath = path.join(process.cwd(), "data", carrera.jsonFile);
+    const filePath = path.join(process.cwd(), "data", version.jsonFile);
     const fileContents = await fs.readFile(filePath, "utf8");
+
+    const parsed = JSON.parse(fileContents);
+    const data = ensurePlanIdentity(parsed, carreraId, version.versionId);
+    if (!data) {
+        return { status: "invalid", carrera: { id: carrera.id, nombre: carrera.nombre } };
+    }
 
     return {
         status: "ok",
-        carrera,
-        data: JSON.parse(fileContents),
+        carrera: { id: carrera.id, nombre: carrera.nombre },
+        version,
+        data,
     };
     } catch (error: any) {
     if (error?.code === "ENOENT") {
-        return { status: "unavailable", carrera };
+        return { status: "unavailable", carrera: { id: carrera.id, nombre: carrera.nombre } };
     }
 
     console.error("Error leyendo plan:", error);
-    return { status: "invalid", carrera };
+    return { status: "invalid", carrera: { id: carrera.id, nombre: carrera.nombre } };
     }
     }
 
     export default async function Page({
     params,
+    searchParams,
     }: {
     params: Promise<{ carrera: string }>;
+    searchParams?: Promise<{ v?: string | string[] }>;
     }) {
     const { carrera: carreraId } = await params;
-    const result = await getPlanData(carreraId);
+    const resolvedSearchParams = searchParams ? await searchParams : {};
+    const requestedVersionId = normalizeSearchParam(resolvedSearchParams.v);
+    const result = await getPlanData(carreraId, requestedVersionId);
 
     if (!result) {
     notFound();
@@ -82,7 +133,7 @@ async function getPlanData(carreraId: string): Promise<PlanLoadResult | null> {
     return (
         <PlanStatus
         titulo={result.carrera.nombre}
-        mensaje="Este plan todavía no está cargado en la aplicación."
+        mensaje="Este plan (o esta versión) todavía no está cargado en la aplicación."
         />
     );
     }

@@ -28,6 +28,8 @@ export type PlanInfo = {
   carrera: string;
   universidad: string;
   codigo_plan: string;
+  plan_id: string;
+  version_id: string;
 };
 
 export type PlanData = {
