@@ -174,6 +174,7 @@ export default function PlanViewer({
     deshacerMateria,
     resetMaterias,
     isHydrated,
+    syncStatus,
   } =
     usePlanState(data.plan.plan_id, data.plan.version_id, data.materias, agrupadores);
 
@@ -308,6 +309,7 @@ export default function PlanViewer({
         disponibles={progreso.disponibles}
         total={progreso.total}
         onReset={resetMaterias}
+        syncStatus={syncStatus}
         versionSelector={{
           selectedVersionId: data.plan.version_id,
           defaultVersionId,
