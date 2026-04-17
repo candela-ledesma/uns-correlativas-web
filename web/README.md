@@ -28,7 +28,10 @@ Este incremento agrega:
 Copiá `.env.example` a `.env.local` y completá:
 
 ```bash
-DATABASE_URL="file:./prisma/dev.db"
+DATABASE_URL="postgresql://usuario:password@host:5432/uns_correlativas?schema=public"
+DATABASE_URL_E2E="postgresql://usuario:password@host:5432/uns_correlativas_e2e?schema=public"
+NEXTAUTH_SECRET="un-secreto-largo"
+NEXTAUTH_URL="http://localhost:3000"
 AUTH_SECRET="un-secreto-largo"
 AUTH_URL="http://localhost:3000"
 
@@ -51,6 +54,9 @@ NEXT_PUBLIC_ENABLE_DEV_LOGIN="false"
 3. Cargar `AUTH_GOOGLE_CLIENT_ID` y `AUTH_GOOGLE_CLIENT_SECRET`.
 
 ### Base de datos, migraciones y seed
+
+Importante: Prisma CLI toma variables desde `.env`, no desde `.env.local`.
+Creá `web/.env` con al menos `DATABASE_URL` para poder ejecutar migraciones y seed local.
 
 ```bash
 npm run prisma:generate

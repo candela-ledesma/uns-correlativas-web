@@ -14,7 +14,10 @@ export default defineConfig({
     reuseExistingServer: true,
     env: {
       ...process.env,
-      DATABASE_URL: process.env.DATABASE_URL ?? "file:./prisma/playwright.db",
+      DATABASE_URL:
+        process.env.DATABASE_URL_E2E ??
+        process.env.DATABASE_URL ??
+        "postgresql://postgres:postgres@localhost:5432/uns_correlativas_e2e?schema=public",
       AUTH_SECRET: process.env.AUTH_SECRET ?? "playwright-dev-secret",
       AUTH_ENABLE_DEV_LOGIN: "true",
       NEXT_PUBLIC_ENABLE_DEV_LOGIN: "true",

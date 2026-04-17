@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 
 if (!process.env.DATABASE_URL) {
-  process.env.DATABASE_URL = "file:./prisma/dev.db";
+  throw new Error("Falta DATABASE_URL para inicializar Prisma (PostgreSQL)");
 }
 
 const globalForPrisma = globalThis as unknown as {
