@@ -17,7 +17,7 @@ npm run test:e2e
 
 Este incremento agrega:
 
-- login con Google (principal en produccion),
+- login por credenciales de desarrollo,
 - sesiones seguras con NextAuth,
 - sincronizacion de progreso por usuario en base de datos,
 - roles (`USER`, `MODERATOR`, `ADMIN`) en backend,
@@ -35,23 +35,14 @@ NEXTAUTH_URL="http://localhost:3000"
 AUTH_SECRET="un-secreto-largo"
 AUTH_URL="http://localhost:3000"
 
-AUTH_GOOGLE_CLIENT_ID="..."
-AUTH_GOOGLE_CLIENT_SECRET="..."
-
 ADMIN_SEED_EMAIL="admin@uns.local"
 
 # Solo desarrollo/tests
-AUTH_ENABLE_DEV_LOGIN="false"
-NEXT_PUBLIC_ENABLE_DEV_LOGIN="false"
+AUTH_ENABLE_DEV_LOGIN="true"
+NEXT_PUBLIC_ENABLE_DEV_LOGIN="true"
 ```
 
-### Configurar Google OAuth
-
-1. Crear credenciales OAuth 2.0 en Google Cloud Console.
-2. Configurar callback:
-	 - `http://localhost:3000/api/auth/callback/google` (local)
-	 - `https://tu-dominio/api/auth/callback/google` (produccion)
-3. Cargar `AUTH_GOOGLE_CLIENT_ID` y `AUTH_GOOGLE_CLIENT_SECRET`.
+Para deshabilitar el login por credenciales en produccion, setea ambas variables en `false`.
 
 ### Base de datos, migraciones y seed
 

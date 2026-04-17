@@ -17,7 +17,7 @@ export default async function LoginPage({
       <div className="mx-auto grid w-full max-w-xl gap-6">
         <h1 className="text-3xl font-extrabold text-zinc-900">Iniciar sesión</h1>
         <p className="text-sm text-zinc-600">
-          Usá tu cuenta de Google para sincronizar el progreso entre dispositivos y habilitar permisos por rol.
+          Ingresá con credenciales de desarrollo para sincronizar el progreso entre dispositivos y habilitar permisos por rol.
         </p>
         <LoginActions callbackUrl={callbackUrl} />
       </div>

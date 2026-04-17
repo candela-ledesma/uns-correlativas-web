@@ -1,6 +1,5 @@
 import { getServerSession } from "next-auth/next";
 import type { NextAuthOptions } from "next-auth";
-import Google from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
@@ -16,30 +15,11 @@ if (!process.env.NEXTAUTH_SECRET && process.env.AUTH_SECRET) {
   process.env.NEXTAUTH_SECRET = process.env.AUTH_SECRET;
 }
 
-const hasGoogleProvider =
-  Boolean(process.env.AUTH_GOOGLE_CLIENT_ID) &&
-  Boolean(process.env.AUTH_GOOGLE_CLIENT_SECRET);
-
 const allowDevLogin =
   process.env.AUTH_ENABLE_DEV_LOGIN === "true" ||
-  (!hasGoogleProvider && process.env.NODE_ENV !== "production");
-
-if (process.env.NODE_ENV === "production" && !hasGoogleProvider) {
-  throw new Error(
-    "Faltan AUTH_GOOGLE_CLIENT_ID y AUTH_GOOGLE_CLIENT_SECRET para login con Google en produccion"
-  );
-}
+  process.env.NODE_ENV !== "production";
 
 const providers = [];
-
-if (hasGoogleProvider) {
-  providers.push(
-    Google({
-      clientId: process.env.AUTH_GOOGLE_CLIENT_ID as string,
-      clientSecret: process.env.AUTH_GOOGLE_CLIENT_SECRET as string,
-    })
-  );
-}
 
 if (allowDevLogin) {
   providers.push(
@@ -80,7 +60,7 @@ if (allowDevLogin) {
 
 if (providers.length === 0) {
   throw new Error(
-    "No hay providers de autenticacion configurados. Configura Google o habilita AUTH_ENABLE_DEV_LOGIN=true"
+    "No hay providers de autenticacion configurados. Habilita AUTH_ENABLE_DEV_LOGIN=true"
   );
 }
 
