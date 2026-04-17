@@ -1,12 +1,13 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { promises as fs } from "fs";
-import path from "path";
 import PlanViewer from "@/components/PlanViewer";
 import PlanStatus from "@/components/PlanStatus";
-import { getCarreraById, getVersionForCarrera } from "@/lib/carreras";
-import type { CarreraVersionConfig } from "@/lib/carreras";
-import type { PlanData } from "@/app/types/plan";
+import { getCarreraById } from "@/lib/carreras";
+import {
+    formatValidationIssues,
+    loadPlanData,
+    normalizeSearchParam,
+} from "@/lib/planDataLoader";
 import type { Metadata } from "next";
 
 export async function generateMetadata({
@@ -29,105 +30,6 @@ export async function generateMetadata({
     };
 }
 
-
-type PlanLoadResult =
-    | {
-        status: "ok";
-        carrera: {
-        id: string;
-        nombre: string;
-        defaultVersionId: string;
-        versions: Pick<CarreraVersionConfig, "versionId" | "label" | "disponible">[];
-        };
-        version: { versionId: string; label: string; jsonFile: string };
-        data: PlanData;
-    }
-    | {
-        status: "unavailable";
-        carrera: { id: string; nombre: string };
-    }
-    | {
-        status: "invalid";
-        carrera: { id: string; nombre: string };
-    };
-
-function normalizeSearchParam(value: string | string[] | undefined) {
-    if (!value) return null;
-    if (Array.isArray(value)) return value[0] ?? null;
-    return value;
-}
-
-function ensurePlanIdentity(
-    raw: unknown,
-    carreraId: string,
-    versionId: string
-): PlanData | null {
-    if (!raw || typeof raw !== "object") return null;
-
-    const data = raw as Record<string, any>;
-    if (!data.plan || typeof data.plan !== "object") return null;
-
-    const plan = data.plan as Record<string, any>;
-
-    if (plan.plan_id && String(plan.plan_id) !== String(carreraId)) return null;
-    if (plan.version_id && String(plan.version_id) !== String(versionId)) return null;
-
-    plan.plan_id = carreraId;
-    plan.version_id = versionId;
-
-    return data as PlanData;
-}
-
-async function getPlanData(
-    carreraId: string,
-    requestedVersionId: string | null
-): Promise<PlanLoadResult | null> {
-    const carrera = getCarreraById(carreraId);
-    if (!carrera) return null;
-
-    const version = getVersionForCarrera(carreraId, requestedVersionId);
-    if (!version || version.disponible === false) {
-    return {
-        status: "unavailable",
-        carrera: { id: carrera.id, nombre: carrera.nombre },
-    };
-    }
-
-    try {
-    const filePath = path.join(process.cwd(), "data", version.jsonFile);
-    const fileContents = await fs.readFile(filePath, "utf8");
-
-    const parsed = JSON.parse(fileContents);
-    const data = ensurePlanIdentity(parsed, carreraId, version.versionId);
-    if (!data) {
-        return { status: "invalid", carrera: { id: carrera.id, nombre: carrera.nombre } };
-    }
-
-    return {
-        status: "ok",
-        carrera: {
-        id: carrera.id,
-        nombre: carrera.nombre,
-        defaultVersionId: carrera.defaultVersionId,
-        versions: carrera.versions.map((item) => ({
-            versionId: item.versionId,
-            label: item.label,
-            disponible: item.disponible,
-        })),
-        },
-        version,
-        data,
-    };
-    } catch (error: any) {
-    if (error?.code === "ENOENT") {
-        return { status: "unavailable", carrera: { id: carrera.id, nombre: carrera.nombre } };
-    }
-
-    console.error("Error leyendo plan:", error);
-    return { status: "invalid", carrera: { id: carrera.id, nombre: carrera.nombre } };
-    }
-    }
-
     export default async function Page({
     params,
     searchParams,
@@ -138,9 +40,9 @@ async function getPlanData(
     const { carrera: carreraId } = await params;
     const resolvedSearchParams = searchParams ? await searchParams : {};
     const requestedVersionId = normalizeSearchParam(resolvedSearchParams.v);
-    const result = await getPlanData(carreraId, requestedVersionId);
+    const result = await loadPlanData(carreraId, requestedVersionId);
 
-    if (!result) {
+    if (result.status === "not-found") {
     notFound();
     }
 
@@ -154,10 +56,28 @@ async function getPlanData(
     }
 
     if (result.status === "invalid") {
+    const mensaje =
+        result.errorKind === "shape"
+        ? "Los datos de este plan tienen un formato inválido y no se pueden mostrar."
+        : "Los datos de este plan contienen inconsistencias internas y no se pueden mostrar de forma confiable.";
+
     return (
         <PlanStatus
         titulo={result.carrera.nombre}
-        mensaje="Hubo un problema al cargar este plan."
+        mensaje={mensaje}
+        detallesTecnicos={formatValidationIssues(result.issues)}
+        testId="plan-status-invalid"
+        variant="error"
+        />
+    );
+    }
+
+    if (result.status === "error") {
+    return (
+        <PlanStatus
+        titulo={result.carrera.nombre}
+        mensaje="Hubo un problema inesperado al cargar este plan."
+        testId="plan-status-error"
         variant="error"
         />
     );

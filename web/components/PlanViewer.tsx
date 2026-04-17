@@ -20,6 +20,7 @@ type Props = {
     versionId: string;
     label: string;
     disponible?: boolean;
+    hidden?: boolean;
   }[];
 };
 

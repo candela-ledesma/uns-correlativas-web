@@ -1,0 +1,9 @@
+{
+  "plan": {
+    "carrera": "Arquitectura",
+    "universidad": "Universidad Nacional del Sur",
+    "codigo_plan": "Fixture inválido"
+  },
+  "materias": "esto-deberia-ser-array",
+  "agrupadores": []
+}

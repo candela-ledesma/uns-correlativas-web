@@ -5,6 +5,7 @@ export type CarreraVersionConfig = {
     label: string;
     jsonFile: string;
     disponible?: boolean;
+    hidden?: boolean;
 };
 
 export type CarreraConfig = {
@@ -15,6 +16,8 @@ export type CarreraConfig = {
     versions: CarreraVersionConfig[];
     disponible?: boolean;
 };
+
+const includeInternalVersions = process.env.NODE_ENV !== "production";
 
 export const CARRERAS: CarreraConfig[] = [
     {
@@ -29,6 +32,24 @@ export const CARRERAS: CarreraConfig[] = [
         jsonFile: "arquitectura.json",
         disponible: true,
         },
+        ...(includeInternalVersions
+        ? [
+            {
+            versionId: "v2_interna",
+            label: "Plan alternativo interno",
+            jsonFile: "arquitectura.json",
+            disponible: true,
+            hidden: true,
+            },
+            {
+            versionId: "v_invalid_shape",
+            label: "Plan inválido interno",
+            jsonFile: "arquitectura_invalid_shape.json",
+            disponible: true,
+            hidden: true,
+            },
+        ]
+        : []),
     ],
     disponible: true,
     },

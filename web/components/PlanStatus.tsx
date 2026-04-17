@@ -4,14 +4,21 @@ type Props = {
     titulo: string;
     mensaje: string;
     variant?: "info" | "error";
+    detallesTecnicos?: string[];
+    testId?: string;
 };
 
 export default function PlanStatus({
     titulo,
     mensaje,
     variant = "info",
+    detallesTecnicos,
+    testId,
 }: Props) {
     const isError = variant === "error";
+    const shouldShowDetails =
+        process.env.NODE_ENV !== "production" &&
+        Boolean(detallesTecnicos && detallesTecnicos.length > 0);
 
     return (
     <main className="min-h-screen bg-zinc-50 px-6 py-10">
@@ -27,6 +34,7 @@ export default function PlanStatus({
         </div>
 
         <section
+            data-testid={testId}
             className={`rounded-3xl border bg-white p-8 shadow-sm ${
             isError ? "border-red-200" : "border-zinc-200"
             }`}
@@ -46,6 +54,17 @@ export default function PlanStatus({
             </h1>
 
             <p className="mt-3 text-base leading-7 text-zinc-600">{mensaje}</p>
+
+            {shouldShowDetails && detallesTecnicos && (
+            <div className="mt-6 rounded-2xl border border-zinc-200 bg-zinc-50 p-4">
+                <h2 className="mb-2 text-sm font-semibold text-zinc-800">Detalle técnico</h2>
+                <ul className="grid gap-1 text-sm text-zinc-700">
+                {detallesTecnicos.map((detalle, index) => (
+                    <li key={`${detalle}-${index}`}>{detalle}</li>
+                ))}
+                </ul>
+            </div>
+            )}
         </section>
         </div>
     </main>

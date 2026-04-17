@@ -7,6 +7,7 @@ type VersionOption = {
     versionId: string;
     label: string;
     disponible?: boolean;
+    hidden?: boolean;
 };
 
 type VersionSelectorConfig = {
@@ -57,8 +58,14 @@ export default function PlanHeader({
         const pathname = usePathname();
         const router = useRouter();
         const searchParams = useSearchParams();
+        const visibleVersionOptions = versionSelector
+        ? versionSelector.options.filter((option) => option.hidden !== true)
+        : [];
+        const availableVisibleVersions = visibleVersionOptions.filter(
+        (option) => option.disponible !== false
+        );
         const showVersionSelector = Boolean(
-        versionSelector && versionSelector.options.length > 1
+        versionSelector && availableVisibleVersions.length > 1
         );
   const porcentaje = total > 0 ? Math.round((aprobadas / total) * 100) : 0;
 
@@ -96,7 +103,7 @@ export default function PlanHeader({
                 onChange={(event) => updateVersion(event.target.value)}
                 className="rounded-md border border-zinc-300 bg-white px-2 py-1 text-sm font-medium text-zinc-900 outline-none transition focus:border-zinc-500"
                 >
-                {versionSelector.options.map((option) => {
+                {visibleVersionOptions.map((option) => {
                     const isDisabled = option.disponible === false;
 
                     return (
