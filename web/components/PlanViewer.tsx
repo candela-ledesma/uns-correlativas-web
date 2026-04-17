@@ -1,11 +1,14 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useSession } from "next-auth/react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { PlanData, Materia } from "@/app/types/plan";
 import PlanHeader from "@/components/PlanHeader";
 import PlanFilters from "@/components/PlanFilters";
 import AnioSection from "@/components/AnioSection";
 import GrupoMaterias from "@/components/GrupoMaterias";
+import PlanOnboarding from "@/components/PlanOnboarding";
 import { usePlanState } from "@/hooks/usePlanState";
 import { usePlanStructure } from "@/hooks/usePlanStructure";
 import { getMateriaViewModel } from "@/lib/materiaViewModel";
@@ -14,7 +17,9 @@ import { filtrarMaterias, type FiltrosPlan } from "@/lib/filtrarMaterias";
 
 type Props = {
   data: PlanData;
+  carreraId: string;
   versionLabel: string;
+  forceShowOnboarding?: boolean;
   defaultVersionId: string;
   versionOptions: {
     versionId: string;
@@ -143,11 +148,21 @@ function combinarSeccionesPorAnioYCuatrimestre(
 
 export default function PlanViewer({
   data,
+  carreraId,
   versionLabel,
+  forceShowOnboarding = false,
   defaultVersionId,
   versionOptions,
 }: Props) {
+  const { status: sessionStatus } = useSession();
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const { idsAgrupadores } = usePlanStructure(data);
+  const [isOnboardingOpen, setIsOnboardingOpen] = useState(false);
+  const [isOnboardingSubmitting, setIsOnboardingSubmitting] = useState(false);
+  const onboardingStateKeyRef = useRef<string | null>(null);
+  const planVisitKeyRef = useRef<string | null>(null);
 
   const agrupadores = data.agrupadores || [];
   const materiasPorId = useMemo(() => {
@@ -297,10 +312,113 @@ export default function PlanViewer({
     disponibles
   );
 
+  useEffect(() => {
+    if (sessionStatus !== "authenticated") return;
+
+    const key = `${carreraId}::${data.plan.version_id}`;
+    if (planVisitKeyRef.current === key) return;
+
+    planVisitKeyRef.current = key;
+
+    fetch("/api/perfil/plan-visit", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        careerId: carreraId,
+        planId: data.plan.plan_id,
+        versionId: data.plan.version_id,
+      }),
+    }).catch(() => undefined);
+  }, [carreraId, data.plan.plan_id, data.plan.version_id, sessionStatus]);
+
+  useEffect(() => {
+    const key = `${carreraId}::${data.plan.version_id}::${sessionStatus}::${forceShowOnboarding ? "forced" : "auto"}`;
+    if (onboardingStateKeyRef.current === key) return;
+
+    onboardingStateKeyRef.current = key;
+
+    if (forceShowOnboarding) {
+      setIsOnboardingOpen(true);
+
+      const params = new URLSearchParams(searchParams.toString());
+      if (params.has("onboarding")) {
+        params.delete("onboarding");
+        const query = params.toString();
+        router.replace(query ? `${pathname}?${query}` : pathname);
+      }
+
+      return;
+    }
+
+    if (sessionStatus === "authenticated") {
+      fetch("/api/perfil/onboarding")
+        .then((response) => (response.ok ? response.json() : null))
+        .then((payload: { shouldAutoShowOnboarding?: boolean } | null) => {
+          if (!payload) return;
+
+          if (payload.shouldAutoShowOnboarding) {
+            setIsOnboardingOpen(true);
+          }
+        })
+        .catch(() => undefined);
+
+      return;
+    }
+
+    if (sessionStatus === "unauthenticated") {
+      const guestState = window.localStorage.getItem("onboarding::guest::state");
+
+      if (!guestState) {
+        setIsOnboardingOpen(true);
+      }
+    }
+  }, [
+    carreraId,
+    data.plan.version_id,
+    forceShowOnboarding,
+    pathname,
+    router,
+    searchParams,
+    sessionStatus,
+  ]);
+
+  async function persistOnboarding(action: "dismiss" | "complete") {
+    setIsOnboardingSubmitting(true);
+
+    if (sessionStatus === "authenticated") {
+      await fetch("/api/perfil/onboarding", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          action,
+        }),
+      }).catch(() => null);
+    } else if (typeof window !== "undefined") {
+      window.localStorage.setItem("onboarding::guest::state", action);
+    }
+
+    setIsOnboardingSubmitting(false);
+    setIsOnboardingOpen(false);
+  }
+
   if (!isHydrated) return null;
 
   return (
     <main className="mx-auto max-w-7xl px-6 py-6">
+      <div className="mb-4 flex justify-end">
+        <button
+          type="button"
+          onClick={() => setIsOnboardingOpen(true)}
+          className="rounded-xl border border-zinc-300 bg-white px-3 py-2 text-xs font-semibold uppercase tracking-wide text-zinc-700 shadow-sm"
+        >
+          Ver ayuda rapida
+        </button>
+      </div>
+
       <PlanHeader
         titulo={titulo}
         subtitulo={subtitulo}
@@ -401,6 +519,17 @@ export default function PlanViewer({
           />
         );
       })}
+
+      <PlanOnboarding
+        open={isOnboardingOpen}
+        isSubmitting={isOnboardingSubmitting}
+        onDismiss={() => {
+          void persistOnboarding("dismiss");
+        }}
+        onComplete={() => {
+          void persistOnboarding("complete");
+        }}
+      />
     </main>
   );
 }

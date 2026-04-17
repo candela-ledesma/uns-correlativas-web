@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
+import ProfileWorkspace from "@/components/ProfileWorkspace";
+import { getUserProductContext } from "@/lib/userProductContext";
 import styles from "./page.module.css";
 
 export default async function PerfilPage() {
@@ -21,6 +23,8 @@ export default async function PerfilPage() {
         ? "Moderador"
         : "Usuario";
 
+  const context = await getUserProductContext(session.user.id);
+
   return (
     <main className={styles.page}>
       <section className={styles.container}>
@@ -31,68 +35,14 @@ export default async function PerfilPage() {
           </Link>
         </div>
 
-        <article className={styles.profileCard}>
-          <div className={styles.header}>
-            <div className={styles.avatar} aria-hidden="true">
-              {iniciales}
-            </div>
-
-            <div className={styles.identity}>
-              <h1 className={styles.title}>Perfil</h1>
-              <p className={styles.name}>{nombreVisible}</p>
-              <p className={styles.email}>{email}</p>
-            </div>
-
-            <div className={styles.chips}>
-              <span className={styles.chip}>Cuenta activa</span>
-              <span className={`${styles.chip} ${styles.roleChip}`}>{rolLabel}</span>
-            </div>
-          </div>
-
-          <div className={styles.divider} />
-
-          <section className={styles.actions}>
-            <h2 className={styles.sectionTitle}>Accesos rápidos</h2>
-
-            <div className={styles.actionGrid}>
-              <Link href="/" className={styles.actionCard}>
-                <p className={styles.actionTitle}>Inicio</p>
-                <p className={styles.actionText}>Volver al selector de carreras</p>
-                <span className={styles.actionArrow} aria-hidden="true">
-                  →
-                </span>
-              </Link>
-
-              <Link href="/planes/arquitectura" className={styles.actionCard}>
-                <p className={styles.actionTitle}>Plan</p>
-                <p className={styles.actionText}>Abrir plan de Arquitectura</p>
-                <span className={styles.actionArrow} aria-hidden="true">
-                  →
-                </span>
-              </Link>
-
-              {(rol === "MODERATOR" || rol === "ADMIN") && (
-                <Link href="/moderacion" className={styles.actionCard}>
-                  <p className={styles.actionTitle}>Moderación</p>
-                  <p className={styles.actionText}>Revisar cambios pendientes</p>
-                  <span className={styles.actionArrow} aria-hidden="true">
-                    →
-                  </span>
-                </Link>
-              )}
-
-              {rol === "ADMIN" && (
-                <Link href="/admin" className={styles.actionCard}>
-                  <p className={styles.actionTitle}>Administración</p>
-                  <p className={styles.actionText}>Gestionar permisos y auditoría</p>
-                  <span className={styles.actionArrow} aria-hidden="true">
-                    →
-                  </span>
-                </Link>
-              )}
-            </div>
-          </section>
-        </article>
+        <ProfileWorkspace
+          role={rol}
+          roleLabel={rolLabel}
+          email={email}
+          nombreVisible={nombreVisible}
+          iniciales={iniciales}
+          initialContext={context}
+        />
       </section>
     </main>
   );
