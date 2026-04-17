@@ -1,13 +1,34 @@
+"use client";
+
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import { CARRERAS } from "@/lib/carreras";
 import HomeSessionPanel from "@/components/HomeSessionPanel";
 import styles from "./page.module.css";
 
+function normalizarTexto(valor: string) {
+  return valor
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim();
+}
+
 export default function HomePage() {
+  const [busqueda, setBusqueda] = useState("");
   const totalCarreras = CARRERAS.length;
   const carrerasDisponibles = CARRERAS.filter(
     (carrera) => carrera.disponible !== false,
   ).length;
+
+  const carrerasFiltradas = useMemo(() => {
+    const termino = normalizarTexto(busqueda);
+    if (!termino) return CARRERAS;
+
+    return CARRERAS.filter((carrera) =>
+      normalizarTexto(carrera.nombre).includes(termino),
+    );
+  }, [busqueda]);
 
   return (
     <main className={styles.page}>
@@ -48,8 +69,25 @@ export default function HomePage() {
           </div>
         </div>
 
+        <div className={styles.searchWrap}>
+          <input
+            type="search"
+            value={busqueda}
+            onChange={(event) => setBusqueda(event.target.value)}
+            placeholder="Buscar carrera por nombre"
+            aria-label="Buscar carrera por nombre"
+            className={styles.searchInput}
+          />
+        </div>
+
+        {carrerasFiltradas.length === 0 && (
+          <p className={styles.noResults}>
+            No se encontraron carreras con ese nombre.
+          </p>
+        )}
+
         <div className={styles.grid}>
-          {CARRERAS.map((carrera, index) => {
+          {carrerasFiltradas.map((carrera, index) => {
             const disponible = carrera.disponible !== false;
 
             return (
