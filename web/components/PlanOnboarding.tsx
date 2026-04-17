@@ -52,7 +52,10 @@ export default function PlanOnboarding({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 p-4">
+    <div
+      data-testid="plan-onboarding-modal"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 p-4"
+    >
       <div className="w-full max-w-xl rounded-2xl border border-zinc-200 bg-white p-5 shadow-2xl">
         <div className="mb-4 flex items-start justify-between gap-3">
           <div>
@@ -65,6 +68,7 @@ export default function PlanOnboarding({
           </div>
           <button
             type="button"
+            data-testid="plan-onboarding-dismiss"
             onClick={onDismiss}
             disabled={isSubmitting}
             className="rounded-lg border border-zinc-300 px-3 py-1.5 text-xs font-semibold text-zinc-600"
@@ -100,6 +104,7 @@ export default function PlanOnboarding({
             {!isLastStep && (
               <button
                 type="button"
+                data-testid="plan-onboarding-next"
                 disabled={isSubmitting}
                 onClick={() => setStepIndex((prev) => Math.min(STEPS.length - 1, prev + 1))}
                 className="rounded-lg border border-zinc-900 bg-zinc-900 px-3 py-2 text-sm font-semibold text-white"
@@ -111,6 +116,7 @@ export default function PlanOnboarding({
             {isLastStep && (
               <button
                 type="button"
+                data-testid="plan-onboarding-complete"
                 disabled={isSubmitting}
                 onClick={onComplete}
                 className="rounded-lg border border-zinc-900 bg-zinc-900 px-3 py-2 text-sm font-semibold text-white"

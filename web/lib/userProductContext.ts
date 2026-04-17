@@ -1,6 +1,9 @@
 import { prisma } from "@/lib/prisma";
 import { CARRERAS, getCarreraById } from "@/lib/carreras";
-import type { UserProductContextResponse } from "@/lib/userProductContextTypes";
+import type {
+  UserProductContextResponse,
+  UserSessionSummaryResponse,
+} from "@/lib/userProductContextTypes";
 
 const DEFAULT_ACTIVITY_LIMIT = 25;
 
@@ -149,26 +152,28 @@ export async function createUserActivity(input: {
 
 export async function getUserProductContext(
   userId: string,
-  options?: { activityLimit?: number }
+  options?: { activityLimit?: number; includeActivity?: boolean }
 ): Promise<UserProductContextResponse> {
   const enrolledCareerIds = await ensureEnrollmentBootstrap(userId);
   const preference = await ensurePreferenceRow(userId, enrolledCareerIds);
+  const includeActivity = options?.includeActivity !== false;
 
-  const [lastPlans, activities] = await Promise.all([
-    prisma.userRecentPlan.findMany({
-      where: { userId },
-      orderBy: {
-        openedAt: "desc",
-      },
-    }),
-    prisma.userActivity.findMany({
+  const lastPlans = await prisma.userRecentPlan.findMany({
+    where: { userId },
+    orderBy: {
+      openedAt: "desc",
+    },
+  });
+
+  const activities = includeActivity
+    ? await prisma.userActivity.findMany({
       where: { userId },
       orderBy: {
         createdAt: "desc",
       },
       take: Math.max(1, options?.activityLimit ?? DEFAULT_ACTIVITY_LIMIT),
-    }),
-  ]);
+    })
+    : [];
 
   const lastPlanByCareer = Object.fromEntries(
     lastPlans.map((row) => [
@@ -194,7 +199,8 @@ export async function getUserProductContext(
     shouldAutoShowOnboarding:
       !preference.onboardingCompletedAt && !preference.onboardingDismissedAt,
     lastPlanByCareer,
-    recentActivity: activities.map((item) => ({
+    recentActivity: includeActivity
+      ? activities.map((item) => ({
       id: item.id,
       type: item.type,
       careerId: item.careerId,
@@ -205,7 +211,24 @@ export async function getUserProductContext(
       toState: item.toState,
       metadata: parseMetadata(item.metadataJson),
       createdAt: item.createdAt.toISOString(),
-    })),
+      }))
+      : [],
+  };
+}
+
+export async function getUserSessionSummary(userId: string): Promise<UserSessionSummaryResponse> {
+  const context = await getUserProductContext(userId, {
+    includeActivity: false,
+  });
+
+  const activeCareer = context.activeCareerId
+    ? context.careers.find((career) => career.id === context.activeCareerId) ?? null
+    : null;
+
+  return {
+    activeCareerId: context.activeCareerId,
+    activeCareerName: activeCareer?.nombre ?? null,
+    lastPlanByCareer: context.lastPlanByCareer,
   };
 }
 

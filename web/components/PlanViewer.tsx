@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useSession } from "next-auth/react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { PlanData, Materia } from "@/app/types/plan";
 import PlanHeader from "@/components/PlanHeader";
 import PlanFilters from "@/components/PlanFilters";
@@ -154,6 +155,9 @@ export default function PlanViewer({
   versionOptions,
 }: Props) {
   const { status: sessionStatus } = useSession();
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const { idsAgrupadores } = usePlanStructure(data);
   const [isOnboardingOpen, setIsOnboardingOpen] = useState(false);
   const [isOnboardingSubmitting, setIsOnboardingSubmitting] = useState(false);
@@ -337,6 +341,14 @@ export default function PlanViewer({
 
     if (forceShowOnboarding) {
       setIsOnboardingOpen(true);
+
+      const params = new URLSearchParams(searchParams.toString());
+      if (params.has("onboarding")) {
+        params.delete("onboarding");
+        const query = params.toString();
+        router.replace(query ? `${pathname}?${query}` : pathname);
+      }
+
       return;
     }
 
@@ -362,7 +374,15 @@ export default function PlanViewer({
         setIsOnboardingOpen(true);
       }
     }
-  }, [carreraId, data.plan.version_id, forceShowOnboarding, sessionStatus]);
+  }, [
+    carreraId,
+    data.plan.version_id,
+    forceShowOnboarding,
+    pathname,
+    router,
+    searchParams,
+    sessionStatus,
+  ]);
 
   async function persistOnboarding(action: "dismiss" | "complete") {
     setIsOnboardingSubmitting(true);

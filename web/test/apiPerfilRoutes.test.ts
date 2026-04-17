@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { auth } from "@/auth";
 import {
   getUserProductContext,
+  getUserSessionSummary,
   recordPlanOpened,
   updateOnboardingState,
   updateUserCareerContext,
@@ -15,6 +16,7 @@ import {
   POST as postOnboarding,
 } from "@/app/api/perfil/onboarding/route";
 import { POST as postPlanVisit } from "@/app/api/perfil/plan-visit/route";
+import { GET as getSummary } from "@/app/api/perfil/resumen/route";
 
 vi.mock("@/auth", () => ({
   auth: vi.fn(),
@@ -22,6 +24,7 @@ vi.mock("@/auth", () => ({
 
 vi.mock("@/lib/userProductContext", () => ({
   getUserProductContext: vi.fn(),
+  getUserSessionSummary: vi.fn(),
   updateUserCareerContext: vi.fn(),
   updateOnboardingState: vi.fn(),
   recordPlanOpened: vi.fn(),
@@ -44,6 +47,12 @@ const baseContext = {
   recentActivity: [],
 };
 
+const baseSummary = {
+  activeCareerId: "arquitectura",
+  activeCareerName: "Arquitectura",
+  lastPlanByCareer: {},
+};
+
 describe("/api/perfil routes", () => {
   beforeEach(() => {
     vi.mocked(auth).mockResolvedValue({
@@ -55,6 +64,7 @@ describe("/api/perfil routes", () => {
     } as never);
 
     vi.mocked(getUserProductContext).mockResolvedValue(baseContext as never);
+    vi.mocked(getUserSessionSummary).mockResolvedValue(baseSummary as never);
     vi.mocked(updateUserCareerContext).mockResolvedValue(baseContext as never);
     vi.mocked(updateOnboardingState).mockResolvedValue(baseContext as never);
     vi.mocked(recordPlanOpened).mockResolvedValue(baseContext as never);
@@ -134,11 +144,23 @@ describe("/api/perfil routes", () => {
     });
   });
 
+  it("GET /api/perfil/resumen retorna contexto liviano", async () => {
+    const response = await getSummary();
+
+    expect(response.status).toBe(200);
+    const body = await response.json();
+    expect(body.activeCareerName).toBe("Arquitectura");
+    expect(getUserSessionSummary).toHaveBeenCalledWith("user-1");
+  });
+
   it("responde 401 sin sesion", async () => {
     vi.mocked(auth).mockResolvedValue(null as never);
 
     const response = await getContext();
 
     expect(response.status).toBe(401);
+
+    const summaryResponse = await getSummary();
+    expect(summaryResponse.status).toBe(401);
   });
 });

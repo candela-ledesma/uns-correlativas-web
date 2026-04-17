@@ -40,6 +40,12 @@ export type UserProductContextResponse = {
   recentActivity: UserActivityItem[];
 };
 
+export type UserSessionSummaryResponse = {
+  activeCareerId: string | null;
+  activeCareerName: string | null;
+  lastPlanByCareer: Record<string, UserLastPlan>;
+};
+
 export function buildPlanHref(careerId: string, plan?: UserLastPlan) {
   if (!plan) {
     return `/planes/${careerId}`;

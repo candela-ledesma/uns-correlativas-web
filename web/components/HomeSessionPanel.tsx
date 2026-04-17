@@ -6,28 +6,28 @@ import { signOut, useSession } from "next-auth/react";
 import LoginActions from "@/components/LoginActions";
 import {
   buildPlanHref,
-  type UserProductContextResponse,
+  type UserSessionSummaryResponse,
 } from "@/lib/userProductContextTypes";
 
 export default function HomeSessionPanel() {
   const { data: session, status } = useSession();
   const [open, setOpen] = useState(false);
-  const [userContext, setUserContext] = useState<UserProductContextResponse | null>(null);
+  const [summary, setSummary] = useState<UserSessionSummaryResponse | null>(null);
   const [contextLoading, setContextLoading] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   async function loadUserContext() {
     setContextLoading(true);
 
-    const response = await fetch("/api/perfil/contexto").catch(() => null);
+    const response = await fetch("/api/perfil/resumen").catch(() => null);
 
     if (!response?.ok) {
       setContextLoading(false);
       return;
     }
 
-    const payload = (await response.json()) as UserProductContextResponse;
-    setUserContext(payload);
+    const payload = (await response.json()) as UserSessionSummaryResponse;
+    setSummary(payload);
     setContextLoading(false);
   }
 
@@ -51,7 +51,7 @@ export default function HomeSessionPanel() {
 
   useEffect(() => {
     if (status !== "authenticated") {
-      setUserContext(null);
+      setSummary(null);
       return;
     }
 
@@ -115,12 +115,9 @@ export default function HomeSessionPanel() {
     );
   }
 
-  const activeCareerId = userContext?.activeCareerId;
-  const activeCareer = activeCareerId
-    ? userContext?.careers.find((career) => career.id === activeCareerId)
-    : null;
+  const activeCareerId = summary?.activeCareerId;
   const activeLastPlan = activeCareerId
-    ? userContext?.lastPlanByCareer[activeCareerId]
+    ? summary?.lastPlanByCareer[activeCareerId]
     : undefined;
   const quickPlanHref = activeCareerId
     ? buildPlanHref(activeCareerId, activeLastPlan)
@@ -158,13 +155,13 @@ export default function HomeSessionPanel() {
             <p className="mb-3 text-xs text-zinc-500">Cargando contexto de carrera...</p>
           )}
 
-          {activeCareer && (
+          {summary?.activeCareerName && (
             <div className="mb-3 rounded-xl border border-zinc-200 bg-zinc-50 p-3">
               <p className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
                 Carrera activa
               </p>
               <p className="mt-1 text-sm font-semibold text-zinc-800">
-                {activeCareer.nombre}
+                {summary.activeCareerName}
               </p>
               <Link
                 href={quickPlanHref}
