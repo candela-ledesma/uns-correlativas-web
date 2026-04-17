@@ -9,7 +9,11 @@
     "lint": "eslint",
     "test": "vitest",
     "test:watch": "vitest --watch",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "validate:data": "tsx scripts/validate-data.ts --format=human",
+    "validate:data:json": "tsx scripts/validate-data.ts --format=json",
+    "validate:data:strict": "tsx scripts/validate-data.ts --strict --format=human",
+    "check:premerge": "npm run validate:data && npm test -- --run && npm run test:e2e -- tests/e2e/versionado.test.ts"
   },
   "dependencies": {
     "next": "16.2.4",
@@ -26,6 +30,7 @@
     "eslint-config-next": "16.2.4",
     "postcss": "^8.5.8",
     "tailwindcss": "^4.2.2",
+    "tsx": "^4.21.0",
     "typescript": "^5"
   }
 }

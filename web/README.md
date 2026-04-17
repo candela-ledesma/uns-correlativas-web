@@ -1,36 +1,71 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Web
 
-## Getting Started
+Aplicacion Next.js para visualizar planes de estudio y correlativas.
 
-First, run the development server:
+## Comandos principales
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm run build
+npm run start
+npm run lint
+npm test -- --run
+npm run test:e2e
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Validacion de datos (Incremento 4)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+El proyecto incluye un validador batch para todos los JSON de `data/` configurados en el manifest de carreras.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Scripts
 
-## Learn More
+```bash
+# reporte human-readable
+npm run validate:data
 
-To learn more about Next.js, take a look at the following resources:
+# reporte machine-readable por stdout
+npm run validate:data:json
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# modo estricto (warnings tambien fallan)
+npm run validate:data:strict
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+# flujo sugerido para pre-merge local
+npm run check:premerge
+```
 
-## Deploy on Vercel
+### CLI avanzada
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+npm run validate:data -- --format=both --json-out=./tmp/data-validation.json
+npm run validate:data -- --strict --include-hidden
+npm run validate:data -- --data-dir=./data
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Opciones disponibles:
+
+- `--strict`: trata warnings como fallo.
+- `--include-hidden`: incluye versiones ocultas del manifest.
+- `--include-unavailable`: incluye versiones marcadas no disponibles.
+- `--format=human|json|both`: formato de salida.
+- `--json-out=<ruta>`: escribe reporte JSON a archivo.
+- `--data-dir=<ruta>`: directorio de datos alternativo.
+
+## Politica de severidades
+
+- `critical` (bloqueante): shape invalido, IDs duplicados, referencias esenciales rotas.
+- `medium` (warning): inconsistencias toleradas de legado o referencias cruzadas no bloqueantes.
+- `low` (warning): calidad de datos no critica (por ejemplo carga horaria vacia).
+
+Regla de exit code:
+
+- Falla (`exit 1`) si hay issues `critical`.
+- En modo `--strict`, tambien falla si hay `medium` o `low`.
+
+## Reporte
+
+El reporte incluye:
+
+- resumen global por severidad
+- conteo por tipo de issue
+- detalle por carrera/version
+- estado final (`PASS` o `FAIL`)
