@@ -21,19 +21,13 @@ export const CARRERAS: CarreraConfig[] = [
     id: "arquitectura",
     nombre: "Arquitectura",
     descripcion: "Plan de estudios y correlativas.",
-    defaultVersionId: "v1",
+    defaultVersionId: "v2",
     versions: [
         {
-        versionId: "v1",
+        versionId: "v2",
         label: "Plan actual",
         jsonFile: "arquitectura.json",
         disponible: true,
-        },
-        {
-        versionId: "v2",
-        label: "Plan 2025",
-        jsonFile: "arquitectura_2025.json",
-        disponible: false,
         },
     ],
     disponible: true,
