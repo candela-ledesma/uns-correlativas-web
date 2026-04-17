@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useSession } from "next-auth/react";
 import type { Materia, Agrupador } from "@/app/types/plan";
 import type { EstadoMateria } from "@/lib/evaluarCorrelativas";
 import {
@@ -8,13 +9,19 @@ import {
   estaHabilitadaParaAprobar,
 } from "@/lib/evaluarCorrelativas";
 import {
-  loadPlanState,
+  loadPlanStateSnapshot,
   savePlanState,
   clearPlanState,
+  hasMigratedPlanState,
+  markPlanStateMigrated,
 } from "@/lib/planStorage";
 import { scrollToGroup } from "@/lib/scrollToGroup";
 import { getScrollTargetId } from "@/lib/getScrollTargetId";
 import { getEstadoKey } from "@/lib/estadoKey";
+
+type SyncStatus = "guest" | "syncing" | "synced" | "error";
+
+const REMOTE_SYNC_DEBOUNCE_MS = 450;
 
 function materiaElegidaEnOtroGrupo(
   materia: Materia,
@@ -43,12 +50,19 @@ export function usePlanState(
   materias: Materia[],
   agrupadores: Agrupador[]
 ) {
+  const { data: session, status: sessionStatus } = useSession();
   const [estados, setEstados] = useState<Record<string, EstadoMateria>>({});
   const [isHydrated, setIsHydrated] = useState(false);
+  const [syncStatus, setSyncStatus] = useState<SyncStatus>("guest");
+  const remoteBaselineReadyRef = useRef(false);
+  const lastSyncedSerializedRef = useRef<string | null>(null);
 
   useEffect(() => {
     setIsHydrated(false);
-    setEstados(loadPlanState(planId, versionId));
+    const snapshot = loadPlanStateSnapshot(planId, versionId);
+    setEstados(snapshot.estados);
+    lastSyncedSerializedRef.current = null;
+    remoteBaselineReadyRef.current = false;
     setIsHydrated(true);
   }, [planId, versionId]);
 
@@ -56,6 +70,137 @@ export function usePlanState(
     if (!isHydrated) return;
     savePlanState(planId, versionId, estados);
   }, [estados, isHydrated, planId, versionId]);
+
+  useEffect(() => {
+    if (!isHydrated) return;
+
+    const userId = session?.user?.id;
+
+    if (sessionStatus !== "authenticated" || !userId) {
+      setSyncStatus("guest");
+      return;
+    }
+
+    const authenticatedUserId = userId;
+
+    let cancelled = false;
+
+    async function syncInitialSnapshot() {
+      setSyncStatus("syncing");
+
+      const localSnapshot = loadPlanStateSnapshot(planId, versionId);
+      const migrated = hasMigratedPlanState(
+        authenticatedUserId,
+        planId,
+        versionId
+      );
+
+      const response = await fetch("/api/progreso/sync", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          planId,
+          versionId,
+          localState: localSnapshot.estados,
+          localUpdatedAt: localSnapshot.updatedAt,
+          reason: migrated
+            ? "Sincronizacion de inicio de sesion"
+            : "Migracion inicial desde almacenamiento local",
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`sync-failed-${response.status}`);
+      }
+
+      const payload = (await response.json()) as {
+        state: Record<string, EstadoMateria>;
+        updatedAt: string | null;
+      };
+
+      if (cancelled) return;
+
+      const mergedState = payload.state ?? {};
+      const mergedUpdatedAt = payload.updatedAt ?? new Date().toISOString();
+
+      remoteBaselineReadyRef.current = true;
+      lastSyncedSerializedRef.current = JSON.stringify(mergedState);
+
+      savePlanState(planId, versionId, mergedState, mergedUpdatedAt);
+      setEstados(mergedState);
+      markPlanStateMigrated(authenticatedUserId, planId, versionId);
+      setSyncStatus("synced");
+    }
+
+    syncInitialSnapshot().catch(() => {
+      if (cancelled) return;
+      setSyncStatus("error");
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [isHydrated, planId, versionId, session?.user?.id, sessionStatus]);
+
+  useEffect(() => {
+    if (!isHydrated) return;
+    if (sessionStatus !== "authenticated" || !session?.user?.id) return;
+    if (!remoteBaselineReadyRef.current) return;
+
+    const serialized = JSON.stringify(estados);
+    if (serialized === lastSyncedSerializedRef.current) return;
+
+    const timeout = window.setTimeout(async () => {
+      try {
+        setSyncStatus("syncing");
+
+        const clientUpdatedAt = new Date().toISOString();
+
+        const response = await fetch("/api/progreso", {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            planId,
+            versionId,
+            state: estados,
+            clientUpdatedAt,
+            reason: "Actualizacion de progreso desde UI",
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error(`sync-put-failed-${response.status}`);
+        }
+
+        const payload = (await response.json()) as {
+          state: Record<string, EstadoMateria>;
+          updatedAt: string | null;
+        };
+
+        const nextState = payload.state ?? {};
+        const nextSerialized = JSON.stringify(nextState);
+
+        lastSyncedSerializedRef.current = nextSerialized;
+        savePlanState(planId, versionId, nextState, payload.updatedAt ?? clientUpdatedAt);
+
+        if (nextSerialized !== serialized) {
+          setEstados(nextState);
+        }
+
+        setSyncStatus("synced");
+      } catch {
+        setSyncStatus("error");
+      }
+    }, REMOTE_SYNC_DEBOUNCE_MS);
+
+    return () => {
+      window.clearTimeout(timeout);
+    };
+  }, [estados, isHydrated, planId, versionId, session?.user?.id, sessionStatus]);
 
   function getMateriaContextFromKey(estadoKey: string) {
     if (estadoKey.includes("::")) {
@@ -219,6 +364,22 @@ export function usePlanState(
   function resetMaterias() {
     setEstados({});
     clearPlanState(planId, versionId);
+
+    if (sessionStatus === "authenticated") {
+      fetch("/api/progreso", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          planId,
+          versionId,
+          reason: "Reinicio de progreso desde UI",
+        }),
+      }).catch(() => {
+        setSyncStatus("error");
+      });
+    }
   }
 
   return {
@@ -228,5 +389,8 @@ export function usePlanState(
     deshacerMateria,
     resetMaterias,
     isHydrated,
+    syncStatus,
+    isAuthenticated: sessionStatus === "authenticated",
+    sessionUserRole: session?.user?.role,
   };
 }

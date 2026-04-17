@@ -2,6 +2,16 @@
 __pycache__/
 *.pyc
 .DS_Store
+**/node_modules/
+**/.env
+**/.env.local
+**/.env.development.local
+**/.env.test.local
+**/.env.production.local
+web/prisma/*.db
+web/prisma/*.db-journal
+web/prisma/prisma/*.db
+web/prisma/prisma/*.db-journal
 
 # Playwright
 node_modules/
