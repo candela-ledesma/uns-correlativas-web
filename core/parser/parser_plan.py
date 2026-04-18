@@ -6,11 +6,61 @@ from .patterns import (
     PATRON_MATERIA,
     PATRON_CORRELATIVA,
     PATRON_CORRELATIVA_UN_ESTADO,
-    PATRON_GRUPO
+    PATRON_GRUPO,
+    PATRON_SECCION_OPTATIVAS,
 )
 from .categorizer import detectar_categoria_y_subtipo
 from .grupo_detector import es_linea_agrupador
 import re
+import unicodedata
+
+
+def extraer_orientacion_desde_nombre(nombre):
+    if not isinstance(nombre, str):
+        return None
+
+    match = re.search(
+        r"orientaci[oó]n\s+([^,]+?)(?:,|$)",
+        nombre,
+        re.IGNORECASE,
+    )
+    if not match:
+        return None
+
+    orientacion = match.group(1).strip()
+    return orientacion or None
+
+
+def normalizar_texto(valor):
+    if not isinstance(valor, str):
+        return ""
+
+    valor = valor.lower().strip()
+    valor = "".join(
+        c for c in unicodedata.normalize("NFD", valor) if unicodedata.category(c) != "Mn"
+    )
+    return valor
+
+
+def debe_anotar_orientacion(nombre_materia, orientacion_contexto):
+    orientacion = normalizar_texto(orientacion_contexto)
+    nombre = normalizar_texto(nombre_materia)
+
+    if not orientacion or not nombre:
+        return False
+
+    if orientacion == "hidraulica":
+        return "hidraulic" in nombre
+
+    if orientacion == "vias de comunicacion":
+        return "ferrocarril" in nombre or "carretera" in nombre
+
+    # Construcciones incluye muchas materias troncales compartidas;
+    # no se etiqueta automaticamente para evitar excluirlas en otros filtros.
+    if orientacion == "construcciones":
+        return False
+
+    return False
 
 def extraer_correlativas_de_linea(linea):
     correlativas = {}
@@ -34,7 +84,80 @@ def limpiar_linea_materia(linea):
     return linea
 
 
-def parsear_linea_materia(linea, año_actual, cuatrimestre_actual, seccion_actual=None, grupo_actual=None):
+def construir_marcadores_orientacion(lineas):
+    indice_optativas = None
+
+    for index, linea in enumerate(lineas):
+        if PATRON_SECCION_OPTATIVAS.match(linea):
+            indice_optativas = index
+            break
+
+    limite = indice_optativas if indice_optativas is not None else len(lineas)
+    marcadores = []
+
+    for index in range(limite):
+        match = PATRON_MATERIA.match(lineas[index])
+        if not match:
+            continue
+
+        codigo = match.group(1).strip()
+        if not codigo.upper().startswith("G"):
+            continue
+
+        nombre = match.group(2).strip()
+        orientacion = extraer_orientacion_desde_nombre(nombre)
+        if orientacion:
+            marcadores.append((index, orientacion))
+
+    return marcadores
+
+
+def obtener_orientacion_cercana(
+    index_linea,
+    marcadores,
+    max_distancia=80,
+    preferir_siguiente_hasta=60,
+):
+    if not marcadores:
+        return None
+
+    marcador_previo = None
+    marcador_siguiente = None
+
+    for index_marcador, orientacion in marcadores:
+        if index_marcador <= index_linea:
+            marcador_previo = (index_marcador, orientacion)
+
+        if index_marcador >= index_linea:
+            marcador_siguiente = (index_marcador, orientacion)
+            break
+
+    if marcador_siguiente:
+        distancia_siguiente = marcador_siguiente[0] - index_linea
+        if distancia_siguiente <= preferir_siguiente_hasta:
+            return marcador_siguiente[1]
+
+    if marcador_previo:
+        distancia_previa = index_linea - marcador_previo[0]
+        if distancia_previa <= max_distancia:
+            return marcador_previo[1]
+
+    if marcador_siguiente:
+        distancia_siguiente = marcador_siguiente[0] - index_linea
+        if distancia_siguiente <= max_distancia:
+            return marcador_siguiente[1]
+
+    return None
+
+
+def parsear_linea_materia(
+    linea,
+    año_actual,
+    cuatrimestre_actual,
+    seccion_actual=None,
+    grupo_actual=None,
+    orientacion_contexto=None,
+):
     correlativas = extraer_correlativas_de_linea(linea)
     linea_limpia = limpiar_linea_materia(linea)
 
@@ -74,6 +197,14 @@ def parsear_linea_materia(linea, año_actual, cuatrimestre_actual, seccion_actua
         grupo_opcion=grupo_actual,
         subtipo=subtipo
     )
+
+    if (
+        orientacion_contexto
+        and seccion_actual == "normal"
+        and grupo_actual is None
+        and debe_anotar_orientacion(nombre, orientacion_contexto)
+    ):
+        materia["orientaciones"] = [orientacion_contexto]
 
     materia["correlativas"].update(correlativas)
 
@@ -120,8 +251,9 @@ def detectar_materias_generico(texto):
     materia_actual = None
 
     lineas = [l.strip() for l in texto.splitlines() if l.strip()]
+    marcadores_orientacion = construir_marcadores_orientacion(lineas)
 
-    for linea in lineas:
+    for index_linea, linea in enumerate(lineas):
         tipo = clasificar_linea(linea, seccion_actual)
 
         if tipo in ("vacia", "basura", "desconocida"):
@@ -184,6 +316,10 @@ def detectar_materias_generico(texto):
                 agrupadores.append(agrupador)
                 agrupadores_index[codigo] = agrupador
 
+            orientacion_grupo = extraer_orientacion_desde_nombre(nombre)
+            if orientacion_grupo:
+                agrupadores_index[codigo]["orientacion"] = orientacion_grupo
+
             continue
 
         agrupador_info = es_linea_agrupador(linea, seccion_actual)
@@ -205,20 +341,42 @@ def detectar_materias_generico(texto):
                 agrupadores.append(agrupador)
                 agrupadores_index[codigo] = agrupador
 
+            orientacion_grupo = extraer_orientacion_desde_nombre(nombre)
+            if orientacion_grupo:
+                agrupadores_index[codigo]["orientacion"] = orientacion_grupo
+
             continue
 
         if tipo == "materia":
+            orientacion_contexto = None
+            if seccion_actual == "normal":
+                orientacion_contexto = obtener_orientacion_cercana(
+                    index_linea,
+                    marcadores_orientacion,
+                )
+
             materia_parseada = parsear_linea_materia(
                 linea,
                 año_actual,
                 cuatrimestre_actual,
                 seccion_actual,
-                grupo_actual
+                grupo_actual,
+                orientacion_contexto,
             )
 
             if materia_parseada:
                 materia_id = str(materia_parseada["id"])
                 materia_parseada["id"] = materia_id
+
+                if (
+                    seccion_actual == "normal"
+                    and materia_parseada.get("tipo") == "agrupador_requisito"
+                ):
+                    orientacion_detectada = extraer_orientacion_desde_nombre(
+                        materia_parseada.get("nombre", "")
+                    )
+                    if orientacion_detectada:
+                        materia_parseada["orientacion"] = orientacion_detectada
 
                 if materia_id not in materias_index:
                     materias.append(materia_parseada)
@@ -262,6 +420,43 @@ def detectar_materias_generico(texto):
                             materia_parseada["correlativas"]
                         )
 
+                    orientaciones_unificadas = []
+
+                    for orientacion in (
+                        materia_existente.get("orientaciones") or []
+                    ):
+                        if orientacion not in orientaciones_unificadas:
+                            orientaciones_unificadas.append(orientacion)
+
+                    orientacion_existente = materia_existente.get("orientacion")
+                    if (
+                        isinstance(orientacion_existente, str)
+                        and orientacion_existente
+                        and orientacion_existente not in orientaciones_unificadas
+                    ):
+                        orientaciones_unificadas.append(orientacion_existente)
+
+                    for orientacion in (
+                        materia_parseada.get("orientaciones") or []
+                    ):
+                        if orientacion not in orientaciones_unificadas:
+                            orientaciones_unificadas.append(orientacion)
+
+                    orientacion_parseada = materia_parseada.get("orientacion")
+                    if (
+                        isinstance(orientacion_parseada, str)
+                        and orientacion_parseada
+                        and orientacion_parseada not in orientaciones_unificadas
+                    ):
+                        orientaciones_unificadas.append(orientacion_parseada)
+
+                    if len(orientaciones_unificadas) == 1:
+                        materia_existente["orientacion"] = orientaciones_unificadas[0]
+                        materia_existente.pop("orientaciones", None)
+                    elif len(orientaciones_unificadas) > 1:
+                        materia_existente["orientaciones"] = orientaciones_unificadas
+                        materia_existente.pop("orientacion", None)
+
                     materia_actual = materia_existente
 
                 if grupo_actual is not None and grupo_actual in agrupadores_index:
@@ -280,13 +475,9 @@ def detectar_materias_generico(texto):
         agrupador["opciones"] = list(dict.fromkeys(str(op) for op in agrupador["opciones"]))
 
         if agrupador.get("tipo") == "optativa_grupo" and "orientacion" not in agrupador:
-            match = re.search(
-                r"orientaci[oó]n\s+([^,]+?)(?:,|$)",
-                agrupador.get("nombre", ""),
-                re.IGNORECASE,
-            )
-            if match:
-                agrupador["orientacion"] = match.group(1).strip()
+            orientacion = extraer_orientacion_desde_nombre(agrupador.get("nombre", ""))
+            if orientacion:
+                agrupador["orientacion"] = orientacion
 
     return {
         "plan": info_plan,

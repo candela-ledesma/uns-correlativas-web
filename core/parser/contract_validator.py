@@ -88,6 +88,10 @@ def validate_plan_contract(data: Any) -> ContractValidationResult:
         if not _is_non_empty_string(agrupador.get("tipo")):
             _add_issue(errors, "error", f"{path}.tipo", "Debe ser string no vacio")
 
+        orientacion_agrupador = agrupador.get("orientacion")
+        if orientacion_agrupador is not None and not _is_non_empty_string(orientacion_agrupador):
+            _add_issue(errors, "error", f"{path}.orientacion", "Debe ser string o null")
+
         opciones = agrupador.get("opciones")
         if not isinstance(opciones, list):
             _add_issue(errors, "error", f"{path}.opciones", "Debe ser un array")
@@ -151,6 +155,24 @@ def validate_plan_contract(data: Any) -> ContractValidationResult:
         grupo_opcion = materia.get("grupo_opcion")
         if grupo_opcion is not None and not _is_non_empty_string(grupo_opcion):
             _add_issue(errors, "error", f"{path}.grupo_opcion", "Debe ser string o null")
+
+        orientacion = materia.get("orientacion")
+        if orientacion is not None and not _is_non_empty_string(orientacion):
+            _add_issue(errors, "error", f"{path}.orientacion", "Debe ser string o null")
+
+        orientaciones = materia.get("orientaciones")
+        if orientaciones is not None:
+            if not isinstance(orientaciones, list):
+                _add_issue(errors, "error", f"{path}.orientaciones", "Debe ser array o null")
+            else:
+                for orientacion_index, orientacion_item in enumerate(orientaciones):
+                    if not _is_non_empty_string(orientacion_item):
+                        _add_issue(
+                            errors,
+                            "error",
+                            f"{path}.orientaciones[{orientacion_index}]",
+                            "Debe ser string no vacio",
+                        )
 
         subtipo = materia.get("subtipo")
         if subtipo is not None and not isinstance(subtipo, str):

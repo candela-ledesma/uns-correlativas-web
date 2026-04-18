@@ -886,7 +886,8 @@
       "categoria": "normal",
       "grupo_opcion": null,
       "subtipo": null,
-      "correlativas": {}
+      "correlativas": {},
+      "orientacion": "Construcciones"
     },
     {
       "id": "5405",
@@ -1014,7 +1015,8 @@
       "categoria": "normal",
       "grupo_opcion": null,
       "subtipo": null,
-      "correlativas": {}
+      "correlativas": {},
+      "orientacion": "Construcciones"
     },
     {
       "id": "5410",
@@ -1208,7 +1210,10 @@
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
-      }
+      },
+      "orientaciones": [
+        "Hidráulica"
+      ]
     },
     {
       "id": "5335",
@@ -1237,7 +1242,10 @@
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
-      }
+      },
+      "orientaciones": [
+        "Hidráulica"
+      ]
     },
     {
       "id": "G0859",
@@ -1249,7 +1257,8 @@
       "categoria": "normal",
       "grupo_opcion": null,
       "subtipo": null,
-      "correlativas": {}
+      "correlativas": {},
+      "orientacion": "Hidráulica"
     },
     {
       "id": "G0860",
@@ -1261,7 +1270,8 @@
       "categoria": "normal",
       "grupo_opcion": null,
       "subtipo": null,
-      "correlativas": {}
+      "correlativas": {},
+      "orientacion": "Hidráulica"
     },
     {
       "id": "5115",
@@ -1294,7 +1304,10 @@
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
-      }
+      },
+      "orientaciones": [
+        "Hidráulica"
+      ]
     },
     {
       "id": "5412",
@@ -1356,7 +1369,10 @@
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
-      }
+      },
+      "orientaciones": [
+        "Vías de Comunicación"
+      ]
     },
     {
       "id": "5041",
@@ -1385,7 +1401,10 @@
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
-      }
+      },
+      "orientaciones": [
+        "Vías de Comunicación"
+      ]
     },
     {
       "id": "G0861",
@@ -1397,7 +1416,8 @@
       "categoria": "normal",
       "grupo_opcion": null,
       "subtipo": null,
-      "correlativas": {}
+      "correlativas": {},
+      "orientacion": "Vías de Comunicación"
     },
     {
       "id": "5042",
@@ -1430,7 +1450,10 @@
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
-      }
+      },
+      "orientaciones": [
+        "Vías de Comunicación"
+      ]
     },
     {
       "id": "G0862",
@@ -1442,7 +1465,8 @@
       "categoria": "normal",
       "grupo_opcion": null,
       "subtipo": null,
-      "correlativas": {}
+      "correlativas": {},
+      "orientacion": "Vías de Comunicación"
     },
     {
       "id": "2710",

@@ -22,6 +22,22 @@ FIXTURES = [
 
 
 class ParserCareerFixturesTests(unittest.TestCase):
+    @staticmethod
+    def _materia_orientaciones(materia):
+        orientaciones = []
+
+        orientacion_simple = materia.get("orientacion")
+        if isinstance(orientacion_simple, str) and orientacion_simple.strip():
+            orientaciones.append(orientacion_simple.strip())
+
+        orientaciones_multiples = materia.get("orientaciones")
+        if isinstance(orientaciones_multiples, list):
+            for orientacion in orientaciones_multiples:
+                if isinstance(orientacion, str) and orientacion.strip() and orientacion not in orientaciones:
+                    orientaciones.append(orientacion.strip())
+
+        return set(orientaciones)
+
     def test_pdf_fixtures_match_contract(self):
         for carrera_id, pdf_path, reference_json_path in FIXTURES:
             with self.subTest(carrera=carrera_id):
@@ -61,6 +77,30 @@ class ParserCareerFixturesTests(unittest.TestCase):
                         f"Esperado >= {expected_minimum}, obtenido {len(parsed['materias'])}"
                     ),
                 )
+
+                if carrera_id == "ing_civil":
+                    materias_por_id = {
+                        str(materia.get("id")): materia
+                        for materia in parsed.get("materias", [])
+                    }
+
+                    self.assertIn("5013", materias_por_id)
+                    orientaciones_5013 = self._materia_orientaciones(materias_por_id["5013"])
+                    self.assertEqual(orientaciones_5013, set())
+
+                    for materia_id in ("5220", "5335", "5115"):
+                        with self.subTest(materia=materia_id):
+                            self.assertEqual(
+                                self._materia_orientaciones(materias_por_id[materia_id]),
+                                {"Hidráulica"},
+                            )
+
+                    for materia_id in ("5180", "5041", "5042"):
+                        with self.subTest(materia=materia_id):
+                            self.assertEqual(
+                                self._materia_orientaciones(materias_por_id[materia_id]),
+                                {"Vías de Comunicación"},
+                            )
 
 
 if __name__ == "__main__":

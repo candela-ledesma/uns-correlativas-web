@@ -25,7 +25,7 @@ type Params = {
   filtros: FiltrosPlan;
 };
 
-function normalizarTextoBusqueda(valor: string) {
+export function normalizarTextoBusqueda(valor: string) {
   return valor
     .toLowerCase()
     .normalize("NFD")
@@ -64,6 +64,9 @@ export function filtrarMaterias({
 
     if (filtros.orientacion !== "todas") {
       const idMateria = String(materia.id);
+      const orientacionDirecta = materia.orientacion ?? null;
+      const orientacionesDirectas = materia.orientaciones ?? null;
+      const orientacionFiltro = normalizarTextoBusqueda(filtros.orientacion);
 
       const grupoIdParaOrientacion = materia.grupo_opcion
         ? String(materia.grupo_opcion)
@@ -77,11 +80,19 @@ export function filtrarMaterias({
 
       const orientacionGrupo =
         grupo?.tipo === "optativa_grupo" ? grupo.orientacion ?? null : null;
+      const orientacionMateria = orientacionDirecta ?? orientacionGrupo;
 
-      if (orientacionGrupo) {
-        const orientacionFiltro = normalizarTextoBusqueda(filtros.orientacion);
-        const orientacionMateria = normalizarTextoBusqueda(orientacionGrupo);
-        if (orientacionMateria !== orientacionFiltro) {
+      if (orientacionesDirectas && orientacionesDirectas.length > 0) {
+        const coincide = orientacionesDirectas.some(
+          (orientacion) => normalizarTextoBusqueda(orientacion) === orientacionFiltro
+        );
+
+        if (!coincide) {
+          return false;
+        }
+      } else if (orientacionMateria) {
+        const orientacionMateriaNormalizada = normalizarTextoBusqueda(orientacionMateria);
+        if (orientacionMateriaNormalizada !== orientacionFiltro) {
           return false;
         }
       }

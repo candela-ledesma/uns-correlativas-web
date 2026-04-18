@@ -6,6 +6,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { PlanData, Materia } from "@/app/types/plan";
 import PlanHeader from "@/components/PlanHeader";
 import PlanFilters from "@/components/PlanFilters";
+import OrientationSelector from "@/components/OrientationSelector";
 import AnioSection from "@/components/AnioSection";
 import GrupoMaterias from "@/components/GrupoMaterias";
 import PlanOnboarding from "@/components/PlanOnboarding";
@@ -13,7 +14,11 @@ import { usePlanState } from "@/hooks/usePlanState";
 import { usePlanStructure } from "@/hooks/usePlanStructure";
 import { getMateriaViewModel } from "@/lib/materiaViewModel";
 import { calcularProgresoPlan } from "@/lib/calcularProgresoPlan";
-import { filtrarMaterias, type FiltrosPlan } from "@/lib/filtrarMaterias";
+import {
+  filtrarMaterias,
+  normalizarTextoBusqueda,
+  type FiltrosPlan,
+} from "@/lib/filtrarMaterias";
 
 type Props = {
   data: PlanData;
@@ -36,14 +41,6 @@ const FILTROS_INICIALES: FiltrosPlan = {
   estado: "todas",
   orientacion: "todas",
 };
-
-function normalizarTexto(valor: string) {
-  return valor
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .trim();
-}
 
 function agruparPorAnioYCuatrimestre(materias: Materia[]) {
   const resultado: Record<string, Record<string, Materia[]>> = {};
@@ -170,7 +167,7 @@ export default function PlanViewer({
     });
   };
 
-  const agrupadores = data.agrupadores || [];
+  const agrupadores = useMemo(() => data.agrupadores ?? [], [data.agrupadores]);
   const materiasPorId = useMemo(() => {
     return new Map(data.materias.map((m) => [String(m.id), m]));
   }, [data.materias]);
@@ -178,16 +175,6 @@ export default function PlanViewer({
   const [filtros, setFiltros] = useState<FiltrosPlan>({
     ...FILTROS_INICIALES,
   });
-
-  const canResetFiltros = filtros.codigo !== FILTROS_INICIALES.codigo
-    || filtros.anio !== FILTROS_INICIALES.anio
-    || filtros.cuatrimestre !== FILTROS_INICIALES.cuatrimestre
-    || filtros.estado !== FILTROS_INICIALES.estado
-    || filtros.orientacion !== FILTROS_INICIALES.orientacion;
-
-  function resetFiltros() {
-    setFiltros({ ...FILTROS_INICIALES });
-  }
 
   const {
     estados,
@@ -224,7 +211,7 @@ export default function PlanViewer({
       const orientacion = agrupador.orientacion;
       if (!orientacion) continue;
 
-      const clave = normalizarTexto(orientacion);
+      const clave = normalizarTextoBusqueda(orientacion);
       if (vistos.has(clave)) continue;
       vistos.add(clave);
 
@@ -234,15 +221,76 @@ export default function PlanViewer({
     return resultado;
   }, [agrupadores]);
 
+  const orientacionCanonicaPorClave = useMemo(() => {
+    const map = new Map<string, string>();
+
+    for (const orientacion of orientaciones) {
+      const clave = normalizarTextoBusqueda(orientacion);
+
+      if (!map.has(clave)) {
+        map.set(clave, orientacion);
+      }
+    }
+
+    return map;
+  }, [orientaciones]);
+
+  const orientacionDesdeUrl = useMemo(() => {
+    if (orientaciones.length === 0) return FILTROS_INICIALES.orientacion;
+
+    const orientacionRaw = searchParams.get("orientacion");
+    if (!orientacionRaw) return FILTROS_INICIALES.orientacion;
+
+    const orientacion = orientacionCanonicaPorClave.get(
+      normalizarTextoBusqueda(orientacionRaw)
+    );
+
+    return orientacion ?? FILTROS_INICIALES.orientacion;
+  }, [orientaciones.length, orientacionCanonicaPorClave, searchParams]);
+
+  const filtrosConOrientacion = useMemo(
+    () => ({
+      ...filtros,
+      orientacion: orientacionDesdeUrl,
+    }),
+    [filtros, orientacionDesdeUrl]
+  );
+
+  const canResetFiltros = filtrosConOrientacion.codigo !== FILTROS_INICIALES.codigo
+    || filtrosConOrientacion.anio !== FILTROS_INICIALES.anio
+    || filtrosConOrientacion.cuatrimestre !== FILTROS_INICIALES.cuatrimestre
+    || filtrosConOrientacion.estado !== FILTROS_INICIALES.estado
+    || filtrosConOrientacion.orientacion !== FILTROS_INICIALES.orientacion;
+
+  function actualizarOrientacionEnUrl(orientacion: string) {
+    const params = new URLSearchParams(searchParams.toString());
+
+    if (orientacion === FILTROS_INICIALES.orientacion) {
+      params.delete("orientacion");
+    } else {
+      params.set("orientacion", orientacion);
+    }
+
+    const query = params.toString();
+    router.replace(query ? `${pathname}?${query}` : pathname, {
+      scroll: false,
+    });
+  }
+
+  function resetFiltros() {
+    setFiltros({ ...FILTROS_INICIALES });
+    actualizarOrientacionEnUrl(FILTROS_INICIALES.orientacion);
+  }
+
   const materiasFiltradas = useMemo(() => {
     return filtrarMaterias({
       materias: data.materias,
       estados,
       agrupadores,
       idsAgrupadores,
-      filtros,
+      filtros: filtrosConOrientacion,
     });
-  }, [data.materias, estados, agrupadores, idsAgrupadores, filtros]);
+  }, [data.materias, estados, agrupadores, idsAgrupadores, filtrosConOrientacion]);
 
   const agrupadorTipoPorId = useMemo(() => {
     return new Map(agrupadores.map((a) => [String(a.id), a.tipo]));
@@ -441,14 +489,19 @@ export default function PlanViewer({
         }}
       />
 
+      <OrientationSelector
+        orientaciones={orientaciones}
+        selected={orientacionDesdeUrl}
+        onSelect={actualizarOrientacionEnUrl}
+      />
+
       <PlanFilters
-        filtros={filtros}
+        filtros={filtrosConOrientacion}
         onChange={setFiltros}
         onReset={resetFiltros}
         canReset={canResetFiltros}
         anios={anios}
         cuatrimestres={cuatrimestres}
-        orientaciones={orientaciones}
       />
 
       {Object.entries(seccionesPorAnioYCuatrimestre).map(([anio, cuatrimestresMap]) => (
