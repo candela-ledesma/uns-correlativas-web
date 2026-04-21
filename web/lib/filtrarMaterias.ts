@@ -70,24 +70,22 @@ export function filtrarMaterias({
       const tieneOrientacionesDirectas =
         Array.isArray(orientacionesDirectas) && orientacionesDirectas.length > 0;
 
-      // Buscar orientaciones en la materia misma (campos orientacion/orientaciones)
       if (tieneOrientacionesDirectas) {
         const coincide = orientacionesDirectas.some(
           (orientacion) => normalizarTextoBusqueda(orientacion) === orientacionFiltro
         );
 
         if (coincide) {
-          // Materia tiene esta orientación directamente
           return true;
         }
       } else if (orientacionDirecta) {
         const orientacionMateriaNormalizada = normalizarTextoBusqueda(orientacionDirecta);
         if (orientacionMateriaNormalizada === orientacionFiltro) {
-          // Materia tiene esta orientación directamente
           return true;
         }
       }
 
+      // Buscar orientaciones en la materia misma (campos orientacion/orientaciones)
       // Si no encontró en la materia, buscar en agrupadores (para optativas)
       const grupoIdParaOrientacion = materia.grupo_opcion
         ? String(materia.grupo_opcion)
@@ -111,13 +109,13 @@ export function filtrarMaterias({
         return false;
       }
 
-      // Las materias comunes (sin orientación explícita o de agrupador) se muestran siempre.
+        // Las materias comunes (sin orientación explícita o de agrupador) se muestran siempre.
       const esComun = !orientacionDirecta && !tieneOrientacionesDirectas;
       if (esComun) {
         return true;
       }
 
-      // Materia no tiene esta orientación.
+        // Materia no tiene esta orientación.
       return false;
     }
 
