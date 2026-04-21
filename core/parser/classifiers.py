@@ -13,6 +13,7 @@ from .patterns import (
     PATRON_SECCION_OPTATIVAS,
     PATRON_SECCION_IDIOMAS,
     PATRON_SECCION_SEMINARIOS,
+    PATRON_SECCION_ORIENTACION,
     PATRON_GRUPO,
     PATRON_MATERIA,
     PATRON_CORRELATIVA,
@@ -57,6 +58,9 @@ def clasificar_linea(linea, seccion_actual):
 
     if PATRON_SECCION_SEMINARIOS.match(linea):
         return "seccion_seminarios"
+
+    if PATRON_SECCION_ORIENTACION.match(linea):
+        return "seccion_orientacion"
 
     if PATRON_CORRELATIVA_SOLO.match(linea):
         return "correlativa"

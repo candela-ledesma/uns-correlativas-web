@@ -95,6 +95,10 @@ export function filtrarMaterias({
         if (orientacionMateriaNormalizada !== orientacionFiltro) {
           return false;
         }
+      } else {
+        // Con orientación activa, ocultamos materias sin orientación explícita
+        // para evitar mostrar materias comunes en filtros de orientación.
+        return false;
       }
     }
 

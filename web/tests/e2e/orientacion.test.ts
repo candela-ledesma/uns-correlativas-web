@@ -23,7 +23,7 @@ test.describe("Ingeniería Civil - orientaciones y correlativas", () => {
 
     // Caso pedido: en Construcciones aparece 5225
     await expect(page.getByTestId("materia-5225")).toBeVisible();
-    await expect(page.getByTestId("materia-5013")).toBeVisible();
+    await expect(page.getByTestId("materia-5013")).toHaveCount(0);
 
     // No deben aparecer exclusivas de Hidráulica
     await expect(page.getByTestId("materia-5220")).toHaveCount(0);
@@ -48,7 +48,7 @@ test.describe("Ingeniería Civil - orientaciones y correlativas", () => {
     await expect(page.getByTestId("materia-5220")).toBeVisible();
     await expect(page.getByTestId("materia-5335")).toBeVisible();
     await expect(page.getByTestId("materia-5115")).toBeVisible();
-    await expect(page.getByTestId("materia-5013")).toBeVisible();
+    await expect(page.getByTestId("materia-5013")).toHaveCount(0);
   });
 
   test("Vías de Comunicación: aparecen 5180, 5041 y 5042", async ({ page }) => {
@@ -63,7 +63,7 @@ test.describe("Ingeniería Civil - orientaciones y correlativas", () => {
     await expect(page.getByTestId("materia-5180")).toBeVisible();
     await expect(page.getByTestId("materia-5041")).toBeVisible();
     await expect(page.getByTestId("materia-5042")).toBeVisible();
-    await expect(page.getByTestId("materia-5013")).toBeVisible();
+    await expect(page.getByTestId("materia-5013")).toHaveCount(0);
   });
 
   test("lee orientación desde query params y permite volver a Todas", async ({ page }) => {
