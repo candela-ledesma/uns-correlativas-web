@@ -4,7 +4,7 @@
     "universidad": "Universidad Nacional del Sur",
     "codigo_plan": "Plan 2025 - Versión 1"
   },
-  "comunes": [
+  "materias": [
     {
       "id": "1029",
       "nombre": "BIOLOGIA CELULAR",

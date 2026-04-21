@@ -4,7 +4,7 @@
     "universidad": "Universidad Nacional del Sur",
     "codigo_plan": "Plan 2025 - Versión 1"
   },
-  "comunes": [
+  "materias": [
     {
       "id": "5293",
       "nombre": "INTRODUCCION A LAS INGENIERIAS",
@@ -576,103 +576,6 @@
       }
     },
     {
-      "id": "5405",
-      "nombre": "PRACTICA PROFESIONAL SUPERVISADA IC",
-      "año": "Cuarto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "5008": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "5176": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "I0012": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
-      }
-    },
-    {
-      "id": "5013",
-      "nombre": "MEDIO AMBIENTE IC",
-      "año": "Quinto Año",
-      "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "32",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "5006": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        },
-        "5070": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        },
-        "5176": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "5462": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        },
-        "I0012": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
-      }
-    },
-    {
-      "id": "1709",
-      "nombre": "LEGISLACION APLICADA A LA INGENIERIA",
-      "año": "Quinto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "64",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "5070": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "5176": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "I0012": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
-      }
-    },
-    {
-      "id": "5175",
-      "nombre": "EXAMEN DE SUFICIENCIA DE IDIOMA: INGLES",
-      "año": "Quinto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "",
-      "tipo": "materia",
-      "categoria": "optativa",
-      "grupo_opcion": "I0012",
-      "subtipo": "idioma",
-      "correlativas": {}
-    }
-  ],
-  "Construcciones": [
-    {
       "id": "5080",
       "nombre": "CONSTRUCCIONES METALICAS Y DE MADERA",
       "año": "Cuarto Año",
@@ -711,8 +614,7 @@
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
-      },
-      "orientacion": "Construcciones"
+      }
     },
     {
       "id": "5134",
@@ -749,11 +651,7 @@
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
-      },
-      "orientaciones": [
-        "Construcciones",
-        "Hidrulica"
-      ]
+      }
     },
     {
       "id": "5225",
@@ -827,11 +725,7 @@
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
-      },
-      "orientaciones": [
-        "Construcciones",
-        "Hidrulica"
-      ]
+      }
     },
     {
       "id": "5009",
@@ -886,8 +780,7 @@
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
-      },
-      "orientacion": "Construcciones"
+      }
     },
     {
       "id": "5181",
@@ -953,8 +846,44 @@
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
-      },
-      "orientacion": "Construcciones"
+      }
+    },
+    {
+      "id": "5270",
+      "nombre": "INGENIERIA SANITARIA",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "96",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5006": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "5132": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "5176": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "5230": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "5462": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "I0012": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
     },
     {
       "id": "G0857",
@@ -968,6 +897,31 @@
       "subtipo": null,
       "correlativas": {},
       "orientacion": "Construcciones"
+    },
+    {
+      "id": "5405",
+      "nombre": "PRACTICA PROFESIONAL SUPERVISADA IC",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5008": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "5176": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "I0012": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
     },
     {
       "id": "5044",
@@ -1029,8 +983,40 @@
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
-      },
-      "orientacion": "Construcciones"
+      }
+    },
+    {
+      "id": "5013",
+      "nombre": "MEDIO AMBIENTE IC",
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "32",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5006": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "5070": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "5176": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "5462": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "I0012": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
     },
     {
       "id": "G0858",
@@ -1044,6 +1030,31 @@
       "subtipo": null,
       "correlativas": {},
       "orientacion": "Construcciones"
+    },
+    {
+      "id": "5410",
+      "nombre": "PUERTOS Y VIAS NAVEGABLES",
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "96",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5176": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "5375": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "I0012": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
     },
     {
       "id": "5012",
@@ -1080,8 +1091,7 @@
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
-      },
-      "orientacion": "Construcciones"
+      }
     },
     {
       "id": "5148",
@@ -1122,6 +1132,31 @@
       "orientacion": "Construcciones"
     },
     {
+      "id": "1709",
+      "nombre": "LEGISLACION APLICADA A LA INGENIERIA",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "64",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5070": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "5176": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "I0012": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
       "id": "5411",
       "nombre": "PUENTES",
       "año": "Quinto Año",
@@ -1154,6 +1189,291 @@
         }
       },
       "orientacion": "Construcciones"
+    },
+    {
+      "id": "5220",
+      "nombre": "HIDRAULICA AGRICOLA E HIDROLOGIA",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "96",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5006": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "5176": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "5230": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "5462": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "5475": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "I0012": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      },
+      "orientacion": "Hidráulica"
+    },
+    {
+      "id": "5335",
+      "nombre": "MAQUINAS HIDRAULICAS Y USINAS HIDROELECTRICAS",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "96",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5176": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "5220": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "5230": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "I0012": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      },
+      "orientacion": "Hidráulica"
+    },
+    {
+      "id": "G0859",
+      "nombre": "Optativa de Ing. Civil, orientación Hidráulica, plan 2025",
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "",
+      "tipo": "agrupador_requisito",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {},
+      "orientacion": "Hidráulica"
+    },
+    {
+      "id": "G0860",
+      "nombre": "Optativa de Ing. Civil, orientación Hidráulica, plan 2025",
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "",
+      "tipo": "agrupador_requisito",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {},
+      "orientacion": "Hidráulica"
+    },
+    {
+      "id": "5115",
+      "nombre": "DISEÑO DE ESTRUCTURAS HIDRAULICAS",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "96",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5134": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "5176": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "5220": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "5241": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "I0012": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      },
+      "orientacion": "Hidráulica"
+    },
+    {
+      "id": "5412",
+      "nombre": "PUENTES A",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "64",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5080": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "5176": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "5241": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "5242": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "I0012": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      },
+      "orientaciones": [
+        "Hidráulica",
+        "Vías de Comunicación"
+      ]
+    },
+    {
+      "id": "5180",
+      "nombre": "FERROCARRILES",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "96",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5176": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "5375": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "5475": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "I0012": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      },
+      "orientacion": "Vías de Comunicación"
+    },
+    {
+      "id": "5041",
+      "nombre": "CARRETERAS I",
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "96",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5117": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "5176": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "5375": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "I0012": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      },
+      "orientacion": "Vías de Comunicación"
+    },
+    {
+      "id": "G0861",
+      "nombre": "Optativa de Ing. Civil, orientación Vías de Comunicación, plan 2025",
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "",
+      "tipo": "agrupador_requisito",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {},
+      "orientacion": "Vías de Comunicación"
+    },
+    {
+      "id": "5042",
+      "nombre": "CARRETERAS II",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "96",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5041": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "5117": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "5176": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "5242": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "I0012": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      },
+      "orientacion": "Vías de Comunicación"
+    },
+    {
+      "id": "G0862",
+      "nombre": "Optativa de Ing. Civil, orientación Vías de Comunicación, plan 2025",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "agrupador_requisito",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {},
+      "orientacion": "Vías de Comunicación"
     },
     {
       "id": "2710",
@@ -1356,6 +1676,36 @@
       ]
     },
     {
+      "id": "5229",
+      "nombre": "HIDRAULICA FLUVIAL",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "32",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G0859",
+      "subtipo": null,
+      "correlativas": {
+        "5176": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "5230": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "5375": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "I0012": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      },
+      "orientacion": "Hidráulica"
+    },
+    {
       "id": "5320",
       "nombre": "LAMINAS",
       "año": "Quinto Año",
@@ -1388,6 +1738,32 @@
         "Hidráulica",
         "Vías de Comunicación"
       ]
+    },
+    {
+      "id": "5340",
+      "nombre": "PROYECTO GEOMETRICO DE CARRETERAS ASISTIDO POR COMPUTADORA",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "32",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G0861",
+      "subtipo": null,
+      "correlativas": {
+        "5044": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "5176": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "I0012": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      },
+      "orientacion": "Vías de Comunicación"
     },
     {
       "id": "5360",
@@ -1512,344 +1888,23 @@
         "Hidráulica",
         "Vías de Comunicación"
       ]
-    }
-  ],
-  "Hidrulica": [
-    {
-      "id": "5134",
-      "nombre": "ESTABILIDAD IV",
-      "año": "Cuarto Año",
-      "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "64",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "5131": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "5132": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "5176": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "5552": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "5712": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "I0012": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
-      },
-      "orientaciones": [
-        "Construcciones",
-        "Hidrulica"
-      ]
     },
     {
-      "id": "5375",
-      "nombre": "MECANICA DE SUELOS Y FUNDACIONES",
-      "año": "Cuarto Año",
-      "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "96",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "5006": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "5176": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "5230": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        },
-        "5462": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "I0012": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
-      },
-      "orientaciones": [
-        "Construcciones",
-        "Hidrulica"
-      ]
-    },
-    {
-      "id": "5270",
-      "nombre": "INGENIERIA SANITARIA",
-      "año": "Cuarto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "96",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "5006": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "5132": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "5176": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "5230": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        },
-        "5462": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "I0012": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
-      },
-      "orientaciones": [
-        "Hidrulica",
-        "Vs de Comunicacinnn"
-      ]
-    },
-    {
-      "id": "5134",
-      "nombre": "ESTABILIDAD IV",
-      "año": "Cuarto Año",
-      "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "64",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "5131": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "5132": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "5176": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "5552": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "5712": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "I0012": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
-      },
-      "orientaciones": [
-        "Construcciones",
-        "Hidrulica"
-      ]
-    },
-    {
-      "id": "5375",
-      "nombre": "MECANICA DE SUELOS Y FUNDACIONES",
-      "año": "Cuarto Año",
-      "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "96",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "5006": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "5176": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "5230": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        },
-        "5462": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "I0012": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
-      },
-      "orientaciones": [
-        "Construcciones",
-        "Hidrulica"
-      ]
-    },
-    {
-      "id": "5270",
-      "nombre": "INGENIERIA SANITARIA",
-      "año": "Cuarto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "96",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "5006": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "5132": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "5176": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "5230": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        },
-        "5462": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "I0012": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
-      },
-      "orientaciones": [
-        "Hidrulica",
-        "Vs de Comunicacinnn"
-      ]
-    }
-  ],
-  "Vs de Comunicacinnn": [
-    {
-      "id": "5270",
-      "nombre": "INGENIERIA SANITARIA",
-      "año": "Cuarto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "96",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "5006": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "5132": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "5176": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "5230": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        },
-        "5462": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "I0012": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
-      },
-      "orientaciones": [
-        "Hidrulica",
-        "Vs de Comunicacinnn"
-      ]
-    },
-    {
-      "id": "5410",
-      "nombre": "PUERTOS Y VIAS NAVEGABLES",
+      "id": "5341",
+      "nombre": "PROYECTO GEOMETRICO DE CARRETERAS ASISTIDO POR COMPUTADORA - VC",
       "año": "Quinto Año",
-      "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "96",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "5176": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "5375": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "I0012": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
-      },
-      "orientacion": "Vs de Comunicacinnn"
-    },
-    {
-      "id": "5270",
-      "nombre": "INGENIERIA SANITARIA",
-      "año": "Cuarto Año",
       "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "96",
+      "horas": "",
       "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
+      "categoria": "optativa",
+      "grupo_opcion": "G0861",
       "subtipo": null,
       "correlativas": {
-        "5006": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "5132": {
+        "5041": {
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         },
         "5176": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "5230": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        },
-        "5462": {
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         },
@@ -1858,36 +1913,19 @@
           "para_rendir": "aprobada"
         }
       },
-      "orientaciones": [
-        "Hidrulica",
-        "Vs de Comunicacinnn"
-      ]
+      "orientacion": "Vías de Comunicación"
     },
     {
-      "id": "5410",
-      "nombre": "PUERTOS Y VIAS NAVEGABLES",
+      "id": "5175",
+      "nombre": "EXAMEN DE SUFICIENCIA DE IDIOMA: INGLES",
       "año": "Quinto Año",
-      "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "96",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
       "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "5176": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "5375": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "I0012": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
-      },
-      "orientacion": "Vs de Comunicacinnn"
+      "categoria": "optativa",
+      "grupo_opcion": "I0012",
+      "subtipo": "idioma",
+      "correlativas": {}
     }
   ],
   "agrupadores": [

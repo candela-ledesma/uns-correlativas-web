@@ -4,7 +4,7 @@
     "universidad": "Universidad Nacional del Sur",
     "codigo_plan": "Plan 2016 - Versión 2"
   },
-  "comunes": [
+  "materias": [
     {
       "id": "3942",
       "nombre": "TALLER DE ARQUITECTURA I",

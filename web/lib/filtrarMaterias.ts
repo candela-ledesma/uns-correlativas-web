@@ -68,6 +68,25 @@ export function filtrarMaterias({
       const orientacionesDirectas = materia.orientaciones ?? null;
       const orientacionFiltro = normalizarTextoBusqueda(filtros.orientacion);
 
+      // Primero, buscar orientaciones en la materia misma (campos orientacion/orientaciones)
+      if (orientacionesDirectas && orientacionesDirectas.length > 0) {
+        const coincide = orientacionesDirectas.some(
+          (orientacion) => normalizarTextoBusqueda(orientacion) === orientacionFiltro
+        );
+
+        if (coincide) {
+          // Materia tiene esta orientación directamente
+          return true;
+        }
+      } else if (orientacionDirecta) {
+        const orientacionMateriaNormalizada = normalizarTextoBusqueda(orientacionDirecta);
+        if (orientacionMateriaNormalizada === orientacionFiltro) {
+          // Materia tiene esta orientación directamente
+          return true;
+        }
+      }
+
+      // Si no encontró en la materia, buscar en agrupadores (para optativas)
       const grupoIdParaOrientacion = materia.grupo_opcion
         ? String(materia.grupo_opcion)
         : idsAgrupadores.has(idMateria)
@@ -80,26 +99,16 @@ export function filtrarMaterias({
 
       const orientacionGrupo =
         grupo?.tipo === "optativa_grupo" ? grupo.orientacion ?? null : null;
-      const orientacionMateria = orientacionDirecta ?? orientacionGrupo;
 
-      if (orientacionesDirectas && orientacionesDirectas.length > 0) {
-        const coincide = orientacionesDirectas.some(
-          (orientacion) => normalizarTextoBusqueda(orientacion) === orientacionFiltro
-        );
-
-        if (!coincide) {
-          return false;
+      if (orientacionGrupo) {
+        const orientacionGrupoNormalizada = normalizarTextoBusqueda(orientacionGrupo);
+        if (orientacionGrupoNormalizada === orientacionFiltro) {
+          return true;
         }
-      } else if (orientacionMateria) {
-        const orientacionMateriaNormalizada = normalizarTextoBusqueda(orientacionMateria);
-        if (orientacionMateriaNormalizada !== orientacionFiltro) {
-          return false;
-        }
-      } else {
-        // Con orientación activa, ocultamos materias sin orientación explícita
-        // para evitar mostrar materias comunes en filtros de orientación.
-        return false;
       }
+
+      // Materia no tiene esta orientación
+      return false;
     }
 
     if (filtros.anio !== "todos" && anioParaFiltro !== filtros.anio) {

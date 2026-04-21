@@ -4,7 +4,7 @@
     "universidad": "Universidad Nacional del Sur",
     "codigo_plan": "Plan 2012 - Versión 1"
   },
-  "comunes": [
+  "materias": [
     {
       "id": "5912",
       "nombre": "ELEMENTOS DE ALGEBRA Y DE GEOMETRIA",

@@ -205,6 +205,7 @@ export default function PlanViewer({
     const vistos = new Set<string>();
     const resultado: string[] = [];
 
+    // Extraer orientaciones de agrupadores (optativas)
     for (const agrupador of agrupadores) {
       if (agrupador.tipo !== "optativa_grupo") continue;
 
@@ -218,8 +219,32 @@ export default function PlanViewer({
       resultado.push(orientacion);
     }
 
+    // Extraer orientaciones de materias (campos orientacion/orientaciones)
+    for (const materia of data.materias) {
+      if (materia.orientacion) {
+        const clave = normalizarTextoBusqueda(materia.orientacion);
+        if (!vistos.has(clave)) {
+          vistos.add(clave);
+          resultado.push(materia.orientacion);
+        }
+      }
+
+      if (materia.orientaciones && Array.isArray(materia.orientaciones)) {
+        for (const orientacion of materia.orientaciones) {
+          const clave = normalizarTextoBusqueda(orientacion);
+          if (!vistos.has(clave)) {
+            vistos.add(clave);
+            resultado.push(orientacion);
+          }
+        }
+      }
+    }
+
+    // Ordenar alfabéticamente
+    resultado.sort();
+
     return resultado;
-  }, [agrupadores]);
+  }, [agrupadores, data.materias]);
 
   const orientacionCanonicaPorClave = useMemo(() => {
     const map = new Map<string, string>();
