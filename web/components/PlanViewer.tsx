@@ -52,7 +52,6 @@ function obtenerUbicacionPorOrientacion(
 
   return materia.ubicacion?.[orientacionSeleccionada];
 }
-
 function agruparPorAnioYCuatrimestre(
   materias: Materia[],
   orientacionSeleccionada: string
