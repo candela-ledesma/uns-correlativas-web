@@ -68,7 +68,13 @@ export function filtrarMaterias({
       const orientacionesDirectas = materia.orientaciones ?? null;
       const orientacionFiltro = normalizarTextoBusqueda(filtros.orientacion);
 
-      // Primero, buscar orientaciones en la materia misma (campos orientacion/orientaciones)
+      // Las materias comunes (sin orientación) siempre se muestran en cualquier orientación
+      const esComun = !orientacionDirecta && !orientacionesDirectas;
+      if (esComun) {
+        return true;
+      }
+
+      // Buscar orientaciones en la materia misma (campos orientacion/orientaciones)
       if (orientacionesDirectas && orientacionesDirectas.length > 0) {
         const coincide = orientacionesDirectas.some(
           (orientacion) => normalizarTextoBusqueda(orientacion) === orientacionFiltro
@@ -107,7 +113,7 @@ export function filtrarMaterias({
         }
       }
 
-      // Materia no tiene esta orientación
+      // Materia no tiene esta orientación y no es común
       return false;
     }
 
