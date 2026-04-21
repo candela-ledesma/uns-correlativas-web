@@ -56,7 +56,7 @@ describe("Filtro de orientación con ing_civil.json", () => {
     expect(ids.has("5335")).toBe(true);
     expect(ids.has("5115")).toBe(true);
     expect(ids.has("5229")).toBe(true);
-    expect(ids.has("5013")).toBe(false);
+    expect(ids.has("5013")).toBe(true);
 
     expect(ids.has("5009")).toBe(false);
     expect(ids.has("5411")).toBe(false);
@@ -72,7 +72,7 @@ describe("Filtro de orientación con ing_civil.json", () => {
     expect(ids.has("5180")).toBe(true);
     expect(ids.has("5041")).toBe(true);
     expect(ids.has("5042")).toBe(true);
-    expect(ids.has("5013")).toBe(false);
+    expect(ids.has("5013")).toBe(true);
 
     expect(ids.has("5220")).toBe(false);
     expect(ids.has("5335")).toBe(false);

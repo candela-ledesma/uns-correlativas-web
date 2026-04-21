@@ -113,8 +113,49 @@ class ParserCareerFixturesTests(unittest.TestCase):
                     }
 
                     self.assertIn("5013", materias_por_id)
-                    orientaciones_5013 = self._materia_orientaciones(materias_por_id["5013"])
-                    self.assertEqual(orientaciones_5013, set())
+                    self.assertEqual(
+                        self._materia_orientaciones(materias_por_id["5013"]),
+                        {"Construcciones", "Hidráulica", "Vías de Comunicación"},
+                    )
+                    self.assertEqual(
+                        materias_por_id["5013"].get("ubicacion"),
+                        {
+                            "Construcciones": {
+                                "año": "Quinto Año",
+                                "cuatrimestre": "Primer Cuatrimestre",
+                            },
+                            "Hidráulica": {
+                                "año": "Cuarto Año",
+                                "cuatrimestre": "Primer Cuatrimestre",
+                            },
+                            "Vías de Comunicación": {
+                                "año": "Quinto Año",
+                                "cuatrimestre": "Primer Cuatrimestre",
+                            },
+                        },
+                    )
+
+                    self.assertEqual(
+                        self._materia_orientaciones(materias_por_id["5375"]),
+                        {"Construcciones", "Hidráulica", "Vías de Comunicación"},
+                    )
+                    self.assertEqual(
+                        self._materia_orientaciones(materias_por_id["5181"]),
+                        {"Construcciones", "Hidráulica"},
+                    )
+                    self.assertEqual(
+                        materias_por_id["5181"].get("ubicacion"),
+                        {
+                            "Construcciones": {
+                                "año": "Cuarto Año",
+                                "cuatrimestre": "Segundo Cuatrimestre",
+                            },
+                            "Hidráulica": {
+                                "año": "Quinto Año",
+                                "cuatrimestre": "Segundo Cuatrimestre",
+                            },
+                        },
+                    )
 
                     for materia_id in ("5220", "5335", "5115"):
                         with self.subTest(materia=materia_id):

@@ -614,7 +614,12 @@
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
-      }
+      },
+      "orientaciones": [
+        "Construcciones",
+        "Hidráulica",
+        "Vías de Comunicación"
+      ]
     },
     {
       "id": "5134",
@@ -651,7 +656,12 @@
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
-      }
+      },
+      "orientaciones": [
+        "Construcciones",
+        "Hidráulica",
+        "Vías de Comunicación"
+      ]
     },
     {
       "id": "5225",
@@ -725,7 +735,12 @@
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
-      }
+      },
+      "orientaciones": [
+        "Construcciones",
+        "Hidráulica",
+        "Vías de Comunicación"
+      ]
     },
     {
       "id": "5009",
@@ -780,7 +795,12 @@
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
-      }
+      },
+      "orientaciones": [
+        "Construcciones",
+        "Hidráulica",
+        "Vías de Comunicación"
+      ]
     },
     {
       "id": "5181",
@@ -813,7 +833,17 @@
       "orientaciones": [
         "Construcciones",
         "Hidráulica"
-      ]
+      ],
+      "ubicacion": {
+        "Construcciones": {
+          "año": "Cuarto Año",
+          "cuatrimestre": "Segundo Cuatrimestre"
+        },
+        "Hidráulica": {
+          "año": "Quinto Año",
+          "cuatrimestre": "Segundo Cuatrimestre"
+        }
+      }
     },
     {
       "id": "5241",
@@ -846,7 +876,12 @@
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
-      }
+      },
+      "orientaciones": [
+        "Construcciones",
+        "Hidráulica",
+        "Vías de Comunicación"
+      ]
     },
     {
       "id": "5270",
@@ -883,7 +918,12 @@
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
-      }
+      },
+      "orientaciones": [
+        "Construcciones",
+        "Hidráulica",
+        "Vías de Comunicación"
+      ]
     },
     {
       "id": "G0857",
@@ -921,7 +961,12 @@
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
-      }
+      },
+      "orientaciones": [
+        "Construcciones",
+        "Hidráulica",
+        "Vías de Comunicación"
+      ]
     },
     {
       "id": "5044",
@@ -983,7 +1028,12 @@
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
-      }
+      },
+      "orientaciones": [
+        "Construcciones",
+        "Hidráulica",
+        "Vías de Comunicación"
+      ]
     },
     {
       "id": "5013",
@@ -1015,6 +1065,25 @@
         "I0012": {
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
+        }
+      },
+      "orientaciones": [
+        "Construcciones",
+        "Hidráulica",
+        "Vías de Comunicación"
+      ],
+      "ubicacion": {
+        "Construcciones": {
+          "año": "Quinto Año",
+          "cuatrimestre": "Primer Cuatrimestre"
+        },
+        "Hidráulica": {
+          "año": "Cuarto Año",
+          "cuatrimestre": "Primer Cuatrimestre"
+        },
+        "Vías de Comunicación": {
+          "año": "Quinto Año",
+          "cuatrimestre": "Primer Cuatrimestre"
         }
       }
     },
@@ -1054,7 +1123,12 @@
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
-      }
+      },
+      "orientaciones": [
+        "Construcciones",
+        "Hidráulica",
+        "Vías de Comunicación"
+      ]
     },
     {
       "id": "5012",
@@ -1091,7 +1165,12 @@
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
-      }
+      },
+      "orientaciones": [
+        "Construcciones",
+        "Hidráulica",
+        "Vías de Comunicación"
+      ]
     },
     {
       "id": "5148",
@@ -1154,7 +1233,12 @@
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
-      }
+      },
+      "orientaciones": [
+        "Construcciones",
+        "Hidráulica",
+        "Vías de Comunicación"
+      ]
     },
     {
       "id": "5411",

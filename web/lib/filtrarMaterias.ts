@@ -67,15 +67,11 @@ export function filtrarMaterias({
       const orientacionDirecta = materia.orientacion ?? null;
       const orientacionesDirectas = materia.orientaciones ?? null;
       const orientacionFiltro = normalizarTextoBusqueda(filtros.orientacion);
-
-      // Las materias comunes (sin orientación) siempre se muestran en cualquier orientación
-      const esComun = !orientacionDirecta && !orientacionesDirectas;
-      if (esComun) {
-        return true;
-      }
+      const tieneOrientacionesDirectas =
+        Array.isArray(orientacionesDirectas) && orientacionesDirectas.length > 0;
 
       // Buscar orientaciones en la materia misma (campos orientacion/orientaciones)
-      if (orientacionesDirectas && orientacionesDirectas.length > 0) {
+      if (tieneOrientacionesDirectas) {
         const coincide = orientacionesDirectas.some(
           (orientacion) => normalizarTextoBusqueda(orientacion) === orientacionFiltro
         );
@@ -111,9 +107,17 @@ export function filtrarMaterias({
         if (orientacionGrupoNormalizada === orientacionFiltro) {
           return true;
         }
+
+        return false;
       }
 
-      // Materia no tiene esta orientación y no es común
+      // Las materias comunes (sin orientación explícita o de agrupador) se muestran siempre.
+      const esComun = !orientacionDirecta && !tieneOrientacionesDirectas;
+      if (esComun) {
+        return true;
+      }
+
+      // Materia no tiene esta orientación.
       return false;
     }
 

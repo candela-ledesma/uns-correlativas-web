@@ -517,15 +517,21 @@ def detectar_materias_generico(texto):
             elif not orientaciones_materia and orientaciones_nombre:
                 orientaciones_materia.update(orientaciones_nombre)
         else:
-            if materia_id not in materias_normales_sin_orientacion:
-                orientaciones_materia.update(
-                    orientaciones_normales_por_materia.get(materia_id, set())
-                )
-
+            # Primero intenta obtener orientaciones del rastreo durante parsing
+            orientaciones_rastreadas = orientaciones_normales_por_materia.get(materia_id, set())
+            
+            if orientaciones_rastreadas:
+                # Si la materia aparece en bloques de orientación, usar eso
+                orientaciones_materia.update(orientaciones_rastreadas)
+            elif materia_id not in materias_normales_sin_orientacion:
+                # Fallback para materias que no fueron rastreadas
                 if not orientaciones_materia and orientaciones_nombre:
                     orientaciones_materia.update(orientaciones_nombre)
 
-                if orientaciones_totales and orientaciones_materia == orientaciones_totales:
+            if orientaciones_totales and orientaciones_materia == orientaciones_totales:
+                # Solo considera como "común" si NO aparece en bloques de orientación
+                # (es decir, si no tiene ubicación rastreada)
+                if materia_id not in ubicacion_por_orientacion_por_materia:
                     orientaciones_materia.clear()
 
         orientaciones_finales_por_materia[materia_id] = orientaciones_materia

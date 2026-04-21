@@ -42,12 +42,31 @@ const FILTROS_INICIALES: FiltrosPlan = {
   orientacion: "todas",
 };
 
-function agruparPorAnioYCuatrimestre(materias: Materia[]) {
+function obtenerUbicacionPorOrientacion(
+  materia: Materia,
+  orientacionSeleccionada: string
+) {
+  if (orientacionSeleccionada === FILTROS_INICIALES.orientacion) {
+    return undefined;
+  }
+
+  return materia.ubicacion?.[orientacionSeleccionada];
+}
+
+function agruparPorAnioYCuatrimestre(
+  materias: Materia[],
+  orientacionSeleccionada: string
+) {
   const resultado: Record<string, Record<string, Materia[]>> = {};
 
   for (const materia of materias) {
-    const anio = materia.año || "Sin año";
-    const cuatrimestre = materia.cuatrimestre || "Sin cuatrimestre";
+    const ubicacion = obtenerUbicacionPorOrientacion(
+      materia,
+      orientacionSeleccionada
+    );
+    const anio = ubicacion?.año || materia.año || "Sin año";
+    const cuatrimestre =
+      ubicacion?.cuatrimestre || materia.cuatrimestre || "Sin cuatrimestre";
 
     if (!resultado[anio]) {
       resultado[anio] = {};
@@ -71,7 +90,8 @@ type PunteroGrupo = {
 function construirPunterosGruposPorAnioYCuatrimestre(
   materiasFiltradas: Materia[],
   agrupadores: PlanData["agrupadores"],
-  materiasPorId: Map<string, Materia>
+  materiasPorId: Map<string, Materia>,
+  orientacionSeleccionada: string
 ) {
   const resultado: Record<string, Record<string, PunteroGrupo[]>> = {};
   const vistos = new Set<string>();
@@ -94,9 +114,25 @@ function construirPunterosGruposPorAnioYCuatrimestre(
     // El cuatrimestre/año del puntero debe ser el del agrupador (Gxxxx / Ixxxx / etc),
     // porque en algunos PDFs las opciones vienen con slots inconsistentes.
     const placeholder = materiasPorId.get(String(grupoId));
-    const anio = placeholder?.año ?? materia.año ?? "Sin año";
+    const ubicacionPlaceholder = placeholder
+      ? obtenerUbicacionPorOrientacion(placeholder, orientacionSeleccionada)
+      : undefined;
+    const ubicacionMateria = obtenerUbicacionPorOrientacion(
+      materia,
+      orientacionSeleccionada
+    );
+    const anio =
+      ubicacionPlaceholder?.año ||
+      placeholder?.año ||
+      ubicacionMateria?.año ||
+      materia.año ||
+      "Sin año";
     const cuatrimestre =
-      placeholder?.cuatrimestre ?? materia.cuatrimestre ?? "Sin cuatrimestre";
+      ubicacionPlaceholder?.cuatrimestre ||
+      placeholder?.cuatrimestre ||
+      ubicacionMateria?.cuatrimestre ||
+      materia.cuatrimestre ||
+      "Sin cuatrimestre";
 
     if (!resultado[anio]) resultado[anio] = {};
     if (!resultado[anio][cuatrimestre]) resultado[anio][cuatrimestre] = [];
@@ -339,17 +375,29 @@ export default function PlanViewer({
           tipo === "idioma_grupo" ||
           tipo === "seminario_grupo"
         );
-      })
+      }),
+      filtrosConOrientacion.orientacion
     );
-  }, [materiasFiltradas, idsAgrupadores, agrupadorTipoPorId]);
+  }, [
+    materiasFiltradas,
+    idsAgrupadores,
+    agrupadorTipoPorId,
+    filtrosConOrientacion.orientacion,
+  ]);
 
   const punterosPorAnioYCuatrimestre = useMemo(() => {
     return construirPunterosGruposPorAnioYCuatrimestre(
       materiasFiltradas,
       agrupadores,
-      materiasPorId
+      materiasPorId,
+      filtrosConOrientacion.orientacion
     );
-  }, [materiasFiltradas, agrupadores, materiasPorId]);
+  }, [
+    materiasFiltradas,
+    agrupadores,
+    materiasPorId,
+    filtrosConOrientacion.orientacion,
+  ]);
 
   const seccionesPorAnioYCuatrimestre = useMemo(() => {
     return combinarSeccionesPorAnioYCuatrimestre(
