@@ -30,6 +30,7 @@ function buildValidPlanFixture() {
         tipo: "materia",
         categoria: "optativa",
         grupo_opcion: "G1",
+        orientaciones: ["Construcciones", "Vías de Comunicación"],
         subtipo: "optativa",
         correlativas: {
           M1: {
@@ -66,6 +67,27 @@ describe("validatePlanData", () => {
       expect(result.data.plan.plan_id).toBe("arquitectura");
       expect(result.data.plan.version_id).toBe("v2");
       expect(result.data.materias).toHaveLength(2);
+      expect(result.data.materias[1]?.orientaciones).toEqual([
+        "Construcciones",
+        "Vías de Comunicación",
+      ]);
+    }
+  });
+
+  it("falla si orientaciones no es un array de strings", () => {
+    const raw = buildValidPlanFixture();
+    (raw.materias[1] as { orientaciones?: unknown }).orientaciones = ["Construcciones", 123];
+
+    const result = validatePlanData(raw, {
+      carreraId: "arquitectura",
+      versionId: "v2",
+    });
+
+    expect(result.ok).toBe(false);
+
+    if (!result.ok) {
+      expect(result.kind).toBe("shape");
+      expect(result.issues.some((issue) => issue.path === "materias[1].orientaciones[1]")).toBe(true);
     }
   });
 

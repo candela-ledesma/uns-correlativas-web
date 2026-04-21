@@ -21,6 +21,7 @@ class ParserContractValidatorTests(unittest.TestCase):
                     "tipo": "materia",
                     "categoria": "normal",
                     "grupo_opcion": None,
+                    "orientaciones": ["Construcciones", "Vías de Comunicación"],
                     "subtipo": None,
                     "correlativas": {},
                 }
@@ -50,6 +51,7 @@ class ParserContractValidatorTests(unittest.TestCase):
                     "tipo": "materia",
                     "categoria": "otro",
                     "grupo_opcion": 10,
+                    "orientaciones": ["Construcciones", 42],
                     "subtipo": None,
                     "correlativas": {
                         "9999": {

@@ -6,11 +6,122 @@ from .patterns import (
     PATRON_MATERIA,
     PATRON_CORRELATIVA,
     PATRON_CORRELATIVA_UN_ESTADO,
-    PATRON_GRUPO
+    PATRON_GRUPO,
+    PATRON_SECCION_ORIENTACION,
 )
 from .categorizer import detectar_categoria_y_subtipo
 from .grupo_detector import es_linea_agrupador
 import re
+import unicodedata
+
+
+def extraer_orientacion_desde_nombre(nombre):
+    if not isinstance(nombre, str):
+        return None
+
+    match = re.search(
+        r"orientaci[oó]n\s+([^,]+?)(?:,|$)",
+        nombre,
+        re.IGNORECASE,
+    )
+    if not match:
+        return None
+
+    orientacion = match.group(1).strip()
+    return orientacion or None
+
+
+def normalizar_texto(valor):
+    if not isinstance(valor, str):
+        return ""
+
+    valor = valor.lower().strip()
+    valor = "".join(
+        c for c in unicodedata.normalize("NFD", valor) if unicodedata.category(c) != "Mn"
+    )
+    return valor
+
+
+def formatear_orientacion(orientacion):
+    if not isinstance(orientacion, str):
+        return orientacion
+
+    orientacion_limpia = orientacion.strip()
+    if not orientacion_limpia:
+        return orientacion_limpia
+
+    if orientacion_limpia != orientacion_limpia.upper():
+        return orientacion_limpia
+
+    minusculas = {"de", "del", "la", "las", "los", "y", "e"}
+    partes = orientacion_limpia.lower().split()
+    formateadas = []
+
+    for index, parte in enumerate(partes):
+        if index > 0 and parte in minusculas:
+            formateadas.append(parte)
+        else:
+            formateadas.append(parte.capitalize())
+
+    return " ".join(formateadas)
+
+
+def normalizar_orientacion(orientacion, orientaciones_canonicas_por_normalizada):
+    if not isinstance(orientacion, str):
+        return None
+
+    orientacion_limpia = orientacion.strip()
+    if not orientacion_limpia:
+        return None
+
+    orientacion_normalizada = normalizar_texto(orientacion_limpia)
+    if not orientacion_normalizada:
+        return None
+
+    return orientaciones_canonicas_por_normalizada.get(
+        orientacion_normalizada,
+        orientacion_limpia,
+    )
+
+
+def detectar_orientaciones_por_nombre(nombre_materia):
+    nombre = normalizar_texto(nombre_materia)
+    if not nombre:
+        return set()
+
+    orientaciones = set()
+
+    if "hidraulic" in nombre:
+        orientaciones.add("Hidráulica")
+
+    if "ferrocarril" in nombre or "carretera" in nombre:
+        orientaciones.add("Vías de Comunicación")
+
+    return orientaciones
+
+
+def orden_orientacion(orientacion, orientaciones_ordenadas):
+    try:
+        return orientaciones_ordenadas.index(orientacion)
+    except ValueError:
+        return len(orientaciones_ordenadas)
+
+
+def asignar_orientaciones_materia(materia, orientaciones_ordenadas, orientaciones_set):
+    materia.pop("orientacion", None)
+    materia.pop("orientaciones", None)
+
+    orientaciones_ordenadas_materia = sorted(
+        orientaciones_set,
+        key=lambda orientacion: (orden_orientacion(orientacion, orientaciones_ordenadas), orientacion),
+    )
+
+    if len(orientaciones_ordenadas_materia) == 1:
+        materia["orientacion"] = orientaciones_ordenadas_materia[0]
+        return
+
+    if len(orientaciones_ordenadas_materia) > 1:
+        materia["orientaciones"] = orientaciones_ordenadas_materia
 
 def extraer_correlativas_de_linea(linea):
     correlativas = {}
@@ -34,7 +145,13 @@ def limpiar_linea_materia(linea):
     return linea
 
 
-def parsear_linea_materia(linea, año_actual, cuatrimestre_actual, seccion_actual=None, grupo_actual=None):
+def parsear_linea_materia(
+    linea,
+    año_actual,
+    cuatrimestre_actual,
+    seccion_actual=None,
+    grupo_actual=None,
+):
     correlativas = extraer_correlativas_de_linea(linea)
     linea_limpia = limpiar_linea_materia(linea)
 
@@ -119,12 +236,54 @@ def detectar_materias_generico(texto):
     grupo_actual = None
     materia_actual = None
 
+    orientacion_actual = None
+    orientaciones_ordenadas = []
+    orientaciones_canonicas_por_normalizada = {}
+
+    orientaciones_normales_por_materia = {}
+    materias_normales_sin_orientacion = set()
+    grupos_optativos_por_materia = {}
+    orientaciones_optativas_por_materia = {}
+    
+    # Rastrear ubicación (año/cuatrimestre) por orientación para cada materia
+    ubicacion_por_orientacion_por_materia = {}
+
+    def registrar_orientacion(orientacion):
+        if not isinstance(orientacion, str):
+            return None
+
+        orientacion_limpia = formatear_orientacion(orientacion)
+        if not orientacion_limpia:
+            return None
+
+        orientacion_normalizada = normalizar_texto(orientacion_limpia)
+        if not orientacion_normalizada:
+            return None
+
+        if orientacion_normalizada not in orientaciones_canonicas_por_normalizada:
+            orientaciones_canonicas_por_normalizada[orientacion_normalizada] = orientacion_limpia
+            orientaciones_ordenadas.append(orientacion_limpia)
+
+        return orientaciones_canonicas_por_normalizada[orientacion_normalizada]
+
     lineas = [l.strip() for l in texto.splitlines() if l.strip()]
 
     for linea in lineas:
         tipo = clasificar_linea(linea, seccion_actual)
 
         if tipo in ("vacia", "basura", "desconocida"):
+            continue
+
+        if tipo == "seccion_orientacion":
+            match_orientacion = PATRON_SECCION_ORIENTACION.match(linea)
+            if match_orientacion:
+                orientacion_actual = registrar_orientacion(match_orientacion.group(1))
+            else:
+                orientacion_actual = None
+
+            seccion_actual = "normal"
+            grupo_actual = None
+            materia_actual = None
             continue
 
         if tipo == "anio":
@@ -184,6 +343,12 @@ def detectar_materias_generico(texto):
                 agrupadores.append(agrupador)
                 agrupadores_index[codigo] = agrupador
 
+            orientacion_grupo = registrar_orientacion(
+                extraer_orientacion_desde_nombre(nombre)
+            )
+            if orientacion_grupo:
+                agrupadores_index[codigo]["orientacion"] = orientacion_grupo
+
             continue
 
         agrupador_info = es_linea_agrupador(linea, seccion_actual)
@@ -205,6 +370,12 @@ def detectar_materias_generico(texto):
                 agrupadores.append(agrupador)
                 agrupadores_index[codigo] = agrupador
 
+            orientacion_grupo = registrar_orientacion(
+                extraer_orientacion_desde_nombre(nombre)
+            )
+            if orientacion_grupo:
+                agrupadores_index[codigo]["orientacion"] = orientacion_grupo
+
             continue
 
         if tipo == "materia":
@@ -213,12 +384,24 @@ def detectar_materias_generico(texto):
                 año_actual,
                 cuatrimestre_actual,
                 seccion_actual,
-                grupo_actual
+                grupo_actual,
             )
 
             if materia_parseada:
                 materia_id = str(materia_parseada["id"])
                 materia_parseada["id"] = materia_id
+
+                if (
+                    seccion_actual == "normal"
+                    and materia_parseada.get("tipo") == "agrupador_requisito"
+                ):
+                    orientacion_detectada = extraer_orientacion_desde_nombre(
+                        materia_parseada.get("nombre", "")
+                    )
+                    if orientacion_detectada:
+                        materia_parseada["orientacion"] = orientacion_detectada
+
+                materia_resuelta = materia_parseada
 
                 if materia_id not in materias_index:
                     materias.append(materia_parseada)
@@ -261,13 +444,41 @@ def detectar_materias_generico(texto):
                         materia_existente["correlativas"].update(
                             materia_parseada["correlativas"]
                         )
-
+                    materia_resuelta = materia_existente
                     materia_actual = materia_existente
+
+                if seccion_actual == "normal" and materia_resuelta.get("tipo") == "materia":
+                    if orientacion_actual:
+                        orientaciones_normales_por_materia.setdefault(materia_id, set()).add(
+                            orientacion_actual
+                        )
+                        # Rastrear ubicación (año/cuatrimestre) por orientación
+                        ubicacion_por_orientacion_por_materia.setdefault(materia_id, {})[orientacion_actual] = {
+                            "año": año_actual,
+                            "cuatrimestre": cuatrimestre_actual,
+                        }
+                    else:
+                        materias_normales_sin_orientacion.add(materia_id)
 
                 if grupo_actual is not None and grupo_actual in agrupadores_index:
                     opciones = agrupadores_index[grupo_actual]["opciones"]
                     if materia_id not in opciones:
                         opciones.append(materia_id)
+
+                    if seccion_actual == "optativas":
+                        grupos_materia = grupos_optativos_por_materia.setdefault(
+                            materia_id,
+                            [],
+                        )
+                        if grupo_actual not in grupos_materia:
+                            grupos_materia.append(grupo_actual)
+
+                        orientacion_grupo = agrupadores_index[grupo_actual].get("orientacion")
+                        if isinstance(orientacion_grupo, str) and orientacion_grupo.strip():
+                            orientaciones_optativas_por_materia.setdefault(
+                                materia_id,
+                                set(),
+                            ).add(orientacion_grupo)
 
             continue
 
@@ -276,17 +487,130 @@ def detectar_materias_generico(texto):
             materia_actual["correlativas"].update(correlativas)
             continue
 
+    orientaciones_totales = set(orientaciones_ordenadas)
+    orientaciones_finales_por_materia = {}
+
+    for materia in materias:
+        if materia.get("tipo") != "materia":
+            continue
+
+        materia_id = str(materia.get("id"))
+        orientaciones_materia = set()
+
+        orientaciones_nombre = {
+            normalizar_orientacion(orientacion, orientaciones_canonicas_por_normalizada)
+            for orientacion in detectar_orientaciones_por_nombre(materia.get("nombre", ""))
+        }
+        orientaciones_nombre = {
+            orientacion for orientacion in orientaciones_nombre if orientacion
+        }
+
+        if materia.get("categoria") == "optativa":
+            orientaciones_materia.update(
+                orientaciones_optativas_por_materia.get(materia_id, set())
+            )
+
+            if len(orientaciones_materia) > 1 and orientaciones_nombre:
+                coincidencias = orientaciones_materia.intersection(orientaciones_nombre)
+                if len(coincidencias) == 1:
+                    orientaciones_materia = coincidencias
+            elif not orientaciones_materia and orientaciones_nombre:
+                orientaciones_materia.update(orientaciones_nombre)
+        else:
+            # Primero intenta obtener orientaciones del rastreo durante parsing
+            orientaciones_rastreadas = orientaciones_normales_por_materia.get(materia_id, set())
+            
+            if orientaciones_rastreadas:
+                # Si la materia aparece en bloques de orientación, usar eso
+                orientaciones_materia.update(orientaciones_rastreadas)
+            elif materia_id not in materias_normales_sin_orientacion:
+                # Fallback para materias que no fueron rastreadas
+                if not orientaciones_materia and orientaciones_nombre:
+                    orientaciones_materia.update(orientaciones_nombre)
+
+            if orientaciones_totales and orientaciones_materia == orientaciones_totales:
+                # Solo considera como "común" si NO aparece en bloques de orientación
+                # (es decir, si no tiene ubicación rastreada)
+                if materia_id not in ubicacion_por_orientacion_por_materia:
+                    orientaciones_materia.clear()
+
+        orientaciones_finales_por_materia[materia_id] = orientaciones_materia
+        asignar_orientaciones_materia(materia, orientaciones_ordenadas, orientaciones_materia)
+
+    for materia in materias:
+        if materia.get("categoria") != "optativa":
+            continue
+
+        materia_id = str(materia.get("id"))
+        grupos_materia = grupos_optativos_por_materia.get(materia_id, [])
+        if not grupos_materia:
+            continue
+
+        orientaciones_materia = orientaciones_finales_por_materia.get(materia_id, set())
+        grupos_coincidentes = []
+
+        if orientaciones_materia:
+            for grupo_id in grupos_materia:
+                orientacion_grupo = agrupadores_index.get(grupo_id, {}).get("orientacion")
+                if orientacion_grupo in orientaciones_materia:
+                    grupos_coincidentes.append(grupo_id)
+
+        grupo_preferido = grupos_coincidentes[0] if grupos_coincidentes else grupos_materia[0]
+        materia["grupo_opcion"] = grupo_preferido
+
     for agrupador in agrupadores:
-        agrupador["opciones"] = list(dict.fromkeys(str(op) for op in agrupador["opciones"]))
+        orientacion_agrupador = agrupador.get("orientacion")
+        opciones_filtradas = []
+
+        for opcion in agrupador["opciones"]:
+            opcion_id = str(opcion)
+            orientaciones_materia = orientaciones_finales_por_materia.get(opcion_id, set())
+
+            if (
+                isinstance(orientacion_agrupador, str)
+                and orientacion_agrupador
+                and orientaciones_materia
+                and orientacion_agrupador not in orientaciones_materia
+            ):
+                continue
+
+            if opcion_id not in opciones_filtradas:
+                opciones_filtradas.append(opcion_id)
+
+        agrupador["opciones"] = opciones_filtradas
 
         if agrupador.get("tipo") == "optativa_grupo" and "orientacion" not in agrupador:
-            match = re.search(
-                r"orientaci[oó]n\s+([^,]+?)(?:,|$)",
-                agrupador.get("nombre", ""),
-                re.IGNORECASE,
+            orientacion = registrar_orientacion(
+                extraer_orientacion_desde_nombre(agrupador.get("nombre", ""))
             )
-            if match:
-                agrupador["orientacion"] = match.group(1).strip()
+            if orientacion:
+                agrupador["orientacion"] = orientacion
+
+    # Agregar ubicación contextualizada por orientación a cada materia
+    for materia_id, ubicaciones_por_ori in ubicacion_por_orientacion_por_materia.items():
+        if materia_id in materias_index:
+            materia = materias_index[materia_id]
+            
+            # Si la materia aparece en múltiples orientaciones con diferente ubicación,
+            # guardar estructura completa. Si es igual en todas, simplificar.
+            if len(ubicaciones_por_ori) > 0:
+                # Verificar si todas las ubicaciones son iguales
+                ubicaciones_lista = list(ubicaciones_por_ori.values())
+                todas_iguales = all(
+                    u == ubicaciones_lista[0] for u in ubicaciones_lista
+                )
+                
+                if todas_iguales and ubicaciones_lista[0].get("año"):
+                    # Todas tienen la misma ubicación, usar valor único
+                    materia["año"] = ubicaciones_lista[0]["año"]
+                    materia["cuatrimestre"] = ubicaciones_lista[0]["cuatrimestre"]
+                elif len(ubicaciones_por_ori) > 1:
+                    # Diferentes ubicaciones en diferentes orientaciones
+                    materia["ubicacion"] = ubicaciones_por_ori
+                elif ubicaciones_lista[0].get("año"):
+                    # Una sola orientación pero tiene año
+                    materia["año"] = ubicaciones_lista[0]["año"]
+                    materia["cuatrimestre"] = ubicaciones_lista[0]["cuatrimestre"]
 
     return {
         "plan": info_plan,

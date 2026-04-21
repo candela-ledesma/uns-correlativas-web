@@ -25,7 +25,7 @@ type Params = {
   filtros: FiltrosPlan;
 };
 
-function normalizarTextoBusqueda(valor: string) {
+export function normalizarTextoBusqueda(valor: string) {
   return valor
     .toLowerCase()
     .normalize("NFD")
@@ -64,7 +64,31 @@ export function filtrarMaterias({
 
     if (filtros.orientacion !== "todas") {
       const idMateria = String(materia.id);
+      const orientacionDirecta = materia.orientacion ?? null;
+      const orientacionesDirectas = materia.orientaciones ?? null;
+      const orientacionFiltro = normalizarTextoBusqueda(filtros.orientacion);
+      const tieneOrientacionesDirectas =
+        Array.isArray(orientacionesDirectas) && orientacionesDirectas.length > 0;
 
+      // Buscar orientaciones en la materia misma (campos orientacion/orientaciones)
+      if (tieneOrientacionesDirectas) {
+        const coincide = orientacionesDirectas.some(
+          (orientacion) => normalizarTextoBusqueda(orientacion) === orientacionFiltro
+        );
+
+        if (coincide) {
+          // Materia tiene esta orientación directamente
+          return true;
+        }
+      } else if (orientacionDirecta) {
+        const orientacionMateriaNormalizada = normalizarTextoBusqueda(orientacionDirecta);
+        if (orientacionMateriaNormalizada === orientacionFiltro) {
+          // Materia tiene esta orientación directamente
+          return true;
+        }
+      }
+
+      // Si no encontró en la materia, buscar en agrupadores (para optativas)
       const grupoIdParaOrientacion = materia.grupo_opcion
         ? String(materia.grupo_opcion)
         : idsAgrupadores.has(idMateria)
@@ -79,12 +103,22 @@ export function filtrarMaterias({
         grupo?.tipo === "optativa_grupo" ? grupo.orientacion ?? null : null;
 
       if (orientacionGrupo) {
-        const orientacionFiltro = normalizarTextoBusqueda(filtros.orientacion);
-        const orientacionMateria = normalizarTextoBusqueda(orientacionGrupo);
-        if (orientacionMateria !== orientacionFiltro) {
-          return false;
+        const orientacionGrupoNormalizada = normalizarTextoBusqueda(orientacionGrupo);
+        if (orientacionGrupoNormalizada === orientacionFiltro) {
+          return true;
         }
+
+        return false;
       }
+
+      // Las materias comunes (sin orientación explícita o de agrupador) se muestran siempre.
+      const esComun = !orientacionDirecta && !tieneOrientacionesDirectas;
+      if (esComun) {
+        return true;
+      }
+
+      // Materia no tiene esta orientación.
+      return false;
     }
 
     if (filtros.anio !== "todos" && anioParaFiltro !== filtros.anio) {

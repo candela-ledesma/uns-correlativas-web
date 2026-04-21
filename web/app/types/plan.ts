@@ -12,6 +12,9 @@ export type Materia = {
   tipo: string;
   categoria: "normal" | "optativa";
   grupo_opcion: string | null;
+  orientacion?: string | null;
+  orientaciones?: string[];
+  ubicacion?: Record<string, { año: string | null; cuatrimestre: string | null }>;
   subtipo: string | null;
   correlativas: Record<string, Requisito>;
 };

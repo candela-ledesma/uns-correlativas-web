@@ -56,3 +56,8 @@ PATRON_SECCION_SEMINARIOS = re.compile(
     r'^SEMINARIOS$',
     re.IGNORECASE
 )
+
+PATRON_SECCION_ORIENTACION = re.compile(
+    r'^ORIENTACI[OÓ]N\s+(.+)$',
+    re.IGNORECASE
+)

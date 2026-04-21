@@ -66,6 +66,30 @@ function asStringOrNull(
   return value;
 }
 
+function asStringArray(
+  value: unknown,
+  path: string,
+  issues: PlanValidationIssue[]
+): string[] | null {
+  if (!Array.isArray(value)) {
+    addIssue(issues, "shape", path, "Debe ser un array de strings");
+    return null;
+  }
+
+  const result: string[] = [];
+
+  value.forEach((item, index) => {
+    if (typeof item !== "string" || item.trim().length === 0) {
+      addIssue(issues, "shape", `${path}[${index}]`, "Debe ser un string no vacío");
+      return;
+    }
+
+    result.push(item);
+  });
+
+  return result;
+}
+
 function asRequisitoState(
   value: unknown,
   path: string,
@@ -203,6 +227,33 @@ function parseMaterias(raw: unknown, issues: PlanValidationIssue[]): Materia[] |
       `${path}.grupo_opcion`,
       issues
     );
+    const orientacion =
+      materiaRaw.orientacion === undefined
+        ? undefined
+        : asStringOrNull(materiaRaw.orientacion, `${path}.orientacion`, issues);
+    const orientaciones =
+      materiaRaw.orientaciones === undefined
+        ? undefined
+        : asStringArray(materiaRaw.orientaciones, `${path}.orientaciones`, issues);
+    
+    // Validar ubicacion (opcional, object con orientaciones como claves)
+    let ubicacion: Record<string, { año: string | null; cuatrimestre: string | null }> | undefined;
+    if (materiaRaw.ubicacion !== undefined) {
+      if (typeof materiaRaw.ubicacion === "object" && materiaRaw.ubicacion !== null && !Array.isArray(materiaRaw.ubicacion)) {
+        ubicacion = {};
+        for (const [orientacionKey, ubicacionData] of Object.entries(materiaRaw.ubicacion)) {
+          if (typeof ubicacionData === "object" && ubicacionData !== null && !Array.isArray(ubicacionData)) {
+            const anioUbi = asStringOrNull((ubicacionData as any).año, `${path}.ubicacion.${orientacionKey}.año`, issues);
+            const cuatrimestreUbi = asStringOrNull((ubicacionData as any).cuatrimestre, `${path}.ubicacion.${orientacionKey}.cuatrimestre`, issues);
+            ubicacion[orientacionKey] = {
+              año: anioUbi,
+              cuatrimestre: cuatrimestreUbi,
+            };
+          }
+        }
+      }
+    }
+    
     const subtipo = asStringOrNull(materiaRaw.subtipo, `${path}.subtipo`, issues);
     const correlativas = parseCorrelativas(
       materiaRaw.correlativas,
@@ -229,6 +280,7 @@ function parseMaterias(raw: unknown, issues: PlanValidationIssue[]): Materia[] |
       tipo === null ||
       categoria === null ||
       grupoOpcion === undefined ||
+      orientaciones === null ||
       subtipo === undefined ||
       correlativas === null
     ) {
@@ -244,6 +296,9 @@ function parseMaterias(raw: unknown, issues: PlanValidationIssue[]): Materia[] |
       tipo,
       categoria,
       grupo_opcion: grupoOpcion,
+      orientacion: orientacion ?? undefined,
+      orientaciones: orientaciones ?? undefined,
+      ubicacion: ubicacion ?? undefined,
       subtipo,
       correlativas,
     });

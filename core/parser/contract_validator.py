@@ -43,8 +43,30 @@ def validate_plan_contract(data: Any) -> ContractValidationResult:
         return ContractValidationResult(errors=errors, warnings=warnings)
 
     plan = data.get("plan")
-    materias = data.get("materias")
     agrupadores = data.get("agrupadores")
+    
+    # El formato nuevo agrupa materias por orientación/comunes
+    # El formato antiguo tiene "materias" como array
+    materias_list = data.get("materias")
+    comunes = data.get("comunes")
+    
+    # Determinar si es formato antiguo o nuevo
+    if isinstance(materias_list, list):
+        # Formato antiguo: tiene "materias" array
+        es_formato_antiguo = True
+        todas_las_materias = materias_list
+    else:
+        # Formato nuevo: materias están distribuidas en "comunes" + orientaciones
+        es_formato_antiguo = False
+        todas_las_materias = []
+        if isinstance(comunes, list):
+            todas_las_materias.extend(comunes)
+        
+        # Recopilar materias de todas las orientaciones
+        for key, value in data.items():
+            if key not in ("plan", "agrupadores", "comunes", "materias"):
+                if isinstance(value, list):
+                    todas_las_materias.extend(value)
 
     if not _is_record(plan):
         _add_issue(errors, "error", "plan", "Debe existir como objeto")
@@ -53,9 +75,13 @@ def validate_plan_contract(data: Any) -> ContractValidationResult:
             if not _is_non_empty_string(plan.get(key)):
                 _add_issue(errors, "error", f"plan.{key}", "Debe ser string no vacio")
 
-    if not isinstance(materias, list):
-        _add_issue(errors, "error", "materias", "Debe existir como array")
-        materias = []
+    if not es_formato_antiguo and not isinstance(materias_list, list):
+        # Formato nuevo: materias están en comunes + orientaciones
+        if not isinstance(comunes, list) and not any(
+            isinstance(v, list) for k, v in data.items() 
+            if k not in ("plan", "agrupadores", "materias", "comunes")
+        ):
+            _add_issue(errors, "error", "materias/comunes", "Debe existir como array(s)")
 
     if not isinstance(agrupadores, list):
         _add_issue(errors, "error", "agrupadores", "Debe existir como array")
@@ -88,6 +114,10 @@ def validate_plan_contract(data: Any) -> ContractValidationResult:
         if not _is_non_empty_string(agrupador.get("tipo")):
             _add_issue(errors, "error", f"{path}.tipo", "Debe ser string no vacio")
 
+        orientacion_agrupador = agrupador.get("orientacion")
+        if orientacion_agrupador is not None and not _is_non_empty_string(orientacion_agrupador):
+            _add_issue(errors, "error", f"{path}.orientacion", "Debe ser string o null")
+
         opciones = agrupador.get("opciones")
         if not isinstance(opciones, list):
             _add_issue(errors, "error", f"{path}.opciones", "Debe ser un array")
@@ -106,7 +136,7 @@ def validate_plan_contract(data: Any) -> ContractValidationResult:
 
         agrupador_options[agrupador_id] = opciones_set
 
-    for index, materia in enumerate(materias):
+    for index, materia in enumerate(todas_las_materias):
         path = f"materias[{index}]"
 
         if not _is_record(materia):
@@ -118,11 +148,16 @@ def validate_plan_contract(data: Any) -> ContractValidationResult:
             _add_issue(errors, "error", f"{path}.id", "Debe ser string no vacio")
             continue
 
-        if materia_id in materia_ids:
-            _add_issue(errors, "error", f"{path}.id", f"ID duplicado: {materia_id}")
-            continue
-
-        materia_ids.add(materia_id)
+        # En formato nuevo, IDs pueden repetirse entre orientaciones
+        if es_formato_antiguo:
+            if materia_id in materia_ids:
+                _add_issue(errors, "error", f"{path}.id", f"ID duplicado: {materia_id}")
+                continue
+            materia_ids.add(materia_id)
+        else:
+            # En formato nuevo, registrar el ID solo la primera vez
+            if materia_id not in materia_ids:
+                materia_ids.add(materia_id)
 
         required_string_fields = [
             "nombre",
@@ -151,6 +186,24 @@ def validate_plan_contract(data: Any) -> ContractValidationResult:
         grupo_opcion = materia.get("grupo_opcion")
         if grupo_opcion is not None and not _is_non_empty_string(grupo_opcion):
             _add_issue(errors, "error", f"{path}.grupo_opcion", "Debe ser string o null")
+
+        orientacion = materia.get("orientacion")
+        if orientacion is not None and not _is_non_empty_string(orientacion):
+            _add_issue(errors, "error", f"{path}.orientacion", "Debe ser string o null")
+
+        orientaciones = materia.get("orientaciones")
+        if orientaciones is not None:
+            if not isinstance(orientaciones, list):
+                _add_issue(errors, "error", f"{path}.orientaciones", "Debe ser array o null")
+            else:
+                for orientacion_index, orientacion_item in enumerate(orientaciones):
+                    if not _is_non_empty_string(orientacion_item):
+                        _add_issue(
+                            errors,
+                            "error",
+                            f"{path}.orientaciones[{orientacion_index}]",
+                            "Debe ser string no vacio",
+                        )
 
         subtipo = materia.get("subtipo")
         if subtipo is not None and not isinstance(subtipo, str):
@@ -185,7 +238,7 @@ def validate_plan_contract(data: Any) -> ContractValidationResult:
                         "Debe ser 'cursada', 'aprobada' o null",
                     )
 
-    for index, materia in enumerate(materias):
+    for index, materia in enumerate(todas_las_materias):
         if not _is_record(materia):
             continue
         materia_id = materia.get("id")

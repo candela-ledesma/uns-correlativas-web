@@ -6,6 +6,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { PlanData, Materia } from "@/app/types/plan";
 import PlanHeader from "@/components/PlanHeader";
 import PlanFilters from "@/components/PlanFilters";
+import OrientationSelector from "@/components/OrientationSelector";
 import AnioSection from "@/components/AnioSection";
 import GrupoMaterias from "@/components/GrupoMaterias";
 import PlanOnboarding from "@/components/PlanOnboarding";
@@ -13,7 +14,11 @@ import { usePlanState } from "@/hooks/usePlanState";
 import { usePlanStructure } from "@/hooks/usePlanStructure";
 import { getMateriaViewModel } from "@/lib/materiaViewModel";
 import { calcularProgresoPlan } from "@/lib/calcularProgresoPlan";
-import { filtrarMaterias, type FiltrosPlan } from "@/lib/filtrarMaterias";
+import {
+  filtrarMaterias,
+  normalizarTextoBusqueda,
+  type FiltrosPlan,
+} from "@/lib/filtrarMaterias";
 
 type Props = {
   data: PlanData;
@@ -37,20 +42,31 @@ const FILTROS_INICIALES: FiltrosPlan = {
   orientacion: "todas",
 };
 
-function normalizarTexto(valor: string) {
-  return valor
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .trim();
+function obtenerUbicacionPorOrientacion(
+  materia: Materia,
+  orientacionSeleccionada: string
+) {
+  if (orientacionSeleccionada === FILTROS_INICIALES.orientacion) {
+    return undefined;
+  }
+
+  return materia.ubicacion?.[orientacionSeleccionada];
 }
 
-function agruparPorAnioYCuatrimestre(materias: Materia[]) {
+function agruparPorAnioYCuatrimestre(
+  materias: Materia[],
+  orientacionSeleccionada: string
+) {
   const resultado: Record<string, Record<string, Materia[]>> = {};
 
   for (const materia of materias) {
-    const anio = materia.año || "Sin año";
-    const cuatrimestre = materia.cuatrimestre || "Sin cuatrimestre";
+    const ubicacion = obtenerUbicacionPorOrientacion(
+      materia,
+      orientacionSeleccionada
+    );
+    const anio = ubicacion?.año || materia.año || "Sin año";
+    const cuatrimestre =
+      ubicacion?.cuatrimestre || materia.cuatrimestre || "Sin cuatrimestre";
 
     if (!resultado[anio]) {
       resultado[anio] = {};
@@ -74,7 +90,8 @@ type PunteroGrupo = {
 function construirPunterosGruposPorAnioYCuatrimestre(
   materiasFiltradas: Materia[],
   agrupadores: PlanData["agrupadores"],
-  materiasPorId: Map<string, Materia>
+  materiasPorId: Map<string, Materia>,
+  orientacionSeleccionada: string
 ) {
   const resultado: Record<string, Record<string, PunteroGrupo[]>> = {};
   const vistos = new Set<string>();
@@ -97,9 +114,25 @@ function construirPunterosGruposPorAnioYCuatrimestre(
     // El cuatrimestre/año del puntero debe ser el del agrupador (Gxxxx / Ixxxx / etc),
     // porque en algunos PDFs las opciones vienen con slots inconsistentes.
     const placeholder = materiasPorId.get(String(grupoId));
-    const anio = placeholder?.año ?? materia.año ?? "Sin año";
+    const ubicacionPlaceholder = placeholder
+      ? obtenerUbicacionPorOrientacion(placeholder, orientacionSeleccionada)
+      : undefined;
+    const ubicacionMateria = obtenerUbicacionPorOrientacion(
+      materia,
+      orientacionSeleccionada
+    );
+    const anio =
+      ubicacionPlaceholder?.año ||
+      placeholder?.año ||
+      ubicacionMateria?.año ||
+      materia.año ||
+      "Sin año";
     const cuatrimestre =
-      placeholder?.cuatrimestre ?? materia.cuatrimestre ?? "Sin cuatrimestre";
+      ubicacionPlaceholder?.cuatrimestre ||
+      placeholder?.cuatrimestre ||
+      ubicacionMateria?.cuatrimestre ||
+      materia.cuatrimestre ||
+      "Sin cuatrimestre";
 
     if (!resultado[anio]) resultado[anio] = {};
     if (!resultado[anio][cuatrimestre]) resultado[anio][cuatrimestre] = [];
@@ -170,7 +203,7 @@ export default function PlanViewer({
     });
   };
 
-  const agrupadores = data.agrupadores || [];
+  const agrupadores = useMemo(() => data.agrupadores ?? [], [data.agrupadores]);
   const materiasPorId = useMemo(() => {
     return new Map(data.materias.map((m) => [String(m.id), m]));
   }, [data.materias]);
@@ -178,16 +211,6 @@ export default function PlanViewer({
   const [filtros, setFiltros] = useState<FiltrosPlan>({
     ...FILTROS_INICIALES,
   });
-
-  const canResetFiltros = filtros.codigo !== FILTROS_INICIALES.codigo
-    || filtros.anio !== FILTROS_INICIALES.anio
-    || filtros.cuatrimestre !== FILTROS_INICIALES.cuatrimestre
-    || filtros.estado !== FILTROS_INICIALES.estado
-    || filtros.orientacion !== FILTROS_INICIALES.orientacion;
-
-  function resetFiltros() {
-    setFiltros({ ...FILTROS_INICIALES });
-  }
 
   const {
     estados,
@@ -218,21 +241,107 @@ export default function PlanViewer({
     const vistos = new Set<string>();
     const resultado: string[] = [];
 
+    // Extraer orientaciones de agrupadores (optativas)
     for (const agrupador of agrupadores) {
       if (agrupador.tipo !== "optativa_grupo") continue;
 
       const orientacion = agrupador.orientacion;
       if (!orientacion) continue;
 
-      const clave = normalizarTexto(orientacion);
+      const clave = normalizarTextoBusqueda(orientacion);
       if (vistos.has(clave)) continue;
       vistos.add(clave);
 
       resultado.push(orientacion);
     }
 
+    // Extraer orientaciones de materias (campos orientacion/orientaciones)
+    for (const materia of data.materias) {
+      if (materia.orientacion) {
+        const clave = normalizarTextoBusqueda(materia.orientacion);
+        if (!vistos.has(clave)) {
+          vistos.add(clave);
+          resultado.push(materia.orientacion);
+        }
+      }
+
+      if (materia.orientaciones && Array.isArray(materia.orientaciones)) {
+        for (const orientacion of materia.orientaciones) {
+          const clave = normalizarTextoBusqueda(orientacion);
+          if (!vistos.has(clave)) {
+            vistos.add(clave);
+            resultado.push(orientacion);
+          }
+        }
+      }
+    }
+
+    // Ordenar alfabéticamente
+    resultado.sort();
+
     return resultado;
-  }, [agrupadores]);
+  }, [agrupadores, data.materias]);
+
+  const orientacionCanonicaPorClave = useMemo(() => {
+    const map = new Map<string, string>();
+
+    for (const orientacion of orientaciones) {
+      const clave = normalizarTextoBusqueda(orientacion);
+
+      if (!map.has(clave)) {
+        map.set(clave, orientacion);
+      }
+    }
+
+    return map;
+  }, [orientaciones]);
+
+  const orientacionDesdeUrl = useMemo(() => {
+    if (orientaciones.length === 0) return FILTROS_INICIALES.orientacion;
+
+    const orientacionRaw = searchParams.get("orientacion");
+    if (!orientacionRaw) return FILTROS_INICIALES.orientacion;
+
+    const orientacion = orientacionCanonicaPorClave.get(
+      normalizarTextoBusqueda(orientacionRaw)
+    );
+
+    return orientacion ?? FILTROS_INICIALES.orientacion;
+  }, [orientaciones.length, orientacionCanonicaPorClave, searchParams]);
+
+  const filtrosConOrientacion = useMemo(
+    () => ({
+      ...filtros,
+      orientacion: orientacionDesdeUrl,
+    }),
+    [filtros, orientacionDesdeUrl]
+  );
+
+  const canResetFiltros = filtrosConOrientacion.codigo !== FILTROS_INICIALES.codigo
+    || filtrosConOrientacion.anio !== FILTROS_INICIALES.anio
+    || filtrosConOrientacion.cuatrimestre !== FILTROS_INICIALES.cuatrimestre
+    || filtrosConOrientacion.estado !== FILTROS_INICIALES.estado
+    || filtrosConOrientacion.orientacion !== FILTROS_INICIALES.orientacion;
+
+  function actualizarOrientacionEnUrl(orientacion: string) {
+    const params = new URLSearchParams(searchParams.toString());
+
+    if (orientacion === FILTROS_INICIALES.orientacion) {
+      params.delete("orientacion");
+    } else {
+      params.set("orientacion", orientacion);
+    }
+
+    const query = params.toString();
+    router.replace(query ? `${pathname}?${query}` : pathname, {
+      scroll: false,
+    });
+  }
+
+  function resetFiltros() {
+    setFiltros({ ...FILTROS_INICIALES });
+    actualizarOrientacionEnUrl(FILTROS_INICIALES.orientacion);
+  }
 
   const materiasFiltradas = useMemo(() => {
     return filtrarMaterias({
@@ -240,9 +349,9 @@ export default function PlanViewer({
       estados,
       agrupadores,
       idsAgrupadores,
-      filtros,
+      filtros: filtrosConOrientacion,
     });
-  }, [data.materias, estados, agrupadores, idsAgrupadores, filtros]);
+  }, [data.materias, estados, agrupadores, idsAgrupadores, filtrosConOrientacion]);
 
   const agrupadorTipoPorId = useMemo(() => {
     return new Map(agrupadores.map((a) => [String(a.id), a.tipo]));
@@ -266,17 +375,29 @@ export default function PlanViewer({
           tipo === "idioma_grupo" ||
           tipo === "seminario_grupo"
         );
-      })
+      }),
+      filtrosConOrientacion.orientacion
     );
-  }, [materiasFiltradas, idsAgrupadores, agrupadorTipoPorId]);
+  }, [
+    materiasFiltradas,
+    idsAgrupadores,
+    agrupadorTipoPorId,
+    filtrosConOrientacion.orientacion,
+  ]);
 
   const punterosPorAnioYCuatrimestre = useMemo(() => {
     return construirPunterosGruposPorAnioYCuatrimestre(
       materiasFiltradas,
       agrupadores,
-      materiasPorId
+      materiasPorId,
+      filtrosConOrientacion.orientacion
     );
-  }, [materiasFiltradas, agrupadores, materiasPorId]);
+  }, [
+    materiasFiltradas,
+    agrupadores,
+    materiasPorId,
+    filtrosConOrientacion.orientacion,
+  ]);
 
   const seccionesPorAnioYCuatrimestre = useMemo(() => {
     return combinarSeccionesPorAnioYCuatrimestre(
@@ -441,14 +562,19 @@ export default function PlanViewer({
         }}
       />
 
+      <OrientationSelector
+        orientaciones={orientaciones}
+        selected={orientacionDesdeUrl}
+        onSelect={actualizarOrientacionEnUrl}
+      />
+
       <PlanFilters
-        filtros={filtros}
+        filtros={filtrosConOrientacion}
         onChange={setFiltros}
         onReset={resetFiltros}
         canReset={canResetFiltros}
         anios={anios}
         cuatrimestres={cuatrimestres}
-        orientaciones={orientaciones}
       />
 
       {Object.entries(seccionesPorAnioYCuatrimestre).map(([anio, cuatrimestresMap]) => (
