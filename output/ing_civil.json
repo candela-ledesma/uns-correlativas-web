@@ -813,7 +813,17 @@
       "orientaciones": [
         "Construcciones",
         "Hidráulica"
-      ]
+      ],
+      "ubicacion": {
+        "Construcciones": {
+          "año": "Cuarto Año",
+          "cuatrimestre": "Segundo Cuatrimestre"
+        },
+        "Hidráulica": {
+          "año": "Quinto Año",
+          "cuatrimestre": "Segundo Cuatrimestre"
+        }
+      }
     },
     {
       "id": "5241",
@@ -1015,6 +1025,20 @@
         "I0012": {
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
+        }
+      },
+      "ubicacion": {
+        "Construcciones": {
+          "año": "Quinto Año",
+          "cuatrimestre": "Primer Cuatrimestre"
+        },
+        "Hidráulica": {
+          "año": "Cuarto Año",
+          "cuatrimestre": "Primer Cuatrimestre"
+        },
+        "Vías de Comunicación": {
+          "año": "Quinto Año",
+          "cuatrimestre": "Primer Cuatrimestre"
         }
       }
     },

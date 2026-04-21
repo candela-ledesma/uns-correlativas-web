@@ -244,6 +244,9 @@ def detectar_materias_generico(texto):
     materias_normales_sin_orientacion = set()
     grupos_optativos_por_materia = {}
     orientaciones_optativas_por_materia = {}
+    
+    # Rastrear ubicación (año/cuatrimestre) por orientación para cada materia
+    ubicacion_por_orientacion_por_materia = {}
 
     def registrar_orientacion(orientacion):
         if not isinstance(orientacion, str):
@@ -449,6 +452,11 @@ def detectar_materias_generico(texto):
                         orientaciones_normales_por_materia.setdefault(materia_id, set()).add(
                             orientacion_actual
                         )
+                        # Rastrear ubicación (año/cuatrimestre) por orientación
+                        ubicacion_por_orientacion_por_materia.setdefault(materia_id, {})[orientacion_actual] = {
+                            "año": año_actual,
+                            "cuatrimestre": cuatrimestre_actual,
+                        }
                     else:
                         materias_normales_sin_orientacion.add(materia_id)
 
@@ -571,6 +579,32 @@ def detectar_materias_generico(texto):
             )
             if orientacion:
                 agrupador["orientacion"] = orientacion
+
+    # Agregar ubicación contextualizada por orientación a cada materia
+    for materia_id, ubicaciones_por_ori in ubicacion_por_orientacion_por_materia.items():
+        if materia_id in materias_index:
+            materia = materias_index[materia_id]
+            
+            # Si la materia aparece en múltiples orientaciones con diferente ubicación,
+            # guardar estructura completa. Si es igual en todas, simplificar.
+            if len(ubicaciones_por_ori) > 0:
+                # Verificar si todas las ubicaciones son iguales
+                ubicaciones_lista = list(ubicaciones_por_ori.values())
+                todas_iguales = all(
+                    u == ubicaciones_lista[0] for u in ubicaciones_lista
+                )
+                
+                if todas_iguales and ubicaciones_lista[0].get("año"):
+                    # Todas tienen la misma ubicación, usar valor único
+                    materia["año"] = ubicaciones_lista[0]["año"]
+                    materia["cuatrimestre"] = ubicaciones_lista[0]["cuatrimestre"]
+                elif len(ubicaciones_por_ori) > 1:
+                    # Diferentes ubicaciones en diferentes orientaciones
+                    materia["ubicacion"] = ubicaciones_por_ori
+                elif ubicaciones_lista[0].get("año"):
+                    # Una sola orientación pero tiene año
+                    materia["año"] = ubicaciones_lista[0]["año"]
+                    materia["cuatrimestre"] = ubicaciones_lista[0]["cuatrimestre"]
 
     return {
         "plan": info_plan,
