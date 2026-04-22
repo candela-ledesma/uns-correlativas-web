@@ -230,10 +230,30 @@ export default function KanbanPlan({
     cursor: "pointer",
   };
 
+  function handleExportPDF() {
+    window.print();
+  }
+
   return (
     <div style={{ background: BG_GRADIENT, fontFamily: FONT, borderRadius: 20, padding: 20 }}>
+      <style>{`
+        @media print {
+          @page { size: A4 landscape; margin: 12mm; }
+          [data-no-print] { display: none !important; }
+          body, html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+          .kanban-years-container {
+            flex-wrap: wrap !important;
+            overflow: visible !important;
+            overflow-x: visible !important;
+          }
+          .kanban-year-card {
+            break-inside: avoid;
+            page-break-inside: avoid;
+          }
+        }
+      `}</style>
       {/* Header controls */}
-      <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 12, gap: 8, flexWrap: "wrap" }}>
+      <div data-no-print style={{ display: "flex", justifyContent: "flex-end", marginBottom: 12, gap: 8, flexWrap: "wrap" }}>
         {isModified && (
           <button
             type="button"
@@ -278,12 +298,26 @@ export default function KanbanPlan({
         >
           {showMateriaStatus ? "Ocultar estado materia" : "Mostrar estado materia"}
         </button>
+
+        <button
+          type="button"
+          onClick={handleExportPDF}
+          style={{
+            ...btnBase,
+            background: "rgba(249,199,79,0.10)",
+            border: "1px solid rgba(249,199,79,0.35)",
+            color: "#f9c74f",
+          }}
+        >
+          Exportar PDF
+        </button>
       </div>
       </div>
 
       {/* Year groups */}
         <div
           ref={scrollContainerRef}
+          className="kanban-years-container"
           style={{
             display: "flex",
             gap: 20,
@@ -316,6 +350,7 @@ export default function KanbanPlan({
               ref={(el) => {
                 yearRefs.current[anio] = el;
               }}
+              className="kanban-year-card"
               style={{
                 background: "rgba(255,255,255,0.03)",
                 border: `1px solid ${color}44`,

@@ -192,7 +192,7 @@ export default function PlanViewer({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { idsAgrupadores } = usePlanStructure(data);
-  const [vistaActiva, setVistaActiva] = useState<"plan" | "kanban">("plan");
+  const [vistaActiva, setVistaActiva] = useState<"plan" | "Plan Vista">("plan");
   const [isOnboardingOpen, setIsOnboardingOpen] = useState(false);
   const [isOnboardingSubmitting, setIsOnboardingSubmitting] = useState(false);
   const onboardingStateKeyRef = useRef<string | null>(null);
@@ -538,7 +538,7 @@ export default function PlanViewer({
     <main className="mx-auto max-w-7xl">
       <div className="mb-4 flex items-center justify-between gap-4">
         <div className="flex p-1 rounded-xl" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.12)" }}>
-          {(["plan", "kanban"] as const).map((vista) => (
+          {(["plan", "Plan Vista"] as const).map((vista) => (
             <button
               key={vista}
               type="button"
@@ -550,7 +550,7 @@ export default function PlanViewer({
                   : { color: "#a89bc9" }
               }
             >
-              {vista === "plan" ? "Plan" : "Kanban"}
+              {vista === "plan" ? "Plan" : "Plan Vista"}
             </button>
           ))}
         </div>
@@ -565,7 +565,7 @@ export default function PlanViewer({
         </button>
       </div>
 
-      {vistaActiva === "kanban" && (
+      {vistaActiva === "Plan Vista" && (
         <KanbanPlan
           materias={data.materias}
           agrupadores={agrupadores}
