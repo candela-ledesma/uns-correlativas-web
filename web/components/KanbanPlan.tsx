@@ -42,20 +42,64 @@ function anioSortKey(titulo: string): number {
   return idx === -1 ? ANIO_ORDER.length : idx;
 }
 
+function normalizeCuatrimestre(c: string | null | undefined): "1" | "2" {
+  if (!c) return "1";
+  const lower = c.toLowerCase();
+  if (lower.includes("2") || lower.includes("segundo")) return "2";
+  return "1";
+}
+
 function buildInitialOrder(
   materias: Materia[],
   idsAgrupadores: Set<string>
 ): Record<string, string[]> {
-  const porAnio = new Map<string, string[]>();
+  const porCol = new Map<string, string[]>();
+
   for (const m of materias) {
     if (idsAgrupadores.has(String(m.id))) continue;
     const anio = m.año ?? "Sin año";
-    if (!porAnio.has(anio)) porAnio.set(anio, []);
-    porAnio.get(anio)!.push(String(m.id));
+    const c = normalizeCuatrimestre(m.cuatrimestre);
+    const key = `${anio}|${c}`;
+    if (!porCol.has(key)) porCol.set(key, []);
+    porCol.get(key)!.push(String(m.id));
   }
+
+  // Ensure both cuatrimestres exist for every year
+  const years = new Set(Array.from(porCol.keys()).map((k) => k.split("|")[0]));
+  for (const y of years) {
+    if (!porCol.has(`${y}|1`)) porCol.set(`${y}|1`, []);
+    if (!porCol.has(`${y}|2`)) porCol.set(`${y}|2`, []);
+  }
+
   return Object.fromEntries(
-    Array.from(porAnio.entries()).sort(([a], [b]) => anioSortKey(a) - anioSortKey(b))
+    Array.from(porCol.entries()).sort(([a], [b]) => {
+      const [ay, ac] = a.split("|");
+      const [by, bc] = b.split("|");
+      const yearDiff = anioSortKey(ay) - anioSortKey(by);
+      return yearDiff !== 0 ? yearDiff : (ac ?? "1").localeCompare(bc ?? "1");
+    })
   );
+}
+
+function getYearsFromOrder(order: Record<string, string[]>): string[] {
+  const years = new Set<string>();
+  for (const key of Object.keys(order)) {
+    years.add(key.split("|")[0]);
+  }
+  return Array.from(years).sort((a, b) => {
+    const diff = anioSortKey(a) - anioSortKey(b);
+    if (diff !== 0) return diff;
+    return a.localeCompare(b);
+  });
+}
+
+function getNextYearName(existingYears: string[]): string {
+  for (const name of ANIO_ORDER) {
+    if (!existingYears.includes(name)) return name;
+  }
+  let n = 7;
+  while (existingYears.includes(`Año ${n}`)) n++;
+  return `Año ${n}`;
 }
 
 function getMateriaEstado(
@@ -108,7 +152,7 @@ export default function KanbanPlan({
   const [dragOver, setDragOver] = useState<string | null>(null);
   const dragRef = useRef<DragRef | null>(null);
 
-  const colTitulos = Object.keys(localOrder);
+  const years = getYearsFromOrder(localOrder);
 
   const isModified =
     JSON.stringify(localOrder) !==
@@ -116,6 +160,15 @@ export default function KanbanPlan({
 
   function handleReset() {
     setLocalOrder(buildInitialOrder(materias, idsAgrupadores));
+  }
+
+  function handleAddYear() {
+    const newYear = getNextYearName(years);
+    setLocalOrder((prev) => ({
+      ...prev,
+      [`${newYear}|1`]: [],
+      [`${newYear}|2`]: [],
+    }));
   }
 
   function handleDragStart(materiaId: string, fromCol: string) {
@@ -138,122 +191,194 @@ export default function KanbanPlan({
     dragRef.current = null;
   }
 
+  const btnBase: React.CSSProperties = {
+    borderRadius: 10,
+    padding: "6px 14px",
+    fontSize: 12,
+    fontFamily: FONT,
+    cursor: "pointer",
+  };
+
   return (
     <div style={{ background: BG_GRADIENT, fontFamily: FONT, borderRadius: 20, padding: 20 }}>
-      {/* Reset button */}
-      {isModified && (
-        <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 12 }}>
+      {/* Header controls */}
+      <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 12, gap: 8, flexWrap: "wrap" }}>
+        {isModified && (
           <button
             type="button"
             onClick={handleReset}
             style={{
+              ...btnBase,
               background: "rgba(157,78,221,0.10)",
               border: "1px dashed rgba(157,78,221,0.35)",
               color: "#9d4edd",
-              borderRadius: 10,
-              padding: "6px 14px",
-              fontSize: 12,
-              fontFamily: FONT,
-              cursor: "pointer",
             }}
           >
             Restablecer orden original
           </button>
-        </div>
-      )}
+        )}
+        <button
+          type="button"
+          onClick={handleAddYear}
+          style={{
+            ...btnBase,
+            background: "rgba(76,201,240,0.10)",
+            border: "1px solid rgba(76,201,240,0.35)",
+            color: "#4cc9f0",
+          }}
+        >
+          + Agregar año
+        </button>
+      </div>
 
-      {/* Columns */}
-      <div style={{ display: "flex", gap: 16, overflowX: "auto", paddingBottom: 16 }}>
-        {colTitulos.map((titulo, colIdx) => {
-          const color = PALETTE[colIdx % PALETTE.length];
-          const ids = localOrder[titulo] ?? [];
-          const colMaterias = ids
-            .map((id) => materiaById.get(id))
-            .filter((m): m is Materia => Boolean(m));
+      {/* Year groups */}
+      <div style={{ display: "flex", gap: 20, overflowX: "auto", paddingBottom: 16, alignItems: "flex-start" }}>
+        {years.map((anio, yearIdx) => {
+          const color = PALETTE[yearIdx % PALETTE.length];
+          const c1Key = `${anio}|1`;
+          const c2Key = `${anio}|2`;
 
-          const aprobadas = colMaterias.filter((m) => getMateriaEstado(m, estados) === "aprobada").length;
-          const cursadas  = colMaterias.filter((m) => getMateriaEstado(m, estados) === "cursada").length;
-          const isDragOver = dragOver === titulo;
+          const cuatrimestres = [
+            { key: c1Key, label: "1° Cuatrimestre" },
+            { key: c2Key, label: "2° Cuatrimestre" },
+          ];
+
+          const totalMaterias = (localOrder[c1Key]?.length ?? 0) + (localOrder[c2Key]?.length ?? 0);
+          const aprobadas = [c1Key, c2Key].flatMap((k) =>
+            (localOrder[k] ?? [])
+              .map((id) => materiaById.get(id))
+              .filter((m): m is Materia => Boolean(m))
+              .filter((m) => getMateriaEstado(m, estados) === "aprobada")
+          ).length;
 
           return (
             <div
-              key={titulo}
+              key={anio}
               style={{
-                background: "rgba(255,255,255,0.04)",
-                border: `1px solid ${isDragOver ? color : "rgba(255,255,255,0.10)"}`,
-                borderRadius: 18,
-                backdropFilter: "blur(8px)",
-                width: 280,
+                background: "rgba(255,255,255,0.03)",
+                border: `1px solid ${color}44`,
+                borderRadius: 20,
                 flexShrink: 0,
-                display: "flex",
-                flexDirection: "column",
-                boxShadow: isDragOver ? `0 0 0 2px ${color}44` : undefined,
-                transition: "border-color 0.15s, box-shadow 0.15s",
+                overflow: "hidden",
               }}
-              onDragOver={(e) => { e.preventDefault(); setDragOver(titulo); }}
-              onDragLeave={(e) => {
-                if (!e.currentTarget.contains(e.relatedTarget as Node)) setDragOver(null);
-              }}
-              onDrop={() => handleDrop(titulo)}
             >
-              {/* Column header */}
+              {/* Year header */}
               <div
                 style={{
-                  background: color + "22",
-                  borderBottom: `1px solid ${color}55`,
-                  borderRadius: "17px 17px 0 0",
-                  padding: "12px 16px",
+                  background: `${color}18`,
+                  borderBottom: `1px solid ${color}44`,
+                  padding: "10px 16px",
                 }}
               >
-                <div style={{ color: TEXT_BASE, fontWeight: "bold", fontSize: 15, textShadow: TITLE_SHADOW }}>
-                  {titulo}
+                <div style={{ color, fontWeight: "bold", fontSize: 15, textShadow: TITLE_SHADOW }}>
+                  {anio}
                 </div>
-                <div style={{ color: TEXT_SEC, fontSize: 12, marginTop: 3 }}>
-                  {colMaterias.length} materias
+                <div style={{ color: TEXT_SEC, fontSize: 11, marginTop: 2 }}>
+                  {totalMaterias} materias
                   {aprobadas > 0 && ` · ${aprobadas} aprobadas`}
-                  {cursadas  > 0 && ` · ${cursadas} cursadas`}
                 </div>
               </div>
 
-              {/* Cards */}
-              <div style={{ padding: 10, display: "flex", flexDirection: "column", gap: 8, flex: 1 }}>
-                {colMaterias.map((materia) => {
-                  const estado     = getMateriaEstado(materia, estados);
-                  const puedeCursar = estaHabilitadaParaCursar(materia, estados, agrupadores);
+              {/* Two cuatrimestre sub-columns */}
+              <div style={{ display: "flex", gap: 0 }}>
+                {cuatrimestres.map(({ key: colKey, label }, cIdx) => {
+                  const ids = localOrder[colKey] ?? [];
+                  const colMaterias = ids
+                    .map((id) => materiaById.get(id))
+                    .filter((m): m is Materia => Boolean(m));
+                  const isDragOver = dragOver === colKey;
+
+                  const cuatrAprobadas = colMaterias.filter((m) => getMateriaEstado(m, estados) === "aprobada").length;
+                  const cuatrCursadas  = colMaterias.filter((m) => getMateriaEstado(m, estados) === "cursada").length;
 
                   return (
                     <div
-                      key={String(materia.id)}
-                      draggable
-                      onDragStart={() => handleDragStart(String(materia.id), titulo)}
-                      onDragEnd={() => setDragOver(null)}
+                      key={colKey}
                       style={{
-                        background: `linear-gradient(135deg, ${color}22, transparent)`,
-                        borderTop:    `1px solid ${color}33`,
-                        borderRight:  `1px solid ${color}33`,
-                        borderBottom: `1px solid ${color}33`,
-                        borderLeft:   `4px solid ${color}`,
-                        borderRadius: 10,
-                        padding: "10px 12px",
-                        cursor: "grab",
-                        userSelect: "none",
-                        transition: "opacity 0.15s",
-                        opacity: !puedeCursar && estado === "no_cursada" ? 0.55 : 1,
+                        width: 220,
+                        display: "flex",
+                        flexDirection: "column",
+                        borderLeft: cIdx === 1 ? `1px solid ${color}22` : undefined,
+                        background: isDragOver ? `${color}08` : undefined,
+                        boxShadow: isDragOver ? `inset 0 0 0 2px ${color}44` : undefined,
+                        transition: "background 0.15s, box-shadow 0.15s",
                       }}
+                      onDragOver={(e) => { e.preventDefault(); setDragOver(colKey); }}
+                      onDragLeave={(e) => {
+                        if (!e.currentTarget.contains(e.relatedTarget as Node)) setDragOver(null);
+                      }}
+                      onDrop={() => handleDrop(colKey)}
                     >
-                      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 8 }}>
-                        <div style={{ minWidth: 0 }}>
-                          <div style={{ color: TEXT_BASE, fontWeight: "bold", fontSize: 13, lineHeight: 1.4 }}>
-                            {materia.nombre}
-                          </div>
-                          <div style={{ color: TEXT_DETAIL, fontSize: 11, marginTop: 3 }}>
-                            {materia.id}
-                            {materia.horas && ` · ${materia.horas} hs`}
-                          </div>
+                      {/* Cuatrimestre sub-header */}
+                      <div
+                        style={{
+                          padding: "8px 12px",
+                          borderBottom: `1px solid ${color}22`,
+                          background: `${color}0a`,
+                        }}
+                      >
+                        <div style={{ color: TEXT_DETAIL, fontSize: 12, fontWeight: "bold" }}>
+                          {label}
                         </div>
-                        <span style={getBadgeStyle(estado, puedeCursar)}>
-                          {getBadgeLabel(estado, puedeCursar)}
-                        </span>
+                        <div style={{ color: TEXT_SEC, fontSize: 11, marginTop: 1 }}>
+                          {colMaterias.length} materias
+                          {cuatrAprobadas > 0 && ` · ${cuatrAprobadas} ✓`}
+                          {cuatrCursadas  > 0 && ` · ${cuatrCursadas} →`}
+                        </div>
+                      </div>
+
+                      {/* Cards */}
+                      <div
+                        style={{
+                          padding: 8,
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: 6,
+                          flex: 1,
+                          minHeight: 60,
+                        }}
+                      >
+                        {colMaterias.map((materia) => {
+                          const estado      = getMateriaEstado(materia, estados);
+                          const puedeCursar = estaHabilitadaParaCursar(materia, estados, agrupadores);
+
+                          return (
+                            <div
+                              key={String(materia.id)}
+                              draggable
+                              onDragStart={() => handleDragStart(String(materia.id), colKey)}
+                              onDragEnd={() => setDragOver(null)}
+                              style={{
+                                background: `linear-gradient(135deg, ${color}22, transparent)`,
+                                borderTop:    `1px solid ${color}33`,
+                                borderRight:  `1px solid ${color}33`,
+                                borderBottom: `1px solid ${color}33`,
+                                borderLeft:   `4px solid ${color}`,
+                                borderRadius: 10,
+                                padding: "9px 10px",
+                                cursor: "grab",
+                                userSelect: "none",
+                                transition: "opacity 0.15s",
+                                opacity: !puedeCursar && estado === "no_cursada" ? 0.55 : 1,
+                              }}
+                            >
+                              <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 6 }}>
+                                <div style={{ minWidth: 0 }}>
+                                  <div style={{ color: TEXT_BASE, fontWeight: "bold", fontSize: 12, lineHeight: 1.4 }}>
+                                    {materia.nombre}
+                                  </div>
+                                  <div style={{ color: TEXT_DETAIL, fontSize: 11, marginTop: 2 }}>
+                                    {materia.id}
+                                    {materia.horas && ` · ${materia.horas} hs`}
+                                  </div>
+                                </div>
+                                <span style={getBadgeStyle(estado, puedeCursar)}>
+                                  {getBadgeLabel(estado, puedeCursar)}
+                                </span>
+                              </div>
+                            </div>
+                          );
+                        })}
                       </div>
                     </div>
                   );
