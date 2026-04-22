@@ -118,7 +118,11 @@ export default function HomeSessionPanel() {
             <p className="mb-2 px-2 text-xs font-medium uppercase tracking-wide text-zinc-500">
               Acceso
             </p>
-            <LoginActions callbackUrl="/perfil" compact />
+            <LoginActions
+              callbackUrl="/perfil"
+              compact
+              showGoogleLogin={process.env.NEXT_PUBLIC_AUTH_GOOGLE_ENABLED === "true"}
+            />
           </div>
         )}
       </div>
