@@ -129,8 +129,28 @@ export default function KanbanPlan({
     dragRef.current = null;
   }
 
+  const isModified =
+    JSON.stringify(localOrder) !==
+    JSON.stringify(buildInitialOrder(materias, idsAgrupadores));
+
+  function handleReset() {
+    setLocalOrder(buildInitialOrder(materias, idsAgrupadores));
+  }
+
   return (
-    <div className="flex gap-4 overflow-x-auto pb-4">
+    <div className="min-h-0">
+      {isModified && (
+        <div className="mb-3 flex justify-end">
+          <button
+            type="button"
+            onClick={handleReset}
+            className="rounded-xl border border-zinc-300 bg-white px-3 py-1.5 text-xs font-semibold text-zinc-600 shadow-sm transition hover:border-zinc-400 hover:bg-zinc-50 hover:text-zinc-900"
+          >
+            Restablecer orden original
+          </button>
+        </div>
+      )}
+      <div className="flex gap-4 overflow-x-auto pb-4">
       {colTitulos.map((titulo) => {
         const ids = localOrder[titulo] ?? [];
         const colMaterias = ids
@@ -206,6 +226,7 @@ export default function KanbanPlan({
           </div>
         );
       })}
+    </div>
     </div>
   );
 }
