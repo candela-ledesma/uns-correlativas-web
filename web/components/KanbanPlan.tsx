@@ -161,6 +161,7 @@ export default function KanbanPlan({
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
   const yearRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const [newlyAddedYear, setNewlyAddedYear] = useState<string | null>(null);
+  const [showMateriaStatus, setShowMateriaStatus] = useState(true);
 
   useEffect(() => {
   if (!newlyAddedYear) return;
@@ -247,6 +248,7 @@ export default function KanbanPlan({
             Restablecer orden original
           </button>
         )}
+        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
         <button
           type="button"
           onClick={handleAddYear}
@@ -259,6 +261,24 @@ export default function KanbanPlan({
         >
           + Agregar año
         </button>
+
+        <button
+          type="button"
+          onClick={() => setShowMateriaStatus((prev) => !prev)}
+          style={{
+            ...btnBase,
+            background: showMateriaStatus
+              ? "rgba(144,190,109,0.10)"
+              : "rgba(255,255,255,0.06)",
+            border: showMateriaStatus
+              ? "1px solid rgba(144,190,109,0.35)"
+              : "1px solid rgba(255,255,255,0.15)",
+            color: showMateriaStatus ? "#90be6d" : TEXT_SEC,
+          }}
+        >
+          {showMateriaStatus ? "Ocultar estado materia" : "Mostrar estado materia"}
+        </button>
+      </div>
       </div>
 
       {/* Year groups */}
@@ -315,7 +335,8 @@ export default function KanbanPlan({
                 <div style={{ color, fontWeight: "bold", fontSize: 15, textShadow: TITLE_SHADOW }}>
                   {anio}
                 </div>
-                <div style={{ color: TEXT_SEC, fontSize: 11, marginTop: 2 }}>
+
+                <div style={{ color: TEXT_SEC, fontSize: 11, marginTop: 6 }}>
                   {totalMaterias} materias
                   {aprobadas > 0 && ` · ${aprobadas} aprobadas`}
                 </div>
@@ -414,9 +435,11 @@ export default function KanbanPlan({
                                     {materia.horas && ` · ${materia.horas} hs`}
                                   </div>
                                 </div>
-                                <span style={getBadgeStyle(estado, puedeCursar)}>
-                                  {getBadgeLabel(estado, puedeCursar)}
-                                </span>
+                                {showMateriaStatus && (
+                                  <span style={getBadgeStyle(estado, puedeCursar)}>
+                                    {getBadgeLabel(estado, puedeCursar)}
+                                  </span>
+                                )}
                               </div>
                             </div>
                           );
