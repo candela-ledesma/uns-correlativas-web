@@ -572,7 +572,14 @@ export default function PlanViewer({
       </div>
 
       {vistaActiva === "kanban" && (
-        <KanbanPlan materiasIniciales={data.materias} />
+        <KanbanPlan
+          materias={data.materias}
+          agrupadores={agrupadores}
+          idsAgrupadores={idsAgrupadores}
+          estados={estados}
+          onToggle={toggleMateria}
+          onUndo={deshacerMateria}
+        />
       )}
 
       {vistaActiva === "plan" && (

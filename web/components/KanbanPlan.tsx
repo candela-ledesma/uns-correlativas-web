@@ -1,35 +1,26 @@
 "use client";
 
-import { useRef, useState, useMemo } from "react";
-import { CARRERAS } from "../lib/carreras";
+import { useMemo } from "react";
+import type { Materia, Agrupador } from "@/app/types/plan";
+import type { EstadoMateria } from "@/lib/evaluarCorrelativas";
+import {
+  estaHabilitadaParaCursar,
+  estaHabilitadaParaAprobar,
+} from "@/lib/evaluarCorrelativas";
+import { getEstadoKey } from "@/lib/estadoKey";
 
-type KanbanMateria = {
-  id: string;
-  nombre: string;
-  horas?: number;
+type Props = {
+  materias: Materia[];
+  agrupadores: Agrupador[];
+  idsAgrupadores: Set<string>;
+  estados: Record<string, EstadoMateria>;
+  onToggle: (materia: Materia, grupoId?: string) => void;
+  onUndo: (materia: Materia, grupoId?: string) => void;
 };
 
 type Columna = {
-  id: string;
   titulo: string;
-  materias: KanbanMateria[];
-};
-
-type DragRef = {
-  materiaId: string;
-  fromColumnaId: string;
-};
-
-type MateriaSeed = {
-  id: string | number;
-  nombre: string;
-  año: string | null;
-  horas?: string | null;
-  tipo?: string;
-};
-
-type Props = {
-  materiasIniciales?: MateriaSeed[];
+  materias: Materia[];
 };
 
 const ANIO_ORDER = [
@@ -46,373 +37,156 @@ function anioSortKey(titulo: string): number {
   return idx === -1 ? ANIO_ORDER.length : idx;
 }
 
-function columnasDesde(materias: MateriaSeed[]): Columna[] {
-  const solasMaterias = materias.filter((m) => m.tipo === "materia" || !m.tipo);
-  const porAnio = new Map<string, KanbanMateria[]>();
+function buildColumnas(materias: Materia[], idsAgrupadores: Set<string>): Columna[] {
+  const porAnio = new Map<string, Materia[]>();
 
-  for (const m of solasMaterias) {
-    const anio = m.año ?? "Sin año asignado";
+  for (const m of materias) {
+    if (idsAgrupadores.has(String(m.id))) continue;
+    const anio = m.año ?? "Sin año";
     if (!porAnio.has(anio)) porAnio.set(anio, []);
-    porAnio.get(anio)!.push({
-      id: crypto.randomUUID(),
-      nombre: m.nombre,
-      horas: m.horas ? parseInt(m.horas, 10) || undefined : undefined,
-    });
+    porAnio.get(anio)!.push(m);
   }
 
   return Array.from(porAnio.entries())
     .sort(([a], [b]) => anioSortKey(a) - anioSortKey(b))
-    .map(([titulo, mats], i) => ({ id: `anio-${i + 1}`, titulo, materias: mats }));
+    .map(([titulo, mats]) => ({ titulo, materias: mats }));
 }
 
-function crearColumnasVacias(): Columna[] {
-  return ANIO_ORDER.slice(0, 5).map((titulo, i) => ({
-    id: `anio-${i + 1}`,
-    titulo,
-    materias: [],
-  }));
+function getMateriaEstado(
+  materia: Materia,
+  estados: Record<string, EstadoMateria>
+): EstadoMateria {
+  const grupoId = materia.grupo_opcion ?? undefined;
+  return estados[getEstadoKey(materia, grupoId)] ?? "no_cursada";
 }
 
-function totalHoras(materias: KanbanMateria[]): number {
-  return materias.reduce((sum, m) => sum + (m.horas ?? 0), 0);
+function getBadgeLabel(estado: EstadoMateria, puedeCursar: boolean): string {
+  if (estado === "aprobada") return "Aprobada";
+  if (estado === "cursada") return "Cursada";
+  if (puedeCursar) return "Disponible";
+  return "Bloqueada";
 }
 
-function crearMateriaVacia(): KanbanMateria {
-  return { id: crypto.randomUUID(), nombre: "Nueva materia" };
+function getBadgeClass(estado: EstadoMateria, puedeCursar: boolean): string {
+  const base =
+    "inline-flex items-center whitespace-nowrap rounded-full px-2.5 py-0.5 text-xs font-bold";
+  if (estado === "aprobada") return `${base} bg-green-200 text-green-800`;
+  if (estado === "cursada") return `${base} bg-blue-200 text-blue-800`;
+  if (puedeCursar) return `${base} bg-yellow-200 text-yellow-800`;
+  return `${base} bg-zinc-200 text-zinc-500`;
 }
 
-const CARRERAS_DISPONIBLES = CARRERAS.filter((c) => c.disponible);
+function getCardClass(
+  estado: EstadoMateria,
+  puedeCursar: boolean,
+  bloqueada: boolean
+): string {
+  const base = "rounded-xl border p-3 shadow-sm transition";
+  if (estado === "aprobada") return `${base} border-green-300 bg-green-100`;
+  if (estado === "cursada") return `${base} border-blue-300 bg-blue-100`;
+  if (bloqueada) return `${base} border-zinc-200 bg-zinc-100 opacity-75`;
+  if (puedeCursar) return `${base} border-yellow-300 bg-yellow-100`;
+  return `${base} border-zinc-200 bg-white`;
+}
 
-export default function KanbanPlan({ materiasIniciales }: Props = {}) {
-  const columnasIniciales = useMemo(
-    () =>
-      materiasIniciales && materiasIniciales.length > 0
-        ? columnasDesde(materiasIniciales)
-        : crearColumnasVacias(),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
+export default function KanbanPlan({
+  materias,
+  agrupadores,
+  idsAgrupadores,
+  estados,
+  onToggle,
+  onUndo,
+}: Props) {
+  const columnas = useMemo(
+    () => buildColumnas(materias, idsAgrupadores),
+    [materias, idsAgrupadores]
   );
-
-  const [columnas, setColumnas] = useState<Columna[]>(columnasIniciales);
-  const [editandoId, setEditandoId] = useState<string | null>(null);
-  const [editandoNombre, setEditandoNombre] = useState("");
-  const [editandoHoras, setEditandoHoras] = useState("");
-  const [dragOver, setDragOver] = useState<string | null>(null);
-  const [modalAbierto, setModalAbierto] = useState(false);
-  const [carreraSeleccionada, setCarreraSeleccionada] = useState<string>(
-    CARRERAS_DISPONIBLES[0]?.id ?? ""
-  );
-  const [cargando, setCargando] = useState(false);
-  const [errorCarga, setErrorCarga] = useState<string | null>(null);
-  const dragRef = useRef<DragRef | null>(null);
-
-  const estaPreCargado = materiasIniciales && materiasIniciales.length > 0;
-
-  function agregarMateria(columnaId: string) {
-    const nueva = crearMateriaVacia();
-    setColumnas((prev) =>
-      prev.map((col) =>
-        col.id === columnaId
-          ? { ...col, materias: [...col.materias, nueva] }
-          : col
-      )
-    );
-    iniciarEdicion(nueva);
-  }
-
-  function eliminarMateria(columnaId: string, materiaId: string) {
-    setColumnas((prev) =>
-      prev.map((col) =>
-        col.id === columnaId
-          ? { ...col, materias: col.materias.filter((m) => m.id !== materiaId) }
-          : col
-      )
-    );
-    if (editandoId === materiaId) setEditandoId(null);
-  }
-
-  function iniciarEdicion(materia: KanbanMateria) {
-    setEditandoId(materia.id);
-    setEditandoNombre(materia.nombre);
-    setEditandoHoras(materia.horas !== undefined ? String(materia.horas) : "");
-  }
-
-  function guardarEdicion() {
-    if (!editandoId) return;
-    const nombre = editandoNombre.trim() || "Sin nombre";
-    const horas = parseInt(editandoHoras, 10);
-    setColumnas((prev) =>
-      prev.map((col) => ({
-        ...col,
-        materias: col.materias.map((m) =>
-          m.id === editandoId
-            ? { ...m, nombre, horas: isNaN(horas) ? undefined : horas }
-            : m
-        ),
-      }))
-    );
-    setEditandoId(null);
-  }
-
-  function handleDragStart(materiaId: string, fromColumnaId: string) {
-    dragRef.current = { materiaId, fromColumnaId };
-  }
-
-  function handleDrop(toColumnaId: string) {
-    const drag = dragRef.current;
-    if (!drag) return;
-    setDragOver(null);
-    if (drag.fromColumnaId === toColumnaId) return;
-
-    setColumnas((prev) => {
-      const materia = prev
-        .find((c) => c.id === drag.fromColumnaId)
-        ?.materias.find((m) => m.id === drag.materiaId);
-      if (!materia) return prev;
-      return prev.map((col) => {
-        if (col.id === drag.fromColumnaId) {
-          return { ...col, materias: col.materias.filter((m) => m.id !== drag.materiaId) };
-        }
-        if (col.id === toColumnaId) {
-          return { ...col, materias: [...col.materias, materia] };
-        }
-        return col;
-      });
-    });
-
-    dragRef.current = null;
-  }
-
-  async function cargarPlan() {
-    const carrera = CARRERAS_DISPONIBLES.find((c) => c.id === carreraSeleccionada);
-    if (!carrera) return;
-
-    setCargando(true);
-    setErrorCarga(null);
-
-    try {
-      const res = await fetch(`/api/materias/${carrera.id}?v=${carrera.defaultVersionId}`);
-      if (!res.ok) throw new Error(`Error ${res.status}`);
-
-      const data = await res.json();
-      const materias: MateriaSeed[] = data.materias ?? [];
-      setColumnas(columnasDesde(materias));
-      setModalAbierto(false);
-    } catch (err) {
-      setErrorCarga(err instanceof Error ? err.message : "Error al cargar el plan");
-    } finally {
-      setCargando(false);
-    }
-  }
 
   return (
-    <div className="min-h-0">
-      {/* Header — solo se muestra cuando el componente se usa standalone */}
-      {!estaPreCargado && (
-        <div className="mb-6 flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-zinc-900">Plan de estudio</h1>
-          <button
-            type="button"
-            onClick={() => setModalAbierto(true)}
-            className="flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 active:scale-95"
+    <div className="flex gap-4 overflow-x-auto pb-4">
+      {columnas.map((col) => {
+        const aprobadas = col.materias.filter(
+          (m) => getMateriaEstado(m, estados) === "aprobada"
+        ).length;
+        const cursadas = col.materias.filter(
+          (m) => getMateriaEstado(m, estados) === "cursada"
+        ).length;
+
+        return (
+          <div
+            key={col.titulo}
+            className="flex w-72 shrink-0 flex-col rounded-2xl border border-zinc-200 bg-white shadow-sm"
           >
-            <span>✦</span>
-            Armar plan
-          </button>
-        </div>
-      )}
-
-      {/* Columns */}
-      <div className="flex gap-4 overflow-x-auto pb-4">
-        {columnas.map((col) => {
-          const horas = totalHoras(col.materias);
-          const isDragOver = dragOver === col.id;
-
-          return (
-            <div
-              key={col.id}
-              className={`flex w-72 shrink-0 flex-col rounded-2xl border bg-white shadow-sm transition ${
-                isDragOver ? "border-blue-400 ring-2 ring-blue-200" : "border-zinc-200"
-              }`}
-              onDragOver={(e) => {
-                e.preventDefault();
-                setDragOver(col.id);
-              }}
-              onDragLeave={(e) => {
-                if (!e.currentTarget.contains(e.relatedTarget as Node)) {
-                  setDragOver(null);
-                }
-              }}
-              onDrop={() => handleDrop(col.id)}
-            >
-              {/* Column header */}
-              <div className="rounded-t-2xl border-b border-zinc-100 bg-zinc-50 px-4 py-3">
-                <div className="font-bold text-zinc-900">{col.titulo}</div>
-                <div className="mt-0.5 text-xs text-zinc-500">
-                  {col.materias.length} materias
-                  {horas > 0 && ` · ${horas} hs`}
-                </div>
+            <div className="rounded-t-2xl border-b border-zinc-100 bg-zinc-50 px-4 py-3">
+              <div className="font-bold text-zinc-900">{col.titulo}</div>
+              <div className="mt-0.5 text-xs text-zinc-500">
+                {col.materias.length} materias
+                {aprobadas > 0 && ` · ${aprobadas} aprobadas`}
+                {cursadas > 0 && ` · ${cursadas} cursadas`}
               </div>
+            </div>
 
-              {/* Cards */}
-              <div className="flex flex-1 flex-col gap-2 p-3">
-                {col.materias.map((materia) => (
+            <div className="flex flex-1 flex-col gap-2 p-3">
+              {col.materias.map((materia) => {
+                const estado = getMateriaEstado(materia, estados);
+                const puedeCursar = estaHabilitadaParaCursar(materia, estados, agrupadores);
+                const puedeAprobar = estaHabilitadaParaAprobar(materia, estados, agrupadores);
+                const bloqueada = !puedeCursar && estado === "no_cursada";
+                const grupoId = materia.grupo_opcion ?? undefined;
+
+                const puedeAvanzar =
+                  (estado === "no_cursada" && puedeCursar) ||
+                  (estado === "cursada" && puedeAprobar);
+
+                return (
                   <div
-                    key={materia.id}
-                    draggable
-                    onDragStart={() => handleDragStart(materia.id, col.id)}
-                    onDragEnd={() => setDragOver(null)}
-                    className="group relative rounded-xl border border-zinc-200 bg-white p-3 shadow-sm transition hover:shadow-md cursor-grab active:cursor-grabbing"
+                    key={String(materia.id)}
+                    className={getCardClass(estado, puedeCursar, bloqueada)}
                   >
-                    {editandoId === materia.id ? (
-                      <div className="flex flex-col gap-2" onClick={(e) => e.stopPropagation()}>
-                        <input
-                          autoFocus
-                          value={editandoNombre}
-                          onChange={(e) => setEditandoNombre(e.target.value)}
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter") guardarEdicion();
-                            if (e.key === "Escape") setEditandoId(null);
-                          }}
-                          className="w-full rounded-lg border border-zinc-300 px-2 py-1 text-sm font-semibold text-zinc-900 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-200"
-                          placeholder="Nombre de la materia"
-                        />
-                        <input
-                          type="number"
-                          min={0}
-                          value={editandoHoras}
-                          onChange={(e) => setEditandoHoras(e.target.value)}
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter") guardarEdicion();
-                            if (e.key === "Escape") setEditandoId(null);
-                          }}
-                          className="w-full rounded-lg border border-zinc-300 px-2 py-1 text-sm text-zinc-700 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-200"
-                          placeholder="Horas (opcional)"
-                        />
-                        <div className="flex justify-end gap-2">
-                          <button
-                            type="button"
-                            onClick={() => setEditandoId(null)}
-                            className="rounded-lg px-2 py-1 text-xs text-zinc-500 hover:bg-zinc-100"
-                          >
-                            Cancelar
-                          </button>
-                          <button
-                            type="button"
-                            onClick={guardarEdicion}
-                            className="rounded-lg bg-blue-600 px-2 py-1 text-xs font-semibold text-white hover:bg-blue-700"
-                          >
-                            Guardar
-                          </button>
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0">
+                        <div className="text-sm font-semibold leading-5 text-zinc-900">
+                          {materia.nombre}
+                        </div>
+                        <div className="mt-0.5 text-xs text-zinc-500">
+                          {materia.id}
+                          {materia.horas && ` · ${materia.horas} hs`}
                         </div>
                       </div>
-                    ) : (
-                      <>
-                        <button
-                          type="button"
-                          aria-label="Eliminar materia"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            eliminarMateria(col.id, materia.id);
-                          }}
-                          className="absolute right-2 top-2 flex h-5 w-5 items-center justify-center rounded-full text-zinc-400 opacity-0 transition hover:bg-red-100 hover:text-red-500 group-hover:opacity-100"
-                        >
-                          ✕
-                        </button>
-                        <div
-                          onDoubleClick={() => iniciarEdicion(materia)}
-                          className="cursor-text select-none"
-                          title="Doble clic para editar"
-                        >
-                          <div className="pr-5 text-sm font-semibold leading-5 text-zinc-900">
-                            {materia.nombre}
-                          </div>
-                          {materia.horas !== undefined && (
-                            <div className="mt-1 text-xs text-zinc-500">{materia.horas} hs</div>
-                          )}
-                        </div>
-                      </>
+                      <span className={getBadgeClass(estado, puedeCursar)}>
+                        {getBadgeLabel(estado, puedeCursar)}
+                      </span>
+                    </div>
+
+                    {(puedeAvanzar || estado !== "no_cursada") && (
+                      <div className="mt-2 flex gap-1.5">
+                        {puedeAvanzar && (
+                          <button
+                            type="button"
+                            onClick={() => onToggle(materia, grupoId)}
+                            className="rounded-lg border border-zinc-300 bg-white px-2.5 py-1 text-xs font-semibold text-zinc-700 transition hover:bg-zinc-50"
+                          >
+                            {estado === "no_cursada" ? "Marcar cursada" : "Marcar aprobada"}
+                          </button>
+                        )}
+                        {estado !== "no_cursada" && (
+                          <button
+                            type="button"
+                            onClick={() => onUndo(materia, grupoId)}
+                            className="rounded-lg border border-zinc-300 bg-white px-2.5 py-1 text-xs font-semibold text-zinc-700 transition hover:bg-zinc-50"
+                          >
+                            Deshacer
+                          </button>
+                        )}
+                      </div>
                     )}
                   </div>
-                ))}
-
-                <button
-                  type="button"
-                  onClick={() => agregarMateria(col.id)}
-                  className="mt-1 flex items-center gap-1.5 rounded-xl border border-dashed border-zinc-300 px-3 py-2 text-sm text-zinc-500 transition hover:border-zinc-400 hover:bg-zinc-50 hover:text-zinc-700"
-                >
-                  <span className="text-base leading-none">+</span>
-                  Agregar materia
-                </button>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Modal — solo cuando se usa standalone */}
-      {!estaPreCargado && modalAbierto && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
-          onClick={() => !cargando && setModalAbierto(false)}
-        >
-          <div
-            className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h2 className="mb-1 text-lg font-bold text-zinc-900">Armar plan de estudio</h2>
-            <p className="mb-4 text-sm text-zinc-500">
-              Seleccioná una carrera para cargar sus materias en el tablero. Podés editarlas y reorganizarlas después.
-            </p>
-
-            <label className="mb-1 block text-sm font-semibold text-zinc-700">Carrera</label>
-            <select
-              value={carreraSeleccionada}
-              onChange={(e) => setCarreraSeleccionada(e.target.value)}
-              disabled={cargando}
-              className="mb-4 w-full rounded-xl border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-200 disabled:opacity-60"
-            >
-              {CARRERAS_DISPONIBLES.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.nombre}
-                </option>
-              ))}
-            </select>
-
-            {errorCarga && (
-              <p className="mb-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">
-                {errorCarga}
-              </p>
-            )}
-
-            <div className="flex justify-end gap-2">
-              <button
-                type="button"
-                disabled={cargando}
-                onClick={() => setModalAbierto(false)}
-                className="rounded-xl px-4 py-2 text-sm font-semibold text-zinc-600 transition hover:bg-zinc-100 disabled:opacity-50"
-              >
-                Cancelar
-              </button>
-              <button
-                type="button"
-                disabled={cargando}
-                onClick={cargarPlan}
-                className="flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-700 disabled:opacity-60"
-              >
-                {cargando ? (
-                  <>
-                    <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-                    Cargando...
-                  </>
-                ) : (
-                  "Cargar plan"
-                )}
-              </button>
+                );
+              })}
             </div>
           </div>
-        </div>
-      )}
+        );
+      })}
     </div>
   );
 }
