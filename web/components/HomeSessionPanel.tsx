@@ -12,6 +12,7 @@ import {
 export default function HomeSessionPanel() {
   const { data: session, status } = useSession();
   const [open, setOpen] = useState(false);
+  const [signingOut, setSigningOut] = useState(false);
   const [summary, setSummary] = useState<UserSessionSummaryResponse | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const triggerClassName =
@@ -213,10 +214,14 @@ export default function HomeSessionPanel() {
             )}
             <button
               type="button"
-              onClick={() => signOut({ callbackUrl: "/" })}
-              className="rounded-md border border-zinc-300 px-3 py-2 text-sm font-medium text-zinc-800"
+              disabled={signingOut}
+              onClick={() => {
+                setSigningOut(true);
+                void signOut({ callbackUrl: "/" });
+              }}
+              className="rounded-md border border-zinc-300 px-3 py-2 text-sm font-medium text-zinc-800 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              Cerrar sesion
+              {signingOut ? "Cerrando sesion..." : "Cerrar sesion"}
             </button>
           </div>
         </div>
