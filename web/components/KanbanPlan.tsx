@@ -1,12 +1,12 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useMemo } from "react";
 import { CARRERAS } from "../lib/carreras";
 
 type KanbanMateria = {
   id: string;
   nombre: string;
-  creditos?: number;
+  horas?: number;
 };
 
 type Columna = {
@@ -18,6 +18,18 @@ type Columna = {
 type DragRef = {
   materiaId: string;
   fromColumnaId: string;
+};
+
+type MateriaSeed = {
+  id: string | number;
+  nombre: string;
+  año: string | null;
+  horas?: string | null;
+  tipo?: string;
+};
+
+type Props = {
+  materiasIniciales?: MateriaSeed[];
 };
 
 const ANIO_ORDER = [
@@ -34,6 +46,25 @@ function anioSortKey(titulo: string): number {
   return idx === -1 ? ANIO_ORDER.length : idx;
 }
 
+function columnasDesde(materias: MateriaSeed[]): Columna[] {
+  const solasMaterias = materias.filter((m) => m.tipo === "materia" || !m.tipo);
+  const porAnio = new Map<string, KanbanMateria[]>();
+
+  for (const m of solasMaterias) {
+    const anio = m.año ?? "Sin año asignado";
+    if (!porAnio.has(anio)) porAnio.set(anio, []);
+    porAnio.get(anio)!.push({
+      id: crypto.randomUUID(),
+      nombre: m.nombre,
+      horas: m.horas ? parseInt(m.horas, 10) || undefined : undefined,
+    });
+  }
+
+  return Array.from(porAnio.entries())
+    .sort(([a], [b]) => anioSortKey(a) - anioSortKey(b))
+    .map(([titulo, mats], i) => ({ id: `anio-${i + 1}`, titulo, materias: mats }));
+}
+
 function crearColumnasVacias(): Columna[] {
   return ANIO_ORDER.slice(0, 5).map((titulo, i) => ({
     id: `anio-${i + 1}`,
@@ -42,8 +73,8 @@ function crearColumnasVacias(): Columna[] {
   }));
 }
 
-function totalCreditos(materias: KanbanMateria[]): number {
-  return materias.reduce((sum, m) => sum + (m.creditos ?? 0), 0);
+function totalHoras(materias: KanbanMateria[]): number {
+  return materias.reduce((sum, m) => sum + (m.horas ?? 0), 0);
 }
 
 function crearMateriaVacia(): KanbanMateria {
@@ -52,11 +83,20 @@ function crearMateriaVacia(): KanbanMateria {
 
 const CARRERAS_DISPONIBLES = CARRERAS.filter((c) => c.disponible);
 
-export default function KanbanPlan() {
-  const [columnas, setColumnas] = useState<Columna[]>(crearColumnasVacias);
+export default function KanbanPlan({ materiasIniciales }: Props = {}) {
+  const columnasIniciales = useMemo(
+    () =>
+      materiasIniciales && materiasIniciales.length > 0
+        ? columnasDesde(materiasIniciales)
+        : crearColumnasVacias(),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
+
+  const [columnas, setColumnas] = useState<Columna[]>(columnasIniciales);
   const [editandoId, setEditandoId] = useState<string | null>(null);
   const [editandoNombre, setEditandoNombre] = useState("");
-  const [editandoCreditos, setEditandoCreditos] = useState("");
+  const [editandoHoras, setEditandoHoras] = useState("");
   const [dragOver, setDragOver] = useState<string | null>(null);
   const [modalAbierto, setModalAbierto] = useState(false);
   const [carreraSeleccionada, setCarreraSeleccionada] = useState<string>(
@@ -65,6 +105,8 @@ export default function KanbanPlan() {
   const [cargando, setCargando] = useState(false);
   const [errorCarga, setErrorCarga] = useState<string | null>(null);
   const dragRef = useRef<DragRef | null>(null);
+
+  const estaPreCargado = materiasIniciales && materiasIniciales.length > 0;
 
   function agregarMateria(columnaId: string) {
     const nueva = crearMateriaVacia();
@@ -92,25 +134,19 @@ export default function KanbanPlan() {
   function iniciarEdicion(materia: KanbanMateria) {
     setEditandoId(materia.id);
     setEditandoNombre(materia.nombre);
-    setEditandoCreditos(
-      materia.creditos !== undefined ? String(materia.creditos) : ""
-    );
+    setEditandoHoras(materia.horas !== undefined ? String(materia.horas) : "");
   }
 
   function guardarEdicion() {
     if (!editandoId) return;
     const nombre = editandoNombre.trim() || "Sin nombre";
-    const creditos = parseInt(editandoCreditos, 10);
+    const horas = parseInt(editandoHoras, 10);
     setColumnas((prev) =>
       prev.map((col) => ({
         ...col,
         materias: col.materias.map((m) =>
           m.id === editandoId
-            ? {
-                ...m,
-                nombre,
-                creditos: isNaN(creditos) ? undefined : creditos,
-              }
+            ? { ...m, nombre, horas: isNaN(horas) ? undefined : horas }
             : m
         ),
       }))
@@ -135,10 +171,7 @@ export default function KanbanPlan() {
       if (!materia) return prev;
       return prev.map((col) => {
         if (col.id === drag.fromColumnaId) {
-          return {
-            ...col,
-            materias: col.materias.filter((m) => m.id !== drag.materiaId),
-          };
+          return { ...col, materias: col.materias.filter((m) => m.id !== drag.materiaId) };
         }
         if (col.id === toColumnaId) {
           return { ...col, materias: [...col.materias, materia] };
@@ -151,90 +184,55 @@ export default function KanbanPlan() {
   }
 
   async function cargarPlan() {
-    const carrera = CARRERAS_DISPONIBLES.find(
-      (c) => c.id === carreraSeleccionada
-    );
+    const carrera = CARRERAS_DISPONIBLES.find((c) => c.id === carreraSeleccionada);
     if (!carrera) return;
 
     setCargando(true);
     setErrorCarga(null);
 
     try {
-      const versionId = carrera.defaultVersionId;
-      const res = await fetch(
-        `/api/materias/${carrera.id}?v=${versionId}`
-      );
+      const res = await fetch(`/api/materias/${carrera.id}?v=${carrera.defaultVersionId}`);
       if (!res.ok) throw new Error(`Error ${res.status}`);
 
       const data = await res.json();
-      const materias: Array<{
-        id: string;
-        nombre: string;
-        año: string | null;
-        horas?: string | null;
-        tipo?: string;
-      }> = data.materias ?? [];
-
-      const solaMaterias = materias.filter((m) => m.tipo === "materia");
-
-      const porAnio = new Map<string, KanbanMateria[]>();
-      for (const m of solaMaterias) {
-        const anio = m.año ?? "Sin año asignado";
-        if (!porAnio.has(anio)) porAnio.set(anio, []);
-        porAnio.get(anio)!.push({
-          id: crypto.randomUUID(),
-          nombre: m.nombre,
-          creditos: m.horas ? parseInt(m.horas, 10) || undefined : undefined,
-        });
-      }
-
-      const columnasNuevas: Columna[] = Array.from(porAnio.entries())
-        .sort(([a], [b]) => anioSortKey(a) - anioSortKey(b))
-        .map(([titulo, mats], i) => ({
-          id: `anio-${i + 1}`,
-          titulo,
-          materias: mats,
-        }));
-
-      setColumnas(columnasNuevas);
+      const materias: MateriaSeed[] = data.materias ?? [];
+      setColumnas(columnasDesde(materias));
       setModalAbierto(false);
     } catch (err) {
-      setErrorCarga(
-        err instanceof Error ? err.message : "Error al cargar el plan"
-      );
+      setErrorCarga(err instanceof Error ? err.message : "Error al cargar el plan");
     } finally {
       setCargando(false);
     }
   }
 
   return (
-    <div className="min-h-screen bg-zinc-50 p-6">
-      {/* Header */}
-      <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-zinc-900">Plan de estudio</h1>
-        <button
-          type="button"
-          onClick={() => setModalAbierto(true)}
-          className="flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 active:scale-95"
-        >
-          <span>✦</span>
-          Armar plan
-        </button>
-      </div>
+    <div className="min-h-0">
+      {/* Header — solo se muestra cuando el componente se usa standalone */}
+      {!estaPreCargado && (
+        <div className="mb-6 flex items-center justify-between">
+          <h1 className="text-2xl font-bold text-zinc-900">Plan de estudio</h1>
+          <button
+            type="button"
+            onClick={() => setModalAbierto(true)}
+            className="flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 active:scale-95"
+          >
+            <span>✦</span>
+            Armar plan
+          </button>
+        </div>
+      )}
 
       {/* Columns */}
       <div className="flex gap-4 overflow-x-auto pb-4">
         {columnas.map((col) => {
-          const creditos = totalCreditos(col.materias);
+          const horas = totalHoras(col.materias);
           const isDragOver = dragOver === col.id;
 
           return (
             <div
               key={col.id}
               className={`flex w-72 shrink-0 flex-col rounded-2xl border bg-white shadow-sm transition ${
-                isDragOver
-                  ? "border-blue-400 ring-2 ring-blue-200"
-                  : "border-zinc-200"
+                isDragOver ? "border-blue-400 ring-2 ring-blue-200" : "border-zinc-200"
               }`}
               onDragOver={(e) => {
                 e.preventDefault();
@@ -252,7 +250,7 @@ export default function KanbanPlan() {
                 <div className="font-bold text-zinc-900">{col.titulo}</div>
                 <div className="mt-0.5 text-xs text-zinc-500">
                   {col.materias.length} materias
-                  {creditos > 0 && ` · ${creditos} hs`}
+                  {horas > 0 && ` · ${horas} hs`}
                 </div>
               </div>
 
@@ -267,10 +265,7 @@ export default function KanbanPlan() {
                     className="group relative rounded-xl border border-zinc-200 bg-white p-3 shadow-sm transition hover:shadow-md cursor-grab active:cursor-grabbing"
                   >
                     {editandoId === materia.id ? (
-                      <div
-                        className="flex flex-col gap-2"
-                        onClick={(e) => e.stopPropagation()}
-                      >
+                      <div className="flex flex-col gap-2" onClick={(e) => e.stopPropagation()}>
                         <input
                           autoFocus
                           value={editandoNombre}
@@ -285,8 +280,8 @@ export default function KanbanPlan() {
                         <input
                           type="number"
                           min={0}
-                          value={editandoCreditos}
-                          onChange={(e) => setEditandoCreditos(e.target.value)}
+                          value={editandoHoras}
+                          onChange={(e) => setEditandoHoras(e.target.value)}
                           onKeyDown={(e) => {
                             if (e.key === "Enter") guardarEdicion();
                             if (e.key === "Escape") setEditandoId(null);
@@ -332,10 +327,8 @@ export default function KanbanPlan() {
                           <div className="pr-5 text-sm font-semibold leading-5 text-zinc-900">
                             {materia.nombre}
                           </div>
-                          {materia.creditos !== undefined && (
-                            <div className="mt-1 text-xs text-zinc-500">
-                              {materia.creditos} hs
-                            </div>
+                          {materia.horas !== undefined && (
+                            <div className="mt-1 text-xs text-zinc-500">{materia.horas} hs</div>
                           )}
                         </div>
                       </>
@@ -357,8 +350,8 @@ export default function KanbanPlan() {
         })}
       </div>
 
-      {/* Modal */}
-      {modalAbierto && (
+      {/* Modal — solo cuando se usa standalone */}
+      {!estaPreCargado && modalAbierto && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
           onClick={() => !cargando && setModalAbierto(false)}
@@ -367,16 +360,12 @@ export default function KanbanPlan() {
             className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl"
             onClick={(e) => e.stopPropagation()}
           >
-            <h2 className="mb-1 text-lg font-bold text-zinc-900">
-              Armar plan de estudio
-            </h2>
+            <h2 className="mb-1 text-lg font-bold text-zinc-900">Armar plan de estudio</h2>
             <p className="mb-4 text-sm text-zinc-500">
               Seleccioná una carrera para cargar sus materias en el tablero. Podés editarlas y reorganizarlas después.
             </p>
 
-            <label className="mb-1 block text-sm font-semibold text-zinc-700">
-              Carrera
-            </label>
+            <label className="mb-1 block text-sm font-semibold text-zinc-700">Carrera</label>
             <select
               value={carreraSeleccionada}
               onChange={(e) => setCarreraSeleccionada(e.target.value)}
