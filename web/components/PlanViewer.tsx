@@ -535,37 +535,31 @@ export default function PlanViewer({
   if (!isHydrated) return null;
 
   return (
-    <main className="mx-auto max-w-7xl px-6 py-6">
+    <main className="mx-auto max-w-7xl">
       <div className="mb-4 flex items-center justify-between gap-4">
-        <div className="flex rounded-xl border border-zinc-200 bg-white p-1 shadow-sm">
-          <button
-            type="button"
-            onClick={() => setVistaActiva("plan")}
-            className={`rounded-lg px-4 py-1.5 text-sm font-semibold transition ${
-              vistaActiva === "plan"
-                ? "bg-zinc-900 text-white shadow-sm"
-                : "text-zinc-600 hover:text-zinc-900"
-            }`}
-          >
-            Plan
-          </button>
-          <button
-            type="button"
-            onClick={() => setVistaActiva("kanban")}
-            className={`rounded-lg px-4 py-1.5 text-sm font-semibold transition ${
-              vistaActiva === "kanban"
-                ? "bg-zinc-900 text-white shadow-sm"
-                : "text-zinc-600 hover:text-zinc-900"
-            }`}
-          >
-            Kanban
-          </button>
+        <div className="flex p-1 rounded-xl" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.12)" }}>
+          {(["plan", "kanban"] as const).map((vista) => (
+            <button
+              key={vista}
+              type="button"
+              onClick={() => setVistaActiva(vista)}
+              className="rounded-lg px-4 py-1.5 text-sm font-semibold transition capitalize"
+              style={
+                vistaActiva === vista
+                  ? { background: "rgba(157,78,221,0.30)", color: "#e2d9f3", boxShadow: "0 1px 4px #9d4edd44" }
+                  : { color: "#a89bc9" }
+              }
+            >
+              {vista === "plan" ? "Plan" : "Kanban"}
+            </button>
+          ))}
         </div>
 
         <button
           type="button"
           onClick={() => setIsOnboardingOpen(true)}
-          className="rounded-xl border border-zinc-300 bg-white px-3 py-2 text-xs font-semibold uppercase tracking-wide text-zinc-700 shadow-sm"
+          className="rounded-xl px-3 py-2 text-xs font-semibold uppercase tracking-wide transition"
+          style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.15)", color: "#a89bc9" }}
         >
           Ver ayuda rapida
         </button>

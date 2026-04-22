@@ -2,6 +2,11 @@
 
 import { normalizarTextoBusqueda } from "@/lib/filtrarMaterias";
 
+const TEXT_SEC = "#a89bc9";
+const TEXT     = "#e2d9f3";
+const SURFACE  = { background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.10)", backdropFilter: "blur(8px)" } as const;
+const PURPLE   = "#9d4edd";
+
 type Props = {
   orientaciones: string[];
   selected: string;
@@ -12,15 +17,10 @@ function buildOrientationTestId(value: string) {
   const normalized = normalizarTextoBusqueda(value)
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
-
   return normalized || "todas";
 }
 
-export default function OrientationSelector({
-  orientaciones,
-  selected,
-  onSelect,
-}: Props) {
+export default function OrientationSelector({ orientaciones, selected, onSelect }: Props) {
   if (orientaciones.length === 0) return null;
 
   const options = ["todas", ...orientaciones];
@@ -28,16 +28,16 @@ export default function OrientationSelector({
   return (
     <section
       data-testid="orientacion-selector"
-      className="mb-6 rounded-2xl border border-sky-200 bg-gradient-to-r from-sky-50 via-white to-cyan-50 p-4 shadow-sm"
+      style={{ ...SURFACE, borderRadius: 16, padding: 16, marginBottom: 24 }}
     >
-      <div className="mb-3 text-sm font-semibold text-sky-900">
-        Elegi una orientacion para ver tus optativas
+      <div style={{ color: TEXT_SEC, fontSize: 13, fontWeight: 600, marginBottom: 12 }}>
+        Elegí una orientación para ver tus optativas
       </div>
 
-      <div className="flex flex-wrap gap-2">
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
         {options.map((option) => {
           const isActive = selected === option;
-          const label = option === "todas" ? "Todas" : option;
+          const label    = option === "todas" ? "Todas" : option;
 
           return (
             <button
@@ -46,11 +46,11 @@ export default function OrientationSelector({
               data-testid={`orientacion-option-${buildOrientationTestId(option)}`}
               aria-pressed={isActive}
               onClick={() => onSelect(option)}
-              className={`rounded-full border px-4 py-2 text-sm font-semibold transition ${
+              style={
                 isActive
-                  ? "border-sky-700 bg-sky-700 text-white"
-                  : "border-zinc-300 bg-white text-zinc-800 hover:border-sky-300 hover:bg-sky-50"
-              }`}
+                  ? { background: `${PURPLE}30`, border: `1px solid ${PURPLE}88`, color: TEXT, borderRadius: 99, padding: "8px 16px", fontSize: 14, fontWeight: 600, cursor: "pointer" }
+                  : { background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", color: TEXT_SEC, borderRadius: 99, padding: "8px 16px", fontSize: 14, fontWeight: 600, cursor: "pointer" }
+              }
             >
               {label}
             </button>

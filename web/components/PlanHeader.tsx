@@ -3,6 +3,14 @@
 import { useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
+// ── Design tokens ──────────────────────────────────────────────────────────
+const TEXT    = "#e2d9f3";
+const TEXT_SEC = "#a89bc9";
+const SURFACE = { background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.10)", backdropFilter: "blur(8px)" } as const;
+const BTN     = { background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.15)", color: TEXT } as const;
+const INPUT   = { background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.15)", color: TEXT } as const;
+const TITLE_SHADOW = "0 2px 16px #9d4edd88";
+
 type VersionOption = {
     versionId: string;
     label: string;
@@ -30,61 +38,37 @@ type Props = {
 
 function StatCard({ label, value }: { label: string; value: number }) {
     return (
-        <div className="min-w-[120px] rounded-2xl border border-zinc-200 bg-white px-4 py-3 shadow-sm">
-            <div className="mb-1.5 text-sm text-zinc-500">{label}</div>
-            <div className="text-2xl font-extrabold leading-none text-zinc-900">{value}</div>
+        <div style={{ ...SURFACE, minWidth: 120, borderRadius: 14, padding: "12px 16px" }}>
+            <div style={{ color: TEXT_SEC, fontSize: 13, marginBottom: 6 }}>{label}</div>
+            <div style={{ color: TEXT, fontSize: 26, fontWeight: 800, lineHeight: 1 }}>{value}</div>
         </div>
     );
 }
 
-function SyncBadge({
-    syncStatus,
-}: {
-    syncStatus?: "guest" | "syncing" | "synced" | "error";
-}) {
+function SyncBadge({ syncStatus }: { syncStatus?: "guest" | "syncing" | "synced" | "error" }) {
     if (!syncStatus) return null;
 
-    if (syncStatus === "guest") {
-        return (
-            <span className="rounded-full border border-zinc-300 bg-white px-3 py-1 text-xs font-medium text-zinc-600">
-                Guardado local
-            </span>
-        );
-    }
-
-    if (syncStatus === "syncing") {
-        return (
-            <span className="rounded-full border border-amber-300 bg-amber-50 px-3 py-1 text-xs font-medium text-amber-700">
-                Sincronizando...
-            </span>
-        );
-    }
-
-    if (syncStatus === "error") {
-        return (
-            <span className="rounded-full border border-red-300 bg-red-50 px-3 py-1 text-xs font-medium text-red-700">
-                Error de sincronizacion
-            </span>
-        );
-    }
+    const styles: Record<string, React.CSSProperties> = {
+        guest:   { background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.15)", color: TEXT_SEC },
+        syncing: { background: "rgba(249,199,79,0.12)",  border: "1px solid rgba(249,199,79,0.35)",  color: "#f9c74f" },
+        synced:  { background: "rgba(144,190,109,0.12)", border: "1px solid rgba(144,190,109,0.35)", color: "#90be6d" },
+        error:   { background: "rgba(231,111,81,0.12)",  border: "1px solid rgba(231,111,81,0.35)",  color: "#e76f51" },
+    };
+    const labels: Record<string, string> = {
+        guest: "Guardado local", syncing: "Sincronizando...",
+        synced: "Sincronizado en nube", error: "Error de sincronizacion",
+    };
 
     return (
-        <span className="rounded-full border border-green-300 bg-green-50 px-3 py-1 text-xs font-medium text-green-700">
-            Sincronizado en nube
+        <span style={{ ...styles[syncStatus], borderRadius: 99, padding: "4px 12px", fontSize: 12, fontWeight: 500 }}>
+            {labels[syncStatus]}
         </span>
     );
 }
 
 export default function PlanHeader({
-    titulo,
-    subtitulo,
-    aprobadas,
-    cursadas,
-    disponibles,
-    total,
-    onReset,
-    syncStatus,
-    versionSelector,
+    titulo, subtitulo, aprobadas, cursadas, disponibles, total,
+    onReset, syncStatus, versionSelector,
 }: Props) {
     const [mostrarProgreso, setMostrarProgreso] = useState(false);
     const pathname = usePathname();
@@ -92,66 +76,47 @@ export default function PlanHeader({
     const searchParams = useSearchParams();
 
     const visibleVersionOptions = versionSelector
-        ? versionSelector.options.filter((option) => option.hidden !== true)
+        ? versionSelector.options.filter((o) => o.hidden !== true)
         : [];
-
-    const availableVisibleVersions = visibleVersionOptions.filter(
-        (option) => option.disponible !== false
-    );
-
-    const showVersionSelector = Boolean(
-        versionSelector && availableVisibleVersions.length > 1
-    );
-
+    const availableVisible = visibleVersionOptions.filter((o) => o.disponible !== false);
+    const showVersionSelector = Boolean(versionSelector && availableVisible.length > 1);
     const porcentaje = total > 0 ? Math.round((aprobadas / total) * 100) : 0;
 
     function updateVersion(versionId: string) {
-        if (!versionSelector) return;
-        if (versionId === versionSelector.selectedVersionId) return;
-
+        if (!versionSelector || versionId === versionSelector.selectedVersionId) return;
         const params = new URLSearchParams(searchParams.toString());
         params.set("v", versionId);
-
         const query = params.toString();
         router.push(query ? `${pathname}?${query}` : pathname);
     }
 
     return (
-        <header className="mb-9 grid gap-5">
-            <div className="flex flex-wrap items-start justify-between gap-4">
+        <header style={{ marginBottom: 36, display: "grid", gap: 20 }}>
+            <div style={{ display: "flex", flexWrap: "wrap", alignItems: "flex-start", justifyContent: "space-between", gap: 16 }}>
                 <div>
-                    <h1 className="mb-2 text-[clamp(2rem,4vw,3rem)] font-extrabold leading-tight tracking-tight text-zinc-900">
+                    <h1 style={{ color: TEXT, fontSize: "clamp(2rem,4vw,3rem)", fontWeight: 800, lineHeight: 1.1, letterSpacing: "-0.02em", marginBottom: 8, textShadow: TITLE_SHADOW }}>
                         {titulo}
                     </h1>
-
-                    {subtitulo && <p className="m-0 text-base text-zinc-600">{subtitulo}</p>}
+                    {subtitulo && <p style={{ color: TEXT_SEC, fontSize: 15, margin: 0 }}>{subtitulo}</p>}
                 </div>
 
-                <div className="flex flex-wrap items-center gap-3">
+                <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 12 }}>
                     <SyncBadge syncStatus={syncStatus} />
 
                     {showVersionSelector && versionSelector && (
-                        <label className="inline-flex items-center gap-2 rounded-xl border border-zinc-300 bg-white px-3 py-2 shadow-sm">
-                            <span className="text-sm font-medium text-zinc-600">Versión</span>
+                        <label style={{ display: "inline-flex", alignItems: "center", gap: 8, ...SURFACE, borderRadius: 12, padding: "8px 12px" }}>
+                            <span style={{ color: TEXT_SEC, fontSize: 14, fontWeight: 500 }}>Versión</span>
                             <select
                                 data-testid="version-selector"
                                 value={versionSelector.selectedVersionId}
-                                onChange={(event) => updateVersion(event.target.value)}
-                                className="rounded-md border border-zinc-300 bg-white px-2 py-1 text-sm font-medium text-zinc-900 outline-none transition focus:border-zinc-500"
+                                onChange={(e) => updateVersion(e.target.value)}
+                                style={{ ...INPUT, borderRadius: 8, padding: "4px 8px", fontSize: 14, fontWeight: 500, outline: "none" }}
                             >
-                                {visibleVersionOptions.map((option) => {
-                                    const isDisabled = option.disponible === false;
-
-                                    return (
-                                        <option
-                                            key={option.versionId}
-                                            value={option.versionId}
-                                            disabled={isDisabled}
-                                        >
-                                            {isDisabled ? `${option.label} (próximamente)` : option.label}
-                                        </option>
-                                    );
-                                })}
+                                {visibleVersionOptions.map((o) => (
+                                    <option key={o.versionId} value={o.versionId} disabled={o.disponible === false}>
+                                        {o.disponible === false ? `${o.label} (próximamente)` : o.label}
+                                    </option>
+                                ))}
                             </select>
                         </label>
                     )}
@@ -161,7 +126,7 @@ export default function PlanHeader({
                         target="_blank"
                         rel="noopener noreferrer"
                         aria-label="Abrir easter egg en YouTube"
-                        className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-zinc-300 bg-white text-sm text-zinc-700 shadow-sm transition hover:bg-zinc-50"
+                        style={{ ...BTN, display: "inline-flex", alignItems: "center", justifyContent: "center", width: 40, height: 40, borderRadius: 99, fontSize: 14, textDecoration: "none" }}
                     >
                         😬
                     </a>
@@ -171,7 +136,7 @@ export default function PlanHeader({
                             type="button"
                             data-testid="reset-btn"
                             onClick={onReset}
-                            className="rounded-xl border border-zinc-300 bg-white px-4 py-2.5 font-bold text-zinc-900 shadow-sm transition hover:bg-zinc-50"
+                            style={{ ...BTN, borderRadius: 12, padding: "10px 16px", fontWeight: 700, cursor: "pointer" }}
                         >
                             Reiniciar progreso
                         </button>
@@ -181,8 +146,8 @@ export default function PlanHeader({
                         type="button"
                         data-testid="toggle-progreso-btn"
                         aria-expanded={mostrarProgreso}
-                        onClick={() => setMostrarProgreso((prev) => !prev)}
-                        className="rounded-xl border border-zinc-300 bg-white px-4 py-2.5 font-semibold text-zinc-900 shadow-sm transition hover:bg-zinc-50"
+                        onClick={() => setMostrarProgreso((p) => !p)}
+                        style={{ ...BTN, borderRadius: 12, padding: "10px 16px", fontWeight: 600, cursor: "pointer" }}
                     >
                         {mostrarProgreso ? "Ocultar progreso" : "Mostrar progreso"}
                     </button>
@@ -190,31 +155,24 @@ export default function PlanHeader({
             </div>
 
             {mostrarProgreso && (
-                <div className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
-                    <div className="mb-4 flex flex-wrap items-center justify-between gap-4">
+                <div style={{ ...SURFACE, borderRadius: 16, padding: 20 }}>
+                    <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: 16, marginBottom: 16 }}>
                         <div>
-                            <div className="mb-1.5 text-sm text-zinc-500">Progreso general</div>
-                            <div className="text-xl font-extrabold text-zinc-900">{porcentaje}% aprobado</div>
+                            <div style={{ color: TEXT_SEC, fontSize: 13, marginBottom: 6 }}>Progreso general</div>
+                            <div style={{ color: TEXT, fontSize: 20, fontWeight: 800 }}>{porcentaje}% aprobado</div>
                         </div>
-
-                        <div className="text-sm text-zinc-600">
-                            {aprobadas} de {total} materias aprobadas
-                        </div>
+                        <div style={{ color: TEXT_SEC, fontSize: 14 }}>{aprobadas} de {total} materias aprobadas</div>
                     </div>
 
-                    <div
-                        aria-hidden="true"
-                        className="mb-5 h-3 w-full overflow-hidden rounded-full bg-slate-100"
-                    >
+                    <div aria-hidden="true" style={{ height: 10, width: "100%", borderRadius: 99, background: "rgba(255,255,255,0.08)", overflow: "hidden", marginBottom: 20 }}>
                         <div
-                            className="h-full rounded-full bg-gradient-to-r from-green-300 to-green-500 transition-[width] duration-200"
-                            style={{ width: `${porcentaje}%` }}
+                            style={{ height: "100%", borderRadius: 99, background: "linear-gradient(90deg, #90be6d, #43aa8b)", transition: "width 0.2s", width: `${porcentaje}%` }}
                         />
                     </div>
 
-                    <div className="flex flex-wrap gap-3">
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
                         <StatCard label="Aprobadas" value={aprobadas} />
-                        <StatCard label="Cursadas" value={cursadas} />
+                        <StatCard label="Cursadas"  value={cursadas}  />
                         <StatCard label="Disponibles" value={disponibles} />
                     </div>
                 </div>

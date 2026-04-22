@@ -7,6 +7,9 @@ import { EstadoMateria } from "@/lib/evaluarCorrelativas";
 import { getMateriaViewModel } from "@/lib/materiaViewModel";
 import { obtenerCorrelativasMateria } from "@/lib/correlativasMateria";
 
+const TEXT         = "#e2d9f3";
+const TITLE_SHADOW = "0 2px 16px #9d4edd88";
+
 type Props = {
   titulo: string;
   grupoId: string;
@@ -20,37 +23,19 @@ type Props = {
 };
 
 export default function GrupoMaterias({
-  titulo,
-  grupoId,
-  materias,
-  estados,
-  todasLasMaterias,
-  agrupadores,
-  idsAgrupadores,
-  onToggle,
-  onUndo,
+  titulo, grupoId, materias, estados, todasLasMaterias,
+  agrupadores, idsAgrupadores, onToggle, onUndo,
 }: Props) {
   return (
     <section id={`grupo-${grupoId}`} className="mb-10 scroll-mt-24">
-      <h2 className="mb-5 text-3xl font-bold tracking-tight text-zinc-900">
+      <h2 style={{ color: TEXT, fontSize: 28, fontWeight: 700, letterSpacing: "-0.02em", marginBottom: 20, textShadow: TITLE_SHADOW }}>
         {titulo}
       </h2>
 
       <MateriasGrid>
         {materias.map((materia) => {
-          const vm = getMateriaViewModel({
-            materia,
-            estados,
-            agrupadores,
-            idsAgrupadores,
-            grupoIdRender: grupoId,
-          });
-          const correlativas = obtenerCorrelativasMateria(
-            materia,
-            todasLasMaterias,
-            agrupadores,
-            estados
-          );
+          const vm = getMateriaViewModel({ materia, estados, agrupadores, idsAgrupadores, grupoIdRender: grupoId });
+          const correlativas = obtenerCorrelativasMateria(materia, todasLasMaterias, agrupadores, estados);
 
           return (
             <MateriaCard

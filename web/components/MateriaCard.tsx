@@ -5,6 +5,50 @@ import { Materia } from "../app/types/plan";
 import { EstadoMateria } from "../lib/evaluarCorrelativas";
 import type { CorrelativaDetalle } from "@/lib/correlativasMateria";
 
+// ── Design tokens ─────────────────────────────────────────────────────────────
+const TEXT      = "#e2d9f3";
+const TEXT_SEC  = "#a89bc9";
+const TEXT_DET  = "#c3b8e0";
+
+type CardTheme = { bg: string; borderLeft: string; border: string; opacity?: number };
+
+function getCardTheme(
+  estado: EstadoMateria,
+  puedeCursar: boolean,
+  bloqueada: boolean
+): CardTheme {
+  if (estado === "aprobada") return { bg: "rgba(144,190,109,0.13)", borderLeft: "4px solid #90be6d", border: "1px solid rgba(144,190,109,0.35)" };
+  if (estado === "cursada")  return { bg: "rgba(76,201,240,0.10)",  borderLeft: "4px solid #4cc9f0", border: "1px solid rgba(76,201,240,0.35)"  };
+  if (bloqueada)             return { bg: "rgba(255,255,255,0.03)", borderLeft: "4px solid rgba(255,255,255,0.12)", border: "1px solid rgba(255,255,255,0.08)", opacity: 0.55 };
+  if (puedeCursar)           return { bg: "rgba(249,199,79,0.10)",  borderLeft: "4px solid #f9c74f", border: "1px solid rgba(249,199,79,0.35)"  };
+  return                            { bg: "rgba(255,255,255,0.05)", borderLeft: "4px solid rgba(255,255,255,0.15)", border: "1px solid rgba(255,255,255,0.10)" };
+}
+
+type BadgeTheme = { bg: string; color: string; border: string };
+
+function getBadgeTheme(estado: EstadoMateria, bloqueada: boolean, puedeCursar: boolean): BadgeTheme {
+  if (estado === "aprobada") return { bg: "rgba(144,190,109,0.20)", color: "#90be6d", border: "1px solid rgba(144,190,109,0.40)" };
+  if (estado === "cursada")  return { bg: "rgba(76,201,240,0.18)",  color: "#4cc9f0", border: "1px solid rgba(76,201,240,0.40)"  };
+  if (bloqueada)             return { bg: "rgba(255,255,255,0.06)", color: TEXT_SEC,  border: "1px solid rgba(255,255,255,0.15)" };
+  if (puedeCursar)           return { bg: "rgba(249,199,79,0.18)",  color: "#f9c74f", border: "1px solid rgba(249,199,79,0.40)"  };
+  return                            { bg: "rgba(255,255,255,0.06)", color: TEXT_SEC,  border: "1px solid rgba(255,255,255,0.12)" };
+}
+
+function getEstadoLabel(estado: EstadoMateria, bloqueada: boolean): string {
+  if (estado === "aprobada") return "Aprobada";
+  if (estado === "cursada")  return "Cursada";
+  if (bloqueada)             return "Bloqueada";
+  return "Disponible";
+}
+
+function getNivelLabel(nivel: string | null) {
+  if (!nivel)             return "Sin requisito";
+  if (nivel === "aprobada") return "Aprobada";
+  if (nivel === "cursada")  return "Cursada";
+  return nivel;
+}
+
+// ── Types ─────────────────────────────────────────────────────────────────────
 type Props = HTMLAttributes<HTMLDivElement> & {
   materia: Materia;
   estado: EstadoMateria;
@@ -19,114 +63,38 @@ type Props = HTMLAttributes<HTMLDivElement> & {
   verCorrelativasTestId?: string;
 };
 
-function getNivelLabel(nivel: string | null) {
-  if (!nivel) return "Sin requisito";
-  if (nivel === "aprobada") return "Aprobada";
-  if (nivel === "cursada") return "Cursada";
-  return nivel;
-}
-
-function getCumplimientoLabel(cumple: boolean) {
-  return cumple ? "Cumple" : "No cumple";
-}
-
-function getCumplimientoClassName(cumple: boolean) {
-  const base = "ml-2 inline-flex rounded-full px-2 py-0.5 text-[10px] font-bold";
-  return cumple
-    ? `${base} bg-green-100 text-green-700`
-    : `${base} bg-red-100 text-red-700`;
-}
-
-function getEstadoLabel(
-  estado: EstadoMateria,
-  bloqueada: boolean,
-  puedeAprobar: boolean
-) {
-  if (estado === "aprobada") return "Aprobada";
-  if (estado === "cursada" && puedeAprobar) return "Cursada";
-  if (estado === "cursada") return "Cursada";
-  if (bloqueada) return "Bloqueada";
-  return "Disponible";
-}
-
-function getCardClassName(
-  estado: EstadoMateria,
-  puedeCursar: boolean,
-  bloqueada: boolean,
-  puedeClickear: boolean
-) {
-  const base =
-    "w-full rounded-2xl border p-4 text-left shadow-sm transition duration-150 focus:outline-none focus:ring-4 focus:ring-blue-700/30";
-
-  if (estado === "aprobada") {
-    return `${base} cursor-not-allowed border-green-300 bg-green-100 opacity-90`;
-  }
-
-  if (estado === "cursada") {
-    return `${base} cursor-not-allowed border-blue-300 bg-blue-100 opacity-90`;
-  }
-
-  if (!puedeClickear || bloqueada) {
-    return `${base} cursor-not-allowed border-zinc-200 bg-zinc-100 opacity-75`;
-  }
-
-  if (puedeCursar) {
-    return `${base} cursor-pointer border-yellow-300 bg-yellow-100 hover:-translate-y-0.5 hover:shadow-md`;
-  }
-
-  return `${base} cursor-pointer border-zinc-200 bg-white hover:-translate-y-0.5 hover:shadow-md`;
-}
-
-function getBadgeClassName(
-  estado: EstadoMateria,
-  bloqueada: boolean,
-  puedeAprobar: boolean
-) {
-  const base =
-    "inline-flex items-center justify-center whitespace-nowrap rounded-full px-3 py-1 text-xs font-bold";
-
-  if (estado === "aprobada") {
-    return `${base} bg-green-200 text-green-800`;
-  }
-
-  if (estado === "cursada" && puedeAprobar) {
-    return `${base} bg-blue-200 text-blue-800`;
-  }
-
-  if (estado === "cursada") {
-    return `${base} bg-blue-200 text-blue-800`;
-  }
-
-  if (bloqueada) {
-    return `${base} bg-zinc-200 text-zinc-500`;
-  }
-
-  return `${base} bg-yellow-200 text-yellow-800`;
-}
-
+// ── Component ─────────────────────────────────────────────────────────────────
 export default function MateriaCard({
-  materia,
-  estado,
-  puedeCursar,
-  puedeAprobar,
-  puedeClickear,
-  bloqueada,
-  onToggle,
-  onUndo,
-  undoTestId,
-  correlativas = [],
-  verCorrelativasTestId,
-  ...rest
+  materia, estado, puedeCursar, puedeAprobar, puedeClickear, bloqueada,
+  onToggle, onUndo, undoTestId, correlativas = [], verCorrelativasTestId, ...rest
 }: Props) {
   const [mostrarCorrelativas, setMostrarCorrelativas] = useState(false);
-  const estadoLabel = getEstadoLabel(estado, bloqueada, puedeAprobar);
-  const canUndo = estado !== "no_cursada" && Boolean(onUndo);
+
+  const canUndo          = estado !== "no_cursada" && Boolean(onUndo);
   const puedeInteractuar = puedeClickear || canUndo;
   const tieneCorrelativas = correlativas.length > 0;
+  const estadoLabel      = getEstadoLabel(estado, bloqueada);
 
-  const ariaLabel = `${materia.nombre}. Código ${materia.id}. Estado ${estadoLabel}. ${
-    materia.horas ? `Carga horaria ${materia.horas} horas.` : ""
-  }`;
+  const theme      = getCardTheme(estado, puedeCursar, bloqueada);
+  const badgeTheme = getBadgeTheme(estado, bloqueada, puedeCursar);
+
+  const cardStyle: React.CSSProperties = {
+    width: "100%",
+    borderRadius: 14,
+    padding: 16,
+    textAlign: "left",
+    transition: "box-shadow 0.15s, transform 0.15s, opacity 0.15s",
+    outline: "none",
+    background: theme.bg,
+    borderTop:    theme.border,
+    borderRight:  theme.border,
+    borderBottom: theme.border,
+    borderLeft:   theme.borderLeft,
+    opacity: theme.opacity,
+    cursor: puedeInteractuar && puedeClickear ? "pointer" : puedeInteractuar ? "default" : "not-allowed",
+  };
+
+  const ariaLabel = `${materia.nombre}. Código ${materia.id}. Estado ${estadoLabel}. ${materia.horas ? `Carga horaria ${materia.horas} horas.` : ""}`;
 
   function handleCardClick() {
     if (!puedeClickear) return;
@@ -136,7 +104,6 @@ export default function MateriaCard({
   function handleCardKeyDown(event: KeyboardEvent<HTMLDivElement>) {
     if (!puedeClickear) return;
     if (event.key !== "Enter" && event.key !== " ") return;
-
     event.preventDefault();
     onToggle();
   }
@@ -151,6 +118,17 @@ export default function MateriaCard({
     setMostrarCorrelativas((prev) => !prev);
   }
 
+  const actionBtnStyle: React.CSSProperties = {
+    borderRadius: 8,
+    padding: "6px 12px",
+    fontSize: 13,
+    fontWeight: 600,
+    cursor: "pointer",
+    background: "rgba(255,255,255,0.07)",
+    border: "1px solid rgba(255,255,255,0.15)",
+    color: TEXT,
+  };
+
   return (
     <div
       {...rest}
@@ -159,20 +137,15 @@ export default function MateriaCard({
       onClick={handleCardClick}
       onKeyDown={handleCardKeyDown}
       aria-label={ariaLabel}
-      className={`group ${getCardClassName(
-        estado,
-        puedeCursar,
-        bloqueada,
-        puedeInteractuar
-      )}`}
+      style={cardStyle}
+      className="group focus:ring-4 focus:ring-[#9d4edd]/30"
     >
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <div className="mb-2 text-base font-bold leading-5 text-zinc-900 [text-wrap:balance]">
+      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
+        <div style={{ minWidth: 0 }}>
+          <div style={{ color: TEXT, fontWeight: 700, fontSize: 15, lineHeight: 1.35, marginBottom: 6 }}>
             {materia.nombre}
           </div>
-
-          <div className="flex flex-wrap gap-2 text-sm text-zinc-600">
+          <div style={{ color: TEXT_DET, fontSize: 13, display: "flex", flexWrap: "wrap", gap: 6 }}>
             <span>Código {materia.id}</span>
             {materia.horas && <span>• {materia.horas} hs</span>}
           </div>
@@ -180,19 +153,19 @@ export default function MateriaCard({
 
         <span
           aria-hidden="true"
-          className={getBadgeClassName(estado, bloqueada, puedeAprobar)}
+          style={{ ...badgeTheme, display: "inline-flex", alignItems: "center", justifyContent: "center", whiteSpace: "nowrap", borderRadius: 99, padding: "4px 12px", fontSize: 11, fontWeight: 700 }}
         >
           {estadoLabel}
         </span>
       </div>
 
-      <div className="mt-3 flex items-center gap-2">
+      <div style={{ marginTop: 12, display: "flex", alignItems: "center", gap: 8 }}>
         {tieneCorrelativas && (
           <button
             type="button"
             data-testid={verCorrelativasTestId}
             onClick={handleCorrelativasClick}
-            className="rounded-lg border border-zinc-300 bg-white px-3 py-1.5 text-sm font-semibold text-zinc-900 transition hover:bg-zinc-50"
+            style={actionBtnStyle}
           >
             {mostrarCorrelativas ? "Ocultar correlativas" : "Ver correlativas"}
           </button>
@@ -203,7 +176,8 @@ export default function MateriaCard({
             type="button"
             data-testid={undoTestId}
             onClick={handleUndoClick}
-            className="rounded-lg border border-zinc-300 bg-white px-3 py-1.5 text-sm font-semibold text-zinc-900 transition duration-150 hover:bg-zinc-50 md:invisible md:pointer-events-none md:opacity-0 md:group-hover:visible md:group-hover:pointer-events-auto md:group-hover:opacity-100 md:group-focus-within:visible md:group-focus-within:pointer-events-auto md:group-focus-within:opacity-100 md:focus-visible:visible md:focus-visible:pointer-events-auto md:focus-visible:opacity-100"
+            style={actionBtnStyle}
+            className="md:invisible md:pointer-events-none md:opacity-0 md:group-hover:visible md:group-hover:pointer-events-auto md:group-hover:opacity-100 md:group-focus-within:visible md:group-focus-within:pointer-events-auto md:group-focus-within:opacity-100 md:focus-visible:visible md:focus-visible:pointer-events-auto md:focus-visible:opacity-100"
           >
             Deshacer
           </button>
@@ -212,32 +186,29 @@ export default function MateriaCard({
 
       {tieneCorrelativas && mostrarCorrelativas && (
         <div
-          className="mt-3 rounded-xl border border-zinc-200 bg-white/70 p-3"
-          onClick={(event) => event.stopPropagation()}
+          style={{ marginTop: 12, borderRadius: 10, padding: 12, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.10)" }}
+          onClick={(e) => e.stopPropagation()}
         >
-          <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-zinc-600">
+          <div style={{ color: TEXT_SEC, fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 8 }}>
             Correlativas
           </div>
 
-          <ul className="space-y-2">
+          <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: 8 }}>
             {correlativas.map((correlativa) => (
-              <li
-                key={correlativa.id}
-                className="rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm"
-              >
-                <div className="font-semibold text-zinc-900">
+              <li key={correlativa.id} style={{ borderRadius: 8, padding: "8px 12px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", fontSize: 13 }}>
+                <div style={{ color: TEXT, fontWeight: 600, marginBottom: 4 }}>
                   {correlativa.nombre} ({correlativa.id})
                 </div>
-                <div className="mt-1 text-xs text-zinc-600">
+                <div style={{ color: TEXT_SEC, fontSize: 12 }}>
                   Para cursar: {getNivelLabel(correlativa.paraCursar)}
-                  <span className={getCumplimientoClassName(correlativa.cumpleParaCursar)}>
-                    {getCumplimientoLabel(correlativa.cumpleParaCursar)}
+                  <span style={{ marginLeft: 6, borderRadius: 99, padding: "1px 8px", fontSize: 10, fontWeight: 700, background: correlativa.cumpleParaCursar ? "rgba(144,190,109,0.20)" : "rgba(231,111,81,0.20)", color: correlativa.cumpleParaCursar ? "#90be6d" : "#e76f51", border: `1px solid ${correlativa.cumpleParaCursar ? "rgba(144,190,109,0.35)" : "rgba(231,111,81,0.35)"}` }}>
+                    {correlativa.cumpleParaCursar ? "Cumple" : "No cumple"}
                   </span>
                 </div>
-                <div className="text-xs text-zinc-600">
+                <div style={{ color: TEXT_SEC, fontSize: 12 }}>
                   Para rendir: {getNivelLabel(correlativa.paraRendir)}
-                  <span className={getCumplimientoClassName(correlativa.cumpleParaRendir)}>
-                    {getCumplimientoLabel(correlativa.cumpleParaRendir)}
+                  <span style={{ marginLeft: 6, borderRadius: 99, padding: "1px 8px", fontSize: 10, fontWeight: 700, background: correlativa.cumpleParaRendir ? "rgba(144,190,109,0.20)" : "rgba(231,111,81,0.20)", color: correlativa.cumpleParaRendir ? "#90be6d" : "#e76f51", border: `1px solid ${correlativa.cumpleParaRendir ? "rgba(144,190,109,0.35)" : "rgba(231,111,81,0.35)"}` }}>
+                    {correlativa.cumpleParaRendir ? "Cumple" : "No cumple"}
                   </span>
                 </div>
               </li>
