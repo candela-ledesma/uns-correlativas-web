@@ -10,6 +10,7 @@ import OrientationSelector from "@/components/OrientationSelector";
 import AnioSection from "@/components/AnioSection";
 import GrupoMaterias from "@/components/GrupoMaterias";
 import PlanOnboarding from "@/components/PlanOnboarding";
+import KanbanPlan from "@/components/KanbanPlan";
 import { usePlanState } from "@/hooks/usePlanState";
 import { usePlanStructure } from "@/hooks/usePlanStructure";
 import { getMateriaViewModel } from "@/lib/materiaViewModel";
@@ -191,6 +192,7 @@ export default function PlanViewer({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { idsAgrupadores } = usePlanStructure(data);
+  const [vistaActiva, setVistaActiva] = useState<"plan" | "kanban">("plan");
   const [isOnboardingOpen, setIsOnboardingOpen] = useState(false);
   const [isOnboardingSubmitting, setIsOnboardingSubmitting] = useState(false);
   const onboardingStateKeyRef = useRef<string | null>(null);
@@ -534,7 +536,32 @@ export default function PlanViewer({
 
   return (
     <main className="mx-auto max-w-7xl px-6 py-6">
-      <div className="mb-4 flex justify-end">
+      <div className="mb-4 flex items-center justify-between gap-4">
+        <div className="flex rounded-xl border border-zinc-200 bg-white p-1 shadow-sm">
+          <button
+            type="button"
+            onClick={() => setVistaActiva("plan")}
+            className={`rounded-lg px-4 py-1.5 text-sm font-semibold transition ${
+              vistaActiva === "plan"
+                ? "bg-zinc-900 text-white shadow-sm"
+                : "text-zinc-600 hover:text-zinc-900"
+            }`}
+          >
+            Plan
+          </button>
+          <button
+            type="button"
+            onClick={() => setVistaActiva("kanban")}
+            className={`rounded-lg px-4 py-1.5 text-sm font-semibold transition ${
+              vistaActiva === "kanban"
+                ? "bg-zinc-900 text-white shadow-sm"
+                : "text-zinc-600 hover:text-zinc-900"
+            }`}
+          >
+            Kanban
+          </button>
+        </div>
+
         <button
           type="button"
           onClick={() => setIsOnboardingOpen(true)}
@@ -544,111 +571,121 @@ export default function PlanViewer({
         </button>
       </div>
 
-      <PlanHeader
-        titulo={titulo}
-        subtitulo={subtitulo}
-        aprobadas={progreso.aprobadas}
-        cursadas={progreso.cursadas}
-        disponibles={progreso.disponibles}
-        total={progreso.total}
-        onReset={resetMaterias}
-        syncStatus={syncStatus}
-        versionSelector={{
-          selectedVersionId: data.plan.version_id,
-          defaultVersionId,
-          options: versionOptions,
-        }}
-      />
-
-      <OrientationSelector
-        orientaciones={orientaciones}
-        selected={orientacionDesdeUrl}
-        onSelect={actualizarOrientacionEnUrl}
-      />
-
-      <PlanFilters
-        filtros={filtrosConOrientacion}
-        onChange={setFiltros}
-        onReset={resetFiltros}
-        canReset={canResetFiltros}
-        anios={anios}
-        cuatrimestres={cuatrimestres}
-      />
-
-      {Object.entries(seccionesPorAnioYCuatrimestre).map(([anio, cuatrimestresMap]) => (
-        <AnioSection
-          key={anio}
-          anio={anio}
-          cuatrimestres={cuatrimestresMap}
-          punterosCuatrimestre={punterosPorAnioYCuatrimestre[anio] || {}}
-          estados={estados}
-          todasLasMaterias={data.materias}
+      {vistaActiva === "kanban" && (
+        <KanbanPlan
+          materias={data.materias}
           agrupadores={agrupadores}
           idsAgrupadores={idsAgrupadores}
-          onToggle={toggleMateria}
-          onUndo={deshacerMateria}
+          estados={estados}
         />
-      ))}
+      )}
 
-      {gruposIdiomas.map((grupo) => {
-        const materias = obtenerMateriasDeGrupo(grupo.id);
-        if (materias.length === 0) return null;
-
-        return (
-          <GrupoMaterias
-            key={grupo.id}
-            titulo={grupo.nombre}
-            grupoId={grupo.id}
-            materias={materias}
-            estados={estados}
-            todasLasMaterias={data.materias}
-            agrupadores={agrupadores}
-            idsAgrupadores={idsAgrupadores}
-            onToggle={toggleMateria}
-            onUndo={deshacerMateria}
+      {vistaActiva === "plan" && (
+        <>
+          <PlanHeader
+            titulo={titulo}
+            subtitulo={subtitulo}
+            aprobadas={progreso.aprobadas}
+            cursadas={progreso.cursadas}
+            disponibles={progreso.disponibles}
+            total={progreso.total}
+            onReset={resetMaterias}
+            syncStatus={syncStatus}
+            versionSelector={{
+              selectedVersionId: data.plan.version_id,
+              defaultVersionId,
+              options: versionOptions,
+            }}
           />
-        );
-      })}
 
-      {gruposSeminarios.map((grupo) => {
-        const materias = obtenerMateriasDeGrupo(grupo.id);
-        if (materias.length === 0) return null;
-
-        return (
-          <GrupoMaterias
-            key={grupo.id}
-            titulo={grupo.nombre}
-            grupoId={grupo.id}
-            materias={materias}
-            estados={estados}
-            todasLasMaterias={data.materias}
-            agrupadores={agrupadores}
-            idsAgrupadores={idsAgrupadores}
-            onToggle={toggleMateria}
-            onUndo={deshacerMateria}
+          <OrientationSelector
+            orientaciones={orientaciones}
+            selected={orientacionDesdeUrl}
+            onSelect={actualizarOrientacionEnUrl}
           />
-        );
-      })}
 
-      {gruposOptativas.map((grupo) => {
-        const materias = obtenerMateriasDeGrupo(grupo.id);
-        if (materias.length === 0) return null;
-
-        return (
-          <GrupoMaterias
-            key={grupo.id}
-            titulo={`${grupo.nombre} (${grupo.id})`}
-            grupoId={grupo.id}
-            materias={materias}
-            estados={estados}
-            todasLasMaterias={data.materias}
-            agrupadores={agrupadores}
-            idsAgrupadores={idsAgrupadores}
-            onToggle={toggleMateria}
-            onUndo={deshacerMateria}
+          <PlanFilters
+            filtros={filtrosConOrientacion}
+            onChange={setFiltros}
+            onReset={resetFiltros}
+            canReset={canResetFiltros}
+            anios={anios}
+            cuatrimestres={cuatrimestres}
           />
-        );
-      })}
+
+          {Object.entries(seccionesPorAnioYCuatrimestre).map(([anio, cuatrimestresMap]) => (
+            <AnioSection
+              key={anio}
+              anio={anio}
+              cuatrimestres={cuatrimestresMap}
+              punterosCuatrimestre={punterosPorAnioYCuatrimestre[anio] || {}}
+              estados={estados}
+              todasLasMaterias={data.materias}
+              agrupadores={agrupadores}
+              idsAgrupadores={idsAgrupadores}
+              onToggle={toggleMateria}
+              onUndo={deshacerMateria}
+            />
+          ))}
+
+          {gruposIdiomas.map((grupo) => {
+            const materias = obtenerMateriasDeGrupo(grupo.id);
+            if (materias.length === 0) return null;
+            return (
+              <GrupoMaterias
+                key={grupo.id}
+                titulo={grupo.nombre}
+                grupoId={grupo.id}
+                materias={materias}
+                estados={estados}
+                todasLasMaterias={data.materias}
+                agrupadores={agrupadores}
+                idsAgrupadores={idsAgrupadores}
+                onToggle={toggleMateria}
+                onUndo={deshacerMateria}
+              />
+            );
+          })}
+
+          {gruposSeminarios.map((grupo) => {
+            const materias = obtenerMateriasDeGrupo(grupo.id);
+            if (materias.length === 0) return null;
+            return (
+              <GrupoMaterias
+                key={grupo.id}
+                titulo={grupo.nombre}
+                grupoId={grupo.id}
+                materias={materias}
+                estados={estados}
+                todasLasMaterias={data.materias}
+                agrupadores={agrupadores}
+                idsAgrupadores={idsAgrupadores}
+                onToggle={toggleMateria}
+                onUndo={deshacerMateria}
+              />
+            );
+          })}
+
+          {gruposOptativas.map((grupo) => {
+            const materias = obtenerMateriasDeGrupo(grupo.id);
+            if (materias.length === 0) return null;
+            return (
+              <GrupoMaterias
+                key={grupo.id}
+                titulo={`${grupo.nombre} (${grupo.id})`}
+                grupoId={grupo.id}
+                materias={materias}
+                estados={estados}
+                todasLasMaterias={data.materias}
+                agrupadores={agrupadores}
+                idsAgrupadores={idsAgrupadores}
+                onToggle={toggleMateria}
+                onUndo={deshacerMateria}
+              />
+            );
+          })}
+        </>
+      )}
 
       <PlanOnboarding
         open={isOnboardingOpen}
