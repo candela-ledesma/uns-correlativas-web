@@ -577,8 +577,6 @@ export default function PlanViewer({
           agrupadores={agrupadores}
           idsAgrupadores={idsAgrupadores}
           estados={estados}
-          onToggle={toggleMateria}
-          onUndo={deshacerMateria}
         />
       )}
 

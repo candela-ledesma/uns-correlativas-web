@@ -1,12 +1,9 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useRef, useState } from "react";
 import type { Materia, Agrupador } from "@/app/types/plan";
 import type { EstadoMateria } from "@/lib/evaluarCorrelativas";
-import {
-  estaHabilitadaParaCursar,
-  estaHabilitadaParaAprobar,
-} from "@/lib/evaluarCorrelativas";
+import { estaHabilitadaParaCursar } from "@/lib/evaluarCorrelativas";
 import { getEstadoKey } from "@/lib/estadoKey";
 
 type Props = {
@@ -14,13 +11,11 @@ type Props = {
   agrupadores: Agrupador[];
   idsAgrupadores: Set<string>;
   estados: Record<string, EstadoMateria>;
-  onToggle: (materia: Materia, grupoId?: string) => void;
-  onUndo: (materia: Materia, grupoId?: string) => void;
 };
 
-type Columna = {
-  titulo: string;
-  materias: Materia[];
+type DragRef = {
+  materiaId: string;
+  fromCol: string;
 };
 
 const ANIO_ORDER = [
@@ -37,19 +32,22 @@ function anioSortKey(titulo: string): number {
   return idx === -1 ? ANIO_ORDER.length : idx;
 }
 
-function buildColumnas(materias: Materia[], idsAgrupadores: Set<string>): Columna[] {
-  const porAnio = new Map<string, Materia[]>();
+function buildInitialOrder(
+  materias: Materia[],
+  idsAgrupadores: Set<string>
+): Record<string, string[]> {
+  const porAnio = new Map<string, string[]>();
 
   for (const m of materias) {
     if (idsAgrupadores.has(String(m.id))) continue;
     const anio = m.año ?? "Sin año";
     if (!porAnio.has(anio)) porAnio.set(anio, []);
-    porAnio.get(anio)!.push(m);
+    porAnio.get(anio)!.push(String(m.id));
   }
 
-  return Array.from(porAnio.entries())
-    .sort(([a], [b]) => anioSortKey(a) - anioSortKey(b))
-    .map(([titulo, mats]) => ({ titulo, materias: mats }));
+  return Object.fromEntries(
+    Array.from(porAnio.entries()).sort(([a], [b]) => anioSortKey(a) - anioSortKey(b))
+  );
 }
 
 function getMateriaEstado(
@@ -81,7 +79,8 @@ function getCardClass(
   puedeCursar: boolean,
   bloqueada: boolean
 ): string {
-  const base = "rounded-xl border p-3 shadow-sm transition";
+  const base =
+    "rounded-xl border p-3 shadow-sm transition cursor-grab active:cursor-grabbing select-none";
   if (estado === "aprobada") return `${base} border-green-300 bg-green-100`;
   if (estado === "cursada") return `${base} border-blue-300 bg-blue-100`;
   if (bloqueada) return `${base} border-zinc-200 bg-zinc-100 opacity-75`;
@@ -94,53 +93,96 @@ export default function KanbanPlan({
   agrupadores,
   idsAgrupadores,
   estados,
-  onToggle,
-  onUndo,
 }: Props) {
-  const columnas = useMemo(
-    () => buildColumnas(materias, idsAgrupadores),
-    [materias, idsAgrupadores]
+  const materiaById = useMemo(
+    () => new Map(materias.map((m) => [String(m.id), m])),
+    [materias]
   );
+
+  const [localOrder, setLocalOrder] = useState<Record<string, string[]>>(() =>
+    buildInitialOrder(materias, idsAgrupadores)
+  );
+  const [dragOver, setDragOver] = useState<string | null>(null);
+  const dragRef = useRef<DragRef | null>(null);
+
+  const colTitulos = Object.keys(localOrder);
+
+  function handleDragStart(materiaId: string, fromCol: string) {
+    dragRef.current = { materiaId, fromCol };
+  }
+
+  function handleDrop(toCol: string) {
+    const drag = dragRef.current;
+    if (!drag || drag.fromCol === toCol) {
+      setDragOver(null);
+      dragRef.current = null;
+      return;
+    }
+
+    setLocalOrder((prev) => ({
+      ...prev,
+      [drag.fromCol]: (prev[drag.fromCol] ?? []).filter((id) => id !== drag.materiaId),
+      [toCol]: [...(prev[toCol] ?? []), drag.materiaId],
+    }));
+
+    setDragOver(null);
+    dragRef.current = null;
+  }
 
   return (
     <div className="flex gap-4 overflow-x-auto pb-4">
-      {columnas.map((col) => {
-        const aprobadas = col.materias.filter(
+      {colTitulos.map((titulo) => {
+        const ids = localOrder[titulo] ?? [];
+        const colMaterias = ids
+          .map((id) => materiaById.get(id))
+          .filter((m): m is Materia => Boolean(m));
+
+        const aprobadas = colMaterias.filter(
           (m) => getMateriaEstado(m, estados) === "aprobada"
         ).length;
-        const cursadas = col.materias.filter(
+        const cursadas = colMaterias.filter(
           (m) => getMateriaEstado(m, estados) === "cursada"
         ).length;
+        const isDragOver = dragOver === titulo;
 
         return (
           <div
-            key={col.titulo}
-            className="flex w-72 shrink-0 flex-col rounded-2xl border border-zinc-200 bg-white shadow-sm"
+            key={titulo}
+            className={`flex w-72 shrink-0 flex-col rounded-2xl border bg-white shadow-sm transition ${
+              isDragOver ? "border-blue-400 ring-2 ring-blue-200" : "border-zinc-200"
+            }`}
+            onDragOver={(e) => {
+              e.preventDefault();
+              setDragOver(titulo);
+            }}
+            onDragLeave={(e) => {
+              if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+                setDragOver(null);
+              }
+            }}
+            onDrop={() => handleDrop(titulo)}
           >
             <div className="rounded-t-2xl border-b border-zinc-100 bg-zinc-50 px-4 py-3">
-              <div className="font-bold text-zinc-900">{col.titulo}</div>
+              <div className="font-bold text-zinc-900">{titulo}</div>
               <div className="mt-0.5 text-xs text-zinc-500">
-                {col.materias.length} materias
+                {colMaterias.length} materias
                 {aprobadas > 0 && ` · ${aprobadas} aprobadas`}
                 {cursadas > 0 && ` · ${cursadas} cursadas`}
               </div>
             </div>
 
             <div className="flex flex-1 flex-col gap-2 p-3">
-              {col.materias.map((materia) => {
+              {colMaterias.map((materia) => {
                 const estado = getMateriaEstado(materia, estados);
                 const puedeCursar = estaHabilitadaParaCursar(materia, estados, agrupadores);
-                const puedeAprobar = estaHabilitadaParaAprobar(materia, estados, agrupadores);
                 const bloqueada = !puedeCursar && estado === "no_cursada";
-                const grupoId = materia.grupo_opcion ?? undefined;
-
-                const puedeAvanzar =
-                  (estado === "no_cursada" && puedeCursar) ||
-                  (estado === "cursada" && puedeAprobar);
 
                 return (
                   <div
                     key={String(materia.id)}
+                    draggable
+                    onDragStart={() => handleDragStart(String(materia.id), titulo)}
+                    onDragEnd={() => setDragOver(null)}
                     className={getCardClass(estado, puedeCursar, bloqueada)}
                   >
                     <div className="flex items-start justify-between gap-2">
@@ -157,29 +199,6 @@ export default function KanbanPlan({
                         {getBadgeLabel(estado, puedeCursar)}
                       </span>
                     </div>
-
-                    {(puedeAvanzar || estado !== "no_cursada") && (
-                      <div className="mt-2 flex gap-1.5">
-                        {puedeAvanzar && (
-                          <button
-                            type="button"
-                            onClick={() => onToggle(materia, grupoId)}
-                            className="rounded-lg border border-zinc-300 bg-white px-2.5 py-1 text-xs font-semibold text-zinc-700 transition hover:bg-zinc-50"
-                          >
-                            {estado === "no_cursada" ? "Marcar cursada" : "Marcar aprobada"}
-                          </button>
-                        )}
-                        {estado !== "no_cursada" && (
-                          <button
-                            type="button"
-                            onClick={() => onUndo(materia, grupoId)}
-                            className="rounded-lg border border-zinc-300 bg-white px-2.5 py-1 text-xs font-semibold text-zinc-700 transition hover:bg-zinc-50"
-                          >
-                            Deshacer
-                          </button>
-                        )}
-                      </div>
-                    )}
                   </div>
                 );
               })}
