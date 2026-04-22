@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { Materia, Agrupador } from "@/app/types/plan";
 import type { EstadoMateria } from "@/lib/evaluarCorrelativas";
 import { estaHabilitadaParaCursar } from "@/lib/evaluarCorrelativas";
@@ -158,18 +158,48 @@ export default function KanbanPlan({
     JSON.stringify(localOrder) !==
     JSON.stringify(buildInitialOrder(materias, idsAgrupadores));
 
+  const scrollContainerRef = useRef<HTMLDivElement | null>(null);
+  const yearRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const [newlyAddedYear, setNewlyAddedYear] = useState<string | null>(null);
+
+  useEffect(() => {
+  if (!newlyAddedYear) return;
+
+  const container = scrollContainerRef.current;
+  const yearEl = yearRefs.current[newlyAddedYear];
+
+  if (container && yearEl) {
+    yearEl.scrollIntoView({
+      behavior: "smooth",
+      inline: "center",
+      block: "nearest",
+    });
+  }
+
+  const timeout = setTimeout(() => {
+    setNewlyAddedYear(null);
+  }, 500);
+
+  return () => clearTimeout(timeout);
+  }, [newlyAddedYear, years]);
+
   function handleReset() {
     setLocalOrder(buildInitialOrder(materias, idsAgrupadores));
   }
 
   function handleAddYear() {
     const newYear = getNextYearName(years);
+
     setLocalOrder((prev) => ({
       ...prev,
       [`${newYear}|1`]: [],
       [`${newYear}|2`]: [],
     }));
+
+    setNewlyAddedYear(newYear);
   }
+
+ 
 
   function handleDragStart(materiaId: string, fromCol: string) {
     dragRef.current = { materiaId, fromCol };
@@ -232,7 +262,16 @@ export default function KanbanPlan({
       </div>
 
       {/* Year groups */}
-      <div style={{ display: "flex", gap: 20, overflowX: "auto", paddingBottom: 16, alignItems: "flex-start" }}>
+        <div
+          ref={scrollContainerRef}
+          style={{
+            display: "flex",
+            gap: 20,
+            overflowX: "auto",
+            paddingBottom: 16,
+            alignItems: "flex-start",
+          }}
+        >
         {years.map((anio, yearIdx) => {
           const color = PALETTE[yearIdx % PALETTE.length];
           const c1Key = `${anio}|1`;
@@ -254,6 +293,9 @@ export default function KanbanPlan({
           return (
             <div
               key={anio}
+              ref={(el) => {
+                yearRefs.current[anio] = el;
+              }}
               style={{
                 background: "rgba(255,255,255,0.03)",
                 border: `1px solid ${color}44`,
@@ -391,3 +433,5 @@ export default function KanbanPlan({
     </div>
   );
 }
+
+
