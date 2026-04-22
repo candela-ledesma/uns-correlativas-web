@@ -56,7 +56,7 @@ function buildInitialOrder(
   const porCol = new Map<string, string[]>();
 
   for (const m of materias) {
-    if (idsAgrupadores.has(String(m.id))) continue;
+    if (m.categoria === "optativa" && !idsAgrupadores.has(String(m.id))) continue;
     const anio = m.año ?? "Sin año";
     const c = normalizeCuatrimestre(m.cuatrimestre);
     const key = `${anio}|${c}`;
