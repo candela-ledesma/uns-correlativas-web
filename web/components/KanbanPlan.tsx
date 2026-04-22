@@ -110,6 +110,14 @@ function getMateriaEstado(
   return estados[getEstadoKey(materia, grupoId)] ?? "no_cursada";
 }
 
+// Returns the single orientation key for grouping, or null when the materia
+// is common (no orientation, or shared across multiple orientations).
+function getMateriaOrientacionKey(m: Materia): string | null {
+  if (m.orientacion) return m.orientacion;
+  if (m.orientaciones?.length === 1) return m.orientaciones[0];
+  return null;
+}
+
 function getBadgeStyle(estado: EstadoMateria, puedeCursar: boolean): React.CSSProperties {
   const base: React.CSSProperties = {
     display: "inline-flex",
@@ -229,6 +237,49 @@ export default function KanbanPlan({
     fontFamily: FONT,
     cursor: "pointer",
   };
+
+  function renderMateriaCard(materia: Materia, colKey: string, color: string) {
+    const estado      = getMateriaEstado(materia, estados);
+    const puedeCursar = estaHabilitadaParaCursar(materia, estados, agrupadores);
+    return (
+      <div
+        key={String(materia.id)}
+        draggable
+        onDragStart={() => handleDragStart(String(materia.id), colKey)}
+        onDragEnd={() => setDragOver(null)}
+        style={{
+          background: `linear-gradient(135deg, ${color}22, transparent)`,
+          borderTop:    `1px solid ${color}33`,
+          borderRight:  `1px solid ${color}33`,
+          borderBottom: `1px solid ${color}33`,
+          borderLeft:   `4px solid ${color}`,
+          borderRadius: 10,
+          padding: "9px 10px",
+          cursor: "grab",
+          userSelect: "none",
+          transition: "opacity 0.15s",
+          opacity: !puedeCursar && estado === "no_cursada" ? 0.55 : 1,
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 6 }}>
+          <div style={{ minWidth: 0 }}>
+            <div style={{ color: TEXT_BASE, fontWeight: "bold", fontSize: 12, lineHeight: 1.4 }}>
+              {materia.nombre}
+            </div>
+            <div style={{ color: TEXT_DETAIL, fontSize: 11, marginTop: 2 }}>
+              {materia.id}
+              {materia.horas && ` · ${materia.horas} hs`}
+            </div>
+          </div>
+          {showMateriaStatus && (
+            <span style={getBadgeStyle(estado, puedeCursar)}>
+              {getBadgeLabel(estado, puedeCursar)}
+            </span>
+          )}
+        </div>
+      </div>
+    );
+  }
 
   function handleExportPDF() {
     window.print();
@@ -426,60 +477,58 @@ export default function KanbanPlan({
                       </div>
 
                       {/* Cards */}
-                      <div
-                        style={{
-                          padding: 8,
-                          display: "flex",
-                          flexDirection: "column",
-                          gap: 6,
-                          flex: 1,
-                          minHeight: 60,
-                        }}
-                      >
-                        {colMaterias.map((materia) => {
-                          const estado      = getMateriaEstado(materia, estados);
-                          const puedeCursar = estaHabilitadaParaCursar(materia, estados, agrupadores);
-
-                          return (
-                            <div
-                              key={String(materia.id)}
-                              draggable
-                              onDragStart={() => handleDragStart(String(materia.id), colKey)}
-                              onDragEnd={() => setDragOver(null)}
-                              style={{
-                                background: `linear-gradient(135deg, ${color}22, transparent)`,
-                                borderTop:    `1px solid ${color}33`,
-                                borderRight:  `1px solid ${color}33`,
-                                borderBottom: `1px solid ${color}33`,
-                                borderLeft:   `4px solid ${color}`,
-                                borderRadius: 10,
-                                padding: "9px 10px",
-                                cursor: "grab",
-                                userSelect: "none",
-                                transition: "opacity 0.15s",
-                                opacity: !puedeCursar && estado === "no_cursada" ? 0.55 : 1,
-                              }}
-                            >
-                              <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 6 }}>
-                                <div style={{ minWidth: 0 }}>
-                                  <div style={{ color: TEXT_BASE, fontWeight: "bold", fontSize: 12, lineHeight: 1.4 }}>
-                                    {materia.nombre}
-                                  </div>
-                                  <div style={{ color: TEXT_DETAIL, fontSize: 11, marginTop: 2 }}>
-                                    {materia.id}
-                                    {materia.horas && ` · ${materia.horas} hs`}
-                                  </div>
+                      {(() => {
+                        const comunes = colMaterias.filter(m => getMateriaOrientacionKey(m) === null);
+                        const oriMap = new Map<string, Materia[]>();
+                        for (const m of colMaterias) {
+                          const k = getMateriaOrientacionKey(m);
+                          if (k) {
+                            if (!oriMap.has(k)) oriMap.set(k, []);
+                            oriMap.get(k)!.push(m);
+                          }
+                        }
+                        const oriGroups = Array.from(oriMap.entries());
+                        return (
+                          <div
+                            style={{
+                              padding: 8,
+                              display: "flex",
+                              flexDirection: "column",
+                              gap: 6,
+                            }}
+                          >
+                            {comunes.map(m => renderMateriaCard(m, colKey, color))}
+                            {oriGroups.map(([ori, mats]) => (
+                              <div
+                                key={ori}
+                                style={{
+                                  background: `${color}0a`,
+                                  border: `1px solid ${color}33`,
+                                  borderRadius: 8,
+                                  padding: 6,
+                                  marginTop: comunes.length > 0 ? 4 : 0,
+                                  display: "flex",
+                                  flexDirection: "column",
+                                  gap: 6,
+                                }}
+                              >
+                                <div style={{
+                                  fontSize: 10,
+                                  fontWeight: 700,
+                                  color: TEXT_SEC,
+                                  textTransform: "uppercase",
+                                  letterSpacing: "0.06em",
+                                  paddingBottom: 4,
+                                  borderBottom: `1px solid ${color}22`,
+                                }}>
+                                  {ori}
                                 </div>
-                                {showMateriaStatus && (
-                                  <span style={getBadgeStyle(estado, puedeCursar)}>
-                                    {getBadgeLabel(estado, puedeCursar)}
-                                  </span>
-                                )}
+                                {mats.map(m => renderMateriaCard(m, colKey, color))}
                               </div>
-                            </div>
-                          );
-                        })}
-                      </div>
+                            ))}
+                          </div>
+                        );
+                      })()}
                     </div>
                   );
                 })}
