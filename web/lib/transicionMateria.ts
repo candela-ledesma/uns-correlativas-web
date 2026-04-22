@@ -14,18 +14,10 @@ export function obtenerSiguienteEstadoMateria(
   materia: Materia,
   estadoActual: EstadoMateria,
   estados: Record<string, EstadoMateria>,
-  materias: Materia[],
-  agrupadores: Agrupador[],
-  grupoId?: string
+  agrupadores: Agrupador[]
 ): ResultadoTransicion {
   if (estadoActual === "no_cursada") {
-    const puedeCursar = estaHabilitadaParaCursar(
-      materia,
-      estados,
-      materias,
-      agrupadores,
-      grupoId
-    );
+    const puedeCursar = estaHabilitadaParaCursar(materia, estados, agrupadores);
 
     return {
       siguienteEstado: puedeCursar ? "cursada" : "no_cursada",
@@ -34,13 +26,7 @@ export function obtenerSiguienteEstadoMateria(
   }
 
   if (estadoActual === "cursada") {
-    const puedeAprobar = estaHabilitadaParaAprobar(
-      materia,
-      estados,
-      materias,
-      agrupadores,
-      grupoId
-    );
+    const puedeAprobar = estaHabilitadaParaAprobar(materia, estados, agrupadores);
 
     return {
       siguienteEstado: puedeAprobar ? "aprobada" : "cursada",

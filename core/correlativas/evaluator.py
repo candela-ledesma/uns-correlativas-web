@@ -1,4 +1,4 @@
-#Valida si una materia está disponible según correlativas, incluyendo grupos optativos.
+# Valida si una materia está disponible según correlativas, incluyendo grupos optativos.
 from .helpers import cumple_estado
 
 

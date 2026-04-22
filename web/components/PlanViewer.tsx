@@ -423,7 +423,6 @@ export default function PlanViewer({
     const vm = getMateriaViewModel({
       materia,
       estados,
-      todasLasMaterias: data.materias,
       agrupadores,
       idsAgrupadores,
     });

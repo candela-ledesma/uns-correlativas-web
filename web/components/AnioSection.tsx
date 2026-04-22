@@ -61,7 +61,6 @@ export default function AnioSection({
                 const vm = getMateriaViewModel({
                 materia,
                 estados,
-                todasLasMaterias,
                 agrupadores,
                 idsAgrupadores,
                 });

@@ -10,7 +10,6 @@ import { getEstadoKey } from "@/lib/estadoKey";
 type Params = {
   materia: Materia;
   estados: Record<string, EstadoMateria>;
-  todasLasMaterias: Materia[];
   agrupadores: Agrupador[];
   idsAgrupadores: Set<string>;
   grupoIdRender?: string;
@@ -47,7 +46,7 @@ function grupoYaElegido(
   });
 }
 
-function materiaElegidaEnOtroGrupo(
+export function materiaElegidaEnOtroGrupo(
   materia: Materia,
   estados: Record<string, EstadoMateria>,
   grupoIdRender?: string
@@ -71,7 +70,6 @@ function materiaElegidaEnOtroGrupo(
 export function getMateriaViewModel({
   materia,
   estados,
-  todasLasMaterias,
   agrupadores,
   idsAgrupadores,
   grupoIdRender,
@@ -83,21 +81,9 @@ export function getMateriaViewModel({
     ? estadoAgrupador(materiaId, agrupadores, estados)
     : estados[getEstadoKey(materia, grupoIdRender)] || "no_cursada";
 
-  const puedeCursar = estaHabilitadaParaCursar(
-    materia,
-    estados,
-    todasLasMaterias,
-    agrupadores,
-    grupoIdRender
-  );
+  const puedeCursar = estaHabilitadaParaCursar(materia, estados, agrupadores);
 
-  const puedeAprobar = estaHabilitadaParaAprobar(
-    materia,
-    estados,
-    todasLasMaterias,
-    agrupadores,
-    grupoIdRender
-  );
+  const puedeAprobar = estaHabilitadaParaAprobar(materia, estados, agrupadores);
 
   const bloqueadaPorGrupo =
     !esAgrupador &&
@@ -115,8 +101,8 @@ export function getMateriaViewModel({
     bloqueadaPorMateriaRepetida;
 
   const puedeClickear =
-  estado === "cursada" ||
-  (estado === "no_cursada" && !bloqueada);
+    estado === "cursada" ||
+    (estado === "no_cursada" && !bloqueada);
 
   return {
     esAgrupador,

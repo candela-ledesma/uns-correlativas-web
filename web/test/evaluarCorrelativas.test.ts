@@ -300,7 +300,7 @@ describe("estaHabilitada", () => {
     };
 
     const fisica = materias.find((m) => m.id === "3059")!;
-    expect(estaHabilitadaParaCursar(fisica, estados, materias, agrupadores)).toBe(
+    expect(estaHabilitadaParaCursar(fisica, estados, agrupadores)).toBe(
       true
     );
   });
@@ -313,7 +313,7 @@ describe("estaHabilitada", () => {
 
     const tallerII = materias.find((m) => m.id === "3943")!;
     expect(
-      estaHabilitadaParaCursar(tallerII, estados, materias, agrupadores)
+      estaHabilitadaParaCursar(tallerII, estados, agrupadores)
     ).toBe(false);
   });
 
@@ -325,7 +325,7 @@ describe("estaHabilitada", () => {
 
     const tallerII = materias.find((m) => m.id === "3943")!;
     expect(
-      estaHabilitadaParaCursar(tallerII, estados, materias, agrupadores)
+      estaHabilitadaParaCursar(tallerII, estados, agrupadores)
     ).toBe(true);
   });
 
@@ -337,7 +337,7 @@ describe("estaHabilitada", () => {
 
     const morfologia = materias.find((m) => m.id === "3820")!;
     expect(
-      estaHabilitadaParaCursar(morfologia, estados, materias, agrupadores)
+      estaHabilitadaParaCursar(morfologia, estados, agrupadores)
     ).toBe(true);
   });
 
@@ -349,7 +349,7 @@ describe("estaHabilitada", () => {
 
     const morfologia = materias.find((m) => m.id === "3820")!;
     expect(
-      estaHabilitadaParaCursar(morfologia, estados, materias, agrupadores)
+      estaHabilitadaParaCursar(morfologia, estados, agrupadores)
     ).toBe(false);
   });
 
@@ -366,7 +366,7 @@ describe("estaHabilitada", () => {
 
     const tallerIV = materias.find((m) => m.id === "3945")!;
     expect(
-      estaHabilitadaParaCursar(tallerIV, estados, materias, agrupadores)
+      estaHabilitadaParaCursar(tallerIV, estados, agrupadores)
     ).toBe(false);
   });
 
@@ -385,7 +385,7 @@ describe("estaHabilitada", () => {
 
     const tallerIV = materias.find((m) => m.id === "3945")!;
     expect(
-      estaHabilitadaParaCursar(tallerIV, estados, materias, agrupadores)
+      estaHabilitadaParaCursar(tallerIV, estados, agrupadores)
     ).toBe(true);
   });
 });

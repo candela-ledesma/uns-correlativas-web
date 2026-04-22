@@ -9,6 +9,5 @@ def extraer_texto(pdf_path):
             contenido = page.extract_text()
             if contenido:
                 texto += contenido + "\n"
-                
 
     return texto

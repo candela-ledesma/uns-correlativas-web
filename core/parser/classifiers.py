@@ -1,12 +1,6 @@
-#Decide qué tipo de línea es:
-    #año
-    #cuatrimestre
-    #sección
-    #grupo
-    #materia
-    #correlativa
-    #basura
+# Decide qué tipo de línea es: año, cuatrimestre, sección, grupo, materia, correlativa, basura.
 
+from .cleaner import es_linea_basura
 from .patterns import (
     PATRON_ANIO,
     PATRON_CUATRIMESTRE,
@@ -21,19 +15,6 @@ from .patterns import (
     PATRON_CORRELATIVA_UN_ESTADO_SOLO
 )
 
-
-def es_linea_basura(linea):
-    basura = {
-        "U N S",
-        "NIVERSIDAD ACIONAL DEL UR",
-        "Carga",
-        "Horaria",
-        "Materia",
-        "Correlativas",
-        "Para cursar",
-        "Para rendir"
-    }
-    return linea.strip() in basura
 
 def clasificar_linea(linea, seccion_actual):
     linea = linea.strip()

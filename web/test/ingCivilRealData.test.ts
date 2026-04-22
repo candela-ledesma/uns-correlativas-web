@@ -89,12 +89,7 @@ describe("Ing Civil real - correlativas", () => {
     );
 
     expect(
-      estaHabilitadaParaCursar(
-        hidraulicaAplicada,
-        baseIncompleta,
-        data.materias,
-        data.agrupadores
-      )
+      estaHabilitadaParaCursar(hidraulicaAplicada, baseIncompleta, data.agrupadores)
     ).toBe(false);
 
     const paraCursar = {
@@ -103,21 +98,11 @@ describe("Ing Civil real - correlativas", () => {
     };
 
     expect(
-      estaHabilitadaParaCursar(
-        hidraulicaAplicada,
-        paraCursar,
-        data.materias,
-        data.agrupadores
-      )
+      estaHabilitadaParaCursar(hidraulicaAplicada, paraCursar, data.agrupadores)
     ).toBe(true);
 
     expect(
-      estaHabilitadaParaAprobar(
-        hidraulicaAplicada,
-        paraCursar,
-        data.materias,
-        data.agrupadores
-      )
+      estaHabilitadaParaAprobar(hidraulicaAplicada, paraCursar, data.agrupadores)
     ).toBe(false);
 
     const paraAprobar = {
@@ -126,12 +111,7 @@ describe("Ing Civil real - correlativas", () => {
     };
 
     expect(
-      estaHabilitadaParaAprobar(
-        hidraulicaAplicada,
-        paraAprobar,
-        data.materias,
-        data.agrupadores
-      )
+      estaHabilitadaParaAprobar(hidraulicaAplicada, paraAprobar, data.agrupadores)
     ).toBe(true);
   });
 });

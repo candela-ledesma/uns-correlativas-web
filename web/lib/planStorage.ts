@@ -52,10 +52,10 @@ export function loadPlanState(
 ): Record<string, EstadoMateria> {
     if (typeof window === "undefined") return {};
 
-        const key = getStorageKey(planId, versionId);
-        const saved = localStorage.getItem(key);
+    const key = getStorageKey(planId, versionId);
+    const saved = localStorage.getItem(key);
 
-        if (!saved) {
+    if (!saved) {
         const defaultVersion = getDefaultVersionForCarrera(planId)?.versionId ?? null;
 
         if (defaultVersion && defaultVersion === versionId) {
@@ -73,14 +73,14 @@ export function loadPlanState(
         }
 
         return {};
-        }
+    }
 
     try {
-    return JSON.parse(saved);
+        return JSON.parse(saved);
     } catch {
-    return {};
+        return {};
     }
-    }
+}
 
 export function loadPlanStateSnapshot(
     planId: string,
@@ -98,17 +98,17 @@ export function savePlanState(
     estados: Record<string, EstadoMateria>,
     updatedAtIso?: string
 ) {
-if (typeof window === "undefined") return;
+    if (typeof window === "undefined") return;
 
-localStorage.setItem(getStorageKey(planId, versionId), JSON.stringify(estados));
-saveSnapshotUpdatedAt(planId, versionId, updatedAtIso);
+    localStorage.setItem(getStorageKey(planId, versionId), JSON.stringify(estados));
+    saveSnapshotUpdatedAt(planId, versionId, updatedAtIso);
 }
 
 export function clearPlanState(planId: string, versionId: string) {
-if (typeof window === "undefined") return;
+    if (typeof window === "undefined") return;
 
-localStorage.removeItem(getStorageKey(planId, versionId));
-clearSnapshotUpdatedAt(planId, versionId);
+    localStorage.removeItem(getStorageKey(planId, versionId));
+    clearSnapshotUpdatedAt(planId, versionId);
 }
 
 export function hasMigratedPlanState(

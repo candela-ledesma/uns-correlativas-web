@@ -41,7 +41,6 @@ export default function GrupoMaterias({
           const vm = getMateriaViewModel({
             materia,
             estados,
-            todasLasMaterias,
             agrupadores,
             idsAgrupadores,
             grupoIdRender: grupoId,

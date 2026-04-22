@@ -18,31 +18,11 @@ import {
 import { scrollToGroup } from "@/lib/scrollToGroup";
 import { getScrollTargetId } from "@/lib/getScrollTargetId";
 import { getEstadoKey } from "@/lib/estadoKey";
+import { materiaElegidaEnOtroGrupo } from "@/lib/materiaViewModel";
 
 type SyncStatus = "guest" | "syncing" | "synced" | "error";
 
 const REMOTE_SYNC_DEBOUNCE_MS = 450;
-
-function materiaElegidaEnOtroGrupo(
-  materia: Materia,
-  estados: Record<string, EstadoMateria>,
-  grupoIdActual?: string
-) {
-  if (!grupoIdActual) return false;
-
-  const materiaId = String(materia.id);
-
-  return Object.entries(estados).some(([key, estado]) => {
-    if (!key.includes("::")) return false;
-
-    const [otroGrupoId, otroMateriaId] = key.split("::");
-
-    if (otroGrupoId === grupoIdActual) return false;
-    if (otroMateriaId !== materiaId) return false;
-
-    return estado === "cursada" || estado === "aprobada";
-  });
-}
 
 export function usePlanState(
   planId: string,
@@ -231,15 +211,13 @@ export function usePlanState(
         const contexto = getMateriaContextFromKey(estadoKey);
         if (!contexto) continue;
 
-        const { materia, grupoId } = contexto;
+        const { materia } = contexto;
 
         if (estado === "cursada") {
           const puedeSeguirCursada = estaHabilitadaParaCursar(
             materia,
             normalizados,
-            materias,
-            agrupadores,
-            grupoId
+            agrupadores
           );
 
           if (!puedeSeguirCursada) {
@@ -254,9 +232,7 @@ export function usePlanState(
           const puedeSeguirAprobada = estaHabilitadaParaAprobar(
             materia,
             normalizados,
-            materias,
-            agrupadores,
-            grupoId
+            agrupadores
           );
 
           if (puedeSeguirAprobada) continue;
@@ -264,9 +240,7 @@ export function usePlanState(
           const puedeQuedarCursada = estaHabilitadaParaCursar(
             materia,
             normalizados,
-            materias,
-            agrupadores,
-            grupoId
+            agrupadores
           );
 
           if (puedeQuedarCursada) {
@@ -301,13 +275,7 @@ export function usePlanState(
       const actual = prev[estadoKey] || "no_cursada";
 
       if (actual === "no_cursada") {
-        const puedeCursar = estaHabilitadaParaCursar(
-          materia,
-          prev,
-          materias,
-          agrupadores,
-          grupoId
-        );
+        const puedeCursar = estaHabilitadaParaCursar(materia, prev, agrupadores);
 
         if (!puedeCursar) return prev;
 
@@ -318,13 +286,7 @@ export function usePlanState(
       }
 
       if (actual === "cursada") {
-        const puedeAprobar = estaHabilitadaParaAprobar(
-          materia,
-          prev,
-          materias,
-          agrupadores,
-          grupoId
-        );
+        const puedeAprobar = estaHabilitadaParaAprobar(materia, prev, agrupadores);
 
         if (!puedeAprobar) return prev;
 

@@ -17,10 +17,7 @@ def parsear_plan_pdf(pdf_path: Path) -> dict[str, Any]:
     texto = extraer_texto(pdf_path)
     texto_limpio = limpiar_texto(texto)
     resultado_parser = detectar_materias_generico(texto_limpio)
-    
-    # Agrupar por orientación
     return agrupar_materias_por_orientacion(resultado_parser)
-
 
 
 def guardar_json_plan(

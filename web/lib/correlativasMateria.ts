@@ -1,6 +1,6 @@
 import type { Agrupador, Materia } from "@/app/types/plan";
+import { cumpleNivel, estadoAgrupador } from "@/lib/evaluarCorrelativas";
 import type { EstadoMateria } from "@/lib/evaluarCorrelativas";
-import { estadoAgrupador } from "@/lib/evaluarCorrelativas";
 
 type RequisitoCorrelativa = {
   para_cursar: string | null;
@@ -17,20 +17,6 @@ export type CorrelativaDetalle = {
   cumpleParaCursar: boolean;
   cumpleParaRendir: boolean;
 };
-
-function cumpleNivel(estado: EstadoMateria, requisito: string | null) {
-  if (!requisito) return true;
-
-  if (requisito === "cursada") {
-    return estado === "cursada" || estado === "aprobada";
-  }
-
-  if (requisito === "aprobada") {
-    return estado === "aprobada";
-  }
-
-  return false;
-}
 
 export function obtenerCorrelativasMateria(
   materia: Materia,

@@ -1,4 +1,7 @@
-#Recorre las líneas y construye el JSON final.
+# Recorre las líneas y construye el JSON final.
+import re
+import unicodedata
+
 from .classifiers import clasificar_linea
 from .normalizers import normalizar_anio, normalizar_cuatrimestre
 from .builders import crear_materia, crear_agrupador, crear_requisito
@@ -11,8 +14,6 @@ from .patterns import (
 )
 from .categorizer import detectar_categoria_y_subtipo
 from .grupo_detector import es_linea_agrupador
-import re
-import unicodedata
 
 
 def extraer_orientacion_desde_nombre(nombre):
@@ -593,24 +594,19 @@ def detectar_materias_generico(texto):
             
             # Si la materia aparece en múltiples orientaciones con diferente ubicación,
             # guardar estructura completa. Si es igual en todas, simplificar.
-            if len(ubicaciones_por_ori) > 0:
-                # Verificar si todas las ubicaciones son iguales
-                ubicaciones_lista = list(ubicaciones_por_ori.values())
-                todas_iguales = all(
-                    u == ubicaciones_lista[0] for u in ubicaciones_lista
-                )
-                
-                if todas_iguales and ubicaciones_lista[0].get("año"):
-                    # Todas tienen la misma ubicación, usar valor único
-                    materia["año"] = ubicaciones_lista[0]["año"]
-                    materia["cuatrimestre"] = ubicaciones_lista[0]["cuatrimestre"]
-                elif len(ubicaciones_por_ori) > 1:
-                    # Diferentes ubicaciones en diferentes orientaciones
-                    materia["ubicacion"] = ubicaciones_por_ori
-                elif ubicaciones_lista[0].get("año"):
-                    # Una sola orientación pero tiene año
-                    materia["año"] = ubicaciones_lista[0]["año"]
-                    materia["cuatrimestre"] = ubicaciones_lista[0]["cuatrimestre"]
+            ubicaciones_lista = list(ubicaciones_por_ori.values())
+            todas_iguales = all(
+                u == ubicaciones_lista[0] for u in ubicaciones_lista
+            )
+
+            if todas_iguales and ubicaciones_lista[0].get("año"):
+                materia["año"] = ubicaciones_lista[0]["año"]
+                materia["cuatrimestre"] = ubicaciones_lista[0]["cuatrimestre"]
+            elif len(ubicaciones_por_ori) > 1:
+                materia["ubicacion"] = ubicaciones_por_ori
+            elif ubicaciones_lista[0].get("año"):
+                materia["año"] = ubicaciones_lista[0]["año"]
+                materia["cuatrimestre"] = ubicaciones_lista[0]["cuatrimestre"]
 
     return {
         "plan": info_plan,

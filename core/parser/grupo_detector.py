@@ -26,8 +26,8 @@ def detectar_tipo_agrupador(codigo, nombre, seccion_actual):
 
     return None
 
+
 def es_linea_agrupador(linea, seccion_actual):
-    # si la línea es una correlativa, no puede ser agrupador
     if PATRON_CORRELATIVA_SOLO.match(linea):
         return None
 

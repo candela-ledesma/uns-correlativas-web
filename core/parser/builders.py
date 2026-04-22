@@ -1,7 +1,4 @@
-#Arma estructuras:
-    #materia
-    #agrupador
-    #correlativa
+# Arma estructuras: materia, agrupador, correlativa.
 
 def crear_materia(
     id_,

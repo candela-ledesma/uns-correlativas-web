@@ -47,7 +47,6 @@ export function filtrarMaterias({
     const vm = getMateriaViewModel({
       materia,
       estados,
-      todasLasMaterias: materias,
       agrupadores,
       idsAgrupadores,
     });
@@ -109,13 +108,13 @@ export function filtrarMaterias({
         return false;
       }
 
-        // Las materias comunes (sin orientación explícita o de agrupador) se muestran siempre.
+      // Las materias comunes (sin orientación explícita o de agrupador) se muestran siempre.
       const esComun = !orientacionDirecta && !tieneOrientacionesDirectas;
       if (esComun) {
         return true;
       }
 
-        // Materia no tiene esta orientación.
+      // Materia no tiene esta orientación.
       return false;
     }
 

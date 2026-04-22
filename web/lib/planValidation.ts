@@ -239,12 +239,12 @@ function parseMaterias(raw: unknown, issues: PlanValidationIssue[]): Materia[] |
     // Validar ubicacion (opcional, object con orientaciones como claves)
     let ubicacion: Record<string, { año: string | null; cuatrimestre: string | null }> | undefined;
     if (materiaRaw.ubicacion !== undefined) {
-      if (typeof materiaRaw.ubicacion === "object" && materiaRaw.ubicacion !== null && !Array.isArray(materiaRaw.ubicacion)) {
+      if (isRecord(materiaRaw.ubicacion)) {
         ubicacion = {};
         for (const [orientacionKey, ubicacionData] of Object.entries(materiaRaw.ubicacion)) {
-          if (typeof ubicacionData === "object" && ubicacionData !== null && !Array.isArray(ubicacionData)) {
-            const anioUbi = asStringOrNull((ubicacionData as any).año, `${path}.ubicacion.${orientacionKey}.año`, issues);
-            const cuatrimestreUbi = asStringOrNull((ubicacionData as any).cuatrimestre, `${path}.ubicacion.${orientacionKey}.cuatrimestre`, issues);
+          if (isRecord(ubicacionData)) {
+            const anioUbi = asStringOrNull(ubicacionData.año, `${path}.ubicacion.${orientacionKey}.año`, issues);
+            const cuatrimestreUbi = asStringOrNull(ubicacionData.cuatrimestre, `${path}.ubicacion.${orientacionKey}.cuatrimestre`, issues);
             ubicacion[orientacionKey] = {
               año: anioUbi,
               cuatrimestre: cuatrimestreUbi,

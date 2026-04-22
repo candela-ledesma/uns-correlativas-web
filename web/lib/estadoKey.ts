@@ -14,7 +14,7 @@ export function getEstadoKey(
 export function getMateriaGroupIds(
     materiaId: string,
     agrupadores: Agrupador[]
-    ): string[] {
+): string[] {
     return agrupadores
         .filter((a) => a.opciones.map(String).includes(String(materiaId)))
         .map((a) => String(a.id));

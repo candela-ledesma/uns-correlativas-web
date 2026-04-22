@@ -11,11 +11,11 @@ def normalizar_anio(linea):
 
 
 def normalizar_cuatrimestre(linea):
-    l = linea.strip().lower()
-    if l == "anual":
+    linea_lower = linea.strip().lower()
+    if linea_lower == "anual":
         return "Anual"
-    if "primer" in l or "primero" in l:
+    if "primer" in linea_lower or "primero" in linea_lower:
         return "Primer Cuatrimestre"
-    if "segundo" in l:
+    if "segundo" in linea_lower:
         return "Segundo Cuatrimestre"
     return linea.strip()
