@@ -1,4 +1,5 @@
 import LoginActions from "@/components/LoginActions";
+import { BG_GRADIENT } from "@/lib/tokens";
 import { getAuthProviderFlags } from "@/lib/authProviders";
 
 const AUTH_ERROR_MESSAGES: Record<string, string> = {
@@ -27,14 +28,16 @@ export default async function LoginPage({
   const { hasGoogleProvider: showGoogleLogin, allowDevLogin: showDevLogin } = getAuthProviderFlags();
 
   return (
-    <main className="min-h-screen bg-zinc-50 px-6 py-10">
-      <div className="mx-auto grid w-full max-w-xl gap-6">
-        <h1 className="text-3xl font-extrabold text-zinc-900">Iniciar sesion</h1>
+    <main style={{ minHeight: "100vh", background: BG_GRADIENT, padding: "64px 24px" }}>
+      <div style={{ margin: "0 auto", maxWidth: 480, display: "grid", gap: 24 }}>
+        <h1 style={{ margin: 0, color: "#e2d9f3", fontSize: "clamp(1.8rem,4vw,2.4rem)", fontWeight: 800, letterSpacing: "-0.02em", textShadow: "0 2px 16px rgba(157,78,221,0.4)" }}>
+          Iniciar sesión
+        </h1>
 
         {authError && (
-          <p role="alert" className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          <div role="alert" style={{ background: "rgba(220,38,38,0.12)", border: "1px solid rgba(239,68,68,0.35)", borderRadius: 12, padding: "12px 16px", color: "#fca5a5", fontSize: 14 }}>
             {authError}
-          </p>
+          </div>
         )}
 
         <LoginActions callbackUrl={callbackUrl} showGoogleLogin={showGoogleLogin} />

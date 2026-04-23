@@ -1,8 +1,13 @@
 "use client";
 
-import { FormEvent, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
+
+import { TEXT, TEXT_SEC, SURFACE, INPUT as INPUT_BASE, BTN as BTN_BASE, BTN_VIOLET } from "@/lib/tokens";
+const INPUT   = { ...INPUT_BASE, borderRadius: 10, padding: "10px 14px", fontSize: 14 } as const;
+const BTN     = { ...BTN_BASE,   borderRadius: 10, padding: "10px 16px", fontSize: 14, fontWeight: 600, width: "100%", textAlign: "center" } as const;
+const BTN_VIO = { ...BTN_VIOLET, borderRadius: 10, padding: "10px 16px", fontSize: 14, fontWeight: 700, width: "100%", textAlign: "center" } as const;
 
 type Props = {
   callbackUrl: string;
@@ -10,34 +15,24 @@ type Props = {
   showGoogleLogin?: boolean;
 };
 
-export default function LoginActions({
-  callbackUrl,
-  compact = false,
-  showGoogleLogin = false,
-}: Props) {
-  const [email, setEmail] = useState("tester@uns.local");
-  const [role, setRole] = useState("USER");
+export default function LoginActions({ callbackUrl, compact = false, showGoogleLogin = false }: Props) {
+  const [email,   setEmail]   = useState("tester@uns.local");
+  const [role,    setRole]    = useState("USER");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error,   setError]   = useState<string | null>(null);
 
   const isProduction = process.env.NODE_ENV === "production";
-  const showDevLogin =
-    process.env.NEXT_PUBLIC_ENABLE_DEV_LOGIN === "true" ||
+  const showDevLogin = process.env.NEXT_PUBLIC_ENABLE_DEV_LOGIN === "true" ||
     (!isProduction && process.env.NEXT_PUBLIC_ENABLE_DEV_LOGIN !== "false");
-  const allowDevRoleOverride =
-    process.env.NEXT_PUBLIC_ALLOW_DEV_ROLE_OVERRIDE === "true" ||
+  const allowDevRoleOverride = process.env.NEXT_PUBLIC_ALLOW_DEV_ROLE_OVERRIDE === "true" ||
     (!isProduction && process.env.NEXT_PUBLIC_ALLOW_DEV_ROLE_OVERRIDE !== "false");
 
   const noProviders = !showGoogleLogin && !showDevLogin;
 
-  const safeCallback = useMemo(() => {
-    if (!callbackUrl.startsWith("/")) return "/perfil";
-    return callbackUrl;
-  }, [callbackUrl]);
+  const safeCallback = useMemo(() => callbackUrl.startsWith("/") ? callbackUrl : "/perfil", [callbackUrl]);
 
   async function handleGoogleLogin() {
-    setLoading(true);
-    setError(null);
+    setLoading(true); setError(null);
     try {
       await signIn("google", { callbackUrl: safeCallback });
     } catch {
@@ -46,18 +41,12 @@ export default function LoginActions({
     }
   }
 
-  async function handleDevLogin(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setLoading(true);
-    setError(null);
-
+  async function handleDevLogin() {
+    setLoading(true); setError(null);
     const result = await signIn("dev-login", {
-      email,
-      role: allowDevRoleOverride ? role : "USER",
-      callbackUrl: safeCallback,
-      redirect: false,
+      email, role: allowDevRoleOverride ? role : "USER",
+      callbackUrl: safeCallback, redirect: false,
     });
-
     if (result?.error) {
       setError("No se pudo iniciar sesión. Verificá el email e intentá de nuevo.");
       setLoading(false);
@@ -66,65 +55,54 @@ export default function LoginActions({
     }
   }
 
-  // En el dropdown compacto sin providers, mostrar CTA directo a /login
-  // (donde el server component detecta correctamente qué providers hay)
+  // Compact sin providers → link directo a /login
   if (noProviders && compact) {
     return (
       <Link
         href={`/login?next=${encodeURIComponent(safeCallback)}`}
-        className="flex w-full items-center justify-center rounded-md border border-zinc-300 bg-white px-4 py-2.5 text-sm font-medium text-zinc-800 transition hover:bg-zinc-50"
+        style={{ ...BTN, display: "flex", alignItems: "center", justifyContent: "center", textDecoration: "none" }}
       >
         Iniciar sesión →
       </Link>
     );
   }
 
+  const wrapStyle = compact
+    ? { display: "grid", gap: 12 }
+    : { display: "grid", gap: 16, ...SURFACE, borderRadius: 20, padding: 24 };
+
   return (
-    <div
-      className={
-        compact
-          ? "grid gap-3"
-          : "grid gap-4 rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm"
-      }
-    >
+    <div style={wrapStyle}>
+
       {error && (
-        <p role="alert" aria-live="polite" className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+        <div role="alert" aria-live="polite"
+          style={{ background: "rgba(220,38,38,0.12)", border: "1px solid rgba(239,68,68,0.35)", borderRadius: 10, padding: "10px 14px", color: "#fca5a5", fontSize: 13 }}>
           {error}
-        </p>
+        </div>
       )}
 
       {showGoogleLogin && (
-        <button
-          type="button"
-          onClick={handleGoogleLogin}
-          disabled={loading}
-          className="flex items-center justify-center gap-2.5 rounded-md border border-zinc-300 bg-white px-4 py-2.5 text-sm font-medium text-zinc-800 transition hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-60"
-        >
+        <button type="button" onClick={() => void handleGoogleLogin()} disabled={loading}
+          style={{ ...BTN, display: "flex", alignItems: "center", justifyContent: "center", gap: 10, opacity: loading ? 0.6 : 1, cursor: loading ? "not-allowed" : "pointer" }}>
           {!loading && <GoogleIcon />}
           {loading ? "Iniciando sesión..." : "Continuar con Google"}
         </button>
       )}
 
       {showGoogleLogin && showDevLogin && (
-        <div className="flex items-center gap-2">
-          <div className="h-px flex-1 bg-zinc-200" />
-          <span className="text-xs text-zinc-400">o</span>
-          <div className="h-px flex-1 bg-zinc-200" />
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <div style={{ flex: 1, height: 1, background: "rgba(255,255,255,0.10)" }} />
+          <span style={{ color: TEXT_SEC, fontSize: 12 }}>o</span>
+          <div style={{ flex: 1, height: 1, background: "rgba(255,255,255,0.10)" }} />
         </div>
       )}
 
       {showDevLogin && (
-        <form
-          className={
-            compact
-              ? "grid gap-3 rounded-xl border border-zinc-200 bg-zinc-50/60 p-3"
-              : "grid gap-3 rounded-xl border border-zinc-200 p-4"
-          }
-          onSubmit={handleDevLogin}
-        >
-          <div className="flex items-center gap-2">
-            <h2 className="text-sm font-semibold text-zinc-800">Acceso de desarrollo</h2>
-            <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-amber-700">
+        <form onSubmit={(e) => { e.preventDefault(); void handleDevLogin(); }}
+          style={{ display: "grid", gap: 12, ...SURFACE, borderRadius: 14, padding: 16 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <span style={{ color: TEXT, fontSize: 13, fontWeight: 700 }}>Acceso de desarrollo</span>
+            <span style={{ background: "rgba(249,199,79,0.15)", border: "1px solid rgba(249,199,79,0.3)", borderRadius: 999, padding: "2px 8px", fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "#f9c74f" }}>
               solo dev
             </span>
           </div>
@@ -133,39 +111,30 @@ export default function LoginActions({
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="rounded-md border border-zinc-300 px-3 py-2 text-sm"
+            style={INPUT}
             placeholder="usuario@uns.local"
             required
           />
           {allowDevRoleOverride ? (
-            <select
-              data-testid="dev-login-role"
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
-              className="rounded-md border border-zinc-300 px-3 py-2 text-sm"
-            >
+            <select data-testid="dev-login-role" value={role} onChange={(e) => setRole(e.target.value)} style={INPUT}>
               <option value="USER">USER</option>
               <option value="MODERATOR">MODERATOR</option>
               <option value="ADMIN">ADMIN</option>
             </select>
           ) : (
-            <p className="text-xs text-zinc-600">El rol se fija en USER en este entorno.</p>
+            <p style={{ margin: 0, color: TEXT_SEC, fontSize: 12 }}>El rol se fija en USER en este entorno.</p>
           )}
-          <button
-            data-testid="dev-login-submit"
-            type="submit"
-            disabled={loading}
-            className="rounded-md border border-zinc-400 px-3 py-2 text-sm font-medium text-zinc-800 transition hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-60"
-          >
+          <button data-testid="dev-login-submit" type="submit" disabled={loading}
+            style={{ ...BTN_VIO, opacity: loading ? 0.65 : 1, cursor: loading ? "not-allowed" : "pointer" }}>
             {loading ? "Iniciando sesión..." : "Entrar con cuenta de desarrollo"}
           </button>
         </form>
       )}
 
       {noProviders && !compact && (
-        <p className="text-sm text-zinc-500">
+        <p style={{ margin: 0, color: TEXT_SEC, fontSize: 13 }}>
           No hay proveedores configurados en este entorno.{" "}
-          <Link href="/login" className="font-medium text-zinc-800 underline underline-offset-2">
+          <Link href="/login" style={{ color: TEXT, textDecoration: "underline", textUnderlineOffset: 3 }}>
             Ir a inicio de sesión
           </Link>
         </p>

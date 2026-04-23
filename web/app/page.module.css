@@ -1,16 +1,12 @@
+/* ── Tokens ─────────────────────────────────────────────────────────────── */
 .page {
-  --ink-950: #141414;
-  --ink-700: #44403c;
-  --ink-600: #57534e;
-  --surface: #fffdfa;
-  --line: #e7e5e4;
-  --brand: #1d4ed8;
+  --text:     #e2d9f3;
+  --text-sec: #a89bc9;
+  --line:     rgba(255,255,255,0.10);
+  --surface:  rgba(255,255,255,0.04);
   min-height: 100vh;
-  background:
-    radial-gradient(circle at 8% 4%, #efe8d7 0%, rgba(239, 232, 215, 0) 34%),
-    radial-gradient(circle at 88% -4%, #dbeafe 0%, rgba(219, 234, 254, 0) 26%),
-    linear-gradient(180deg, #fafaf9 0%, #f7f7f5 100%);
-  color: var(--ink-950);
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 55%, #0f3460 100%);
+  color: var(--text);
 }
 
 .container {
@@ -32,21 +28,21 @@
   align-items: center;
   gap: 8px;
   border: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255,255,255,0.06);
+  backdrop-filter: blur(8px);
   border-radius: 999px;
-  padding: 8px 12px;
+  padding: 8px 14px;
   font-size: 0.8rem;
   font-weight: 700;
   letter-spacing: 0.02em;
-  color: var(--ink-700);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  color: var(--text-sec);
 }
 
 .brandDot {
   width: 8px;
   height: 8px;
   border-radius: 999px;
-  background: linear-gradient(90deg, var(--brand), #0ea5e9);
+  background: linear-gradient(90deg, #9d4edd, #4cc9f0);
 }
 
 .topActions {
@@ -59,8 +55,7 @@
   height: 40px;
   border-radius: 999px;
   border: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.88);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  background: rgba(255,255,255,0.06);
 }
 
 .hero {
@@ -74,21 +69,20 @@
   display: inline-flex;
   border-radius: 999px;
   border: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.86);
+  background: rgba(255,255,255,0.06);
+  backdrop-filter: blur(6px);
   padding: 10px 16px;
   font-size: 0.84rem;
   font-weight: 700;
   letter-spacing: 0.01em;
-  color: var(--ink-700);
+  color: var(--text-sec);
   text-decoration: none;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
-  transition: all 180ms ease;
+  transition: background 180ms ease, color 180ms ease;
 }
 
 .unsLink:hover {
-  background: white;
-  color: var(--ink-950);
-  border-color: #d6d3d1;
+  background: rgba(255,255,255,0.10);
+  color: var(--text);
 }
 
 .title {
@@ -99,6 +93,7 @@
   letter-spacing: -0.03em;
   font-weight: 800;
   text-wrap: balance;
+  text-shadow: 0 2px 24px rgba(157,78,221,0.5);
 }
 
 .subtitle {
@@ -106,7 +101,7 @@
   max-width: 680px;
   font-size: 1.15rem;
   line-height: 1.8;
-  color: var(--ink-600);
+  color: var(--text-sec);
   text-wrap: pretty;
 }
 
@@ -116,11 +111,11 @@
   align-items: center;
   gap: 10px;
   border: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.7);
+  background: rgba(255,255,255,0.05);
   border-radius: 999px;
   padding: 8px 14px;
   font-size: 0.83rem;
-  color: var(--ink-700);
+  color: var(--text-sec);
 }
 
 .searchWrap {
@@ -133,28 +128,29 @@
   width: min(620px, 100%);
   border: 1px solid var(--line);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.93);
-  padding: 14px 18px;
+  background: rgba(255,255,255,0.07);
+  backdrop-filter: blur(6px);
+  padding: 14px 20px;
   font-size: 0.98rem;
-  color: var(--ink-950);
-  box-shadow: 0 6px 16px rgba(28, 25, 23, 0.06);
+  color: var(--text);
   transition: border-color 180ms ease, box-shadow 180ms ease;
+  outline: none;
 }
 
 .searchInput::placeholder {
-  color: #78716c;
+  color: var(--text-sec);
+  opacity: 0.7;
 }
 
 .searchInput:focus {
-  outline: none;
-  border-color: #93c5fd;
-  box-shadow: 0 0 0 4px rgba(147, 197, 253, 0.25);
+  border-color: rgba(157,78,221,0.6);
+  box-shadow: 0 0 0 4px rgba(157,78,221,0.15);
 }
 
 .noResults {
   margin: 22px 0 0;
   text-align: center;
-  color: var(--ink-600);
+  color: var(--text-sec);
   font-size: 0.95rem;
 }
 
@@ -171,28 +167,27 @@
   overflow: hidden;
   border-radius: 28px;
   border: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.94);
+  background: rgba(255,255,255,0.04);
+  backdrop-filter: blur(12px);
   padding: 24px;
-  box-shadow: 0 10px 24px rgba(28, 25, 23, 0.07);
-  transition:
-    transform 180ms ease,
-    box-shadow 180ms ease,
-    border-color 180ms ease;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+  text-decoration: none;
+  color: inherit;
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
   animation: fadeLift 420ms ease both;
 }
 
 .card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 18px 36px rgba(28, 25, 23, 0.12);
-  border-color: #d6d3d1;
+  box-shadow: 0 18px 48px rgba(0,0,0,0.4);
+  border-color: rgba(157,78,221,0.35);
 }
 
 .cardTopBar {
   position: absolute;
   inset: 0 0 auto 0;
-  height: 5px;
-  background: linear-gradient(90deg, #1d4ed8 0%, #06b6d4 52%, #10b981 100%);
-  opacity: 0.95;
+  height: 4px;
+  background: linear-gradient(90deg, #9d4edd 0%, #4cc9f0 52%, #43aa8b 100%);
 }
 
 .cardHeader {
@@ -203,10 +198,11 @@
 }
 
 .iconBox {
-  width: 54px;
-  height: 54px;
-  border-radius: 18px;
-  background: #f4f4f5;
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.10);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -217,36 +213,39 @@
   display: inline-flex;
   align-items: center;
   border-radius: 999px;
-  padding: 7px 12px;
+  padding: 6px 12px;
   font-size: 12px;
   font-weight: 700;
 }
 
 .statusAvailable {
-  background: #dcfce7;
-  color: #166534;
+  background: rgba(144,190,109,0.15);
+  color: #90be6d;
+  border: 1px solid rgba(144,190,109,0.25);
 }
 
 .statusSoon {
-  background: #fef3c7;
-  color: #92400e;
+  background: rgba(249,199,79,0.12);
+  color: #f9c74f;
+  border: 1px solid rgba(249,199,79,0.25);
 }
 
 .cardTitle {
-  margin: 24px 0 0;
+  margin: 22px 0 0;
   font-family: var(--font-heading);
-  font-size: 2.02rem;
+  font-size: 2rem;
   line-height: 1.1;
   letter-spacing: -0.03em;
   font-weight: 800;
   text-wrap: balance;
+  color: var(--text);
 }
 
 .cardDescription {
   margin: 12px 0 0;
-  font-size: 0.98rem;
+  font-size: 0.97rem;
   line-height: 1.7;
-  color: var(--ink-600);
+  color: var(--text-sec);
 }
 
 .cardFooter {
@@ -259,84 +258,68 @@
 .cardFooterText {
   font-size: 0.95rem;
   font-weight: 600;
-  color: var(--ink-700);
+  color: var(--text-sec);
 }
 
 .arrow {
-  width: 42px;
-  height: 42px;
+  width: 40px;
+  height: 40px;
   border-radius: 999px;
-  background: #f4f4f5;
-  color: #3f3f46;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid var(--line);
+  color: var(--text-sec);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 20px;
-  transition:
-    background 0.2s ease,
-    color 0.2s ease,
-    transform 0.2s ease;
+  font-size: 18px;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
 }
 
 .card:hover .arrow {
-  background: #18181b;
-  color: white;
-  transform: translateX(2px);
+  background: #9d4edd;
+  border-color: #9d4edd;
+  color: #fff;
+  transform: translateX(3px);
 }
 
 @keyframes fadeLift {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0);    }
 }
 
 @media (max-width: 640px) {
   .container {
     padding: 52px 18px 48px;
   }
-
   .topBar {
     gap: 8px;
     margin-bottom: 12px;
   }
-
   .brandPill {
     font-size: 0.74rem;
     padding: 7px 10px;
   }
-
   .topActions {
     max-width: 56%;
   }
-
   .card {
     padding: 20px;
   }
-
   .cardTitle {
     font-size: 1.7rem;
   }
-
   .subtitle {
     font-size: 1.02rem;
   }
-
   .quickMeta {
     margin-top: 14px;
     padding: 7px 12px;
     font-size: 0.75rem;
     gap: 8px;
   }
-
   .searchWrap {
     margin-top: 26px;
   }
-
   .searchInput {
     padding: 12px 15px;
     font-size: 0.92rem;
@@ -344,17 +327,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .hero,
-  .card {
-    animation: none;
-  }
-
-  .card,
-  .card:hover,
-  .arrow,
-  .card:hover .arrow,
-  .unsLink,
-  .unsLink:hover {
+  .hero, .card { animation: none; }
+  .card, .card:hover, .arrow, .card:hover .arrow, .unsLink, .unsLink:hover {
     transition: none;
     transform: none;
   }

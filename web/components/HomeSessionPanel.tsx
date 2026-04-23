@@ -9,34 +9,52 @@ import {
   type UserSessionSummaryResponse,
 } from "@/lib/userProductContextTypes";
 
-const triggerCls =
-  "inline-flex min-h-10 min-w-[178px] items-center justify-center gap-2 rounded-full border border-zinc-300 bg-white px-4 py-2 text-sm font-semibold text-zinc-800 shadow-sm transition hover:bg-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500";
+import { TEXT, TEXT_SEC, BTN as BTN_TOKEN } from "@/lib/tokens";
+// SURFACE más prominente para el dropdown flotante (mayor blur/opacidad que el base)
+const SURFACE  = { background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.12)", backdropFilter: "blur(16px)" } as const;
+// Botón pill con layout de inline-flex — combina el token visual con forma propia
+const BTN_BASE = { ...BTN_TOKEN, borderRadius: 999, padding: "8px 16px", fontSize: 13, fontWeight: 600, display: "inline-flex", alignItems: "center", gap: 8, whiteSpace: "nowrap" } as const;
+
+// ── Trigger ────────────────────────────────────────────────────────────────
+function Trigger({ onClick, expanded, children }: { onClick: () => void; expanded: boolean; children: React.ReactNode }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-expanded={expanded}
+      style={{ ...BTN_BASE, minHeight: 40, minWidth: 160, justifyContent: "center" }}
+    >
+      {children}
+    </button>
+  );
+}
+
+function Chevron({ open }: { open: boolean }) {
+  return <span aria-hidden="true" style={{ fontSize: 10, color: TEXT_SEC, display: "inline-block", width: 12, textAlign: "center" }}>{open ? "▲" : "▼"}</span>;
+}
 
 export default function HomeSessionPanel() {
   const { data: session, status } = useSession();
-  const [open, setOpen] = useState(false);
-  const [signingOut, setSigningOut] = useState(false);
-  const [summary, setSummary] = useState<UserSessionSummaryResponse | null>(null);
-  const [summaryLoading, setSummaryLoading] = useState(false);
+  const [open,          setOpen]          = useState(false);
+  const [signingOut,    setSigningOut]    = useState(false);
+  const [summary,       setSummary]       = useState<UserSessionSummaryResponse | null>(null);
+  const [summaryLoading,setSummaryLoading]= useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const showGoogleLogin = process.env.NEXT_PUBLIC_AUTH_GOOGLE_ENABLED === "true";
 
   async function loadUserContext() {
     setSummaryLoading(true);
-    const response = await fetch("/api/perfil/resumen").catch(() => null);
+    const res = await fetch("/api/perfil/resumen").catch(() => null);
     setSummaryLoading(false);
-    if (!response?.ok) return null;
-    return (await response.json()) as UserSessionSummaryResponse;
+    if (!res?.ok) return null;
+    return (await res.json()) as UserSessionSummaryResponse;
   }
 
   useEffect(() => {
     if (status !== "authenticated") return;
     let active = true;
-    void (async () => {
-      const payload = await loadUserContext();
-      if (active && payload) setSummary(payload);
-    })();
+    void (async () => { const p = await loadUserContext(); if (active && p) setSummary(p); })();
     return () => { active = false; };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status]);
@@ -44,79 +62,48 @@ export default function HomeSessionPanel() {
   useEffect(() => {
     if (!open || status !== "authenticated") return;
     let active = true;
-    void (async () => {
-      const payload = await loadUserContext();
-      if (active && payload) setSummary(payload);
-    })();
+    void (async () => { const p = await loadUserContext(); if (active && p) setSummary(p); })();
     return () => { active = false; };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, status]);
 
   useEffect(() => {
     if (!open) return;
-    function onClickOutside(e: MouseEvent) {
-      if (!containerRef.current?.contains(e.target as Node)) setOpen(false);
-    }
-    function onEscape(e: KeyboardEvent) {
-      if (e.key === "Escape") setOpen(false);
-    }
-    document.addEventListener("mousedown", onClickOutside);
-    document.addEventListener("keydown", onEscape);
-    return () => {
-      document.removeEventListener("mousedown", onClickOutside);
-      document.removeEventListener("keydown", onEscape);
-    };
+    function onOut(e: MouseEvent) { if (!containerRef.current?.contains(e.target as Node)) setOpen(false); }
+    function onEsc(e: KeyboardEvent) { if (e.key === "Escape") setOpen(false); }
+    document.addEventListener("mousedown", onOut);
+    document.addEventListener("keydown",   onEsc);
+    return () => { document.removeEventListener("mousedown", onOut); document.removeEventListener("keydown", onEsc); };
   }, [open]);
 
-  // ── Cargando sesión ────────────────────────────────────────────────────────
+  // ── Loading ────────────────────────────────────────────────────────────────
   if (status === "loading") {
-    return (
-      <div className={`${triggerCls} border-zinc-200 text-zinc-400`}>
-        Cargando...
-      </div>
-    );
+    return <div style={{ ...BTN_BASE, minHeight: 40, minWidth: 160, justifyContent: "center", cursor: "default", opacity: 0.5 }}>Cargando...</div>;
   }
 
-  // ── No autenticado ─────────────────────────────────────────────────────────
+  // ── Unauthenticated ────────────────────────────────────────────────────────
   if (status !== "authenticated" || !session.user) {
     return (
-      <div ref={containerRef} className="relative">
-        <button
-          type="button"
-          onClick={() => setOpen((p) => !p)}
-          aria-expanded={open}
-          aria-haspopup="dialog"
-          className={triggerCls}
-        >
-          Iniciar sesion
-          <span aria-hidden="true" className="inline-block w-3 text-center text-zinc-400">
-            {open ? "▲" : "▼"}
-          </span>
-        </button>
+      <div ref={containerRef} style={{ position: "relative" }}>
+        <Trigger onClick={() => setOpen((p) => !p)} expanded={open}>
+          Iniciar sesión
+          <Chevron open={open} />
+        </Trigger>
 
         {open && (
           <div
             role="dialog"
             aria-label="Acceso"
-            className="absolute right-0 z-30 mt-3 w-[min(92vw,400px)] rounded-2xl border border-zinc-200 bg-white p-4 shadow-xl"
-            style={{ animation: "dropdownIn 160ms ease-out" }}
+            style={{ position: "absolute", right: 0, zIndex: 30, marginTop: 10, width: "min(92vw, 380px)", borderRadius: 20, padding: 20, animation: "dropdownIn 160ms ease-out", ...SURFACE }}
           >
-            <p className="mb-3 text-sm text-zinc-600">
+            <p style={{ margin: "0 0 14px", color: TEXT_SEC, fontSize: 13, lineHeight: 1.6 }}>
               Ingresá para guardar y sincronizar tu progreso entre dispositivos.
             </p>
-            <LoginActions
-              callbackUrl="/perfil"
-              compact
-              showGoogleLogin={showGoogleLogin}
-            />
-            {/* Siempre hay un acceso directo a la página de login completa */}
+            <LoginActions callbackUrl="/perfil" compact showGoogleLogin={showGoogleLogin} />
             {showGoogleLogin && (
-              <p className="mt-3 text-center text-xs text-zinc-400">
+              <p style={{ margin: "12px 0 0", textAlign: "center", fontSize: 12, color: TEXT_SEC }}>
                 o{" "}
-                <Link
-                  href="/login?next=/perfil"
-                  className="text-zinc-600 underline underline-offset-2 hover:text-zinc-900"
-                >
+                <Link href="/login?next=/perfil" style={{ color: TEXT, textDecoration: "underline", textUnderlineOffset: 3 }}>
                   abrí la página de inicio de sesión
                 </Link>
               </p>
@@ -127,103 +114,74 @@ export default function HomeSessionPanel() {
     );
   }
 
-  // ── Autenticado ────────────────────────────────────────────────────────────
+  // ── Authenticated ──────────────────────────────────────────────────────────
   const activeCareerId = summary?.activeCareerId;
   const activeLastPlan = activeCareerId ? summary?.lastPlanByCareer[activeCareerId] : undefined;
-  const quickPlanHref = activeCareerId ? buildPlanHref(activeCareerId, activeLastPlan) : "/";
+  const quickPlanHref  = activeCareerId ? buildPlanHref(activeCareerId, activeLastPlan) : "/";
 
   return (
-    <div ref={containerRef} className="relative">
-      <button
-        type="button"
-        onClick={() => setOpen((p) => !p)}
-        aria-expanded={open}
-        aria-haspopup="menu"
-        className={triggerCls}
-      >
-        <span className="max-w-[190px] truncate">{session.user.email}</span>
-        <span className="rounded-full border border-zinc-300 bg-zinc-50 px-2 py-0.5 text-[11px] font-bold text-zinc-700">
+    <div ref={containerRef} style={{ position: "relative" }}>
+      <Trigger onClick={() => setOpen((p) => !p)} expanded={open}>
+        <span style={{ maxWidth: 180, overflow: "hidden", textOverflow: "ellipsis" }}>{session.user.email}</span>
+        <span style={{ background: "rgba(157,78,221,0.25)", border: "1px solid rgba(157,78,221,0.4)", borderRadius: 999, padding: "2px 8px", fontSize: 10, fontWeight: 700, color: "#c084fc", flexShrink: 0 }}>
           {session.user.role}
         </span>
-        <span aria-hidden="true" className="inline-block w-3 text-center text-zinc-400">
-          {open ? "▲" : "▼"}
-        </span>
-      </button>
+        <Chevron open={open} />
+      </Trigger>
 
       {open && (
         <div
           role="menu"
-          aria-label="Menu de sesion"
-          className="absolute right-0 z-30 mt-3 w-[min(92vw,360px)] rounded-2xl border border-zinc-200 bg-white p-4 text-left shadow-xl"
-          style={{ animation: "dropdownIn 160ms ease-out" }}
+          aria-label="Menú de sesión"
+          style={{ position: "absolute", right: 0, zIndex: 30, marginTop: 10, width: "min(92vw, 340px)", borderRadius: 20, padding: 20, animation: "dropdownIn 160ms ease-out", ...SURFACE }}
         >
-          <p className="mb-1 truncate text-sm font-semibold text-zinc-800">
+          <p style={{ margin: "0 0 2px", color: TEXT, fontSize: 13, fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
             {session.user.email}
           </p>
-          <p className="mb-3 text-xs text-zinc-400">Rol: {session.user.role}</p>
+          <p style={{ margin: "0 0 16px", color: TEXT_SEC, fontSize: 11 }}>Rol: {session.user.role}</p>
 
-          {/* Carrera activa — skeleton mientras carga */}
+          {/* Skeleton */}
           {summaryLoading && !summary && (
-            <div className="mb-3 rounded-xl border border-zinc-100 bg-zinc-50 p-3">
-              <div className="h-3 w-24 animate-pulse rounded bg-zinc-200" />
-              <div className="mt-2 h-4 w-40 animate-pulse rounded bg-zinc-200" />
+            <div style={{ marginBottom: 16, borderRadius: 12, border: "1px solid rgba(255,255,255,0.08)", background: "rgba(255,255,255,0.04)", padding: 12 }}>
+              <div style={{ height: 10, width: 96, borderRadius: 6, background: "rgba(255,255,255,0.10)", marginBottom: 8 }} />
+              <div style={{ height: 14, width: 160, borderRadius: 6, background: "rgba(255,255,255,0.08)" }} />
             </div>
           )}
 
+          {/* Carrera activa */}
           {!summaryLoading && summary?.activeCareerName && (
-            <div className="mb-3 rounded-xl border border-zinc-200 bg-zinc-50 p-3">
-              <p className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
-                Carrera activa
-              </p>
-              <p className="mt-1 text-sm font-semibold text-zinc-800">
-                {summary.activeCareerName}
-              </p>
+            <div style={{ marginBottom: 16, borderRadius: 12, border: "1px solid rgba(255,255,255,0.10)", background: "rgba(255,255,255,0.04)", padding: 12 }}>
+              <p style={{ margin: "0 0 4px", color: TEXT_SEC, fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.07em" }}>Carrera activa</p>
+              <p style={{ margin: "0 0 10px", color: TEXT, fontSize: 13, fontWeight: 600 }}>{summary.activeCareerName}</p>
               <Link
                 href={quickPlanHref}
                 onClick={() => setOpen(false)}
-                className="mt-2 inline-flex rounded-md border border-zinc-300 bg-white px-3 py-1.5 text-xs font-medium text-zinc-800 hover:bg-zinc-50"
+                style={{ display: "inline-flex", background: "rgba(157,78,221,0.20)", border: "1px solid rgba(157,78,221,0.35)", borderRadius: 8, padding: "6px 12px", fontSize: 12, fontWeight: 600, color: "#c084fc", textDecoration: "none" }}
               >
-                Abrir ultimo plan
+                Abrir último plan
               </Link>
             </div>
           )}
 
-          <div className="flex flex-wrap items-center gap-2">
-            <Link
-              href="/perfil"
-              onClick={() => setOpen(false)}
-              className="rounded-md border border-zinc-300 px-3 py-2 text-sm font-medium text-zinc-800 hover:bg-zinc-50"
-            >
-              Ir a perfil
-            </Link>
-            {(session.user.role === "MODERATOR" || session.user.role === "ADMIN") && (
-              <Link
-                href="/moderacion"
-                onClick={() => setOpen(false)}
-                className="rounded-md border border-zinc-300 px-3 py-2 text-sm font-medium text-zinc-800 hover:bg-zinc-50"
-              >
-                Moderacion
+          {/* Nav links */}
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+            {[
+              { href: "/perfil", label: "Ir a perfil", show: true },
+              { href: "/moderacion", label: "Moderación", show: session.user.role === "MODERATOR" || session.user.role === "ADMIN" },
+              { href: "/admin", label: "Admin", show: session.user.role === "ADMIN" },
+            ].filter((l) => l.show).map((l) => (
+              <Link key={l.href} href={l.href} onClick={() => setOpen(false)}
+                style={{ ...BTN_BASE, borderRadius: 10, padding: "7px 14px", fontSize: 13, textDecoration: "none" }}>
+                {l.label}
               </Link>
-            )}
-            {session.user.role === "ADMIN" && (
-              <Link
-                href="/admin"
-                onClick={() => setOpen(false)}
-                className="rounded-md border border-zinc-300 px-3 py-2 text-sm font-medium text-zinc-800 hover:bg-zinc-50"
-              >
-                Admin
-              </Link>
-            )}
+            ))}
             <button
               type="button"
               disabled={signingOut}
-              onClick={() => {
-                setSigningOut(true);
-                void signOut({ callbackUrl: "/" });
-              }}
-              className="rounded-md border border-zinc-300 px-3 py-2 text-sm font-medium text-zinc-800 hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-60"
+              onClick={() => { setSigningOut(true); void signOut({ callbackUrl: "/" }); }}
+              style={{ ...BTN_BASE, borderRadius: 10, padding: "7px 14px", fontSize: 13, opacity: signingOut ? 0.6 : 1, cursor: signingOut ? "not-allowed" : "pointer" }}
             >
-              {signingOut ? "Cerrando sesion..." : "Cerrar sesion"}
+              {signingOut ? "Cerrando sesión..." : "Cerrar sesión"}
             </button>
           </div>
         </div>

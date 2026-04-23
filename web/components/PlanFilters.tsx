@@ -3,11 +3,9 @@
 import { useState } from "react";
 import type { EstadoFiltro, FiltrosPlan } from "@/lib/filtrarMaterias";
 
-const TEXT     = "#e2d9f3";
-const TEXT_SEC = "#a89bc9";
-const SURFACE  = { background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.10)", backdropFilter: "blur(8px)" } as const;
-const INPUT    = { background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.15)", color: TEXT, borderRadius: 10, padding: "8px 12px", fontSize: 14, width: "100%", outline: "none" } as const;
-const BTN      = { background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.15)", color: TEXT, borderRadius: 10, padding: "6px 14px", fontSize: 13, fontWeight: 600, cursor: "pointer" } as const;
+import { TEXT_SEC, SURFACE, BTN as BTN_BASE, INPUT as INPUT_BASE } from "@/lib/tokens";
+const INPUT = { ...INPUT_BASE, borderRadius: 10, padding: "8px 12px", fontSize: 14 } as const;
+const BTN   = { ...BTN_BASE,   borderRadius: 10, padding: "6px 14px", fontSize: 13, fontWeight: 600 } as const;
 
 type Props = {
   filtros: FiltrosPlan;

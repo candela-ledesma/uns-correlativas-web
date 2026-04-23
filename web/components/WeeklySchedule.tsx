@@ -15,100 +15,70 @@ import { useSchedule, type ScheduleBlock, type CreateBlockInput } from "@/hooks/
 import ScheduleBlockForm from "@/components/ScheduleBlockForm";
 import type { Materia } from "@/app/types/plan";
 
-// ── Constants ──────────────────────────────────────────────────────────────
+import { TEXT, TEXT_SEC, SURFACE, BTN as BTN_BASE, BTN_VIOLET, BTN_RED as BTN_RED_BASE, GLASS } from "@/lib/tokens";
+// Variantes locales con layout específico del planificador
+const BTN     = { ...BTN_BASE,     borderRadius: 10, padding: "8px 16px",  fontSize: 13, fontWeight: 600 } as const;
+const BTN_VIO = { ...BTN_VIOLET,   borderRadius: 10, padding: "8px 16px",  fontSize: 13, fontWeight: 700 } as const;
+const BTN_RED = { ...BTN_RED_BASE, borderRadius: 8,  padding: "4px 10px", fontSize: 11, fontWeight: 700 } as const;
+const BTN_SM  = { ...BTN_BASE,     borderRadius: 8,  padding: "4px 10px", fontSize: 11, fontWeight: 600 } as const;
+const SLOT_LINE = `1px solid ${GLASS.soft}`;    // separador de media hora en la grilla
+const COL_LINE  = `1px solid ${GLASS.medium}`;  // borde entre columnas de día
 
-const TOTAL_SLOTS = (HORA_FIN_GRILLA - HORA_INICIO_GRILLA) / SLOT_MINUTOS;
-const GRID_HEIGHT = TOTAL_SLOTS * SLOT_PX;
-const DRAG_THRESHOLD_PX = 5;
+// ── Constants ──────────────────────────────────────────────────────────────
+const TOTAL_SLOTS    = (HORA_FIN_GRILLA - HORA_INICIO_GRILLA) / SLOT_MINUTOS;
+const GRID_HEIGHT    = TOTAL_SLOTS * SLOT_PX;
+const DRAG_THRESHOLD = 5;
 
 const TIME_LABELS: string[] = [];
 for (let m = HORA_INICIO_GRILLA; m <= HORA_FIN_GRILLA; m += SLOT_MINUTOS) {
   TIME_LABELS.push(minutesToTimeString(m));
 }
 
-// ── Pure helpers ───────────────────────────────────────────────────────────
-
-function snapToSlot(minutes: number): number {
-  return Math.round(minutes / SLOT_MINUTOS) * SLOT_MINUTOS;
-}
-function blockTopPx(horaInicio: number): number {
-  return ((horaInicio - HORA_INICIO_GRILLA) / SLOT_MINUTOS) * SLOT_PX;
-}
-function blockHeightPx(horaInicio: number, horaFin: number): number {
-  return ((horaFin - horaInicio) / SLOT_MINUTOS) * SLOT_PX;
-}
+// ── Helpers ────────────────────────────────────────────────────────────────
+function snapToSlot(m: number)                          { return Math.round(m / SLOT_MINUTOS) * SLOT_MINUTOS; }
+function blockTopPx(horaInicio: number)                 { return ((horaInicio - HORA_INICIO_GRILLA) / SLOT_MINUTOS) * SLOT_PX; }
+function blockHeightPx(ini: number, fin: number)        { return ((fin - ini) / SLOT_MINUTOS) * SLOT_PX; }
 
 // ── Types ──────────────────────────────────────────────────────────────────
-
 type Panel =
   | { type: "create"; prefill?: { dia: number; horaInicio: number } }
   | { type: "edit"; block: ScheduleBlock };
 
-/** Inline action overlay state for a block */
 type ActiveBlock = { id: string; confirming: boolean };
 
 type DragState = {
-  blockId: string;
-  block: ScheduleBlock;
-  duration: number;
-  grabOffsetMinutes: number;
-  startX: number;
-  startY: number;
+  blockId: string; block: ScheduleBlock;
+  duration: number; grabOffsetMinutes: number;
+  startX: number; startY: number;
 };
 
-type Ghost = {
-  dia: number;
-  horaInicio: number;
-  horaFin: number;
-  hasConflict: boolean;
-  color: string;
-};
+type Ghost = { dia: number; horaInicio: number; horaFin: number; hasConflict: boolean; color: string };
 
-type Props = {
-  careerId: string;
-  planId: string;
-  versionId: string;
-  materias: Materia[];
-};
+type Props = { careerId: string; planId: string; versionId: string; materias: Materia[] };
 
 // ── Component ──────────────────────────────────────────────────────────────
-
 export default function WeeklySchedule({ careerId, planId, versionId, materias }: Props) {
   const { status: sessionStatus } = useSession();
-  const { blocks, isLoading, error, createBlock, updateBlock, deleteBlock } = useSchedule({
-    careerId,
-    planId,
-    versionId,
-  });
+  const { blocks, isLoading, error, createBlock, updateBlock, deleteBlock } = useSchedule({ careerId, planId, versionId });
 
-  const [panel, setPanel] = useState<Panel | null>(null);
+  const [panel,       setPanel]       = useState<Panel | null>(null);
   const [activeBlock, setActiveBlock] = useState<ActiveBlock | null>(null);
-  const [deletingId, setDeletingId] = useState<string | null>(null);
-  const [draggingId, setDraggingId] = useState<string | null>(null);
-  const [ghost, setGhost] = useState<Ghost | null>(null);
+  const [deletingId,  setDeletingId]  = useState<string | null>(null);
+  const [draggingId,  setDraggingId]  = useState<string | null>(null);
+  const [ghost,       setGhost]       = useState<Ghost | null>(null);
 
-  const dragRef = useRef<DragState | null>(null);
-  const suppressNextClickRef = useRef(false);
-  const columnRefs = useRef<(HTMLDivElement | null)[]>([null, null, null, null, null]);
-  const gridRef = useRef<HTMLDivElement>(null);
-  const panelRef = useRef<HTMLDivElement>(null);
+  const dragRef             = useRef<DragState | null>(null);
+  const suppressClickRef    = useRef(false);
+  const columnRefs          = useRef<(HTMLDivElement | null)[]>([null, null, null, null, null]);
+  const gridRef             = useRef<HTMLDivElement>(null);
+  const panelRef            = useRef<HTMLDivElement>(null);
 
-  // Scroll panel into view when it opens
   useEffect(() => {
-    if (panel) {
-      requestAnimationFrame(() => {
-        panelRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
-      });
-    }
+    if (panel) requestAnimationFrame(() => panelRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" }));
   }, [panel]);
 
-  // Escape closes panel + overlay
   useEffect(() => {
-    function onKey(e: KeyboardEvent) {
-      if (e.key !== "Escape") return;
-      setActiveBlock(null);
-      setPanel(null);
-    }
+    function onKey(e: KeyboardEvent) { if (e.key === "Escape") { setActiveBlock(null); setPanel(null); } }
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
   }, []);
@@ -118,224 +88,140 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
     .map((m) => ({ id: String(m.id), nombre: m.nombre }))
     .sort((a, b) => a.nombre.localeCompare(b.nombre));
 
-  // ── Drag helpers ──────────────────────────────────────────────────────────
+  // ── Drag ──────────────────────────────────────────────────────────────────
 
-  function getColumnHit(clientX: number, clientY: number): { dia: number; yInColumn: number } | null {
+  function getHit(cx: number, cy: number): { dia: number; y: number } | null {
     for (let i = 0; i < columnRefs.current.length; i++) {
-      const rect = columnRefs.current[i]?.getBoundingClientRect();
-      if (!rect) continue;
-      if (clientX >= rect.left && clientX <= rect.right) {
-        return { dia: i + 1, yInColumn: clientY - rect.top };
-      }
+      const r = columnRefs.current[i]?.getBoundingClientRect();
+      if (r && cx >= r.left && cx <= r.right) return { dia: i + 1, y: cy - r.top };
     }
     return null;
   }
 
-  function buildGhost(clientX: number, clientY: number, drag: DragState, prev: Ghost | null): Ghost {
-    const hit = getColumnHit(clientX, clientY);
-    let targetDia: number;
-    let yInColumn: number;
+  function buildGhost(cx: number, cy: number, drag: DragState, prev: Ghost | null): Ghost {
+    const hit = getHit(cx, cy);
+    let dia = prev?.dia ?? drag.block.dia;
+    let y   = 0;
+    if (hit) { dia = hit.dia; y = hit.y; }
+    else { const r = columnRefs.current[dia - 1]?.getBoundingClientRect(); y = r ? Math.max(0, Math.min(GRID_HEIGHT, cy - r.top)) : 0; }
 
-    if (hit) {
-      targetDia = hit.dia;
-      yInColumn = hit.yInColumn;
-    } else {
-      targetDia = prev?.dia ?? drag.block.dia;
-      const colRect = columnRefs.current[targetDia - 1]?.getBoundingClientRect();
-      yInColumn = colRect ? Math.max(0, Math.min(GRID_HEIGHT, clientY - colRect.top)) : 0;
-    }
-
-    const minutesFromTop = (yInColumn / SLOT_PX) * SLOT_MINUTOS;
-    const rawStart = HORA_INICIO_GRILLA + minutesFromTop - drag.grabOffsetMinutes;
-    const horaInicio = Math.max(
-      HORA_INICIO_GRILLA,
-      Math.min(HORA_FIN_GRILLA - drag.duration, snapToSlot(rawStart)),
-    );
-    const horaFin = horaInicio + drag.duration;
-    const hasConflict =
-      findOverlaps({ id: drag.blockId, dia: targetDia, horaInicio, horaFin }, blocks).length > 0;
-
-    return { dia: targetDia, horaInicio, horaFin, hasConflict, color: drag.block.color ?? "#9d4edd" };
+    const raw = HORA_INICIO_GRILLA + (y / SLOT_PX) * SLOT_MINUTOS - drag.grabOffsetMinutes;
+    const ini = Math.max(HORA_INICIO_GRILLA, Math.min(HORA_FIN_GRILLA - drag.duration, snapToSlot(raw)));
+    const fin = ini + drag.duration;
+    const conflict = findOverlaps({ id: drag.blockId, dia, horaInicio: ini, horaFin: fin }, blocks).length > 0;
+    return { dia, horaInicio: ini, horaFin: fin, hasConflict: conflict, color: drag.block.color ?? "#9d4edd" };
   }
-
-  // ── Pointer events ────────────────────────────────────────────────────────
 
   function onBlockPointerDown(e: React.PointerEvent, block: ScheduleBlock) {
     if (e.button !== 0) return;
     e.stopPropagation();
-
-    const hit = getColumnHit(e.clientX, e.clientY);
+    const hit = getHit(e.clientX, e.clientY);
     if (!hit) return;
-
-    setActiveBlock(null); // close any open overlay before drag
-
-    const minutesFromTop = (hit.yInColumn / SLOT_PX) * SLOT_MINUTOS;
-    const grabOffsetMinutes = HORA_INICIO_GRILLA + minutesFromTop - block.horaInicio;
-
-    dragRef.current = {
-      blockId: block.id,
-      block,
-      duration: block.horaFin - block.horaInicio,
-      grabOffsetMinutes,
-      startX: e.clientX,
-      startY: e.clientY,
-    };
-
+    setActiveBlock(null);
+    const grab = HORA_INICIO_GRILLA + (hit.y / SLOT_PX) * SLOT_MINUTOS - block.horaInicio;
+    dragRef.current = { blockId: block.id, block, duration: block.horaFin - block.horaInicio, grabOffsetMinutes: grab, startX: e.clientX, startY: e.clientY };
     setDraggingId(block.id);
     gridRef.current?.setPointerCapture(e.pointerId);
   }
 
   function onGridPointerMove(e: React.PointerEvent) {
-    const drag = dragRef.current;
-    if (!drag) return;
-    const dx = Math.abs(e.clientX - drag.startX);
-    const dy = Math.abs(e.clientY - drag.startY);
-    if (dx < DRAG_THRESHOLD_PX && dy < DRAG_THRESHOLD_PX) return;
-    setGhost((prev) => buildGhost(e.clientX, e.clientY, drag, prev));
+    const d = dragRef.current; if (!d) return;
+    if (Math.abs(e.clientX - d.startX) < DRAG_THRESHOLD && Math.abs(e.clientY - d.startY) < DRAG_THRESHOLD) return;
+    setGhost((p) => buildGhost(e.clientX, e.clientY, d, p));
   }
 
   async function onGridPointerUp(e: React.PointerEvent) {
-    const drag = dragRef.current;
-    if (!drag) return;
-
+    const d = dragRef.current; if (!d) return;
     gridRef.current?.releasePointerCapture(e.pointerId);
-    dragRef.current = null;
-    setDraggingId(null);
-
-    const currentGhost = ghost;
-    setGhost(null);
-
-    const dx = Math.abs(e.clientX - drag.startX);
-    const dy = Math.abs(e.clientY - drag.startY);
-    const wasDrag = dx >= DRAG_THRESHOLD_PX || dy >= DRAG_THRESHOLD_PX;
-
-    if (wasDrag) {
-      suppressNextClickRef.current = true;
-      setTimeout(() => { suppressNextClickRef.current = false; }, 0);
-    }
-
-    if (!wasDrag || !currentGhost || currentGhost.hasConflict) return;
-
-    const orig = blocks.find((b) => b.id === drag.blockId);
-    if (!orig) return;
-    if (orig.dia === currentGhost.dia && orig.horaInicio === currentGhost.horaInicio) return;
-
-    await updateBlock(drag.blockId, {
-      dia: currentGhost.dia,
-      horaInicio: currentGhost.horaInicio,
-      horaFin: currentGhost.horaFin,
-    });
+    dragRef.current = null; setDraggingId(null);
+    const g = ghost; setGhost(null);
+    const wasDrag = Math.abs(e.clientX - d.startX) >= DRAG_THRESHOLD || Math.abs(e.clientY - d.startY) >= DRAG_THRESHOLD;
+    if (wasDrag) { suppressClickRef.current = true; setTimeout(() => { suppressClickRef.current = false; }, 0); }
+    if (!wasDrag || !g || g.hasConflict) return;
+    const orig = blocks.find((b) => b.id === d.blockId);
+    if (!orig || (orig.dia === g.dia && orig.horaInicio === g.horaInicio)) return;
+    await updateBlock(d.blockId, { dia: g.dia, horaInicio: g.horaInicio, horaFin: g.horaFin });
   }
 
-  function onGridPointerCancel() {
-    dragRef.current = null;
-    setDraggingId(null);
-    setGhost(null);
-  }
+  function onGridPointerCancel() { dragRef.current = null; setDraggingId(null); setGhost(null); }
 
   // ── Cell click → create ───────────────────────────────────────────────────
-
-  function onSlotAreaClick(e: React.MouseEvent, dia: number) {
+  function onSlotClick(e: React.MouseEvent, dia: number) {
     if (draggingId) return;
-
-    // First click dismisses any open overlay, without creating
-    if (activeBlock) {
-      setActiveBlock(null);
-      return;
-    }
-
-    const rect = (e.currentTarget as HTMLDivElement).getBoundingClientRect();
-    const yInColumn = e.clientY - rect.top;
-    const raw = HORA_INICIO_GRILLA + (yInColumn / SLOT_PX) * SLOT_MINUTOS;
-    const horaInicio = Math.max(
-      HORA_INICIO_GRILLA,
-      Math.min(HORA_FIN_GRILLA - SLOT_MINUTOS, snapToSlot(raw)),
-    );
-    setPanel({ type: "create", prefill: { dia, horaInicio } });
+    if (activeBlock) { setActiveBlock(null); return; }
+    const r = (e.currentTarget as HTMLDivElement).getBoundingClientRect();
+    const raw = HORA_INICIO_GRILLA + ((e.clientY - r.top) / SLOT_PX) * SLOT_MINUTOS;
+    const ini = Math.max(HORA_INICIO_GRILLA, Math.min(HORA_FIN_GRILLA - SLOT_MINUTOS, snapToSlot(raw)));
+    setPanel({ type: "create", prefill: { dia, horaInicio: ini } });
   }
 
-  // ── CRUD handlers ──────────────────────────────────────────────────────────
-
+  // ── CRUD ──────────────────────────────────────────────────────────────────
   async function handleCreate(data: CreateBlockInput) {
-    const result = await createBlock(data);
-    if (!result.error) setPanel(null);
-    return result;
+    const r = await createBlock(data); if (!r.error) setPanel(null); return r;
   }
-
   async function handleUpdate(id: string, data: Partial<ScheduleBlock>) {
-    const result = await updateBlock(id, data);
-    if (!result.error) setPanel(null);
-    return result;
+    const r = await updateBlock(id, data); if (!r.error) setPanel(null); return r;
   }
-
   async function handleDelete(id: string) {
-    setDeletingId(id);
-    await deleteBlock(id);
-    setDeletingId(null);
+    setDeletingId(id); await deleteBlock(id); setDeletingId(null);
     setActiveBlock(null);
     if (panel?.type === "edit" && panel.block.id === id) setPanel(null);
   }
 
   // ── Auth guard ─────────────────────────────────────────────────────────────
-
   if (sessionStatus === "unauthenticated") {
     return (
-      <div className="rounded-2xl border border-zinc-700 bg-zinc-800/50 p-8 text-center">
-        <p className="text-sm text-zinc-400">Iniciá sesión para usar el planificador de horarios.</p>
+      <div style={{ ...SURFACE, borderRadius: 16, padding: 32, textAlign: "center" }}>
+        <p style={{ color: TEXT_SEC, fontSize: 14 }}>Iniciá sesión para usar el planificador de horarios.</p>
       </div>
     );
   }
 
   // ── Render ─────────────────────────────────────────────────────────────────
-
   return (
-    <div className="grid gap-4">
+    <div style={{ display: "grid", gap: 16 }}>
+
       {/* Toolbar */}
-      <div className="flex flex-wrap items-center gap-2">
-        <h2 className="flex-1 text-base font-semibold text-zinc-200">Planificador de cuatrimestre</h2>
-        <p className="text-xs text-zinc-500">
+      <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 12 }}>
+        <h2 style={{ flex: 1, color: TEXT, fontSize: 16, fontWeight: 700, margin: 0 }}>
+          Planificador de cuatrimestre
+        </h2>
+        <span style={{ color: TEXT_SEC, fontSize: 12 }}>
           Clic en celda para agregar · clic en bloque para opciones · arrastrá para mover
-        </p>
-        <button
-          type="button"
-          onClick={() => { setActiveBlock(null); setPanel({ type: "create" }); }}
-          className="rounded-lg bg-violet-600 px-3 py-1.5 text-sm font-semibold text-white transition hover:bg-violet-500 active:scale-95"
-        >
+        </span>
+        <button type="button" style={BTN_VIO}
+          onClick={() => { setActiveBlock(null); setPanel({ type: "create" }); }}>
           + Agregar
         </button>
       </div>
 
+      {/* Error */}
       {error && (
-        <p className="rounded-lg border border-red-500/40 bg-red-950/50 px-3 py-2 text-sm text-red-300">
+        <div style={{ background: "rgba(220,38,38,0.12)", border: "1px solid rgba(239,68,68,0.35)", borderRadius: 10, padding: "10px 14px", color: "#fca5a5", fontSize: 13 }}>
           {error}
-        </p>
+        </div>
       )}
 
       {/* Grid */}
-      <div className="overflow-x-auto rounded-2xl border border-zinc-700 bg-zinc-900">
+      <div style={{ overflowX: "auto", ...SURFACE, borderRadius: 16 }}>
         {isLoading ? (
-          <div className="flex h-40 items-center justify-center">
-            <span className="text-sm text-zinc-500">Cargando horario...</span>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: 160 }}>
+            <span style={{ color: TEXT_SEC, fontSize: 14 }}>Cargando horario...</span>
           </div>
         ) : (
           <div
             ref={gridRef}
-            className="flex min-w-[640px] select-none"
-            style={{ cursor: draggingId ? "grabbing" : "default" }}
+            style={{ display: "flex", minWidth: 640, userSelect: "none", cursor: draggingId ? "grabbing" : "default" }}
             onPointerMove={onGridPointerMove}
             onPointerUp={(e) => void onGridPointerUp(e)}
             onPointerCancel={onGridPointerCancel}
           >
             {/* Time axis */}
-            <div className="w-14 flex-shrink-0" style={{ height: GRID_HEIGHT + SLOT_PX }}>
+            <div style={{ width: 52, flexShrink: 0, height: GRID_HEIGHT + SLOT_PX }}>
               <div style={{ height: SLOT_PX }} />
-              <div className="relative" style={{ height: GRID_HEIGHT }}>
+              <div style={{ position: "relative", height: GRID_HEIGHT }}>
                 {TIME_LABELS.map((label, i) => (
-                  <div
-                    key={label}
-                    className="absolute right-2 text-[10px] text-zinc-500"
-                    style={{ top: i * SLOT_PX - 6 }}
-                  >
+                  <div key={label} style={{ position: "absolute", right: 8, top: i * SLOT_PX - 7, fontSize: 10, color: TEXT_SEC, opacity: 0.7 }}>
                     {label}
                   </div>
                 ))}
@@ -344,47 +230,37 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
 
             {/* Day columns */}
             {DIAS_SEMANA.map((diaLabel, diaIdx) => {
-              const diaNum = diaIdx + 1;
+              const diaNum    = diaIdx + 1;
               const diaBlocks = blocks.filter((b) => b.dia === diaNum);
-              const diaGhost = ghost?.dia === diaNum ? ghost : null;
+              const diaGhost  = ghost?.dia === diaNum ? ghost : null;
 
               return (
-                <div key={diaLabel} className="flex flex-1 flex-col border-l border-zinc-700/60">
+                <div key={diaLabel} style={{ display: "flex", flex: 1, flexDirection: "column", borderLeft: COL_LINE }}>
                   {/* Header */}
-                  <div
-                    className="flex items-center justify-center border-b border-zinc-700/60 text-xs font-semibold uppercase tracking-wide text-zinc-400"
-                    style={{ height: SLOT_PX }}
-                  >
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: SLOT_PX, borderBottom: COL_LINE, fontSize: 11, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: TEXT_SEC }}>
                     {diaLabel}
                   </div>
 
                   {/* Slot area */}
                   <div
                     ref={(el) => { columnRefs.current[diaIdx] = el; }}
-                    className="relative"
-                    style={{
-                      height: GRID_HEIGHT,
-                      cursor: draggingId ? "grabbing" : "crosshair",
-                    }}
-                    onClick={(e) => onSlotAreaClick(e, diaNum)}
+                    style={{ position: "relative", height: GRID_HEIGHT, cursor: draggingId ? "grabbing" : "crosshair" }}
+                    onClick={(e) => onSlotClick(e, diaNum)}
                   >
                     {/* Slot lines */}
                     {Array.from({ length: TOTAL_SLOTS }).map((_, i) => (
-                      <div
-                        key={i}
-                        className="absolute w-full border-b border-zinc-800/60"
-                        style={{ top: i * SLOT_PX, height: SLOT_PX }}
-                      />
+                      <div key={i} style={{ position: "absolute", width: "100%", top: i * SLOT_PX, height: SLOT_PX, borderBottom: SLOT_LINE }} />
                     ))}
 
-                    {/* Drop ghost */}
+                    {/* Ghost */}
                     {diaGhost && (
                       <div
-                        className="pointer-events-none absolute left-0.5 right-0.5 rounded-md"
+                        className="pointer-events-none"
                         style={{
+                          position: "absolute", left: 2, right: 2, borderRadius: 6,
                           top: blockTopPx(diaGhost.horaInicio) + 1,
                           height: blockHeightPx(diaGhost.horaInicio, diaGhost.horaFin) - 2,
-                          backgroundColor: diaGhost.hasConflict ? "#dc262625" : `${diaGhost.color}25`,
+                          background: diaGhost.hasConflict ? "rgba(220,38,38,0.15)" : `${diaGhost.color}20`,
                           border: `2px dashed ${diaGhost.hasConflict ? "#ef4444" : diaGhost.color}`,
                           zIndex: 10,
                         }}
@@ -393,23 +269,22 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
 
                     {/* Blocks */}
                     {diaBlocks.map((block) => {
-                      const top = blockTopPx(block.horaInicio);
-                      const height = blockHeightPx(block.horaInicio, block.horaFin);
-                      const color = block.color ?? "#9d4edd";
+                      const top       = blockTopPx(block.horaInicio);
+                      const height    = blockHeightPx(block.horaInicio, block.horaFin);
+                      const color     = block.color ?? "#9d4edd";
                       const isDragging = draggingId === block.id;
                       const isSelected = activeBlock?.id === block.id;
-                      const isEditing = panel?.type === "edit" && panel.block.id === block.id;
+                      const isEditing  = panel?.type === "edit" && panel.block.id === block.id;
 
                       return (
                         <div
                           key={block.id}
-                          className="absolute left-0.5 right-0.5 overflow-hidden rounded-md transition-opacity"
                           style={{
-                            top: top + 1,
-                            height: height - 2,
-                            backgroundColor: color + "33",
+                            position: "absolute", left: 2, right: 2, overflow: "hidden", borderRadius: 6,
+                            top: top + 1, height: height - 2,
+                            background: `${color}28`,
                             border: `1.5px solid ${color}`,
-                            outline: isEditing ? `2px solid ${color}` : isSelected ? `2px solid white` : undefined,
+                            outline: isEditing ? `2px solid ${color}` : isSelected ? "2px solid rgba(255,255,255,0.5)" : undefined,
                             opacity: isDragging ? 0.25 : 1,
                             cursor: isDragging ? "grabbing" : "pointer",
                             zIndex: isSelected ? 15 : isDragging ? 1 : 5,
@@ -418,74 +293,54 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
                           onPointerDown={(e) => onBlockPointerDown(e, block)}
                           onClick={(e) => {
                             e.stopPropagation();
-                            if (suppressNextClickRef.current) return;
-                            // Toggle overlay; if same block, toggle confirming off
-                            setActiveBlock((prev) =>
-                              prev?.id === block.id ? null : { id: block.id, confirming: false },
-                            );
+                            if (suppressClickRef.current) return;
+                            setActiveBlock((p) => p?.id === block.id ? null : { id: block.id, confirming: false });
                           }}
                         >
-                          {/* Block content */}
-                          <div className="px-1.5 py-1" style={{ opacity: isSelected ? 0.3 : 1 }}>
-                            <p className="truncate text-[11px] font-semibold leading-tight" style={{ color }}>
+                          {/* Content */}
+                          <div style={{ padding: "3px 6px", opacity: isSelected ? 0.2 : 1 }}>
+                            <p style={{ margin: 0, color, fontSize: 11, fontWeight: 700, lineHeight: 1.3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                               {block.materiaNombre}
                             </p>
                             {height >= 40 && (
-                              <p className="text-[10px] leading-tight text-zinc-400">
+                              <p style={{ margin: 0, color: TEXT_SEC, fontSize: 10, lineHeight: 1.3 }}>
                                 {minutesToTimeString(block.horaInicio)}–{minutesToTimeString(block.horaFin)}
                                 {block.comision ? ` · ${block.comision}` : ""}
                               </p>
                             )}
                             {height >= 60 && block.notas && (
-                              <p className="mt-0.5 truncate text-[10px] text-zinc-500">{block.notas}</p>
+                              <p style={{ margin: "2px 0 0", color: TEXT_SEC, fontSize: 10, opacity: 0.7, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                                {block.notas}
+                              </p>
                             )}
                           </div>
 
-                          {/* Inline action overlay */}
+                          {/* Action overlay */}
                           {isSelected && (
                             <div
-                              className="absolute inset-0 flex items-center justify-center gap-1 rounded-md px-1"
-                              style={{ backgroundColor: "rgba(9,9,11,0.88)" }}
+                              style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", gap: 6, borderRadius: 6, padding: "0 4px", background: "rgba(10,8,20,0.92)" }}
                               onClick={(e) => e.stopPropagation()}
                             >
                               {!activeBlock!.confirming ? (
                                 <>
-                                  <button
-                                    type="button"
-                                    onClick={() => {
-                                      setPanel({ type: "edit", block });
-                                      setActiveBlock(null);
-                                    }}
-                                    className="rounded px-2 py-0.5 text-[10px] font-semibold text-zinc-200 ring-1 ring-zinc-600 transition hover:bg-zinc-700 active:scale-95"
-                                  >
+                                  <button type="button" style={BTN_SM}
+                                    onClick={() => { setPanel({ type: "edit", block }); setActiveBlock(null); }}>
                                     Editar
                                   </button>
-                                  <button
-                                    type="button"
-                                    onClick={() => setActiveBlock({ id: block.id, confirming: true })}
-                                    className="rounded px-2 py-0.5 text-[10px] font-semibold text-red-400 ring-1 ring-red-500/50 transition hover:bg-red-950/60 active:scale-95"
-                                  >
+                                  <button type="button"
+                                    style={{ ...BTN_SM, color: "#fca5a5", borderColor: "rgba(239,68,68,0.4)" }}
+                                    onClick={() => setActiveBlock({ id: block.id, confirming: true })}>
                                     Eliminar
                                   </button>
                                 </>
                               ) : (
                                 <>
-                                  <span className="text-[10px] text-zinc-400">¿Seguro?</span>
-                                  <button
-                                    type="button"
-                                    disabled={deletingId === block.id}
-                                    onClick={() => void handleDelete(block.id)}
-                                    className="rounded bg-red-600 px-2 py-0.5 text-[10px] font-semibold text-white transition hover:bg-red-500 active:scale-95 disabled:opacity-50"
-                                  >
+                                  <span style={{ color: TEXT_SEC, fontSize: 10 }}>¿Seguro?</span>
+                                  <button type="button" style={BTN_RED} disabled={deletingId === block.id}
+                                    onClick={() => void handleDelete(block.id)}>
                                     {deletingId === block.id ? "..." : "Sí"}
                                   </button>
-                                  <button
-                                    type="button"
-                                    onClick={() => setActiveBlock(null)}
-                                    className="rounded px-2 py-0.5 text-[10px] font-semibold text-zinc-300 ring-1 ring-zinc-600 transition hover:bg-zinc-700 active:scale-95"
-                                  >
-                                    No
-                                  </button>
+                                  <button type="button" style={BTN_SM} onClick={() => setActiveBlock(null)}>No</button>
                                 </>
                               )}
                             </div>
@@ -501,36 +356,23 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
         )}
       </div>
 
-      {/* Side panel — below the grid so it doesn't push it around */}
+      {/* Side panel */}
       {panel && (
-        <div
-          ref={panelRef}
-          className="rounded-2xl border border-zinc-700 bg-zinc-800/80 p-4"
-          style={{ animation: "dropdownIn 140ms ease-out" }}
-        >
-          <div className="mb-3 flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-zinc-200">
+        <div ref={panelRef} style={{ ...SURFACE, borderRadius: 16, padding: 20, animation: "dropdownIn 140ms ease-out" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
+            <h3 style={{ margin: 0, color: TEXT, fontSize: 14, fontWeight: 700 }}>
               {panel.type === "create" ? "Nuevo bloque" : "Editar bloque"}
             </h3>
-            <button
-              type="button"
-              onClick={() => setPanel(null)}
-              className="rounded p-1 text-zinc-500 transition hover:bg-zinc-700 hover:text-zinc-200"
-              aria-label="Cerrar"
-            >
-              ✕
-            </button>
+            <button type="button" style={{ ...BTN, padding: "4px 10px", fontSize: 12 }} onClick={() => setPanel(null)} aria-label="Cerrar">✕</button>
           </div>
           <ScheduleBlockForm
             block={panel.type === "edit" ? panel.block : undefined}
             defaultDia={panel.type === "create" ? panel.prefill?.dia : undefined}
             defaultHoraInicio={panel.type === "create" ? panel.prefill?.horaInicio : undefined}
             materias={materiaOptions}
-            onSave={
-              panel.type === "create"
-                ? (d) => handleCreate(d as CreateBlockInput)
-                : (d) => handleUpdate(panel.block.id, d as Partial<ScheduleBlock>)
-            }
+            onSave={panel.type === "create"
+              ? (d) => handleCreate(d as CreateBlockInput)
+              : (d) => handleUpdate(panel.block.id, d as Partial<ScheduleBlock>)}
             onCancel={() => setPanel(null)}
           />
         </div>
@@ -538,41 +380,28 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
 
       {/* Block list */}
       {blocks.length > 0 && (
-        <div className="grid gap-2">
-          <p className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
+        <div style={{ display: "grid", gap: 8 }}>
+          <p style={{ margin: 0, color: TEXT_SEC, fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em" }}>
             {blocks.length} {blocks.length === 1 ? "bloque" : "bloques"}
           </p>
           {blocks.map((block) => (
-            <div
-              key={block.id}
-              className="flex items-center justify-between gap-3 rounded-xl border border-zinc-700/60 bg-zinc-800/50 px-3 py-2"
-            >
-              <div className="flex min-w-0 items-center gap-2">
-                <span
-                  className="h-2.5 w-2.5 flex-shrink-0 rounded-full"
-                  style={{ backgroundColor: block.color ?? "#9d4edd" }}
-                />
-                <span className="truncate text-sm font-medium text-zinc-200">{block.materiaNombre}</span>
-                <span className="flex-shrink-0 text-xs text-zinc-500">
-                  {DIAS_SEMANA[block.dia - 1]}{" "}
-                  {minutesToTimeString(block.horaInicio)}–{minutesToTimeString(block.horaFin)}
-                  {block.comision ? ` · ${block.comision}` : ""}
-                </span>
-              </div>
-              <div className="flex flex-shrink-0 gap-1">
-                <button
-                  type="button"
-                  onClick={() => { setActiveBlock(null); setPanel({ type: "edit", block }); }}
-                  className="rounded px-2 py-1 text-xs text-zinc-400 transition hover:bg-zinc-700 hover:text-zinc-200"
-                >
+            <div key={block.id} style={{ ...SURFACE, borderRadius: 12, padding: "10px 14px", display: "flex", alignItems: "center", gap: 12 }}>
+              <span style={{ width: 10, height: 10, borderRadius: "50%", flexShrink: 0, background: block.color ?? "#9d4edd" }} />
+              <span style={{ flex: 1, color: TEXT, fontSize: 13, fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                {block.materiaNombre}
+              </span>
+              <span style={{ color: TEXT_SEC, fontSize: 12, flexShrink: 0 }}>
+                {DIAS_SEMANA[block.dia - 1]} {minutesToTimeString(block.horaInicio)}–{minutesToTimeString(block.horaFin)}
+                {block.comision ? ` · ${block.comision}` : ""}
+              </span>
+              <div style={{ display: "flex", gap: 4, flexShrink: 0 }}>
+                <button type="button" style={{ ...BTN, padding: "4px 10px", fontSize: 12 }}
+                  onClick={() => { setActiveBlock(null); setPanel({ type: "edit", block }); }}>
                   Editar
                 </button>
-                <button
-                  type="button"
-                  disabled={deletingId === block.id}
-                  onClick={() => void handleDelete(block.id)}
-                  className="rounded px-2 py-1 text-xs text-zinc-400 transition hover:bg-red-900/40 hover:text-red-400 disabled:opacity-50"
-                >
+                <button type="button" disabled={deletingId === block.id}
+                  style={{ ...BTN, padding: "4px 10px", fontSize: 12, color: "#fca5a5", borderColor: "rgba(239,68,68,0.35)", opacity: deletingId === block.id ? 0.5 : 1 }}
+                  onClick={() => void handleDelete(block.id)}>
                   {deletingId === block.id ? "..." : "Eliminar"}
                 </button>
               </div>
@@ -582,7 +411,7 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
       )}
 
       {!isLoading && blocks.length === 0 && !panel && (
-        <p className="text-center text-sm text-zinc-600">
+        <p style={{ textAlign: "center", color: TEXT_SEC, fontSize: 13, opacity: 0.6 }}>
           No hay bloques todavía. Hacé clic en cualquier celda de la grilla para agregar uno.
         </p>
       )}

@@ -7,8 +7,7 @@ import { EstadoMateria } from "@/lib/evaluarCorrelativas";
 import { getMateriaViewModel } from "@/lib/materiaViewModel";
 import { obtenerCorrelativasMateria } from "@/lib/correlativasMateria";
 
-const TEXT         = "#e2d9f3";
-const TITLE_SHADOW = "0 2px 16px #9d4edd88";
+import { TEXT, TITLE_SHADOW } from "@/lib/tokens";
 
 type Props = {
   titulo: string;

@@ -2,10 +2,7 @@
 
 import { normalizarTextoBusqueda } from "@/lib/filtrarMaterias";
 
-const TEXT_SEC = "#a89bc9";
-const TEXT     = "#e2d9f3";
-const SURFACE  = { background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.10)", backdropFilter: "blur(8px)" } as const;
-const PURPLE   = "#9d4edd";
+import { TEXT, TEXT_SEC, SURFACE, ACCENT as PURPLE } from "@/lib/tokens";
 
 type Props = {
   orientaciones: string[];

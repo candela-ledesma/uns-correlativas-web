@@ -3,13 +3,7 @@
 import { useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
-// ── Design tokens ──────────────────────────────────────────────────────────
-const TEXT    = "#e2d9f3";
-const TEXT_SEC = "#a89bc9";
-const SURFACE = { background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.10)", backdropFilter: "blur(8px)" } as const;
-const BTN     = { background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.15)", color: TEXT } as const;
-const INPUT   = { background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.15)", color: TEXT } as const;
-const TITLE_SHADOW = "0 2px 16px #9d4edd88";
+import { TEXT, TEXT_SEC, SURFACE, BTN, INPUT, TITLE_SHADOW } from "@/lib/tokens";
 
 type VersionOption = {
     versionId: string;

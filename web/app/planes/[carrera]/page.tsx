@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BG_GRADIENT, HEADING_FONT } from "@/lib/tokens";
 import { notFound } from "next/navigation";
 import PlanViewer from "@/components/PlanViewer";
 import PlanStatus from "@/components/PlanStatus";
@@ -88,7 +89,7 @@ export async function generateMetadata({
     const { data } = result;
 
     return (
-    <main className="min-h-screen px-6 py-10" style={{ background: "linear-gradient(135deg, #1a1a2e, #16213e, #0f3460)", fontFamily: "Georgia, serif" }}>
+    <main className="min-h-screen px-6 py-10" style={{ background: BG_GRADIENT, fontFamily: HEADING_FONT }}>
         <div className="mx-auto max-w-7xl">
         <div className="mb-6">
             <Link

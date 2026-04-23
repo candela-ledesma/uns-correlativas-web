@@ -13,6 +13,7 @@ import PlanOnboarding from "@/components/PlanOnboarding";
 import KanbanPlan from "@/components/KanbanPlan";
 import WeeklySchedule from "@/components/WeeklySchedule";
 import { usePlanState } from "@/hooks/usePlanState";
+import { TEXT_SEC, GLASS, ACCENT } from "@/lib/tokens";
 import { usePlanStructure } from "@/hooks/usePlanStructure";
 import { getMateriaViewModel } from "@/lib/materiaViewModel";
 import { calcularProgresoPlan } from "@/lib/calcularProgresoPlan";
@@ -535,21 +536,23 @@ export default function PlanViewer({
 
   if (!isHydrated) return null;
 
+  // Estilos de la barra de tabs — extraídos para no ensuciar el JSX
+  const tabBarStyle    = { background: GLASS.base, border: `1px solid ${GLASS.raised}` };
+  const tabActiveStyle = { background: "rgba(157,78,221,0.30)", color: "#e2d9f3", boxShadow: `0 1px 4px ${ACCENT}44` };
+  const tabIdleStyle   = { color: TEXT_SEC };
+  const helpBtnStyle   = { background: GLASS.base, border: `1px solid ${GLASS.strong}`, color: TEXT_SEC };
+
   return (
     <main className="mx-auto max-w-7xl">
       <div className="mb-4 flex items-center justify-between gap-4">
-        <div className="flex p-1 rounded-xl" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.12)" }}>
+        <div className="flex p-1 rounded-xl" style={tabBarStyle}>
           {(["plan", "Plan Vista", "Planificador"] as const).map((vista) => (
             <button
               key={vista}
               type="button"
               onClick={() => setVistaActiva(vista)}
               className="rounded-lg px-4 py-1.5 text-sm font-semibold transition capitalize"
-              style={
-                vistaActiva === vista
-                  ? { background: "rgba(157,78,221,0.30)", color: "#e2d9f3", boxShadow: "0 1px 4px #9d4edd44" }
-                  : { color: "#a89bc9" }
-              }
+              style={vistaActiva === vista ? tabActiveStyle : tabIdleStyle}
             >
               {vista === "plan" ? "Plan" : vista}
             </button>
@@ -560,7 +563,7 @@ export default function PlanViewer({
           type="button"
           onClick={() => setIsOnboardingOpen(true)}
           className="rounded-xl px-3 py-2 text-xs font-semibold uppercase tracking-wide transition"
-          style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.15)", color: "#a89bc9" }}
+          style={helpBtnStyle}
         >
           Ver ayuda rapida
         </button>

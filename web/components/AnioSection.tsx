@@ -7,9 +7,7 @@ import { EstadoMateria } from "@/lib/evaluarCorrelativas";
 import { getMateriaViewModel } from "@/lib/materiaViewModel";
 import { obtenerCorrelativasMateria } from "@/lib/correlativasMateria";
 
-const TEXT         = "#e2d9f3";
-const TEXT_SEC     = "#a89bc9";
-const TITLE_SHADOW = "0 2px 16px #9d4edd88";
+import { TEXT, TEXT_SEC, TITLE_SHADOW } from "@/lib/tokens";
 
 type CuatrimestresMap = Record<string, Materia[]>;
 type PunteroGrupo = { grupoId: string; nombre: string };

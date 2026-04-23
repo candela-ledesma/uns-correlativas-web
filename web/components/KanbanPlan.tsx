@@ -6,17 +6,13 @@ import type { EstadoMateria } from "@/lib/evaluarCorrelativas";
 import { estaHabilitadaParaCursar } from "@/lib/evaluarCorrelativas";
 import { getEstadoKey } from "@/lib/estadoKey";
 
+import { TEXT as TEXT_BASE, TEXT_SEC, TEXT_DET as TEXT_DETAIL, TITLE_SHADOW, BG_GRADIENT, HEADING_FONT as FONT } from "@/lib/tokens";
+
 // ── Design tokens ─────────────────────────────────────────────────────────────
 const PALETTE = [
   "#f9c74f", "#f4a261", "#90be6d", "#43aa8b",
   "#577590", "#9d4edd", "#e76f51", "#4cc9f0", "#f72585",
 ];
-const BG_GRADIENT  = "linear-gradient(135deg, #1a1a2e, #16213e, #0f3460)";
-const FONT         = "Georgia, serif";
-const TEXT_BASE    = "#e2d9f3";
-const TEXT_SEC     = "#a89bc9";
-const TEXT_DETAIL  = "#c3b8e0";
-const TITLE_SHADOW = "0 2px 16px #9d4edd88";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 type Props = {

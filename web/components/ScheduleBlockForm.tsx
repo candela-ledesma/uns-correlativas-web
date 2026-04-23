@@ -9,22 +9,32 @@ import {
   HORA_FIN_GRILLA,
   SLOT_MINUTOS,
 } from "@/lib/scheduleValidation";
+import type { ScheduleBlock, CreateBlockInput, UpdateBlockInput } from "@/hooks/useSchedule";
 
+import { TEXT_SEC, INPUT as INPUT_BASE, BTN as BTN_BASE, BTN_VIOLET } from "@/lib/tokens";
+const INPUT   = { ...INPUT_BASE,  borderRadius: 10, padding: "8px 12px",  fontSize: 14 } as const;
+const BTN     = { ...BTN_BASE,    borderRadius: 10, padding: "10px 16px", fontSize: 14, fontWeight: 600 } as const;
+const BTN_VIO = { ...BTN_VIOLET,  borderRadius: 10, padding: "10px 16px", fontSize: 14, fontWeight: 700 } as const;
+const LABEL   = { display: "block", color: TEXT_SEC, fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 6 } as const;
+const HINT    = { color: TEXT_SEC, fontSize: 11, opacity: 0.7, marginTop: 4, display: "block" } as const;
+
+// ── Time options ───────────────────────────────────────────────────────────
 const OPCIONES_HORA: string[] = [];
 for (let m = HORA_INICIO_GRILLA; m <= HORA_FIN_GRILLA; m += SLOT_MINUTOS) {
   OPCIONES_HORA.push(minutesToTimeString(m));
 }
-import type { ScheduleBlock, CreateBlockInput, UpdateBlockInput } from "@/hooks/useSchedule";
 
+// ── Colors ─────────────────────────────────────────────────────────────────
 const BLOCK_COLORS = [
   { value: "#9d4edd", label: "Violeta" },
-  { value: "#2563eb", label: "Azul" },
-  { value: "#16a34a", label: "Verde" },
+  { value: "#2563eb", label: "Azul"    },
+  { value: "#16a34a", label: "Verde"   },
   { value: "#ea580c", label: "Naranja" },
-  { value: "#dc2626", label: "Rojo" },
-  { value: "#0891b2", label: "Cian" },
+  { value: "#dc2626", label: "Rojo"    },
+  { value: "#0891b2", label: "Cian"    },
 ];
 
+// ── Types ──────────────────────────────────────────────────────────────────
 type Props = {
   block?: ScheduleBlock;
   defaultDia?: number;
@@ -34,32 +44,17 @@ type Props = {
   onCancel: () => void;
 };
 
-const inputCls =
-  "w-full min-w-0 rounded-lg border border-zinc-600 bg-zinc-800 px-3 py-2 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-violet-500";
-const labelCls = "block text-xs font-semibold uppercase tracking-wide text-zinc-400 mb-1";
-
-export default function ScheduleBlockForm({
-  block,
-  defaultDia,
-  defaultHoraInicio,
-  materias,
-  onSave,
-  onCancel,
-}: Props) {
+export default function ScheduleBlockForm({ block, defaultDia, defaultHoraInicio, materias, onSave, onCancel }: Props) {
   const [materiaNombre, setMateriaNombre] = useState(block?.materiaNombre ?? "");
-  const [materiaId, setMateriaId] = useState(block?.materiaId ?? "");
-  const [dia, setDia] = useState(block?.dia ?? defaultDia ?? 1);
-  const [horaInicio, setHoraInicio] = useState(
-    minutesToTimeString(block?.horaInicio ?? defaultHoraInicio ?? HORA_INICIO_GRILLA),
-  );
-  const [horaFin, setHoraFin] = useState(
-    minutesToTimeString(block?.horaFin ?? (defaultHoraInicio ?? HORA_INICIO_GRILLA) + 90),
-  );
-  const [comision, setComision] = useState(block?.comision ?? "");
-  const [notas, setNotas] = useState(block?.notas ?? "");
-  const [color, setColor] = useState(block?.color ?? BLOCK_COLORS[0].value);
-  const [error, setError] = useState<string | null>(null);
-  const [saving, setSaving] = useState(false);
+  const [materiaId,     setMateriaId]     = useState(block?.materiaId ?? "");
+  const [dia,           setDia]           = useState(block?.dia ?? defaultDia ?? 1);
+  const [horaInicio,    setHoraInicio]    = useState(minutesToTimeString(block?.horaInicio ?? defaultHoraInicio ?? HORA_INICIO_GRILLA));
+  const [horaFin,       setHoraFin]       = useState(minutesToTimeString(block?.horaFin ?? (defaultHoraInicio ?? HORA_INICIO_GRILLA) + 90));
+  const [comision,      setComision]      = useState(block?.comision ?? "");
+  const [notas,         setNotas]         = useState(block?.notas ?? "");
+  const [color,         setColor]         = useState(block?.color ?? BLOCK_COLORS[0].value);
+  const [error,         setError]         = useState<string | null>(null);
+  const [saving,        setSaving]        = useState(false);
 
   const nombreRef = useRef<HTMLInputElement>(null);
 
@@ -67,11 +62,11 @@ export default function ScheduleBlockForm({
     e.preventDefault();
     setError(null);
 
-    const horaInicioMin = timeStringToMinutes(horaInicio);
-    const horaFinMin = timeStringToMinutes(horaFin);
+    const ini = timeStringToMinutes(horaInicio);
+    const fin = timeStringToMinutes(horaFin);
 
-    if (horaFinMin <= horaInicioMin) {
-      setError("\"Hasta\" debe ser posterior a \"Desde\"");
+    if (fin <= ini) {
+      setError('"Hasta" debe ser posterior a "Desde"');
       return;
     }
 
@@ -79,46 +74,32 @@ export default function ScheduleBlockForm({
     const result = await onSave({
       materiaNombre: materiaNombre.trim(),
       materiaId: materiaId || null,
-      dia,
-      horaInicio: horaInicioMin,
-      horaFin: horaFinMin,
+      dia, horaInicio: ini, horaFin: fin,
       comision: comision.trim() || null,
       notas: notas.trim() || null,
       color,
     });
     setSaving(false);
-
-    if (result.error) {
-      setError(result.error);
-    }
+    if (result.error) setError(result.error);
   }
 
   return (
-    <form onSubmit={(e) => void handleSubmit(e)} className="grid gap-3">
+    <form onSubmit={(e) => void handleSubmit(e)} style={{ display: "grid", gap: 14 }}>
+
+      {/* Error */}
       {error && (
-        <p role="alert" className="rounded-lg border border-red-500/40 bg-red-950/50 px-3 py-2 text-sm text-red-300">
+        <div role="alert" style={{ background: "rgba(220,38,38,0.12)", border: "1px solid rgba(239,68,68,0.35)", borderRadius: 10, padding: "10px 14px", color: "#fca5a5", fontSize: 13 }}>
           {error}
-        </p>
+        </div>
       )}
 
       {/* Materia */}
       <div>
-        <label className={labelCls}>Materia</label>
+        <label style={LABEL}>Materia</label>
         {materias.length > 0 && (
-          <select
-            value={materiaId}
-            onChange={(e) => {
-              setMateriaId(e.target.value);
-              const found = materias.find((m) => m.id === e.target.value);
-              if (found) setMateriaNombre(found.nombre);
-              else setMateriaNombre("");
-            }}
-            className={inputCls}
-          >
+          <select value={materiaId} onChange={(e) => { setMateriaId(e.target.value); const f = materias.find((m) => m.id === e.target.value); setMateriaNombre(f ? f.nombre : ""); }} style={INPUT}>
             <option value="">— escribir nombre manualmente —</option>
-            {materias.map((m) => (
-              <option key={m.id} value={m.id}>{m.nombre}</option>
-            ))}
+            {materias.map((m) => <option key={m.id} value={m.id}>{m.nombre}</option>)}
           </select>
         )}
         {(!materiaId || materias.length === 0) && (
@@ -127,7 +108,7 @@ export default function ScheduleBlockForm({
             type="text"
             value={materiaNombre}
             onChange={(e) => setMateriaNombre(e.target.value)}
-            className={`${inputCls} ${materias.length > 0 ? "mt-2" : ""}`}
+            style={{ ...INPUT, marginTop: materias.length > 0 ? 8 : 0 }}
             placeholder="Nombre de la materia"
             autoFocus={!block}
             required
@@ -136,78 +117,43 @@ export default function ScheduleBlockForm({
         )}
       </div>
 
-      {/* Día + horario en una fila */}
-      <div className="grid grid-cols-3 gap-2">
-        <div className="min-w-0">
-          <label className={labelCls}>Día</label>
-          <select
-            value={dia}
-            onChange={(e) => setDia(Number(e.target.value))}
-            className={inputCls}
-          >
-            {DIAS_SEMANA.map((nombre, i) => (
-              <option key={nombre} value={i + 1}>{nombre}</option>
-            ))}
+      {/* Día + Desde + Hasta */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10 }}>
+        <div style={{ minWidth: 0 }}>
+          <label style={LABEL}>Día</label>
+          <select value={dia} onChange={(e) => setDia(Number(e.target.value))} style={INPUT}>
+            {DIAS_SEMANA.map((n, i) => <option key={n} value={i + 1}>{n}</option>)}
           </select>
         </div>
-        <div className="min-w-0">
-          <label className={labelCls}>Desde</label>
-          <select
-            value={horaInicio}
-            onChange={(e) => setHoraInicio(e.target.value)}
-            className={inputCls}
-            required
-          >
-            {OPCIONES_HORA.filter((h) => h < "22:00").map((h) => (
-              <option key={h} value={h}>{h}</option>
-            ))}
+        <div style={{ minWidth: 0 }}>
+          <label style={LABEL}>Desde</label>
+          <select value={horaInicio} onChange={(e) => setHoraInicio(e.target.value)} style={INPUT} required>
+            {OPCIONES_HORA.filter((h) => h < "22:00").map((h) => <option key={h} value={h}>{h}</option>)}
           </select>
-          <p className="mt-1 text-[10px] text-zinc-500">Formato 24 hs</p>
+          <span style={HINT}>Formato 24 hs</span>
         </div>
-        <div className="min-w-0">
-          <label className={labelCls}>Hasta</label>
-          <select
-            value={horaFin}
-            onChange={(e) => setHoraFin(e.target.value)}
-            className={inputCls}
-            required
-          >
-            {OPCIONES_HORA.filter((h) => h > "08:00").map((h) => (
-              <option key={h} value={h}>{h}</option>
-            ))}
+        <div style={{ minWidth: 0 }}>
+          <label style={LABEL}>Hasta</label>
+          <select value={horaFin} onChange={(e) => setHoraFin(e.target.value)} style={INPUT} required>
+            {OPCIONES_HORA.filter((h) => h > "08:00").map((h) => <option key={h} value={h}>{h}</option>)}
           </select>
-          <p className="mt-1 text-[10px] text-zinc-500">Formato 24 hs</p>
+          <span style={HINT}>Formato 24 hs</span>
         </div>
       </div>
 
-      {/* Comisión + Color en una fila */}
-      <div className="grid grid-cols-[1fr_auto] gap-3 items-end">
-        <div className="min-w-0">
-          <label className={labelCls}>Comisión (opcional)</label>
-          <input
-            type="text"
-            value={comision}
-            onChange={(e) => setComision(e.target.value)}
-            className={inputCls}
-            placeholder="Ej: A1, Turno tarde"
-            maxLength={100}
-          />
+      {/* Comisión + Color */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: 14, alignItems: "end" }}>
+        <div style={{ minWidth: 0 }}>
+          <label style={LABEL}>Comisión (opcional)</label>
+          <input type="text" value={comision} onChange={(e) => setComision(e.target.value)} style={INPUT} placeholder="Ej: A1, Turno tarde" maxLength={100} />
         </div>
         <div>
-          <label className={labelCls}>Color</label>
-          <div className="flex gap-1.5 pb-0.5">
+          <label style={LABEL}>Color</label>
+          <div style={{ display: "flex", gap: 6, paddingBottom: 2 }}>
             {BLOCK_COLORS.map((c) => (
-              <button
-                key={c.value}
-                type="button"
-                title={c.label}
+              <button key={c.value} type="button" title={c.label}
                 onClick={() => setColor(c.value)}
-                className="h-7 w-7 rounded-full border-2 transition active:scale-90"
-                style={{
-                  backgroundColor: c.value,
-                  borderColor: color === c.value ? "white" : "transparent",
-                  boxShadow: color === c.value ? `0 0 0 1px ${c.value}` : undefined,
-                }}
+                style={{ width: 26, height: 26, borderRadius: "50%", background: c.value, cursor: "pointer", border: color === c.value ? "2.5px solid #fff" : "2.5px solid transparent", boxShadow: color === c.value ? `0 0 0 1.5px ${c.value}` : "none", transition: "box-shadow 0.15s, border-color 0.15s" }}
               />
             ))}
           </div>
@@ -216,33 +162,22 @@ export default function ScheduleBlockForm({
 
       {/* Notas */}
       <div>
-        <label className={labelCls}>Notas (opcional)</label>
-        <textarea
-          value={notas}
-          onChange={(e) => setNotas(e.target.value)}
-          className={`${inputCls} resize-none`}
-          rows={2}
-          maxLength={500}
+        <label style={LABEL}>Notas (opcional)</label>
+        <textarea value={notas} onChange={(e) => setNotas(e.target.value)}
+          style={{ ...INPUT, resize: "none", lineHeight: 1.5 } as React.CSSProperties}
+          rows={2} maxLength={500}
         />
       </div>
 
       {/* Actions */}
-      <div className="flex gap-2 pt-1">
-        <button
-          type="submit"
-          disabled={saving}
-          className="flex-1 rounded-lg bg-violet-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-violet-500 active:scale-95 disabled:cursor-not-allowed disabled:opacity-60"
-        >
+      <div style={{ display: "flex", gap: 8, paddingTop: 4 }}>
+        <button type="submit" disabled={saving}
+          style={{ ...BTN_VIO, flex: 1, opacity: saving ? 0.65 : 1, cursor: saving ? "not-allowed" : "pointer" }}>
           {saving ? "Guardando..." : block ? "Guardar cambios" : "Agregar bloque"}
         </button>
-        <button
-          type="button"
-          onClick={onCancel}
-          className="rounded-lg border border-zinc-600 px-4 py-2 text-sm font-medium text-zinc-300 transition hover:bg-zinc-700 active:scale-95"
-        >
-          Cancelar
-        </button>
+        <button type="button" onClick={onCancel} style={BTN}>Cancelar</button>
       </div>
+
     </form>
   );
 }
