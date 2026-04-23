@@ -300,7 +300,7 @@ export default function KanbanPlan({ materias, agrupadores, idsAgrupadores, esta
   }
 
   return (
-    <div style={{ background: BG_GRADIENT, fontFamily: FONT, borderRadius: 20, padding: 20 }}>
+    <div className="min-w-0" style={{ background: BG_GRADIENT, fontFamily: FONT, borderRadius: 20, padding: 20 }}>
       <style>{`
         @media print {
           @page { size: A4 landscape; margin: 12mm; }
@@ -312,7 +312,7 @@ export default function KanbanPlan({ materias, agrupadores, idsAgrupadores, esta
       `}</style>
 
       {/* Header controls */}
-      <div data-no-print style={{ display: "flex", justifyContent: "flex-end", marginBottom: 12, gap: 8, flexWrap: "wrap" }}>
+      <div data-no-print className="flex flex-wrap justify-end gap-2 mb-3">
         {isModified && (
           <button type="button" onClick={handleReset}
             style={{ ...btnBase, background: "rgba(157,78,221,0.10)", border: "1px dashed rgba(157,78,221,0.35)", color: "#9d4edd" }}>
@@ -340,7 +340,7 @@ export default function KanbanPlan({ materias, agrupadores, idsAgrupadores, esta
           </select>
         )}
 
-        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+        <div className="flex flex-wrap gap-2 items-center">
           <button type="button" onClick={handleAddYear}
             style={{ ...btnBase, background: "rgba(76,201,240,0.10)", border: "1px solid rgba(76,201,240,0.35)", color: "#4cc9f0" }}>
             + Agregar año
@@ -352,7 +352,7 @@ export default function KanbanPlan({ materias, agrupadores, idsAgrupadores, esta
               border: showMateriaStatus ? "1px solid rgba(144,190,109,0.35)" : "1px solid rgba(255,255,255,0.15)",
               color: showMateriaStatus ? "#90be6d" : TEXT_SEC,
             }}>
-            {showMateriaStatus ? "Ocultar estado materia" : "Mostrar estado materia"}
+            {showMateriaStatus ? "Ocultar estado" : "Mostrar estado"}
           </button>
           <button type="button" onClick={() => window.print()}
             style={{ ...btnBase, background: "rgba(249,199,79,0.10)", border: "1px solid rgba(249,199,79,0.35)", color: "#f9c74f" }}>
@@ -364,8 +364,7 @@ export default function KanbanPlan({ materias, agrupadores, idsAgrupadores, esta
       {/* Year groups */}
       <div
         ref={scrollContainerRef}
-        className="kanban-years-container"
-        style={{ display: "flex", gap: 20, overflowX: "auto", paddingBottom: 16, alignItems: "flex-start" }}
+        className="kanban-years-container flex flex-col sm:flex-row sm:overflow-x-auto gap-4 sm:gap-5 pb-4 items-start"
       >
         {years.map((anio, yearIdx) => {
           const color    = PALETTE[yearIdx % PALETTE.length];
@@ -389,10 +388,10 @@ export default function KanbanPlan({ materias, agrupadores, idsAgrupadores, esta
             <div
               key={anio}
               ref={(el) => { yearRefs.current[anio] = el; }}
-              className="kanban-year-card"
+              className="kanban-year-card w-full sm:w-auto sm:flex-shrink-0"
               style={{
                 background: "rgba(255,255,255,0.03)", border: `1px solid ${color}44`,
-                borderRadius: 20, flexShrink: 0, overflow: "hidden",
+                borderRadius: 20, overflow: "hidden",
               }}
             >
               {/* Year header */}
@@ -406,7 +405,7 @@ export default function KanbanPlan({ materias, agrupadores, idsAgrupadores, esta
               </div>
 
               {/* Cuatrimestre sub-columns */}
-              <div style={{ display: "flex", gap: 0 }}>
+              <div className="flex flex-col sm:flex-row">
                 {slots.map((slot, slotIdx) => {
                   const colKey      = `${anio}|${slot}`;
                   const ids         = localOrder[colKey] ?? [];
@@ -436,8 +435,8 @@ export default function KanbanPlan({ materias, agrupadores, idsAgrupadores, esta
                   return (
                     <div
                       key={colKey}
+                      className="flex flex-col sm:w-[220px]"
                       style={{
-                        width: 220, display: "flex", flexDirection: "column",
                         borderLeft: slotIdx > 0 ? `1px solid ${color}22` : undefined,
                         background: isDragOver ? `${color}08` : undefined,
                         boxShadow: isDragOver ? `inset 0 0 0 2px ${color}44` : undefined,

@@ -179,15 +179,15 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
 
   // ── Render ─────────────────────────────────────────────────────────────────
   return (
-    <div style={{ display: "grid", gap: 16 }}>
+    <div className="grid gap-4 min-w-0">
 
       {/* Toolbar */}
-      <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 12 }}>
-        <h2 style={{ flex: 1, color: TEXT, fontSize: 16, fontWeight: 700, margin: 0 }}>
+      <div className="flex flex-wrap items-center gap-2">
+        <h2 className="flex-1 min-w-0" style={{ color: TEXT, fontSize: 16, fontWeight: 700, margin: 0 }}>
           Planificador de cuatrimestre
         </h2>
-        <span style={{ color: TEXT_SEC, fontSize: 12 }}>
-          Clic en celda para agregar · clic en bloque para opciones · arrastrá para mover
+        <span className="hidden sm:inline" style={{ color: TEXT_SEC, fontSize: 12 }}>
+          Clic en celda · arrastrá para mover
         </span>
         <button type="button" style={BTN_VIO}
           onClick={() => { setActiveBlock(null); setPanel({ type: "create" }); }}>
@@ -203,7 +203,7 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
       )}
 
       {/* Grid */}
-      <div style={{ overflowX: "auto", ...SURFACE, borderRadius: 16 }}>
+      <div className="overflow-x-auto rounded-2xl" style={{ ...SURFACE }}>
         {isLoading ? (
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: 160 }}>
             <span style={{ color: TEXT_SEC, fontSize: 14 }}>Cargando horario...</span>
@@ -211,17 +211,17 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
         ) : (
           <div
             ref={gridRef}
-            style={{ display: "flex", minWidth: 640, userSelect: "none", cursor: draggingId ? "grabbing" : "default" }}
+            style={{ display: "flex", minWidth: 440, userSelect: "none", cursor: draggingId ? "grabbing" : "default" }}
             onPointerMove={onGridPointerMove}
             onPointerUp={(e) => void onGridPointerUp(e)}
             onPointerCancel={onGridPointerCancel}
           >
             {/* Time axis */}
-            <div style={{ width: 52, flexShrink: 0, height: GRID_HEIGHT + SLOT_PX }}>
+            <div style={{ width: 40, flexShrink: 0, height: GRID_HEIGHT + SLOT_PX }}>
               <div style={{ height: SLOT_PX }} />
               <div style={{ position: "relative", height: GRID_HEIGHT }}>
                 {TIME_LABELS.map((label, i) => (
-                  <div key={label} style={{ position: "absolute", right: 8, top: i * SLOT_PX - 7, fontSize: 10, color: TEXT_SEC, opacity: 0.7 }}>
+                  <div key={label} style={{ position: "absolute", right: 4, top: i * SLOT_PX - 7, fontSize: 10, color: TEXT_SEC, opacity: 0.7 }}>
                     {label}
                   </div>
                 ))}
@@ -385,16 +385,16 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
             {blocks.length} {blocks.length === 1 ? "bloque" : "bloques"}
           </p>
           {blocks.map((block) => (
-            <div key={block.id} style={{ ...SURFACE, borderRadius: 12, padding: "10px 14px", display: "flex", alignItems: "center", gap: 12 }}>
-              <span style={{ width: 10, height: 10, borderRadius: "50%", flexShrink: 0, background: block.color ?? "#9d4edd" }} />
-              <span style={{ flex: 1, color: TEXT, fontSize: 13, fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+            <div key={block.id} className="flex flex-wrap items-center gap-x-3 gap-y-1.5 rounded-xl px-3.5 py-2.5" style={{ ...SURFACE }}>
+              <span className="shrink-0" style={{ width: 10, height: 10, borderRadius: "50%", background: block.color ?? "#9d4edd" }} />
+              <span className="flex-1 min-w-24" style={{ color: TEXT, fontSize: 13, fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                 {block.materiaNombre}
               </span>
-              <span style={{ color: TEXT_SEC, fontSize: 12, flexShrink: 0 }}>
+              <span className="shrink-0" style={{ color: TEXT_SEC, fontSize: 12 }}>
                 {DIAS_SEMANA[block.dia - 1]} {minutesToTimeString(block.horaInicio)}–{minutesToTimeString(block.horaFin)}
                 {block.comision ? ` · ${block.comision}` : ""}
               </span>
-              <div style={{ display: "flex", gap: 4, flexShrink: 0 }}>
+              <div className="flex gap-1 shrink-0 ml-auto">
                 <button type="button" style={{ ...BTN, padding: "4px 10px", fontSize: 12 }}
                   onClick={() => { setActiveBlock(null); setPanel({ type: "edit", block }); }}>
                   Editar

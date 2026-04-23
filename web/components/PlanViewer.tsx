@@ -544,14 +544,14 @@ export default function PlanViewer({
 
   return (
     <main className="mx-auto max-w-7xl">
-      <div className="mb-4 flex items-center justify-between gap-4">
+      <div className="mb-4 flex flex-wrap items-center gap-2">
         <div className="flex p-1 rounded-xl" style={tabBarStyle}>
           {(["plan", "Plan Vista", "Planificador"] as const).map((vista) => (
             <button
               key={vista}
               type="button"
               onClick={() => setVistaActiva(vista)}
-              className="rounded-lg px-4 py-1.5 text-sm font-semibold transition capitalize"
+              className="rounded-lg px-3 sm:px-4 py-1 sm:py-1.5 text-xs sm:text-sm font-semibold transition capitalize"
               style={vistaActiva === vista ? tabActiveStyle : tabIdleStyle}
             >
               {vista === "plan" ? "Plan" : vista}
@@ -562,7 +562,7 @@ export default function PlanViewer({
         <button
           type="button"
           onClick={() => setIsOnboardingOpen(true)}
-          className="rounded-xl px-3 py-2 text-xs font-semibold uppercase tracking-wide transition"
+          className="rounded-xl px-3 py-2 text-xs font-semibold uppercase tracking-wide transition ml-auto"
           style={helpBtnStyle}
         >
           Ver ayuda rapida

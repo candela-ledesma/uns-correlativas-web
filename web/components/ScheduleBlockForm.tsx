@@ -118,7 +118,7 @@ export default function ScheduleBlockForm({ block, defaultDia, defaultHoraInicio
       </div>
 
       {/* Día + Desde + Hasta */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10 }}>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
         <div style={{ minWidth: 0 }}>
           <label style={LABEL}>Día</label>
           <select value={dia} onChange={(e) => setDia(Number(e.target.value))} style={INPUT}>
