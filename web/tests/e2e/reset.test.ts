@@ -13,6 +13,7 @@ test("reset limpia los estados", async ({ page }) => {
   await expect(materia).toHaveAttribute("data-estado", "aprobada");
 
   await resetBtn.click();
+  await page.getByTestId("reset-confirm-btn").click();
 
   await expect(page.getByTestId("materia-8118")).toHaveAttribute(
     "data-estado",

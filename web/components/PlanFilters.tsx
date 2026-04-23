@@ -26,12 +26,10 @@ export default function PlanFilters({
     onChange({ ...filtros, [campo]: valor });
   }
 
-  const cols = orientaciones.length > 0 ? 5 : 4;
-
   return (
     <section style={{ ...SURFACE, borderRadius: 16, padding: 16, marginBottom: 32 }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
-        <div style={{ color: TEXT_SEC, fontSize: 13, fontWeight: 600 }}>Filtros</div>
+        <span style={{ color: TEXT_SEC, fontSize: 13, fontWeight: 600 }}>Filtros</span>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           {onReset && (
             <button
@@ -39,7 +37,7 @@ export default function PlanFilters({
               data-testid="reset-filtros-btn"
               onClick={onReset}
               disabled={!canReset}
-              style={{ ...BTN, opacity: canReset ? 1 : 0.4, cursor: canReset ? "pointer" : "not-allowed" }}
+              style={{ ...BTN, opacity: canReset ? 1 : 0.3, cursor: canReset ? "pointer" : "not-allowed" }}
             >
               Restaurar filtros
             </button>
@@ -49,15 +47,18 @@ export default function PlanFilters({
             data-testid="toggle-filtros-btn"
             aria-expanded={mostrarFiltros}
             onClick={() => setMostrarFiltros((p) => !p)}
-            style={BTN}
+            style={{ ...BTN, display: "inline-flex", alignItems: "center", gap: 6 }}
           >
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style={{ flexShrink: 0 }}>
+              <path d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z"/>
+            </svg>
             {mostrarFiltros ? "Ocultar filtros" : "Mostrar filtros"}
           </button>
         </div>
       </div>
 
       {mostrarFiltros && (
-        <div style={{ marginTop: 16, display: "grid", gap: 16, gridTemplateColumns: `repeat(${cols}, 1fr)` }}>
+        <div style={{ marginTop: 16, display: "grid", gap: 16, gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))" }}>
           <label style={{ display: "flex", flexDirection: "column", gap: 6, fontSize: 13, color: TEXT_SEC }}>
             <span>Código o nombre</span>
             <input

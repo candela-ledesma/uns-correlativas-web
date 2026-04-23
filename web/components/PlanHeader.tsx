@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
-import { TEXT, TEXT_SEC, SURFACE, BTN, INPUT, TITLE_SHADOW } from "@/lib/tokens";
+import { TEXT, TEXT_SEC, SURFACE, BTN, BTN_RED as BTN_RED_BASE, INPUT, TITLE_SHADOW } from "@/lib/tokens";
+const BTN_RED = { ...BTN_RED_BASE, borderRadius: 10, padding: "10px 20px", fontWeight: 700, cursor: "pointer" } as const;
 
 type VersionOption = {
     versionId: string;
@@ -64,7 +65,8 @@ export default function PlanHeader({
     titulo, subtitulo, aprobadas, cursadas, disponibles, total,
     onReset, syncStatus, versionSelector,
 }: Props) {
-    const [mostrarProgreso, setMostrarProgreso] = useState(false);
+    const [mostrarProgreso,  setMostrarProgreso]  = useState(false);
+    const [confirmingReset,  setConfirmingReset]  = useState(false);
     const pathname = usePathname();
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -75,6 +77,13 @@ export default function PlanHeader({
     const availableVisible = visibleVersionOptions.filter((o) => o.disponible !== false);
     const showVersionSelector = Boolean(versionSelector && availableVisible.length > 1);
     const porcentaje = total > 0 ? Math.round((aprobadas / total) * 100) : 0;
+
+    useEffect(() => {
+        if (!confirmingReset) return;
+        const handler = (e: KeyboardEvent) => { if (e.key === "Escape") setConfirmingReset(false); };
+        document.addEventListener("keydown", handler);
+        return () => document.removeEventListener("keydown", handler);
+    }, [confirmingReset]);
 
     function updateVersion(versionId: string) {
         if (!versionSelector || versionId === versionSelector.selectedVersionId) return;
@@ -129,7 +138,7 @@ export default function PlanHeader({
                         <button
                             type="button"
                             data-testid="reset-btn"
-                            onClick={onReset}
+                            onClick={() => setConfirmingReset(true)}
                             style={{ ...BTN, borderRadius: 12, padding: "10px 16px", fontWeight: 700, cursor: "pointer" }}
                         >
                             Reiniciar progreso
@@ -168,6 +177,66 @@ export default function PlanHeader({
                         <StatCard label="Aprobadas" value={aprobadas} />
                         <StatCard label="Cursadas"  value={cursadas}  />
                         <StatCard label="Disponibles" value={disponibles} />
+                    </div>
+                </div>
+            )}
+
+            {/* Reset confirmation modal */}
+            {confirmingReset && onReset && (
+                <div
+                    role="dialog"
+                    aria-modal="true"
+                    aria-labelledby="reset-modal-title"
+                    style={{
+                        position: "fixed", inset: 0, zIndex: 1000,
+                        background: "rgba(0,0,0,0.55)",
+                        backdropFilter: "blur(4px)",
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        padding: 24,
+                    }}
+                    onClick={() => setConfirmingReset(false)}
+                >
+                    <div
+                        style={{
+                            background: "rgba(18,12,36,0.97)",
+                            border: "1px solid rgba(255,255,255,0.12)",
+                            borderRadius: 20,
+                            padding: "28px 28px 24px",
+                            maxWidth: 400,
+                            width: "100%",
+                            backdropFilter: "blur(24px)",
+                            boxShadow: "0 24px 64px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04)",
+                            display: "grid",
+                            gap: 20,
+                        }}
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div>
+                            <h2 id="reset-modal-title" style={{ color: TEXT, fontSize: 17, fontWeight: 800, margin: "0 0 10px" }}>
+                                Reiniciar progreso
+                            </h2>
+                            <p style={{ color: TEXT_SEC, fontSize: 14, lineHeight: 1.6, margin: 0 }}>
+                                ¿Seguro que querés reiniciar tu progreso? Esta acción no se puede deshacer.
+                            </p>
+                        </div>
+                        <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
+                            <button
+                                type="button"
+                                autoFocus
+                                onClick={() => setConfirmingReset(false)}
+                                style={{ ...BTN, borderRadius: 10, padding: "10px 18px", cursor: "pointer" }}
+                            >
+                                Cancelar
+                            </button>
+                            <button
+                                type="button"
+                                data-testid="reset-confirm-btn"
+                                onClick={() => { setConfirmingReset(false); onReset(); }}
+                                style={BTN_RED}
+                            >
+                                Sí, reiniciar
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}
