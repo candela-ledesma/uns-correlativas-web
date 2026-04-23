@@ -7,6 +7,7 @@ import { prisma } from "@/lib/prisma";
 import { createAuditEvent } from "@/lib/audit";
 import { isRole } from "@/lib/authz";
 import { Role } from "@/lib/roles";
+import { getAuthProviderFlags } from "@/lib/authProviders";
 
 if (!process.env.NEXTAUTH_URL && process.env.AUTH_URL) {
   process.env.NEXTAUTH_URL = process.env.AUTH_URL;
@@ -16,19 +17,11 @@ if (!process.env.NEXTAUTH_SECRET && process.env.AUTH_SECRET) {
   process.env.NEXTAUTH_SECRET = process.env.AUTH_SECRET;
 }
 
-const isProduction = process.env.NODE_ENV === "production";
-
-const allowDevLogin =
-  process.env.AUTH_ENABLE_DEV_LOGIN === "true" ||
-  (!isProduction && process.env.AUTH_ENABLE_DEV_LOGIN !== "false");
+const { hasGoogleProvider, allowDevLogin, isProduction } = getAuthProviderFlags();
 
 const allowDevRoleOverride =
   process.env.AUTH_ALLOW_DEV_ROLE_OVERRIDE === "true" ||
   (!isProduction && process.env.AUTH_ALLOW_DEV_ROLE_OVERRIDE !== "false");
-
-const hasGoogleProvider =
-  Boolean(process.env.AUTH_GOOGLE_CLIENT_ID) &&
-  Boolean(process.env.AUTH_GOOGLE_CLIENT_SECRET);
 
 const devLoginAllowlist = new Set(
   (process.env.AUTH_DEV_LOGIN_EMAIL_ALLOWLIST ?? "")

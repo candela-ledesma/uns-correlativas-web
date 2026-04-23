@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useMemo, useState } from "react";
+import Link from "next/link";
 import { signIn } from "next-auth/react";
 
 type Props = {
@@ -27,6 +28,8 @@ export default function LoginActions({
     process.env.NEXT_PUBLIC_ALLOW_DEV_ROLE_OVERRIDE === "true" ||
     (!isProduction && process.env.NEXT_PUBLIC_ALLOW_DEV_ROLE_OVERRIDE !== "false");
 
+  const noProviders = !showGoogleLogin && !showDevLogin;
+
   const safeCallback = useMemo(() => {
     if (!callbackUrl.startsWith("/")) return "/perfil";
     return callbackUrl;
@@ -37,7 +40,6 @@ export default function LoginActions({
     setError(null);
     try {
       await signIn("google", { callbackUrl: safeCallback });
-      // No llega aquí en el flujo normal: Google redirige de vuelta a NextAuth
     } catch {
       setError("No se pudo conectar con Google. Verificá tu conexión e intentá de nuevo.");
       setLoading(false);
@@ -64,6 +66,19 @@ export default function LoginActions({
     }
   }
 
+  // En el dropdown compacto sin providers, mostrar CTA directo a /login
+  // (donde el server component detecta correctamente qué providers hay)
+  if (noProviders && compact) {
+    return (
+      <Link
+        href={`/login?next=${encodeURIComponent(safeCallback)}`}
+        className="flex w-full items-center justify-center rounded-md border border-zinc-300 bg-white px-4 py-2.5 text-sm font-medium text-zinc-800 transition hover:bg-zinc-50"
+      >
+        Iniciar sesión →
+      </Link>
+    );
+  }
+
   return (
     <div
       className={
@@ -73,7 +88,7 @@ export default function LoginActions({
       }
     >
       {error && (
-        <p role="alert" className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+        <p role="alert" aria-live="polite" className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
           {error}
         </p>
       )}
@@ -117,7 +132,7 @@ export default function LoginActions({
             data-testid="dev-login-email"
             type="email"
             value={email}
-            onChange={(event) => setEmail(event.target.value)}
+            onChange={(e) => setEmail(e.target.value)}
             className="rounded-md border border-zinc-300 px-3 py-2 text-sm"
             placeholder="usuario@uns.local"
             required
@@ -126,7 +141,7 @@ export default function LoginActions({
             <select
               data-testid="dev-login-role"
               value={role}
-              onChange={(event) => setRole(event.target.value)}
+              onChange={(e) => setRole(e.target.value)}
               className="rounded-md border border-zinc-300 px-3 py-2 text-sm"
             >
               <option value="USER">USER</option>
@@ -147,9 +162,12 @@ export default function LoginActions({
         </form>
       )}
 
-      {!showDevLogin && !showGoogleLogin && (
-        <p className="text-sm text-zinc-600">
-          No hay proveedores de autenticacion habilitados en este entorno.
+      {noProviders && !compact && (
+        <p className="text-sm text-zinc-500">
+          No hay proveedores configurados en este entorno.{" "}
+          <Link href="/login" className="font-medium text-zinc-800 underline underline-offset-2">
+            Ir a inicio de sesión
+          </Link>
         </p>
       )}
     </div>

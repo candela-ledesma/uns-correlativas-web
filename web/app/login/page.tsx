@@ -1,4 +1,5 @@
 import LoginActions from "@/components/LoginActions";
+import { getAuthProviderFlags } from "@/lib/authProviders";
 
 const AUTH_ERROR_MESSAGES: Record<string, string> = {
   OAuthSignin: "Error al iniciar el proceso con Google. Intentá de nuevo.",
@@ -23,13 +24,7 @@ export default async function LoginPage({
     ? (AUTH_ERROR_MESSAGES[errorParam] ?? AUTH_ERROR_MESSAGES.Default)
     : null;
 
-  const isProduction = process.env.NODE_ENV === "production";
-  const showDevLogin =
-    process.env.AUTH_ENABLE_DEV_LOGIN === "true" ||
-    (!isProduction && process.env.AUTH_ENABLE_DEV_LOGIN !== "false");
-  const showGoogleLogin =
-    Boolean(process.env.AUTH_GOOGLE_CLIENT_ID) &&
-    Boolean(process.env.AUTH_GOOGLE_CLIENT_SECRET);
+  const { hasGoogleProvider: showGoogleLogin, allowDevLogin: showDevLogin } = getAuthProviderFlags();
 
   return (
     <main className="min-h-screen bg-zinc-50 px-6 py-10">
