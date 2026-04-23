@@ -39,6 +39,7 @@ model User {
   recentPlans   UserRecentPlan[]
   activities    UserActivity[]
   auditLogs     AuditLog[]         @relation("AuditActor")
+  scheduleBlocks ScheduleBlock[]
 }
 
 model UserCareerEnrollment {
@@ -142,6 +143,27 @@ model UserPlanProgress {
 
   @@unique([userId, planId, versionId])
   @@index([userId, updatedAt])
+}
+
+model ScheduleBlock {
+  id            String   @id @default(cuid())
+  userId        String
+  careerId      String
+  planId        String
+  versionId     String
+  materiaNombre String
+  materiaId     String?
+  dia           Int
+  horaInicio    Int
+  horaFin       Int
+  comision      String?
+  notas         String?
+  color         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, careerId, planId, versionId])
 }
 
 model AuditLog {

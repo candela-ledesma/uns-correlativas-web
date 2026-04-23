@@ -11,6 +11,7 @@ import AnioSection from "@/components/AnioSection";
 import GrupoMaterias from "@/components/GrupoMaterias";
 import PlanOnboarding from "@/components/PlanOnboarding";
 import KanbanPlan from "@/components/KanbanPlan";
+import WeeklySchedule from "@/components/WeeklySchedule";
 import { usePlanState } from "@/hooks/usePlanState";
 import { usePlanStructure } from "@/hooks/usePlanStructure";
 import { getMateriaViewModel } from "@/lib/materiaViewModel";
@@ -192,7 +193,7 @@ export default function PlanViewer({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { idsAgrupadores } = usePlanStructure(data);
-  const [vistaActiva, setVistaActiva] = useState<"plan" | "Plan Vista">("plan");
+  const [vistaActiva, setVistaActiva] = useState<"plan" | "Plan Vista" | "Planificador">("plan");
   const [isOnboardingOpen, setIsOnboardingOpen] = useState(false);
   const [isOnboardingSubmitting, setIsOnboardingSubmitting] = useState(false);
   const onboardingStateKeyRef = useRef<string | null>(null);
@@ -538,7 +539,7 @@ export default function PlanViewer({
     <main className="mx-auto max-w-7xl">
       <div className="mb-4 flex items-center justify-between gap-4">
         <div className="flex p-1 rounded-xl" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.12)" }}>
-          {(["plan", "Plan Vista"] as const).map((vista) => (
+          {(["plan", "Plan Vista", "Planificador"] as const).map((vista) => (
             <button
               key={vista}
               type="button"
@@ -550,7 +551,7 @@ export default function PlanViewer({
                   : { color: "#a89bc9" }
               }
             >
-              {vista === "plan" ? "Plan" : "Plan Vista"}
+              {vista === "plan" ? "Plan" : vista}
             </button>
           ))}
         </div>
@@ -571,6 +572,15 @@ export default function PlanViewer({
           agrupadores={agrupadores}
           idsAgrupadores={idsAgrupadores}
           estados={estados}
+        />
+      )}
+
+      {vistaActiva === "Planificador" && (
+        <WeeklySchedule
+          careerId={carreraId}
+          planId={data.plan.plan_id}
+          versionId={data.plan.version_id}
+          materias={data.materias}
         />
       )}
 
