@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSession } from "next-auth/react";
 import {
   DIAS_SEMANA,
@@ -31,11 +31,9 @@ for (let m = HORA_INICIO_GRILLA; m <= HORA_FIN_GRILLA; m += SLOT_MINUTOS) {
 function snapToSlot(minutes: number): number {
   return Math.round(minutes / SLOT_MINUTOS) * SLOT_MINUTOS;
 }
-
 function blockTopPx(horaInicio: number): number {
   return ((horaInicio - HORA_INICIO_GRILLA) / SLOT_MINUTOS) * SLOT_PX;
 }
-
 function blockHeightPx(horaInicio: number, horaFin: number): number {
   return ((horaFin - horaInicio) / SLOT_MINUTOS) * SLOT_PX;
 }
@@ -46,11 +44,14 @@ type Panel =
   | { type: "create"; prefill?: { dia: number; horaInicio: number } }
   | { type: "edit"; block: ScheduleBlock };
 
+/** Inline action overlay state for a block */
+type ActiveBlock = { id: string; confirming: boolean };
+
 type DragState = {
   blockId: string;
   block: ScheduleBlock;
-  duration: number;           // minutes, preserved across drop
-  grabOffsetMinutes: number;  // minutes from block top to grab point
+  duration: number;
+  grabOffsetMinutes: number;
   startX: number;
   startY: number;
 };
@@ -81,18 +82,36 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
   });
 
   const [panel, setPanel] = useState<Panel | null>(null);
+  const [activeBlock, setActiveBlock] = useState<ActiveBlock | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [ghost, setGhost] = useState<Ghost | null>(null);
 
-  // Mutable drag state — no re-renders during computation
   const dragRef = useRef<DragState | null>(null);
-  // Suppress click event that fires after a real drag gesture
   const suppressNextClickRef = useRef(false);
-  // Refs to each column's slot area div for hit-testing
   const columnRefs = useRef<(HTMLDivElement | null)[]>([null, null, null, null, null]);
-  // Outer grid div that owns the pointer capture
   const gridRef = useRef<HTMLDivElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+
+  // Scroll panel into view when it opens
+  useEffect(() => {
+    if (panel) {
+      requestAnimationFrame(() => {
+        panelRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      });
+    }
+  }, [panel]);
+
+  // Escape closes panel + overlay
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if (e.key !== "Escape") return;
+      setActiveBlock(null);
+      setPanel(null);
+    }
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, []);
 
   const materiaOptions = materias
     .filter((m) => m.tipo !== "agrupador")
@@ -112,12 +131,7 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
     return null;
   }
 
-  function buildGhost(
-    clientX: number,
-    clientY: number,
-    drag: DragState,
-    prevGhost: Ghost | null,
-  ): Ghost {
+  function buildGhost(clientX: number, clientY: number, drag: DragState, prev: Ghost | null): Ghost {
     const hit = getColumnHit(clientX, clientY);
     let targetDia: number;
     let yInColumn: number;
@@ -126,8 +140,7 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
       targetDia = hit.dia;
       yInColumn = hit.yInColumn;
     } else {
-      // Keep last known column; clamp Y
-      targetDia = prevGhost?.dia ?? drag.block.dia;
+      targetDia = prev?.dia ?? drag.block.dia;
       const colRect = columnRefs.current[targetDia - 1]?.getBoundingClientRect();
       yInColumn = colRect ? Math.max(0, Math.min(GRID_HEIGHT, clientY - colRect.top)) : 0;
     }
@@ -139,22 +152,22 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
       Math.min(HORA_FIN_GRILLA - drag.duration, snapToSlot(rawStart)),
     );
     const horaFin = horaInicio + drag.duration;
-
     const hasConflict =
       findOverlaps({ id: drag.blockId, dia: targetDia, horaInicio, horaFin }, blocks).length > 0;
 
     return { dia: targetDia, horaInicio, horaFin, hasConflict, color: drag.block.color ?? "#9d4edd" };
   }
 
-  // ── Pointer event handlers ────────────────────────────────────────────────
+  // ── Pointer events ────────────────────────────────────────────────────────
 
   function onBlockPointerDown(e: React.PointerEvent, block: ScheduleBlock) {
     if (e.button !== 0) return;
-    e.preventDefault();
     e.stopPropagation();
 
     const hit = getColumnHit(e.clientX, e.clientY);
     if (!hit) return;
+
+    setActiveBlock(null); // close any open overlay before drag
 
     const minutesFromTop = (hit.yInColumn / SLOT_PX) * SLOT_MINUTOS;
     const grabOffsetMinutes = HORA_INICIO_GRILLA + minutesFromTop - block.horaInicio;
@@ -175,12 +188,9 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
   function onGridPointerMove(e: React.PointerEvent) {
     const drag = dragRef.current;
     if (!drag) return;
-
-    // Dead zone: don't show ghost until actually dragging
     const dx = Math.abs(e.clientX - drag.startX);
     const dy = Math.abs(e.clientY - drag.startY);
     if (dx < DRAG_THRESHOLD_PX && dy < DRAG_THRESHOLD_PX) return;
-
     setGhost((prev) => buildGhost(e.clientX, e.clientY, drag, prev));
   }
 
@@ -201,7 +211,6 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
 
     if (wasDrag) {
       suppressNextClickRef.current = true;
-      // Clear after click event fires (in next microtask)
       setTimeout(() => { suppressNextClickRef.current = false; }, 0);
     }
 
@@ -224,10 +233,17 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
     setGhost(null);
   }
 
-  // ── Create from cell ──────────────────────────────────────────────────────
+  // ── Cell click → create ───────────────────────────────────────────────────
 
   function onSlotAreaClick(e: React.MouseEvent, dia: number) {
     if (draggingId) return;
+
+    // First click dismisses any open overlay, without creating
+    if (activeBlock) {
+      setActiveBlock(null);
+      return;
+    }
+
     const rect = (e.currentTarget as HTMLDivElement).getBoundingClientRect();
     const yInColumn = e.clientY - rect.top;
     const raw = HORA_INICIO_GRILLA + (yInColumn / SLOT_PX) * SLOT_MINUTOS;
@@ -256,6 +272,7 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
     setDeletingId(id);
     await deleteBlock(id);
     setDeletingId(null);
+    setActiveBlock(null);
     if (panel?.type === "edit" && panel.block.id === id) setPanel(null);
   }
 
@@ -274,13 +291,15 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
   return (
     <div className="grid gap-4">
       {/* Toolbar */}
-      <div className="flex items-center gap-3">
+      <div className="flex flex-wrap items-center gap-2">
         <h2 className="flex-1 text-base font-semibold text-zinc-200">Planificador de cuatrimestre</h2>
-        <p className="text-xs text-zinc-500">Clic en celda vacía para agregar · arrastrar para mover</p>
+        <p className="text-xs text-zinc-500">
+          Clic en celda para agregar · clic en bloque para opciones · arrastrá para mover
+        </p>
         <button
           type="button"
-          onClick={() => setPanel({ type: "create" })}
-          className="rounded-lg bg-violet-600 px-3 py-1.5 text-sm font-semibold text-white transition hover:bg-violet-500"
+          onClick={() => { setActiveBlock(null); setPanel({ type: "create" }); }}
+          className="rounded-lg bg-violet-600 px-3 py-1.5 text-sm font-semibold text-white transition hover:bg-violet-500 active:scale-95"
         >
           + Agregar
         </button>
@@ -290,27 +309,6 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
         <p className="rounded-lg border border-red-500/40 bg-red-950/50 px-3 py-2 text-sm text-red-300">
           {error}
         </p>
-      )}
-
-      {/* Side panel */}
-      {panel && (
-        <div className="rounded-2xl border border-zinc-700 bg-zinc-800/80 p-4">
-          <h3 className="mb-3 text-sm font-semibold text-zinc-200">
-            {panel.type === "create" ? "Nuevo bloque" : "Editar bloque"}
-          </h3>
-          <ScheduleBlockForm
-            block={panel.type === "edit" ? panel.block : undefined}
-            defaultDia={panel.type === "create" ? panel.prefill?.dia : undefined}
-            defaultHoraInicio={panel.type === "create" ? panel.prefill?.horaInicio : undefined}
-            materias={materiaOptions}
-            onSave={
-              panel.type === "create"
-                ? (d) => handleCreate(d as CreateBlockInput)
-                : (d) => handleUpdate(panel.block.id, d as Partial<ScheduleBlock>)
-            }
-            onCancel={() => setPanel(null)}
-          />
-        </div>
       )}
 
       {/* Grid */}
@@ -330,7 +328,7 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
           >
             {/* Time axis */}
             <div className="w-14 flex-shrink-0" style={{ height: GRID_HEIGHT + SLOT_PX }}>
-              <div style={{ height: SLOT_PX }} /> {/* header spacer */}
+              <div style={{ height: SLOT_PX }} />
               <div className="relative" style={{ height: GRID_HEIGHT }}>
                 {TIME_LABELS.map((label, i) => (
                   <div
@@ -360,7 +358,7 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
                     {diaLabel}
                   </div>
 
-                  {/* Slot area — click on empty space → create */}
+                  {/* Slot area */}
                   <div
                     ref={(el) => { columnRefs.current[diaIdx] = el; }}
                     className="relative"
@@ -382,7 +380,7 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
                     {/* Drop ghost */}
                     {diaGhost && (
                       <div
-                        className="pointer-events-none absolute left-0.5 right-0.5 rounded-md transition-[top,height]"
+                        className="pointer-events-none absolute left-0.5 right-0.5 rounded-md"
                         style={{
                           top: blockTopPx(diaGhost.horaInicio) + 1,
                           height: blockHeightPx(diaGhost.horaInicio, diaGhost.horaFin) - 2,
@@ -399,55 +397,99 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
                       const height = blockHeightPx(block.horaInicio, block.horaFin);
                       const color = block.color ?? "#9d4edd";
                       const isDragging = draggingId === block.id;
+                      const isSelected = activeBlock?.id === block.id;
                       const isEditing = panel?.type === "edit" && panel.block.id === block.id;
 
                       return (
                         <div
                           key={block.id}
-                          className="group absolute left-0.5 right-0.5 overflow-hidden rounded-md px-1.5 py-1"
+                          className="absolute left-0.5 right-0.5 overflow-hidden rounded-md transition-opacity"
                           style={{
                             top: top + 1,
                             height: height - 2,
                             backgroundColor: color + "33",
                             border: `1.5px solid ${color}`,
-                            outline: isEditing ? `2px solid ${color}` : undefined,
+                            outline: isEditing ? `2px solid ${color}` : isSelected ? `2px solid white` : undefined,
                             opacity: isDragging ? 0.25 : 1,
-                            cursor: isDragging ? "grabbing" : "grab",
-                            zIndex: isDragging ? 1 : 5,
+                            cursor: isDragging ? "grabbing" : "pointer",
+                            zIndex: isSelected ? 15 : isDragging ? 1 : 5,
                             touchAction: "none",
                           }}
                           onPointerDown={(e) => onBlockPointerDown(e, block)}
                           onClick={(e) => {
                             e.stopPropagation();
                             if (suppressNextClickRef.current) return;
-                            setPanel({ type: "edit", block });
+                            // Toggle overlay; if same block, toggle confirming off
+                            setActiveBlock((prev) =>
+                              prev?.id === block.id ? null : { id: block.id, confirming: false },
+                            );
                           }}
                         >
-                          <p className="truncate text-[11px] font-semibold leading-tight" style={{ color }}>
-                            {block.materiaNombre}
-                          </p>
-                          {height >= 40 && (
-                            <p className="text-[10px] leading-tight text-zinc-400">
-                              {minutesToTimeString(block.horaInicio)}–{minutesToTimeString(block.horaFin)}
-                              {block.comision ? ` · ${block.comision}` : ""}
+                          {/* Block content */}
+                          <div className="px-1.5 py-1" style={{ opacity: isSelected ? 0.3 : 1 }}>
+                            <p className="truncate text-[11px] font-semibold leading-tight" style={{ color }}>
+                              {block.materiaNombre}
                             </p>
+                            {height >= 40 && (
+                              <p className="text-[10px] leading-tight text-zinc-400">
+                                {minutesToTimeString(block.horaInicio)}–{minutesToTimeString(block.horaFin)}
+                                {block.comision ? ` · ${block.comision}` : ""}
+                              </p>
+                            )}
+                            {height >= 60 && block.notas && (
+                              <p className="mt-0.5 truncate text-[10px] text-zinc-500">{block.notas}</p>
+                            )}
+                          </div>
+
+                          {/* Inline action overlay */}
+                          {isSelected && (
+                            <div
+                              className="absolute inset-0 flex items-center justify-center gap-1 rounded-md px-1"
+                              style={{ backgroundColor: "rgba(9,9,11,0.88)" }}
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              {!activeBlock!.confirming ? (
+                                <>
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setPanel({ type: "edit", block });
+                                      setActiveBlock(null);
+                                    }}
+                                    className="rounded px-2 py-0.5 text-[10px] font-semibold text-zinc-200 ring-1 ring-zinc-600 transition hover:bg-zinc-700 active:scale-95"
+                                  >
+                                    Editar
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => setActiveBlock({ id: block.id, confirming: true })}
+                                    className="rounded px-2 py-0.5 text-[10px] font-semibold text-red-400 ring-1 ring-red-500/50 transition hover:bg-red-950/60 active:scale-95"
+                                  >
+                                    Eliminar
+                                  </button>
+                                </>
+                              ) : (
+                                <>
+                                  <span className="text-[10px] text-zinc-400">¿Seguro?</span>
+                                  <button
+                                    type="button"
+                                    disabled={deletingId === block.id}
+                                    onClick={() => void handleDelete(block.id)}
+                                    className="rounded bg-red-600 px-2 py-0.5 text-[10px] font-semibold text-white transition hover:bg-red-500 active:scale-95 disabled:opacity-50"
+                                  >
+                                    {deletingId === block.id ? "..." : "Sí"}
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => setActiveBlock(null)}
+                                    className="rounded px-2 py-0.5 text-[10px] font-semibold text-zinc-300 ring-1 ring-zinc-600 transition hover:bg-zinc-700 active:scale-95"
+                                  >
+                                    No
+                                  </button>
+                                </>
+                              )}
+                            </div>
                           )}
-                          {height >= 60 && block.notas && (
-                            <p className="mt-0.5 truncate text-[10px] text-zinc-500">{block.notas}</p>
-                          )}
-                          {/* Delete button — visible on hover */}
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              void handleDelete(block.id);
-                            }}
-                            disabled={deletingId === block.id}
-                            className="absolute right-0.5 top-0.5 flex h-4 w-4 items-center justify-center rounded text-[9px] text-zinc-400 opacity-0 transition-opacity hover:bg-red-900/60 hover:text-red-300 group-hover:opacity-100 disabled:opacity-40"
-                            title="Eliminar"
-                          >
-                            ✕
-                          </button>
                         </div>
                       );
                     })}
@@ -458,6 +500,41 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
           </div>
         )}
       </div>
+
+      {/* Side panel — below the grid so it doesn't push it around */}
+      {panel && (
+        <div
+          ref={panelRef}
+          className="rounded-2xl border border-zinc-700 bg-zinc-800/80 p-4"
+          style={{ animation: "dropdownIn 140ms ease-out" }}
+        >
+          <div className="mb-3 flex items-center justify-between">
+            <h3 className="text-sm font-semibold text-zinc-200">
+              {panel.type === "create" ? "Nuevo bloque" : "Editar bloque"}
+            </h3>
+            <button
+              type="button"
+              onClick={() => setPanel(null)}
+              className="rounded p-1 text-zinc-500 transition hover:bg-zinc-700 hover:text-zinc-200"
+              aria-label="Cerrar"
+            >
+              ✕
+            </button>
+          </div>
+          <ScheduleBlockForm
+            block={panel.type === "edit" ? panel.block : undefined}
+            defaultDia={panel.type === "create" ? panel.prefill?.dia : undefined}
+            defaultHoraInicio={panel.type === "create" ? panel.prefill?.horaInicio : undefined}
+            materias={materiaOptions}
+            onSave={
+              panel.type === "create"
+                ? (d) => handleCreate(d as CreateBlockInput)
+                : (d) => handleUpdate(panel.block.id, d as Partial<ScheduleBlock>)
+            }
+            onCancel={() => setPanel(null)}
+          />
+        </div>
+      )}
 
       {/* Block list */}
       {blocks.length > 0 && (
@@ -477,14 +554,15 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
                 />
                 <span className="truncate text-sm font-medium text-zinc-200">{block.materiaNombre}</span>
                 <span className="flex-shrink-0 text-xs text-zinc-500">
-                  {DIAS_SEMANA[block.dia - 1]} {minutesToTimeString(block.horaInicio)}–{minutesToTimeString(block.horaFin)}
+                  {DIAS_SEMANA[block.dia - 1]}{" "}
+                  {minutesToTimeString(block.horaInicio)}–{minutesToTimeString(block.horaFin)}
                   {block.comision ? ` · ${block.comision}` : ""}
                 </span>
               </div>
               <div className="flex flex-shrink-0 gap-1">
                 <button
                   type="button"
-                  onClick={() => setPanel({ type: "edit", block })}
+                  onClick={() => { setActiveBlock(null); setPanel({ type: "edit", block }); }}
                   className="rounded px-2 py-1 text-xs text-zinc-400 transition hover:bg-zinc-700 hover:text-zinc-200"
                 >
                   Editar
