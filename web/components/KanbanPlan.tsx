@@ -206,6 +206,8 @@ export default function KanbanPlan({ materias, agrupadores, idsAgrupadores, esta
   const [selectedOrientacion, setSelectedOrientacion] = useState("todas");
 
   const dragRef            = useRef<DragRef | null>(null);
+  const touchStartRef      = useRef<{ x: number; y: number } | null>(null);
+  const isTouchDragRef     = useRef(false);
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
   const yearRefs           = useRef<Record<string, HTMLDivElement | null>>({});
   const [newlyAddedYear,   setNewlyAddedYear]      = useState<string | null>(null);
@@ -221,6 +223,59 @@ export default function KanbanPlan({ materias, agrupadores, idsAgrupadores, esta
     [materias, agrupadores]
   );
   const hasOrientaciones = orientaciones.length > 0;
+
+  // ── Touch drag-and-drop (mobile) ─────────────────────────────────────────────
+  // HTML5 draggable API doesn't fire on iOS Safari / Android touch.
+  // We implement it via touchstart/touchmove/touchend + elementFromPoint.
+
+  function onCardTouchStart(e: React.TouchEvent, materiaId: string, fromCol: string) {
+    const t = e.touches[0];
+    touchStartRef.current = { x: t.clientX, y: t.clientY };
+    isTouchDragRef.current = false;
+    dragRef.current = { materiaId, fromCol };
+  }
+
+  function onContainerTouchEnd(e: React.TouchEvent) {
+    if (!dragRef.current) return;
+    if (isTouchDragRef.current) {
+      const t = e.changedTouches[0];
+      const under = document.elementFromPoint(t.clientX, t.clientY) as HTMLElement | null;
+      const colEl = under?.closest("[data-colkey]") as HTMLElement | null;
+      const toCol = colEl?.dataset.colkey;
+      if (toCol) handleDrop(toCol);
+      else { dragRef.current = null; setDragOver(null); }
+    } else {
+      dragRef.current = null;
+    }
+    touchStartRef.current = null;
+    isTouchDragRef.current = false;
+  }
+
+  function onContainerTouchCancel() {
+    dragRef.current = null;
+    touchStartRef.current = null;
+    isTouchDragRef.current = false;
+    setDragOver(null);
+  }
+
+  // Non-passive touchmove so e.preventDefault() can suppress scroll while dragging
+  useEffect(() => {
+    const el = scrollContainerRef.current;
+    if (!el) return;
+    const handler = (e: TouchEvent) => {
+      if (!dragRef.current || !touchStartRef.current) return;
+      const t = e.touches[0];
+      const moved = Math.hypot(t.clientX - touchStartRef.current.x, t.clientY - touchStartRef.current.y);
+      if (moved < 8) return;
+      isTouchDragRef.current = true;
+      e.preventDefault();
+      const under = document.elementFromPoint(t.clientX, t.clientY) as HTMLElement | null;
+      const colEl = under?.closest("[data-colkey]") as HTMLElement | null;
+      setDragOver(colEl?.dataset.colkey ?? null);
+    };
+    el.addEventListener("touchmove", handler, { passive: false });
+    return () => el.removeEventListener("touchmove", handler);
+  }, []);
 
   useEffect(() => {
     if (!newlyAddedYear) return;
@@ -269,6 +324,7 @@ export default function KanbanPlan({ materias, agrupadores, idsAgrupadores, esta
         draggable
         onDragStart={() => handleDragStart(String(materia.id), colKey)}
         onDragEnd={() => setDragOver(null)}
+        onTouchStart={(e) => onCardTouchStart(e, String(materia.id), colKey)}
         style={{
           background:   `linear-gradient(135deg, ${color}22, transparent)`,
           borderTop:    `1px solid ${color}33`,
@@ -277,6 +333,7 @@ export default function KanbanPlan({ materias, agrupadores, idsAgrupadores, esta
           borderLeft:   `4px solid ${color}`,
           borderRadius: 10, padding: "9px 10px",
           cursor: "grab", userSelect: "none", transition: "opacity 0.15s",
+          touchAction: "none",
           opacity: !puedeCursar && estado === "no_cursada" ? 0.55 : 1,
         }}
       >
@@ -365,6 +422,8 @@ export default function KanbanPlan({ materias, agrupadores, idsAgrupadores, esta
       <div
         ref={scrollContainerRef}
         className="kanban-years-container flex flex-col sm:flex-row sm:overflow-x-auto gap-4 sm:gap-5 pb-4 items-start"
+        onTouchEnd={onContainerTouchEnd}
+        onTouchCancel={onContainerTouchCancel}
       >
         {years.map((anio, yearIdx) => {
           const color    = PALETTE[yearIdx % PALETTE.length];
@@ -435,6 +494,7 @@ export default function KanbanPlan({ materias, agrupadores, idsAgrupadores, esta
                   return (
                     <div
                       key={colKey}
+                      data-colkey={colKey}
                       className="flex flex-col sm:w-[220px]"
                       style={{
                         borderLeft: slotIdx > 0 ? `1px solid ${color}22` : undefined,

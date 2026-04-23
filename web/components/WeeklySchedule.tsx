@@ -211,7 +211,7 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
         ) : (
           <div
             ref={gridRef}
-            style={{ display: "flex", minWidth: 440, userSelect: "none", cursor: draggingId ? "grabbing" : "default" }}
+            style={{ display: "flex", userSelect: "none", cursor: draggingId ? "grabbing" : "default" }}
             onPointerMove={onGridPointerMove}
             onPointerUp={(e) => void onGridPointerUp(e)}
             onPointerCancel={onGridPointerCancel}
@@ -237,8 +237,8 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
               return (
                 <div key={diaLabel} style={{ display: "flex", flex: 1, flexDirection: "column", borderLeft: COL_LINE }}>
                   {/* Header */}
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: SLOT_PX, borderBottom: COL_LINE, fontSize: 11, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: TEXT_SEC }}>
-                    {diaLabel}
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: SLOT_PX, borderBottom: COL_LINE, fontSize: 11, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: TEXT_SEC, overflow: "hidden" }}>
+                    {diaLabel.slice(0, 3)}
                   </div>
 
                   {/* Slot area */}
@@ -318,7 +318,7 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
                           {/* Action overlay */}
                           {isSelected && (
                             <div
-                              style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", gap: 6, borderRadius: 6, padding: "0 4px", background: "rgba(10,8,20,0.92)" }}
+                              style={{ position: "absolute", inset: 0, display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "center", gap: 4, borderRadius: 6, padding: "2px 4px", background: "rgba(10,8,20,0.92)" }}
                               onClick={(e) => e.stopPropagation()}
                             >
                               {!activeBlock!.confirming ? (
