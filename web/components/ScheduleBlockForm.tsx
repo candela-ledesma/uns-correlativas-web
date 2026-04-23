@@ -21,17 +21,30 @@ const BLOCK_COLORS = [
 
 type Props = {
   block?: ScheduleBlock;
+  defaultDia?: number;
+  defaultHoraInicio?: number;
   materias: { id: string; nombre: string }[];
   onSave: (data: CreateBlockInput | UpdateBlockInput) => Promise<{ error?: string }>;
   onCancel: () => void;
 };
 
-export default function ScheduleBlockForm({ block, materias, onSave, onCancel }: Props) {
+export default function ScheduleBlockForm({
+  block,
+  defaultDia,
+  defaultHoraInicio,
+  materias,
+  onSave,
+  onCancel,
+}: Props) {
   const [materiaNombre, setMateriaNombre] = useState(block?.materiaNombre ?? "");
   const [materiaId, setMateriaId] = useState(block?.materiaId ?? "");
-  const [dia, setDia] = useState(block?.dia ?? 1);
-  const [horaInicio, setHoraInicio] = useState(minutesToTimeString(block?.horaInicio ?? HORA_INICIO_GRILLA));
-  const [horaFin, setHoraFin] = useState(minutesToTimeString(block?.horaFin ?? (HORA_INICIO_GRILLA + 90)));
+  const [dia, setDia] = useState(block?.dia ?? defaultDia ?? 1);
+  const [horaInicio, setHoraInicio] = useState(
+    minutesToTimeString(block?.horaInicio ?? defaultHoraInicio ?? HORA_INICIO_GRILLA),
+  );
+  const [horaFin, setHoraFin] = useState(
+    minutesToTimeString(block?.horaFin ?? (defaultHoraInicio ?? HORA_INICIO_GRILLA) + 90),
+  );
   const [comision, setComision] = useState(block?.comision ?? "");
   const [notas, setNotas] = useState(block?.notas ?? "");
   const [color, setColor] = useState(block?.color ?? BLOCK_COLORS[0].value);
