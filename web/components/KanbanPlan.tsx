@@ -202,6 +202,7 @@ export default function KanbanPlan({ materias, agrupadores, idsAgrupadores, esta
     buildInitialOrder(materias, idsAgrupadores)
   );
   const [dragOver,          setDragOver]          = useState<string | null>(null);
+  const [touchDragId,       setTouchDragId]       = useState<string | null>(null);
   const [showMateriaStatus, setShowMateriaStatus]  = useState(true);
   const [selectedOrientacion, setSelectedOrientacion] = useState("todas");
 
@@ -249,6 +250,7 @@ export default function KanbanPlan({ materias, agrupadores, idsAgrupadores, esta
     }
     touchStartRef.current = null;
     isTouchDragRef.current = false;
+    setTouchDragId(null);
   }
 
   function onContainerTouchCancel() {
@@ -256,6 +258,7 @@ export default function KanbanPlan({ materias, agrupadores, idsAgrupadores, esta
     touchStartRef.current = null;
     isTouchDragRef.current = false;
     setDragOver(null);
+    setTouchDragId(null);
   }
 
   // Non-passive touchmove so e.preventDefault() can suppress scroll while dragging
@@ -267,7 +270,10 @@ export default function KanbanPlan({ materias, agrupadores, idsAgrupadores, esta
       const t = e.touches[0];
       const moved = Math.hypot(t.clientX - touchStartRef.current.x, t.clientY - touchStartRef.current.y);
       if (moved < 8) return;
-      isTouchDragRef.current = true;
+      if (!isTouchDragRef.current) {
+        isTouchDragRef.current = true;
+        setTouchDragId(dragRef.current.materiaId);
+      }
       e.preventDefault();
       const under = document.elementFromPoint(t.clientX, t.clientY) as HTMLElement | null;
       const colEl = under?.closest("[data-colkey]") as HTMLElement | null;
@@ -316,8 +322,10 @@ export default function KanbanPlan({ materias, agrupadores, idsAgrupadores, esta
   };
 
   function renderMateriaCard(materia: Materia, colKey: string, color: string) {
-    const estado      = getMateriaEstado(materia, estados);
-    const puedeCursar = estaHabilitadaParaCursar(materia, estados, agrupadores);
+    const estado         = getMateriaEstado(materia, estados);
+    const puedeCursar    = estaHabilitadaParaCursar(materia, estados, agrupadores);
+    const isLifted       = touchDragId === String(materia.id);
+    const anyTouchActive = touchDragId !== null;
     return (
       <div
         key={String(materia.id)}
@@ -326,15 +334,21 @@ export default function KanbanPlan({ materias, agrupadores, idsAgrupadores, esta
         onDragEnd={() => setDragOver(null)}
         onTouchStart={(e) => onCardTouchStart(e, String(materia.id), colKey)}
         style={{
-          background:   `linear-gradient(135deg, ${color}22, transparent)`,
-          borderTop:    `1px solid ${color}33`,
-          borderRight:  `1px solid ${color}33`,
-          borderBottom: `1px solid ${color}33`,
+          background:   isLifted
+            ? `linear-gradient(135deg, ${color}44, ${color}22)`
+            : `linear-gradient(135deg, ${color}22, transparent)`,
+          borderTop:    `1px solid ${isLifted ? color : `${color}33`}`,
+          borderRight:  `1px solid ${isLifted ? color : `${color}33`}`,
+          borderBottom: `1px solid ${isLifted ? color : `${color}33`}`,
           borderLeft:   `4px solid ${color}`,
           borderRadius: 10, padding: "9px 10px",
-          cursor: "grab", userSelect: "none", transition: "opacity 0.15s",
+          cursor: "grab", userSelect: "none",
           touchAction: "none",
-          opacity: !puedeCursar && estado === "no_cursada" ? 0.55 : 1,
+          transform:   isLifted ? "scale(1.04)" : undefined,
+          boxShadow:   isLifted ? `0 8px 20px ${color}55, 0 0 0 1.5px ${color}` : undefined,
+          zIndex:      isLifted ? 10 : undefined,
+          opacity:     isLifted ? 1 : (anyTouchActive ? 0.5 : (!puedeCursar && estado === "no_cursada" ? 0.55 : 1)),
+          transition:  "transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s, border-color 0.15s",
         }}
       >
         <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 6 }}>
@@ -498,8 +512,8 @@ export default function KanbanPlan({ materias, agrupadores, idsAgrupadores, esta
                       className="flex flex-col sm:w-[220px]"
                       style={{
                         borderLeft: slotIdx > 0 ? `1px solid ${color}22` : undefined,
-                        background: isDragOver ? `${color}08` : undefined,
-                        boxShadow: isDragOver ? `inset 0 0 0 2px ${color}44` : undefined,
+                        background: isDragOver ? `${color}18` : undefined,
+                        boxShadow: isDragOver ? `inset 0 0 0 2.5px ${color}` : undefined,
                         transition: "background 0.15s, box-shadow 0.15s",
                       }}
                       onDragOver={(e) => { e.preventDefault(); setDragOver(colKey); }}
