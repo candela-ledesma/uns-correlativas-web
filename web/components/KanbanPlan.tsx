@@ -352,9 +352,16 @@ export default function KanbanPlan({ materias, agrupadores, idsAgrupadores, esta
           transition:  "transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s, border-color 0.15s",
         }}
       >
-        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 6 }}>
-          <div style={{ minWidth: 0 }}>
-            <div style={{ color: TEXT_BASE, fontWeight: "bold", fontSize: 12, lineHeight: 1.4 }}>
+        <div style={{ display: "flex", alignItems: "flex-start", gap: 6 }}>
+          <div style={{ minWidth: 0, flex: 1 }}>
+            <div
+              title={materia.nombre}
+              style={{
+                color: TEXT_BASE, fontWeight: "bold", fontSize: 12, lineHeight: 1.4,
+                display: "-webkit-box", WebkitLineClamp: 2,
+                WebkitBoxOrient: "vertical", overflow: "hidden",
+              } as React.CSSProperties}
+            >
               {materia.nombre}
             </div>
             <div style={{ color: TEXT_DETAIL, fontSize: 11, marginTop: 2 }}>
@@ -362,7 +369,7 @@ export default function KanbanPlan({ materias, agrupadores, idsAgrupadores, esta
             </div>
           </div>
           {showMateriaStatus && (
-            <span style={getBadgeStyle(estado, puedeCursar)}>
+            <span style={{ ...getBadgeStyle(estado, puedeCursar), flexShrink: 0 }}>
               {getBadgeLabel(estado, puedeCursar)}
             </span>
           )}
