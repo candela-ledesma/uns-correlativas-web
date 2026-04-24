@@ -27,7 +27,7 @@ export default function PlanFilters({
   }
 
   return (
-    <section style={{ ...SURFACE, borderRadius: 16, padding: 16, marginBottom: 32 }}>
+    <section data-no-print style={{ ...SURFACE, borderRadius: 16, padding: 16, marginBottom: 32 }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
         <span style={{ color: TEXT_SEC, fontSize: 13, fontWeight: 600 }}>Filtros</span>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>

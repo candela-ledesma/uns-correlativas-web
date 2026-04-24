@@ -180,9 +180,22 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
   // ── Render ─────────────────────────────────────────────────────────────────
   return (
     <div className="grid gap-4 min-w-0">
+      <style>{`
+        @media print {
+          @page { size: A4 landscape; margin: 10mm; }
+          .ws-grid-wrap  { overflow: visible !important; background: white !important; border-color: #ddd !important; }
+          .ws-col        { border-left-color: #ccc !important; }
+          .ws-col-header { background: #f8f8f8 !important; border-bottom-color: #ccc !important; color: #111 !important; }
+          .ws-time-label { color: #666 !important; opacity: 1 !important; }
+          .ws-slot-line  { border-bottom-color: #ebebeb !important; }
+          .ws-block       { background: #fff !important; border: 1px solid #999 !important; box-shadow: none !important; opacity: 1 !important; outline: none !important; filter: none !important; }
+          .ws-block-title { color: #111 !important; -webkit-text-fill-color: #111 !important; text-shadow: none !important; }
+          .ws-block-meta  { color: #111 !important; -webkit-text-fill-color: #111 !important; }
+        }
+      `}</style>
 
       {/* Toolbar */}
-      <div className="flex flex-wrap items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2" data-no-print>
         <h2 className="flex-1 min-w-0" style={{ color: TEXT, fontSize: 16, fontWeight: 700, margin: 0 }}>
           Planificador de cuatrimestre
         </h2>
@@ -203,7 +216,7 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
       )}
 
       {/* Grid */}
-      <div className="overflow-x-auto rounded-2xl" style={{ ...SURFACE }}>
+      <div className="overflow-x-auto rounded-2xl ws-grid-wrap" style={{ ...SURFACE }}>
         {isLoading ? (
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: 160 }}>
             <span style={{ color: TEXT_SEC, fontSize: 14 }}>Cargando horario...</span>
@@ -221,7 +234,7 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
               <div style={{ height: SLOT_PX }} />
               <div style={{ position: "relative", height: GRID_HEIGHT }}>
                 {TIME_LABELS.map((label, i) => (
-                  <div key={label} style={{ position: "absolute", right: 4, top: i * SLOT_PX - 7, fontSize: 10, color: TEXT_SEC, opacity: 0.7 }}>
+                  <div key={label} className="ws-time-label" style={{ position: "absolute", right: 4, top: i * SLOT_PX - 7, fontSize: 10, color: TEXT_SEC, opacity: 0.7 }}>
                     {label}
                   </div>
                 ))}
@@ -235,9 +248,9 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
               const diaGhost  = ghost?.dia === diaNum ? ghost : null;
 
               return (
-                <div key={diaLabel} style={{ display: "flex", flex: 1, flexDirection: "column", borderLeft: COL_LINE }}>
+                <div key={diaLabel} className="ws-col" style={{ display: "flex", flex: 1, flexDirection: "column", borderLeft: COL_LINE }}>
                   {/* Header */}
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: SLOT_PX, borderBottom: COL_LINE, fontSize: 11, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: TEXT_SEC, overflow: "hidden" }}>
+                  <div className="ws-col-header" style={{ display: "flex", alignItems: "center", justifyContent: "center", height: SLOT_PX, borderBottom: COL_LINE, fontSize: 11, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: TEXT_SEC, overflow: "hidden" }}>
                     {diaLabel.slice(0, 3)}
                   </div>
 
@@ -249,7 +262,7 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
                   >
                     {/* Slot lines */}
                     {Array.from({ length: TOTAL_SLOTS }).map((_, i) => (
-                      <div key={i} style={{ position: "absolute", width: "100%", top: i * SLOT_PX, height: SLOT_PX, borderBottom: SLOT_LINE }} />
+                      <div key={i} className="ws-slot-line" style={{ position: "absolute", width: "100%", top: i * SLOT_PX, height: SLOT_PX, borderBottom: SLOT_LINE }} />
                     ))}
 
                     {/* Ghost */}
@@ -279,6 +292,7 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
                       return (
                         <div
                           key={block.id}
+                          className="ws-block"
                           style={{
                             position: "absolute", left: 2, right: 2, overflow: "hidden", borderRadius: 6,
                             top: top + 1, height: height - 2,
@@ -299,11 +313,11 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
                         >
                           {/* Content */}
                           <div style={{ padding: "3px 6px", opacity: isSelected ? 0.2 : 1 }}>
-                            <p style={{ margin: 0, color, fontSize: 11, fontWeight: 700, lineHeight: 1.3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                            <p className="ws-block-title" style={{ margin: 0, color, fontSize: 11, fontWeight: 700, lineHeight: 1.3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                               {block.materiaNombre}
                             </p>
                             {height >= 40 && (
-                              <p style={{ margin: 0, color: TEXT_SEC, fontSize: 10, lineHeight: 1.3 }}>
+                              <p className="ws-block-meta" style={{ margin: 0, color: TEXT_SEC, fontSize: 10, lineHeight: 1.3 }}>
                                 {minutesToTimeString(block.horaInicio)}–{minutesToTimeString(block.horaFin)}
                                 {block.comision ? ` · ${block.comision}` : ""}
                               </p>
@@ -358,7 +372,7 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
 
       {/* Side panel */}
       {panel && (
-        <div ref={panelRef} style={{ ...SURFACE, borderRadius: 16, padding: 20, animation: "dropdownIn 140ms ease-out" }}>
+        <div data-no-print ref={panelRef} style={{ ...SURFACE, borderRadius: 16, padding: 20, animation: "dropdownIn 140ms ease-out" }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
             <h3 style={{ margin: 0, color: TEXT, fontSize: 14, fontWeight: 700 }}>
               {panel.type === "create" ? "Nuevo bloque" : "Editar bloque"}
@@ -380,7 +394,7 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
 
       {/* Block list */}
       {blocks.length > 0 && (
-        <div style={{ display: "grid", gap: 8 }}>
+        <div data-no-print style={{ display: "grid", gap: 8 }}>
           <p style={{ margin: 0, color: TEXT_SEC, fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em" }}>
             {blocks.length} {blocks.length === 1 ? "bloque" : "bloques"}
           </p>

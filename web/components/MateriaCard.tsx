@@ -92,7 +92,7 @@ export default function MateriaCard({
       onKeyDown={handleCardKeyDown}
       aria-label={ariaLabel}
       style={cardStyle}
-      className="group focus:ring-4 focus:ring-[#9d4edd]/30"
+      className="materia-card group focus:ring-4 focus:ring-[#9d4edd]/30"
     >
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
         <div style={{ minWidth: 0 }}>
@@ -107,6 +107,7 @@ export default function MateriaCard({
 
         <span
           aria-hidden="true"
+          className="materia-card-badge"
           style={{ ...badgeTheme, display: "inline-flex", alignItems: "center", justifyContent: "center", whiteSpace: "nowrap", borderRadius: 99, padding: "4px 12px", fontSize: 11, fontWeight: 700 }}
         >
           {estadoLabel}

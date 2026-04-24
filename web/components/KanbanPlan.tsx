@@ -333,6 +333,7 @@ export default function KanbanPlan({ materias, agrupadores, idsAgrupadores, esta
         onDragStart={() => handleDragStart(String(materia.id), colKey)}
         onDragEnd={() => setDragOver(null)}
         onTouchStart={(e) => onCardTouchStart(e, String(materia.id), colKey)}
+        className="kp-card"
         style={{
           background:   isLifted
             ? `linear-gradient(135deg, ${color}44, ${color}22)`
@@ -371,14 +372,23 @@ export default function KanbanPlan({ materias, agrupadores, idsAgrupadores, esta
   }
 
   return (
-    <div className="min-w-0" style={{ background: BG_GRADIENT, fontFamily: FONT, borderRadius: 20, padding: 20 }}>
+    <div className="min-w-0 kp-root" style={{ background: BG_GRADIENT, fontFamily: FONT, borderRadius: 20, padding: 20 }}>
       <style>{`
         @media print {
           @page { size: A4 landscape; margin: 12mm; }
-          [data-no-print] { display: none !important; }
-          body, html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
           .kanban-years-container { flex-wrap: wrap !important; overflow: visible !important; overflow-x: visible !important; }
           .kanban-year-card { break-inside: avoid; page-break-inside: avoid; }
+
+          .kp-root           { background: white !important; }
+          .kp-year-card      { background: white !important; border-color: #bbb !important; }
+          .kp-year-header    { background: #f2f2f2 !important; border-bottom-color: #bbb !important; }
+          .kp-year-header div { color: #111 !important; text-shadow: none !important; }
+          .kp-col            { background: transparent !important; box-shadow: none !important; border-left-color: #ddd !important; }
+          .kp-col-header     { background: #fafafa !important; border-bottom-color: #e0e0e0 !important; }
+          .kp-col-header div { color: #444 !important; }
+          .kp-card      { background: #fff !important; border: 1px solid #999 !important; box-shadow: none !important; opacity: 1 !important; transform: none !important; filter: none !important; }
+          .kp-card div  { color: #111 !important; -webkit-text-fill-color: #111 !important; text-shadow: none !important; opacity: 1 !important; }
+          .kp-card span { background: #fff !important; border: 1px solid #999 !important; color: #111 !important; -webkit-text-fill-color: #111 !important; }
         }
       `}</style>
 
@@ -425,10 +435,6 @@ export default function KanbanPlan({ materias, agrupadores, idsAgrupadores, esta
             }}>
             {showMateriaStatus ? "Ocultar estado" : "Mostrar estado"}
           </button>
-          <button type="button" onClick={() => window.print()}
-            style={{ ...btnBase, background: "rgba(249,199,79,0.10)", border: "1px solid rgba(249,199,79,0.35)", color: "#f9c74f" }}>
-            Exportar PDF
-          </button>
         </div>
       </div>
 
@@ -461,14 +467,14 @@ export default function KanbanPlan({ materias, agrupadores, idsAgrupadores, esta
             <div
               key={anio}
               ref={(el) => { yearRefs.current[anio] = el; }}
-              className="kanban-year-card w-full sm:w-auto sm:flex-shrink-0"
+              className="kanban-year-card kp-year-card w-full sm:w-auto sm:flex-shrink-0"
               style={{
                 background: "rgba(255,255,255,0.03)", border: `1px solid ${color}44`,
                 borderRadius: 20, overflow: "hidden",
               }}
             >
               {/* Year header */}
-              <div style={{ background: `${color}18`, borderBottom: `1px solid ${color}44`, padding: "10px 16px" }}>
+              <div className="kp-year-header" style={{ background: `${color}18`, borderBottom: `1px solid ${color}44`, padding: "10px 16px" }}>
                 <div style={{ color, fontWeight: "bold", fontSize: 15, textShadow: TITLE_SHADOW }}>
                   {anio}
                 </div>
@@ -509,7 +515,7 @@ export default function KanbanPlan({ materias, agrupadores, idsAgrupadores, esta
                     <div
                       key={colKey}
                       data-colkey={colKey}
-                      className="flex flex-col sm:w-[220px]"
+                      className="flex flex-col sm:w-[220px] kp-col"
                       style={{
                         borderLeft: slotIdx > 0 ? `1px solid ${color}22` : undefined,
                         background: isDragOver ? `${color}18` : undefined,
@@ -521,7 +527,7 @@ export default function KanbanPlan({ materias, agrupadores, idsAgrupadores, esta
                       onDrop={() => handleDrop(colKey)}
                     >
                       {/* Sub-header */}
-                      <div style={{ padding: "8px 12px", borderBottom: `1px solid ${color}22`, background: `${color}0a` }}>
+                      <div className="kp-col-header" style={{ padding: "8px 12px", borderBottom: `1px solid ${color}22`, background: `${color}0a` }}>
                         <div style={{ color: TEXT_DETAIL, fontSize: 12, fontWeight: "bold" }}>
                           {SLOT_LABEL[slot]}
                         </div>

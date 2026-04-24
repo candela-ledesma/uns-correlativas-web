@@ -20,6 +20,39 @@ body {
   box-sizing: border-box;
 }
 
+@media print {
+  [data-no-print] { display: none !important; }
+  body, html { background: white !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  main { background: white !important; }
+  h1, h2, h3, h4, h5, h6 {
+    color: #000 !important;
+    text-shadow: none !important;
+    background: none !important;
+    -webkit-background-clip: unset !important;
+    background-clip: unset !important;
+    -webkit-text-fill-color: unset !important;
+  }
+
+  /* Plan — MateriaCard */
+  .materia-card {
+    background: #fff !important;
+    border: 1px solid #999 !important;
+    opacity: 1 !important;
+    box-shadow: none !important;
+    filter: none !important;
+  }
+  .materia-card div, .materia-card span, .materia-card button {
+    color: #111 !important;
+    -webkit-text-fill-color: #111 !important;
+    text-shadow: none !important;
+    opacity: 1 !important;
+  }
+  .materia-card-badge {
+    background: #fff !important;
+    border: 1px solid #999 !important;
+  }
+}
+
 @keyframes dropdownIn {
   from {
     opacity: 0;

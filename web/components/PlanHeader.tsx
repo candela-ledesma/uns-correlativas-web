@@ -103,7 +103,7 @@ export default function PlanHeader({
                     {subtitulo && <p style={{ color: TEXT_SEC, fontSize: 15, margin: 0 }}>{subtitulo}</p>}
                 </div>
 
-                <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 12 }}>
+                <div data-no-print style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 12 }}>
                     <SyncBadge syncStatus={syncStatus} />
 
                     {showVersionSelector && versionSelector && (

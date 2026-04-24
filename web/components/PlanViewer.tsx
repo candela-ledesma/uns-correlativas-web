@@ -544,7 +544,7 @@ export default function PlanViewer({
 
   return (
     <main className="mx-auto max-w-7xl">
-      <div className="mb-4 flex flex-wrap items-center gap-2">
+      <div className="mb-4 flex flex-wrap items-center gap-2" data-no-print>
         <div className="flex p-1 rounded-xl" style={tabBarStyle}>
           {(["plan", "Plan Vista", "Planificador"] as const).map((vista) => (
             <button
@@ -558,6 +558,15 @@ export default function PlanViewer({
             </button>
           ))}
         </div>
+
+        <button
+          type="button"
+          onClick={() => window.print()}
+          className="rounded-xl px-3 py-2 text-xs font-semibold uppercase tracking-wide transition"
+          style={{ background: "rgba(249,199,79,0.10)", border: "1px solid rgba(249,199,79,0.35)", color: "#f9c74f" }}
+        >
+          Exportar PDF
+        </button>
 
         <button
           type="button"

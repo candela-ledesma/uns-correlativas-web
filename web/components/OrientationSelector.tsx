@@ -24,6 +24,7 @@ export default function OrientationSelector({ orientaciones, selected, onSelect 
 
   return (
     <section
+      data-no-print
       data-testid="orientacion-selector"
       style={{ ...SURFACE, borderRadius: 16, padding: 16, marginBottom: 24 }}
     >
