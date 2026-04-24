@@ -1,8 +1,8 @@
 "use client";
 
-import { normalizarTextoBusqueda } from "@/lib/filtrarMaterias";
+import { normalizarTextoBusqueda } from "@/lib/plan/filtrarMaterias";
 
-import { TEXT, TEXT_SEC, SURFACE, ACCENT as PURPLE } from "@/lib/tokens";
+import { TEXT, TEXT_SEC, SURFACE, ACCENT as PURPLE } from "@/lib/ui/tokens";
 
 type Props = {
   orientaciones: string[];

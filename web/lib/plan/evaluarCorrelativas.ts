@@ -1,5 +1,5 @@
-import { Agrupador, Materia } from "../app/types/plan";
-import { getEstadoKey } from "@/lib/estadoKey";
+import { Agrupador, Materia } from "@/app/types/plan";
+import { getEstadoKey } from "@/lib/plan/estadoKey";
 
 export type EstadoMateria = "no_cursada" | "cursada" | "aprobada";
 

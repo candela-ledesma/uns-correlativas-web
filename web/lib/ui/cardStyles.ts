@@ -3,8 +3,8 @@
  * Todo lo que depende de EstadoMateria y produce CSSProperties vive acá.
  */
 import type { CSSProperties } from "react";
-import type { EstadoMateria } from "@/lib/evaluarCorrelativas";
-import { TEXT, TEXT_SEC, GLASS, STATUS_COLORS } from "@/lib/tokens";
+import type { EstadoMateria } from "@/lib/plan/evaluarCorrelativas";
+import { TEXT, TEXT_SEC, GLASS, STATUS_COLORS } from "@/lib/ui/tokens";
 
 // ── Types ──────────────────────────────────────────────────────────────────
 export type CardTheme  = { bg: string; borderLeft: string; border: string; opacity?: number };

@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
 
-import { TEXT, TEXT_SEC, SURFACE, INPUT as INPUT_BASE, BTN as BTN_BASE, BTN_VIOLET, ERROR_PANEL } from "@/lib/tokens";
+import { TEXT, TEXT_SEC, SURFACE, INPUT as INPUT_BASE, BTN as BTN_BASE, BTN_VIOLET, ERROR_PANEL } from "@/lib/ui/tokens";
 const INPUT   = { ...INPUT_BASE, borderRadius: 10, padding: "10px 14px", fontSize: 14 } as const;
 const BTN     = { ...BTN_BASE,   borderRadius: 10, padding: "10px 16px", fontSize: 14, fontWeight: 600, width: "100%", textAlign: "center" } as const;
 const BTN_VIO = { ...BTN_VIOLET, borderRadius: 10, padding: "10px 16px", fontSize: 14, fontWeight: 700, width: "100%", textAlign: "center" } as const;

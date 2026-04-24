@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { hasRequiredRole, isRole, normalizeReason } from "@/lib/authz";
+import { hasRequiredRole, isRole, normalizeReason } from "@/lib/auth/authz";
 
 describe("authz", () => {
   it("evalua jerarquia de roles", () => {

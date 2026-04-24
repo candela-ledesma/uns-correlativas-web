@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
-import { getUserSessionSummary } from "@/lib/userProductContext";
+import { getUserSessionSummary } from "@/lib/db/userProductContext";
 
 function unauthorized() {
   return NextResponse.json({ error: "No autenticado" }, { status: 401 });

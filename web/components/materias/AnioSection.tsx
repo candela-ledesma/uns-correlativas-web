@@ -3,11 +3,11 @@
 import MateriaCard from "@/components/materias/MateriaCard";
 import MateriasGrid from "@/components/materias/MateriasGrid";
 import { Agrupador, Materia } from "@/app/types/plan";
-import { EstadoMateria } from "@/lib/evaluarCorrelativas";
-import { getMateriaViewModel } from "@/lib/materiaViewModel";
-import { obtenerCorrelativasMateria } from "@/lib/correlativasMateria";
+import { EstadoMateria } from "@/lib/plan/evaluarCorrelativas";
+import { getMateriaViewModel } from "@/lib/plan/materiaViewModel";
+import { obtenerCorrelativasMateria } from "@/lib/plan/correlativasMateria";
 
-import { TEXT, TEXT_SEC, TITLE_SHADOW } from "@/lib/tokens";
+import { TEXT, TEXT_SEC, TITLE_SHADOW } from "@/lib/ui/tokens";
 
 type CuatrimestresMap = Record<string, Materia[]>;
 type PunteroGrupo = { grupoId: string; nombre: string };

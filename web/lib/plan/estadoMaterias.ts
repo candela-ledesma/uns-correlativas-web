@@ -1,5 +1,5 @@
-import { Materia } from "../app/types/plan";
-import { EstadoMateria } from "@/lib/evaluarCorrelativas";
+import { Materia } from "@/app/types/plan";
+import { EstadoMateria } from "@/lib/plan/evaluarCorrelativas";
 
 export function siguienteEstado(actual: EstadoMateria): EstadoMateria {
   if (actual === "no_cursada") return "cursada";

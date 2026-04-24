@@ -2,7 +2,7 @@ import { describe, expect, test } from "vitest";
 
 import ingCivil from "@/data/ing_civil.json";
 import type { Agrupador, Materia } from "@/app/types/plan";
-import { filtrarMaterias, type FiltrosPlan } from "@/lib/filtrarMaterias";
+import { filtrarMaterias, type FiltrosPlan } from "@/lib/plan/filtrarMaterias";
 
 const materias = ingCivil.materias as Materia[];
 const agrupadores = ingCivil.agrupadores as Agrupador[];

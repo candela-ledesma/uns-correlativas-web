@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
 import type { Agrupador, Materia } from "@/app/types/plan";
-import type { EstadoMateria } from "@/lib/evaluarCorrelativas";
+import type { EstadoMateria } from "@/lib/plan/evaluarCorrelativas";
 import {
   filtrarMaterias,
   normalizarTextoBusqueda,
   type FiltrosPlan,
-} from "@/lib/filtrarMaterias";
+} from "@/lib/plan/filtrarMaterias";
 
 function crearMateria(
   id: string,

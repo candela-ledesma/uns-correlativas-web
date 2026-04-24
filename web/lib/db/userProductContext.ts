@@ -1,10 +1,10 @@
-import { prisma } from "@/lib/prisma";
-import { CARRERAS, getCarreraById } from "@/lib/carreras";
+import { prisma } from "@/lib/db/prisma";
+import { CARRERAS, getCarreraById } from "@/lib/data/carreras";
 import type {
   UserProductContextResponse,
   UserSessionSummaryResponse,
-} from "@/lib/userProductContextTypes";
-import { createUserActivity } from "@/lib/userActivity";
+} from "@/lib/db/userProductContextTypes";
+import { createUserActivity } from "@/lib/db/userActivity";
 
 const DEFAULT_ACTIVITY_LIMIT = 25;
 

@@ -1,6 +1,6 @@
 import LoginActions from "@/components/auth/LoginActions";
-import { BG_GRADIENT } from "@/lib/tokens";
-import { getAuthProviderFlags } from "@/lib/authProviders";
+import { BG_GRADIENT } from "@/lib/ui/tokens";
+import { getAuthProviderFlags } from "@/lib/auth/authProviders";
 
 const AUTH_ERROR_MESSAGES: Record<string, string> = {
   OAuthSignin: "Error al iniciar el proceso con Google. Intentá de nuevo.",

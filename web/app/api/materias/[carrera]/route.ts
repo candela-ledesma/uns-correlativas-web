@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import {
   formatValidationIssues,
   loadPlanData,
-} from "@/lib/planDataLoader";
+} from "@/lib/data/planDataLoader";
 
 export async function GET(
   req: Request,

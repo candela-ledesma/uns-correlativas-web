@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
-import { prisma } from "@/lib/prisma";
+import { prisma } from "@/lib/db/prisma";
 import AdminRoleManager from "@/components/profile/AdminRoleManager";
-import { Role } from "@/lib/roles";
+import { Role } from "@/lib/auth/roles";
 
 export default async function AdminPage() {
   const session = await auth();

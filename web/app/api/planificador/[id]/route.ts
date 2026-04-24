@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { auth } from "@/auth";
-import { prisma } from "@/lib/prisma";
-import { validateScheduleBlock, findOverlaps } from "@/lib/scheduleValidation";
+import { prisma } from "@/lib/db/prisma";
+import { validateScheduleBlock, findOverlaps } from "@/lib/schedule/scheduleValidation";
 
 function unauthorized() {
   return NextResponse.json({ error: "No autenticado" }, { status: 401 });

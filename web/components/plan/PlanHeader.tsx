@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
-import { TEXT, TEXT_SEC, SURFACE, BTN, BTN_RED as BTN_RED_BASE, INPUT, TITLE_SHADOW, STATUS_COLORS, GLASS } from "@/lib/tokens";
+import { TEXT, TEXT_SEC, SURFACE, BTN, BTN_RED as BTN_RED_BASE, INPUT, TITLE_SHADOW, STATUS_COLORS, GLASS } from "@/lib/ui/tokens";
 const BTN_RED = { ...BTN_RED_BASE, borderRadius: 10, padding: "10px 20px", fontWeight: 700, cursor: "pointer" } as const;
 
 type VersionOption = {

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { auth } from "@/auth";
-import { getUserProductContext, updateOnboardingState } from "@/lib/userProductContext";
+import { getUserProductContext, updateOnboardingState } from "@/lib/db/userProductContext";
 
 const onboardingActionSchema = z.object({
   action: z.enum(["dismiss", "complete", "reset"]),

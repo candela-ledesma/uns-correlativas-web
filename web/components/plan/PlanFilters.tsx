@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import type { EstadoFiltro, FiltrosPlan } from "@/lib/filtrarMaterias";
+import type { EstadoFiltro, FiltrosPlan } from "@/lib/plan/filtrarMaterias";
 
-import { TEXT_SEC, SURFACE, BTN as BTN_BASE, INPUT as INPUT_BASE } from "@/lib/tokens";
+import { TEXT_SEC, SURFACE, BTN as BTN_BASE, INPUT as INPUT_BASE } from "@/lib/ui/tokens";
 const INPUT = { ...INPUT_BASE, borderRadius: 10, padding: "8px 12px", fontSize: 14 } as const;
 const BTN   = { ...BTN_BASE,   borderRadius: 10, padding: "6px 14px", fontSize: 13, fontWeight: 600 } as const;
 

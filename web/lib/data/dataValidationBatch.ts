@@ -4,12 +4,12 @@ import {
   CARRERAS,
   type CarreraConfig,
   type CarreraVersionConfig,
-} from "@/lib/carreras";
+} from "@/lib/data/carreras";
 import {
   validatePlanData,
   type PlanValidationIssue,
   type PlanValidationIssueKind,
-} from "@/lib/planValidation";
+} from "@/lib/data/planValidation";
 import type { PlanData } from "@/app/types/plan";
 
 export type DataIssueSeverity = "critical" | "medium" | "low";

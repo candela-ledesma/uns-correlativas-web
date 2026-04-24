@@ -2,11 +2,11 @@ import { describe, expect, it } from "vitest";
 import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import type { CarreraConfig } from "@/lib/carreras";
+import type { CarreraConfig } from "@/lib/data/carreras";
 import {
   formatBatchValidationReport,
   validateConfiguredPlanData,
-} from "@/lib/dataValidationBatch";
+} from "@/lib/data/dataValidationBatch";
 
 function createTmpDataDir() {
   const root = mkdtempSync(path.join(tmpdir(), "uns-planes-"));

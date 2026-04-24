@@ -4,8 +4,8 @@ import {
   estaHabilitadaParaCursar,
   estaHabilitadaParaAprobar,
   estadoAgrupador,
-} from "@/lib/evaluarCorrelativas";
-import { getEstadoKey } from "@/lib/estadoKey";
+} from "@/lib/plan/evaluarCorrelativas";
+import { getEstadoKey } from "@/lib/plan/estadoKey";
 
 type Params = {
   materia: Materia;

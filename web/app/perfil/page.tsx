@@ -2,7 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import ProfileWorkspace from "@/components/profile/ProfileWorkspace";
-import { getUserProductContext } from "@/lib/userProductContext";
+import { getUserProductContext } from "@/lib/db/userProductContext";
 import styles from "./page.module.css";
 
 export default async function PerfilPage() {

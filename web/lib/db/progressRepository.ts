@@ -1,9 +1,9 @@
-import { prisma } from "@/lib/prisma";
+import { prisma } from "@/lib/db/prisma";
 import {
   sanitizeProgressState,
   type ProgressSnapshot,
   type ProgressState,
-} from "@/lib/progressSync";
+} from "@/lib/db/progressSync";
 
 export async function getProgressSnapshot(params: {
   userId: string;

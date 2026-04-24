@@ -3,7 +3,7 @@ import {
   EstadoMateria,
   estaHabilitadaParaAprobar,
   estaHabilitadaParaCursar,
-} from "@/lib/evaluarCorrelativas";
+} from "@/lib/plan/evaluarCorrelativas";
 
 type ResultadoTransicion = {
   siguienteEstado: EstadoMateria;

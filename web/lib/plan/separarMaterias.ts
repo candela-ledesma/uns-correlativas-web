@@ -1,4 +1,4 @@
-import { Materia } from "../app/types/plan";
+import { Materia } from "@/app/types/plan";
 
 export function separarMaterias(materias: Materia[]) {
   const normales = materias.filter(

@@ -1,6 +1,6 @@
 "use client";
 
-import { TEXT_SEC, GLASS, ACCENT } from "@/lib/tokens";
+import { TEXT_SEC, GLASS, ACCENT } from "@/lib/ui/tokens";
 
 export type PlanVista = "plan" | "Plan Vista" | "Planificador";
 

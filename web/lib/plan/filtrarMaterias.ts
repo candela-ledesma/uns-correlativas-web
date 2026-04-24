@@ -1,6 +1,6 @@
 import type { Agrupador, Materia } from "@/app/types/plan";
-import type { EstadoMateria } from "@/lib/evaluarCorrelativas";
-import { getMateriaViewModel } from "@/lib/materiaViewModel";
+import type { EstadoMateria } from "@/lib/plan/evaluarCorrelativas";
+import { getMateriaViewModel } from "@/lib/plan/materiaViewModel";
 
 export type EstadoFiltro =
   | "todas"

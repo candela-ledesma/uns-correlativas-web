@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { auth } from "@/auth";
-import { recordPlanOpened } from "@/lib/userProductContext";
+import { recordPlanOpened } from "@/lib/db/userProductContext";
 
 const planVisitSchema = z.object({
   careerId: z.string().min(1),

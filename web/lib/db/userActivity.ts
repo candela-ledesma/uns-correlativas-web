@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+import { prisma } from "@/lib/db/prisma";
 
 function safeJsonStringify(value: unknown) {
   if (typeof value === "undefined") return null;

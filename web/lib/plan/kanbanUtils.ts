@@ -1,6 +1,6 @@
 import type { Materia, Agrupador } from "@/app/types/plan";
-import type { EstadoMateria } from "@/lib/evaluarCorrelativas";
-import { getEstadoKey } from "@/lib/estadoKey";
+import type { EstadoMateria } from "@/lib/plan/evaluarCorrelativas";
+import { getEstadoKey } from "@/lib/plan/estadoKey";
 
 export const PALETTE = [
   "#f9c74f", "#f4a261", "#90be6d", "#43aa8b",

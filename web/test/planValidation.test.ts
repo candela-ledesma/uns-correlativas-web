@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { validatePlanData } from "@/lib/planValidation";
+import { validatePlanData } from "@/lib/data/planValidation";
 
 function buildValidPlanFixture() {
   return {

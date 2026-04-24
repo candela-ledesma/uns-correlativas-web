@@ -1,6 +1,6 @@
 import { useMemo } from "react";
-import { agruparMaterias } from "@/lib/agruparMaterias";
-import { separarMaterias } from "@/lib/separarMaterias";
+import { agruparMaterias } from "@/lib/plan/agruparMaterias";
+import { separarMaterias } from "@/lib/plan/separarMaterias";
 import { PlanData } from "@/app/types/plan";
 
 export function usePlanStructure(data: PlanData) {

@@ -1,5 +1,5 @@
-import { prisma } from "@/lib/prisma";
-import type { AppRole } from "@/lib/roles";
+import { prisma } from "@/lib/db/prisma";
+import type { AppRole } from "@/lib/auth/roles";
 
 type JsonLike = Record<string, unknown> | unknown[] | null;
 

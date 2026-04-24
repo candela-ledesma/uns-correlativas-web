@@ -5,7 +5,7 @@ import path from "path";
 import {
   formatBatchValidationReport,
   validateConfiguredPlanData,
-} from "@/lib/dataValidationBatch";
+} from "@/lib/data/dataValidationBatch";
 
 type OutputFormat = "human" | "json" | "both";
 

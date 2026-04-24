@@ -3,11 +3,11 @@ import type { NextAuthOptions } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import { prisma } from "@/lib/prisma";
-import { createAuditEvent } from "@/lib/audit";
-import { isRole } from "@/lib/authz";
-import { Role } from "@/lib/roles";
-import { getAuthProviderFlags } from "@/lib/authProviders";
+import { prisma } from "@/lib/db/prisma";
+import { createAuditEvent } from "@/lib/db/audit";
+import { isRole } from "@/lib/auth/authz";
+import { Role } from "@/lib/auth/roles";
+import { getAuthProviderFlags } from "@/lib/auth/authProviders";
 
 if (!process.env.NEXTAUTH_URL && process.env.AUTH_URL) {
   process.env.NEXTAUTH_URL = process.env.AUTH_URL;

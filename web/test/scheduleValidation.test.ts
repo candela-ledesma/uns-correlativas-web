@@ -6,7 +6,7 @@ import {
   minutesToTimeString,
   timeStringToMinutes,
   type ScheduleBlockData,
-} from "@/lib/scheduleValidation";
+} from "@/lib/schedule/scheduleValidation";
 
 // helpers
 const block = (overrides: Partial<ScheduleBlockData> & { dia: number; horaInicio: number; horaFin: number }): ScheduleBlockData =>

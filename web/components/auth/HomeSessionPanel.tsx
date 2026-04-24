@@ -7,9 +7,9 @@ import LoginActions from "@/components/auth/LoginActions";
 import {
   buildPlanHref,
   type UserSessionSummaryResponse,
-} from "@/lib/userProductContextTypes";
+} from "@/lib/db/userProductContextTypes";
 
-import { TEXT, TEXT_SEC, BTN as BTN_TOKEN, GLASS } from "@/lib/tokens";
+import { TEXT, TEXT_SEC, BTN as BTN_TOKEN, GLASS } from "@/lib/ui/tokens";
 // SURFACE más prominente para el dropdown flotante (mayor blur que SURFACE base)
 const SURFACE  = { background: GLASS.base, border: `1px solid ${GLASS.raised}`, backdropFilter: "blur(16px)" } as const;
 // Botón pill con layout de inline-flex — combina el token visual con forma propia

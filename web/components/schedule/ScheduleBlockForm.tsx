@@ -8,10 +8,10 @@ import {
   HORA_INICIO_GRILLA,
   HORA_FIN_GRILLA,
   SLOT_MINUTOS,
-} from "@/lib/scheduleValidation";
+} from "@/lib/schedule/scheduleValidation";
 import type { ScheduleBlock, CreateBlockInput, UpdateBlockInput } from "@/hooks/useSchedule";
 
-import { TEXT_SEC, INPUT as INPUT_BASE, BTN as BTN_BASE, BTN_VIOLET, ERROR_PANEL } from "@/lib/tokens";
+import { TEXT_SEC, INPUT as INPUT_BASE, BTN as BTN_BASE, BTN_VIOLET, ERROR_PANEL } from "@/lib/ui/tokens";
 const INPUT   = { ...INPUT_BASE,  borderRadius: 10, padding: "8px 12px",  fontSize: 14 } as const;
 const BTN     = { ...BTN_BASE,    borderRadius: 10, padding: "10px 16px", fontSize: 14, fontWeight: 600 } as const;
 const BTN_VIO = { ...BTN_VIOLET,  borderRadius: 10, padding: "10px 16px", fontSize: 14, fontWeight: 700 } as const;

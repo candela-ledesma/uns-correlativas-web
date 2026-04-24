@@ -1,4 +1,4 @@
-import { Materia } from "../app/types/plan";
+import { Materia } from "@/app/types/plan";
 
 export function agruparMaterias(materias: Materia[]) {
   const agrupadas: Record<string, Record<string, Materia[]>> = {};

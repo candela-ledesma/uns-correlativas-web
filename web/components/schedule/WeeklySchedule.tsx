@@ -10,12 +10,12 @@ import {
   SLOT_MINUTOS,
   SLOT_PX,
   findOverlaps,
-} from "@/lib/scheduleValidation";
+} from "@/lib/schedule/scheduleValidation";
 import { useSchedule, type ScheduleBlock, type CreateBlockInput } from "@/hooks/useSchedule";
 import ScheduleBlockForm from "@/components/schedule/ScheduleBlockForm";
 import type { Materia } from "@/app/types/plan";
 
-import { TEXT, TEXT_SEC, SURFACE, BTN as BTN_BASE, BTN_VIOLET, BTN_RED as BTN_RED_BASE, GLASS, ERROR_PANEL } from "@/lib/tokens";
+import { TEXT, TEXT_SEC, SURFACE, BTN as BTN_BASE, BTN_VIOLET, BTN_RED as BTN_RED_BASE, GLASS, ERROR_PANEL } from "@/lib/ui/tokens";
 // Variantes locales con layout específico del planificador
 const BTN     = { ...BTN_BASE,     borderRadius: 10, padding: "8px 16px",  fontSize: 13, fontWeight: 600 } as const;
 const BTN_VIO = { ...BTN_VIOLET,   borderRadius: 10, padding: "8px 16px",  fontSize: 13, fontWeight: 700 } as const;

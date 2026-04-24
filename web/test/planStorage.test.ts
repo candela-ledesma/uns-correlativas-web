@@ -1,6 +1,6 @@
 import { beforeEach, afterEach, describe, expect, it, vi } from "vitest";
-import { loadPlanState, savePlanState } from "@/lib/planStorage";
-import type { EstadoMateria } from "@/lib/evaluarCorrelativas";
+import { loadPlanState, savePlanState } from "@/lib/plan/planStorage";
+import type { EstadoMateria } from "@/lib/plan/evaluarCorrelativas";
 
 class MemoryStorage implements Storage {
   private store = new Map<string, string>();

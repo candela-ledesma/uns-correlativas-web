@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
-import { prisma } from "@/lib/prisma";
-import { hasRequiredRole } from "@/lib/authz";
-import { Role } from "@/lib/roles";
+import { prisma } from "@/lib/db/prisma";
+import { hasRequiredRole } from "@/lib/auth/authz";
+import { Role } from "@/lib/auth/roles";
 
 export default async function ModeracionPage() {
   const session = await auth();

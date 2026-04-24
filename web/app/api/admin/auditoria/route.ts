@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
-import { prisma } from "@/lib/prisma";
-import { Role } from "@/lib/roles";
+import { prisma } from "@/lib/db/prisma";
+import { Role } from "@/lib/auth/roles";
 
 const MODERATOR_ACTIONS = new Set([
   "AUTH_SIGNIN",

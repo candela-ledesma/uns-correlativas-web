@@ -1,4 +1,4 @@
-import type { AppRole } from "@/lib/roles";
+import type { AppRole } from "@/lib/auth/roles";
 
 const ROLE_WEIGHT: Record<AppRole, number> = {
   USER: 1,

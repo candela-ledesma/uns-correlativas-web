@@ -20,14 +20,14 @@ import {
   agruparPorAnioYCuatrimestre,
   construirPunterosGruposPorAnioYCuatrimestre,
   combinarSeccionesPorAnioYCuatrimestre,
-} from "@/lib/planAgrupacion";
-import { getMateriaViewModel } from "@/lib/materiaViewModel";
-import { calcularProgresoPlan } from "@/lib/calcularProgresoPlan";
+} from "@/lib/plan/planAgrupacion";
+import { getMateriaViewModel } from "@/lib/plan/materiaViewModel";
+import { calcularProgresoPlan } from "@/lib/plan/calcularProgresoPlan";
 import {
   filtrarMaterias,
   normalizarTextoBusqueda,
   type FiltrosPlan,
-} from "@/lib/filtrarMaterias";
+} from "@/lib/plan/filtrarMaterias";
 
 type Props = {
   data: PlanData;

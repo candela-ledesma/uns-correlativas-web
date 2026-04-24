@@ -6,7 +6,7 @@ import {
   buildPlanHref,
   type UserActivityItem,
   type UserProductContextResponse,
-} from "@/lib/userProductContextTypes";
+} from "@/lib/db/userProductContextTypes";
 import styles from "@/app/perfil/page.module.css";
 
 type Props = {

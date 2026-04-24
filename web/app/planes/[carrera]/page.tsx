@@ -1,14 +1,14 @@
 import Link from "next/link";
-import { BG_GRADIENT, HEADING_FONT } from "@/lib/tokens";
+import { BG_GRADIENT, HEADING_FONT } from "@/lib/ui/tokens";
 import { notFound } from "next/navigation";
 import PlanViewer from "@/components/plan/PlanViewer";
 import PlanStatus from "@/components/plan/PlanStatus";
-import { getCarreraById } from "@/lib/carreras";
+import { getCarreraById } from "@/lib/data/carreras";
 import {
     formatValidationIssues,
     loadPlanData,
     normalizeSearchParam,
-} from "@/lib/planDataLoader";
+} from "@/lib/data/planDataLoader";
 import type { Metadata } from "next";
 
 export async function generateMetadata({

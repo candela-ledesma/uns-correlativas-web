@@ -4,24 +4,24 @@ import { auth } from "@/auth";
 import {
   getProgressSnapshot,
   upsertProgressSnapshot,
-} from "@/lib/progressRepository";
-import { createAuditEvent } from "@/lib/audit";
-import { createUserActivity } from "@/lib/userProductContext";
+} from "@/lib/db/progressRepository";
+import { createAuditEvent } from "@/lib/db/audit";
+import { createUserActivity } from "@/lib/db/userProductContext";
 
 vi.mock("@/auth", () => ({
   auth: vi.fn(),
 }));
 
-vi.mock("@/lib/progressRepository", () => ({
+vi.mock("@/lib/db/progressRepository", () => ({
   getProgressSnapshot: vi.fn(),
   upsertProgressSnapshot: vi.fn(),
 }));
 
-vi.mock("@/lib/audit", () => ({
+vi.mock("@/lib/db/audit", () => ({
   createAuditEvent: vi.fn(),
 }));
 
-vi.mock("@/lib/userProductContext", () => ({
+vi.mock("@/lib/db/userProductContext", () => ({
   createUserActivity: vi.fn(),
 }));
 

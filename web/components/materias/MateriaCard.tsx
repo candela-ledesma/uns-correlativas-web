@@ -2,9 +2,9 @@
 
 import { HTMLAttributes, KeyboardEvent, MouseEvent, useState } from "react";
 import { Materia } from "@/app/types/plan";
-import { EstadoMateria } from "@/lib/evaluarCorrelativas";
-import type { CorrelativaDetalle } from "@/lib/correlativasMateria";
-import { TEXT, TEXT_SEC, TEXT_DET } from "@/lib/tokens";
+import { EstadoMateria } from "@/lib/plan/evaluarCorrelativas";
+import type { CorrelativaDetalle } from "@/lib/plan/correlativasMateria";
+import { TEXT, TEXT_SEC, TEXT_DET } from "@/lib/ui/tokens";
 import {
   getCardTheme,
   getBadgeTheme,
@@ -14,7 +14,7 @@ import {
   CORRELATIVAS_PANEL,
   CORRELATIVAS_ITEM,
   CARD_ACTION_BTN,
-} from "@/lib/cardStyles";
+} from "@/lib/ui/cardStyles";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 type Props = HTMLAttributes<HTMLDivElement> & {

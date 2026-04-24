@@ -2,17 +2,17 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Materia, Agrupador } from "@/app/types/plan";
-import type { EstadoMateria } from "@/lib/evaluarCorrelativas";
-import { estaHabilitadaParaCursar } from "@/lib/evaluarCorrelativas";
+import type { EstadoMateria } from "@/lib/plan/evaluarCorrelativas";
+import { estaHabilitadaParaCursar } from "@/lib/plan/evaluarCorrelativas";
 
-import { TEXT as TEXT_BASE, TEXT_SEC, TEXT_DET as TEXT_DETAIL, TITLE_SHADOW, BG_GRADIENT, HEADING_FONT as FONT } from "@/lib/tokens";
+import { TEXT as TEXT_BASE, TEXT_SEC, TEXT_DET as TEXT_DETAIL, TITLE_SHADOW, BG_GRADIENT, HEADING_FONT as FONT } from "@/lib/ui/tokens";
 import {
   type CuatrSlot,
   PALETTE, SLOT_LABEL,
   buildInitialOrder, getYearsFromOrder, getNextYearName,
   getMateriaEstado, getMateriaOrientacionKey,
   extractOrientaciones, passesOrientationFilter,
-} from "@/lib/kanbanUtils";
+} from "@/lib/plan/kanbanUtils";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 type Props = {

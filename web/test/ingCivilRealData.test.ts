@@ -5,9 +5,9 @@ import {
   estaHabilitadaParaAprobar,
   estaHabilitadaParaCursar,
   type EstadoMateria,
-} from "@/lib/evaluarCorrelativas";
-import { filtrarMaterias, type FiltrosPlan } from "@/lib/filtrarMaterias";
-import { validatePlanData } from "@/lib/planValidation";
+} from "@/lib/plan/evaluarCorrelativas";
+import { filtrarMaterias, type FiltrosPlan } from "@/lib/plan/filtrarMaterias";
+import { validatePlanData } from "@/lib/data/planValidation";
 
 function cargarPlanIngCivil(): PlanData {
   const validacion = validatePlanData(ingCivilRaw, {

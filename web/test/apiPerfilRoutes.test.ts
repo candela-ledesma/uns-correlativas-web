@@ -6,7 +6,7 @@ import {
   recordPlanOpened,
   updateOnboardingState,
   updateUserCareerContext,
-} from "@/lib/userProductContext";
+} from "@/lib/db/userProductContext";
 import {
   GET as getContext,
   PUT as putContext,
@@ -22,7 +22,7 @@ vi.mock("@/auth", () => ({
   auth: vi.fn(),
 }));
 
-vi.mock("@/lib/userProductContext", () => ({
+vi.mock("@/lib/db/userProductContext", () => ({
   getUserProductContext: vi.fn(),
   getUserSessionSummary: vi.fn(),
   updateUserCareerContext: vi.fn(),

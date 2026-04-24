@@ -1,6 +1,6 @@
 import { Agrupador, Materia } from "@/app/types/plan";
-import { EstadoMateria } from "@/lib/evaluarCorrelativas";
-import { estadoAgrupador } from "@/lib/evaluarCorrelativas";
+import { EstadoMateria } from "@/lib/plan/evaluarCorrelativas";
+import { estadoAgrupador } from "@/lib/plan/evaluarCorrelativas";
 
 type ResultadoProgreso = {
     total: number;

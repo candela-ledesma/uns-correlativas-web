@@ -1,4 +1,4 @@
-import type { EstadoMateria } from "@/lib/evaluarCorrelativas";
+import type { EstadoMateria } from "@/lib/plan/evaluarCorrelativas";
 
 export type ProgressState = Record<string, EstadoMateria>;
 

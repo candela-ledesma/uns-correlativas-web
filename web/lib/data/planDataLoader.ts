@@ -5,12 +5,12 @@ import {
   getCarreraById,
   getVersionForCarrera,
   type CarreraVersionConfig,
-} from "@/lib/carreras";
+} from "@/lib/data/carreras";
 import {
   validatePlanData,
   type PlanValidationIssue,
   type PlanValidationIssueKind,
-} from "@/lib/planValidation";
+} from "@/lib/data/planValidation";
 
 type CarreraInfo = {
   id: string;

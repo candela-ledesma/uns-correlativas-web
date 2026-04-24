@@ -1,14 +1,14 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { PATCH } from "../app/api/admin/users/[userId]/role/route";
 import { auth } from "@/auth";
-import { prisma } from "@/lib/prisma";
-import { createAuditEvent } from "@/lib/audit";
+import { prisma } from "@/lib/db/prisma";
+import { createAuditEvent } from "@/lib/db/audit";
 
 vi.mock("@/auth", () => ({
   auth: vi.fn(),
 }));
 
-vi.mock("@/lib/prisma", () => ({
+vi.mock("@/lib/db/prisma", () => ({
   prisma: {
     user: {
       findUnique: vi.fn(),
@@ -17,7 +17,7 @@ vi.mock("@/lib/prisma", () => ({
   },
 }));
 
-vi.mock("@/lib/audit", () => ({
+vi.mock("@/lib/db/audit", () => ({
   createAuditEvent: vi.fn(),
 }));
 

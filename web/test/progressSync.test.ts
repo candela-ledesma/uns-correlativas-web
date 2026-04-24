@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   resolveProgressSnapshotLww,
   sanitizeProgressState,
-} from "@/lib/progressSync";
+} from "@/lib/db/progressSync";
 
 describe("progressSync", () => {
   it("limpia estados invalidos", () => {

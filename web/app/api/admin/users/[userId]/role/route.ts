@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { auth } from "@/auth";
-import { prisma } from "@/lib/prisma";
-import { createAuditEvent } from "@/lib/audit";
-import { normalizeReason } from "@/lib/authz";
-import { Role } from "@/lib/roles";
+import { prisma } from "@/lib/db/prisma";
+import { createAuditEvent } from "@/lib/db/audit";
+import { normalizeReason } from "@/lib/auth/authz";
+import { Role } from "@/lib/auth/roles";
 
 const schema = z.object({
   role: z.enum([Role.USER, Role.MODERATOR, Role.ADMIN]),

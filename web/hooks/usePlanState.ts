@@ -3,22 +3,22 @@
 import { useEffect, useRef, useState } from "react";
 import { useSession } from "next-auth/react";
 import type { Materia, Agrupador } from "@/app/types/plan";
-import type { EstadoMateria } from "@/lib/evaluarCorrelativas";
+import type { EstadoMateria } from "@/lib/plan/evaluarCorrelativas";
 import {
   estaHabilitadaParaCursar,
   estaHabilitadaParaAprobar,
-} from "@/lib/evaluarCorrelativas";
+} from "@/lib/plan/evaluarCorrelativas";
 import {
   loadPlanStateSnapshot,
   savePlanState,
   clearPlanState,
   hasMigratedPlanState,
   markPlanStateMigrated,
-} from "@/lib/planStorage";
-import { scrollToGroup } from "@/lib/scrollToGroup";
-import { getScrollTargetId } from "@/lib/getScrollTargetId";
-import { getEstadoKey } from "@/lib/estadoKey";
-import { materiaElegidaEnOtroGrupo } from "@/lib/materiaViewModel";
+} from "@/lib/plan/planStorage";
+import { scrollToGroup } from "@/lib/plan/scrollToGroup";
+import { getScrollTargetId } from "@/lib/plan/getScrollTargetId";
+import { getEstadoKey } from "@/lib/plan/estadoKey";
+import { materiaElegidaEnOtroGrupo } from "@/lib/plan/materiaViewModel";
 
 type SyncStatus = "guest" | "syncing" | "synced" | "error";
 

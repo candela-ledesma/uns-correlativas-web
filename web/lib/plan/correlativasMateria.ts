@@ -1,6 +1,6 @@
 import type { Agrupador, Materia } from "@/app/types/plan";
-import { cumpleNivel, estadoAgrupador } from "@/lib/evaluarCorrelativas";
-import type { EstadoMateria } from "@/lib/evaluarCorrelativas";
+import { cumpleNivel, estadoAgrupador } from "@/lib/plan/evaluarCorrelativas";
+import type { EstadoMateria } from "@/lib/plan/evaluarCorrelativas";
 
 type RequisitoCorrelativa = {
   para_cursar: string | null;

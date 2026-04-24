@@ -4,7 +4,7 @@ import { auth } from "@/auth";
 import {
   getUserProductContext,
   updateUserCareerContext,
-} from "@/lib/userProductContext";
+} from "@/lib/db/userProductContext";
 
 const updateContextSchema = z.object({
   enrolledCareerIds: z.array(z.string().min(1)).min(1),

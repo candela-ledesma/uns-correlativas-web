@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { auth } from "@/auth";
-import { createAuditEvent } from "@/lib/audit";
-import { getProgressSnapshot, upsertProgressSnapshot } from "@/lib/progressRepository";
+import { createAuditEvent } from "@/lib/db/audit";
+import { getProgressSnapshot, upsertProgressSnapshot } from "@/lib/db/progressRepository";
 import {
   resolveProgressSnapshotLww,
   sanitizeProgressState,
   type ProgressSnapshot,
-} from "@/lib/progressSync";
+} from "@/lib/db/progressSync";
 
 const syncSchema = z.object({
   planId: z.string().min(1),

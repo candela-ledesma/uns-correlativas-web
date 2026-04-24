@@ -1,5 +1,5 @@
-import { EstadoMateria } from "@/lib/evaluarCorrelativas";
-import { getDefaultVersionForCarrera } from "@/lib/carreras";
+import { EstadoMateria } from "@/lib/plan/evaluarCorrelativas";
+import { getDefaultVersionForCarrera } from "@/lib/data/carreras";
 
 const STORAGE_KEY_PREFIX = "estadoMaterias";
 const LEGACY_STORAGE_KEY = "estadoMaterias";
