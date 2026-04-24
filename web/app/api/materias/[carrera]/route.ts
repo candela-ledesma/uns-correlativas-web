@@ -64,7 +64,7 @@ export async function GET(
 
     return NextResponse.json(result.data);
   } catch (error: unknown) {
-    console.error("Error en API:", error);
+    console.error("[api/materias]", req.url, error);
     return NextResponse.json(
       { error: "No se pudieron cargar las materias" },
       { status: 500 }

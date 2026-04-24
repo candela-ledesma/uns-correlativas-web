@@ -1,12 +1,3 @@
-/**
- * Design tokens del tema oscuro.
- * Solo valores visuales: color, fondo, borde, sombra.
- * Padding, borderRadius y fontSize son layout — cada componente los define.
- *
- * Jerarquía:
- *   primitivos → GLASS (escala de opacidad) → STATUS_COLORS (semánticos)
- *               → objetos de estilo base (SURFACE, BTN, INPUT…)
- */
 import type { CSSProperties } from "react";
 
 // ── 1. Primitivos de color ─────────────────────────────────────────────────

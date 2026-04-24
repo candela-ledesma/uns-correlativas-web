@@ -176,7 +176,7 @@ Estrategia: **last-write-wins por timestamp**.
 - Si hay conflicto entre local y remoto, gana el snapshot con timestamp mas nuevo.
 - Se guarda una marca local para no repetir migracion inicial en cada sesión.
 
-## Validacion de datos (Incremento 4)
+## Validacion de datos
 
 El proyecto incluye un validador batch para todos los JSON de `data/` configurados en el manifest de carreras.
 
