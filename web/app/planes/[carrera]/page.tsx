@@ -89,7 +89,7 @@ export async function generateMetadata({
     const { data } = result;
 
     return (
-    <main className="min-h-screen px-6 py-10" style={{ background: BG_GRADIENT, fontFamily: HEADING_FONT }}>
+    <main className="min-h-screen px-4 sm:px-6 py-8 sm:py-10" style={{ background: BG_GRADIENT, fontFamily: HEADING_FONT }}>
         <div className="mx-auto max-w-7xl">
         <div className="mb-6" data-no-print>
             <Link

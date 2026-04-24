@@ -48,10 +48,13 @@
 .topActions {
   display: flex;
   justify-content: flex-end;
+  min-width: 0;
+  flex-shrink: 1;
 }
 
 .sessionSkeleton {
-  width: 178px;
+  width: 100%;
+  max-width: 178px;
   height: 40px;
   border-radius: 999px;
   border: 1px solid var(--line);
@@ -300,7 +303,8 @@
     padding: 7px 10px;
   }
   .topActions {
-    max-width: 56%;
+    max-width: 60%;
+    min-width: 0;
   }
   .card {
     padding: 20px;

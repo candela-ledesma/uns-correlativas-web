@@ -166,7 +166,7 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
 
   // ── Render ─────────────────────────────────────────────────────────────────
   return (
-    <div className="grid gap-4 min-w-0">
+    <div className="grid gap-4 min-w-0 w-full">
       <style>{`
         @media print {
           @page { size: A4 landscape; margin: 10mm; }
@@ -202,7 +202,7 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
       )}
 
       {/* Grid */}
-      <div className="overflow-x-auto rounded-2xl ws-grid-wrap" style={{ ...SURFACE }}>
+      <div className="overflow-x-auto rounded-2xl ws-grid-wrap max-w-full" style={{ ...SURFACE }}>
         {isLoading ? (
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: 160 }}>
             <span style={{ color: TEXT_SEC, fontSize: 14 }}>Cargando horario...</span>

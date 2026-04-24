@@ -22,7 +22,7 @@ function Trigger({ onClick, expanded, children }: { onClick: () => void; expande
       type="button"
       onClick={onClick}
       aria-expanded={expanded}
-      style={{ ...BTN_BASE, minHeight: 40, minWidth: 160, justifyContent: "center" }}
+      style={{ ...BTN_BASE, minHeight: 40, minWidth: 0, maxWidth: "100%", width: "100%", justifyContent: "center" }}
     >
       {children}
     </button>
@@ -78,13 +78,13 @@ export default function HomeSessionPanel() {
 
   // ── Loading ────────────────────────────────────────────────────────────────
   if (status === "loading") {
-    return <div style={{ ...BTN_BASE, minHeight: 40, minWidth: 160, justifyContent: "center", cursor: "default", opacity: 0.5 }}>Cargando...</div>;
+    return <div style={{ ...BTN_BASE, minHeight: 40, minWidth: 0, maxWidth: "100%", width: "100%", justifyContent: "center", cursor: "default", opacity: 0.5 }}>Cargando...</div>;
   }
 
   // ── Unauthenticated ────────────────────────────────────────────────────────
   if (status !== "authenticated" || !session.user) {
     return (
-      <div ref={containerRef} style={{ position: "relative" }}>
+      <div ref={containerRef} style={{ position: "relative", minWidth: 0, width: "100%" }}>
         <Trigger onClick={() => setOpen((p) => !p)} expanded={open}>
           Iniciar sesión
           <Chevron open={open} />
@@ -120,9 +120,9 @@ export default function HomeSessionPanel() {
   const quickPlanHref  = activeCareerId ? buildPlanHref(activeCareerId, activeLastPlan) : "/";
 
   return (
-    <div ref={containerRef} style={{ position: "relative" }}>
+    <div ref={containerRef} style={{ position: "relative", minWidth: 0, width: "100%" }}>
       <Trigger onClick={() => setOpen((p) => !p)} expanded={open}>
-        <span style={{ maxWidth: 180, overflow: "hidden", textOverflow: "ellipsis" }}>{session.user.email}</span>
+        <span style={{ flex: "1 1 0%", minWidth: 0, overflow: "hidden", textOverflow: "ellipsis" }}>{session.user.email}</span>
         <span style={{ background: "rgba(157,78,221,0.25)", border: "1px solid rgba(157,78,221,0.4)", borderRadius: 999, padding: "2px 8px", fontSize: 10, fontWeight: 700, color: "#c084fc", flexShrink: 0 }}>
           {session.user.role}
         </span>

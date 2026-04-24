@@ -95,15 +95,15 @@ export default function PlanHeader({
 
     return (
         <header style={{ marginBottom: 36, display: "grid", gap: 20 }}>
-            <div style={{ display: "flex", flexWrap: "wrap", alignItems: "flex-start", justifyContent: "space-between", gap: 16 }}>
-                <div>
-                    <h1 style={{ color: TEXT, fontSize: "clamp(2rem,4vw,3rem)", fontWeight: 800, lineHeight: 1.1, letterSpacing: "-0.02em", marginBottom: 8, textShadow: TITLE_SHADOW }}>
+            <div style={{ display: "flex", flexWrap: "wrap", alignItems: "flex-start", justifyContent: "space-between", gap: 16, minWidth: 0, maxWidth: "100%" }}>
+                <div style={{ minWidth: 0, maxWidth: "100%" }}>
+                    <h1 style={{ color: TEXT, fontSize: "clamp(1.6rem,4vw,3rem)", fontWeight: 800, lineHeight: 1.1, letterSpacing: "-0.02em", marginBottom: 8, textShadow: TITLE_SHADOW, wordBreak: "break-word" }}>
                         {titulo}
                     </h1>
-                    {subtitulo && <p style={{ color: TEXT_SEC, fontSize: 15, margin: 0 }}>{subtitulo}</p>}
+                    {subtitulo && <p style={{ color: TEXT_SEC, fontSize: 14, margin: 0, wordBreak: "break-word" }}>{subtitulo}</p>}
                 </div>
 
-                <div data-no-print style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 12 }}>
+                <div data-no-print style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 10, minWidth: 0, maxWidth: "100%" }}>
                     <SyncBadge syncStatus={syncStatus} />
 
                     {showVersionSelector && versionSelector && (
@@ -201,7 +201,7 @@ export default function PlanHeader({
                             background: "rgba(18,12,36,0.97)",
                             border: "1px solid rgba(255,255,255,0.12)",
                             borderRadius: 20,
-                            padding: "28px 28px 24px",
+                            padding: "24px 20px",
                             maxWidth: 400,
                             width: "100%",
                             backdropFilter: "blur(24px)",
@@ -219,7 +219,7 @@ export default function PlanHeader({
                                 ¿Seguro que querés reiniciar tu progreso? Esta acción no se puede deshacer.
                             </p>
                         </div>
-                        <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
+                        <div style={{ display: "flex", flexWrap: "wrap", gap: 10, justifyContent: "flex-end" }}>
                             <button
                                 type="button"
                                 autoFocus
