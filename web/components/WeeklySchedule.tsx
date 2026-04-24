@@ -71,11 +71,6 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
   const suppressClickRef    = useRef(false);
   const columnRefs          = useRef<(HTMLDivElement | null)[]>([null, null, null, null, null]);
   const gridRef             = useRef<HTMLDivElement>(null);
-  const panelRef            = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (panel) requestAnimationFrame(() => panelRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" }));
-  }, [panel]);
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) { if (e.key === "Escape") { setActiveBlock(null); setPanel(null); } }
@@ -370,25 +365,54 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
         )}
       </div>
 
-      {/* Side panel */}
+      {/* Modal */}
       {panel && (
-        <div data-no-print ref={panelRef} style={{ ...SURFACE, borderRadius: 16, padding: 20, animation: "dropdownIn 140ms ease-out" }}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
-            <h3 style={{ margin: 0, color: TEXT, fontSize: 14, fontWeight: 700 }}>
-              {panel.type === "create" ? "Nuevo bloque" : "Editar bloque"}
-            </h3>
-            <button type="button" style={{ ...BTN, padding: "4px 10px", fontSize: 12 }} onClick={() => setPanel(null)} aria-label="Cerrar">✕</button>
+        <div
+          data-no-print
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="schedule-modal-title"
+          style={{
+            position: "fixed", inset: 0, zIndex: 1000,
+            background: "rgba(0,0,0,0.55)",
+            backdropFilter: "blur(4px)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            padding: 20,
+          }}
+          onClick={() => setPanel(null)}
+        >
+          <div
+            style={{
+              background: "rgba(18,12,36,0.97)",
+              border: "1px solid rgba(255,255,255,0.12)",
+              borderRadius: 20,
+              padding: "24px 24px 20px",
+              width: "min(100%, 480px)",
+              backdropFilter: "blur(24px)",
+              boxShadow: "0 24px 64px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04)",
+              maxHeight: "90dvh",
+              overflowY: "auto",
+              animation: "dropdownIn 160ms ease-out",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
+              <h3 id="schedule-modal-title" style={{ margin: 0, color: TEXT, fontSize: 16, fontWeight: 700 }}>
+                {panel.type === "create" ? "Nuevo bloque" : "Editar bloque"}
+              </h3>
+              <button type="button" style={{ ...BTN, padding: "6px 12px", fontSize: 13 }} onClick={() => setPanel(null)} aria-label="Cerrar">✕</button>
+            </div>
+            <ScheduleBlockForm
+              block={panel.type === "edit" ? panel.block : undefined}
+              defaultDia={panel.type === "create" ? panel.prefill?.dia : undefined}
+              defaultHoraInicio={panel.type === "create" ? panel.prefill?.horaInicio : undefined}
+              materias={materiaOptions}
+              onSave={panel.type === "create"
+                ? (d) => handleCreate(d as CreateBlockInput)
+                : (d) => handleUpdate(panel.block.id, d as Partial<ScheduleBlock>)}
+              onCancel={() => setPanel(null)}
+            />
           </div>
-          <ScheduleBlockForm
-            block={panel.type === "edit" ? panel.block : undefined}
-            defaultDia={panel.type === "create" ? panel.prefill?.dia : undefined}
-            defaultHoraInicio={panel.type === "create" ? panel.prefill?.horaInicio : undefined}
-            materias={materiaOptions}
-            onSave={panel.type === "create"
-              ? (d) => handleCreate(d as CreateBlockInput)
-              : (d) => handleUpdate(panel.block.id, d as Partial<ScheduleBlock>)}
-            onCancel={() => setPanel(null)}
-          />
         </div>
       )}
 

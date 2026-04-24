@@ -11,7 +11,7 @@ import {
 } from "@/lib/scheduleValidation";
 import type { ScheduleBlock, CreateBlockInput, UpdateBlockInput } from "@/hooks/useSchedule";
 
-import { TEXT_SEC, INPUT as INPUT_BASE, BTN as BTN_BASE, BTN_VIOLET } from "@/lib/tokens";
+import { TEXT_SEC, INPUT as INPUT_BASE, BTN as BTN_BASE, BTN_VIOLET, ERROR_PANEL } from "@/lib/tokens";
 const INPUT   = { ...INPUT_BASE,  borderRadius: 10, padding: "8px 12px",  fontSize: 14 } as const;
 const BTN     = { ...BTN_BASE,    borderRadius: 10, padding: "10px 16px", fontSize: 14, fontWeight: 600 } as const;
 const BTN_VIO = { ...BTN_VIOLET,  borderRadius: 10, padding: "10px 16px", fontSize: 14, fontWeight: 700 } as const;
@@ -88,7 +88,7 @@ export default function ScheduleBlockForm({ block, defaultDia, defaultHoraInicio
 
       {/* Error */}
       {error && (
-        <div role="alert" style={{ background: "rgba(220,38,38,0.12)", border: "1px solid rgba(239,68,68,0.35)", borderRadius: 10, padding: "10px 14px", color: "#fca5a5", fontSize: 13 }}>
+        <div role="alert" style={{ ...ERROR_PANEL, borderRadius: 10, padding: "10px 14px", fontSize: 13 }}>
           {error}
         </div>
       )}
