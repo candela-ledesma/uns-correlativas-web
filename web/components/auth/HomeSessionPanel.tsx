@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
-import LoginActions from "@/components/LoginActions";
+import LoginActions from "@/components/auth/LoginActions";
 import {
   buildPlanHref,
   type UserSessionSummaryResponse,

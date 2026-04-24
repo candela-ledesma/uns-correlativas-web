@@ -4,18 +4,18 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useSession } from "next-auth/react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { PlanData, Materia } from "@/app/types/plan";
-import PlanHeader from "@/components/PlanHeader";
-import PlanFilters from "@/components/PlanFilters";
-import OrientationSelector from "@/components/OrientationSelector";
-import AnioSection from "@/components/AnioSection";
-import GrupoMaterias from "@/components/GrupoMaterias";
-import PlanOnboarding from "@/components/PlanOnboarding";
-import KanbanPlan from "@/components/KanbanPlan";
-import WeeklySchedule from "@/components/WeeklySchedule";
+import PlanHeader from "@/components/plan/PlanHeader";
+import PlanFilters from "@/components/plan/PlanFilters";
+import OrientationSelector from "@/components/plan/OrientationSelector";
+import AnioSection from "@/components/materias/AnioSection";
+import GrupoMaterias from "@/components/materias/GrupoMaterias";
+import PlanOnboarding from "@/components/onboarding/PlanOnboarding";
+import KanbanPlan from "@/components/kanban/KanbanPlan";
+import WeeklySchedule from "@/components/schedule/WeeklySchedule";
 import { usePlanState } from "@/hooks/usePlanState";
 import { usePlanStructure } from "@/hooks/usePlanStructure";
 import { useOnboarding } from "@/hooks/useOnboarding";
-import PlanTabBar, { type PlanVista } from "@/components/PlanTabBar";
+import PlanTabBar, { type PlanVista } from "@/components/plan/PlanTabBar";
 import {
   agruparPorAnioYCuatrimestre,
   construirPunterosGruposPorAnioYCuatrimestre,

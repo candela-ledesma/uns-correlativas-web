@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { BG_GRADIENT, HEADING_FONT } from "@/lib/tokens";
 import { notFound } from "next/navigation";
-import PlanViewer from "@/components/PlanViewer";
-import PlanStatus from "@/components/PlanStatus";
+import PlanViewer from "@/components/plan/PlanViewer";
+import PlanStatus from "@/components/plan/PlanStatus";
 import { getCarreraById } from "@/lib/carreras";
 import {
     formatValidationIssues,

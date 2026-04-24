@@ -1,7 +1,7 @@
 "use client";
 
-import MateriaCard from "@/components/MateriaCard";
-import MateriasGrid from "@/components/MateriasGrid";
+import MateriaCard from "@/components/materias/MateriaCard";
+import MateriasGrid from "@/components/materias/MateriasGrid";
 import { Agrupador, Materia } from "@/app/types/plan";
 import { EstadoMateria } from "@/lib/evaluarCorrelativas";
 import { getMateriaViewModel } from "@/lib/materiaViewModel";

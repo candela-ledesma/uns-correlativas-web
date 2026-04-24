@@ -1,8 +1,8 @@
 "use client";
 
 import { HTMLAttributes, KeyboardEvent, MouseEvent, useState } from "react";
-import { Materia } from "../app/types/plan";
-import { EstadoMateria } from "../lib/evaluarCorrelativas";
+import { Materia } from "@/app/types/plan";
+import { EstadoMateria } from "@/lib/evaluarCorrelativas";
 import type { CorrelativaDetalle } from "@/lib/correlativasMateria";
 import { TEXT, TEXT_SEC, TEXT_DET } from "@/lib/tokens";
 import {

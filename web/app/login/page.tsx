@@ -1,4 +1,4 @@
-import LoginActions from "@/components/LoginActions";
+import LoginActions from "@/components/auth/LoginActions";
 import { BG_GRADIENT } from "@/lib/tokens";
 import { getAuthProviderFlags } from "@/lib/authProviders";
 

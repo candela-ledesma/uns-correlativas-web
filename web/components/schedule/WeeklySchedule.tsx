@@ -12,7 +12,7 @@ import {
   findOverlaps,
 } from "@/lib/scheduleValidation";
 import { useSchedule, type ScheduleBlock, type CreateBlockInput } from "@/hooks/useSchedule";
-import ScheduleBlockForm from "@/components/ScheduleBlockForm";
+import ScheduleBlockForm from "@/components/schedule/ScheduleBlockForm";
 import type { Materia } from "@/app/types/plan";
 
 import { TEXT, TEXT_SEC, SURFACE, BTN as BTN_BASE, BTN_VIOLET, BTN_RED as BTN_RED_BASE, GLASS, ERROR_PANEL } from "@/lib/tokens";

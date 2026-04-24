@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
-import ProfileWorkspace from "@/components/ProfileWorkspace";
+import ProfileWorkspace from "@/components/profile/ProfileWorkspace";
 import { getUserProductContext } from "@/lib/userProductContext";
 import styles from "./page.module.css";
 

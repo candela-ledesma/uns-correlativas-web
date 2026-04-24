@@ -2,7 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
-import AdminRoleManager from "@/components/AdminRoleManager";
+import AdminRoleManager from "@/components/profile/AdminRoleManager";
 import { Role } from "@/lib/roles";
 
 export default async function AdminPage() {

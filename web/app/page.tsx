@@ -6,7 +6,7 @@ import dynamic from "next/dynamic";
 import { CARRERAS } from "@/lib/carreras";
 import styles from "./page.module.css";
 
-const HomeSessionPanel = dynamic(() => import("@/components/HomeSessionPanel"), {
+const HomeSessionPanel = dynamic(() => import("@/components/auth/HomeSessionPanel"), {
   ssr: false,
   loading: () => <div className={styles.sessionSkeleton} aria-hidden="true" />, 
 });
