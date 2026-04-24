@@ -3,7 +3,7 @@ import {
   estadoAgrupador,
   EstadoMateria,
   estaHabilitadaParaCursar,
-} from "../lib/evaluarCorrelativas";
+} from "@/lib/plan/evaluarCorrelativas";
 import type { Agrupador, Materia } from "../app/types/plan";
 
 function estadosAprobados(ids: string[]): Record<string, EstadoMateria> {

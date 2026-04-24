@@ -41,9 +41,23 @@ flowchart LR
 |-- pdf/                            # Fixtures PDF
 `-- web/
     |-- app/                        # Next.js App Router (paginas + api routes)
-    |-- components/                 # UI de planes, perfil, admin, onboarding
+    |-- components/                 # Componentes React por dominio
+    |   |-- plan/                   # PlanViewer, PlanHeader, PlanFilters, PlanTabBar, OrientationSelector, PlanStatus
+    |   |-- materias/               # MateriaCard, MateriasGrid, AnioSection, GrupoMaterias
+    |   |-- kanban/                 # KanbanPlan (vista tablero con drag & drop)
+    |   |-- schedule/               # WeeklySchedule, ScheduleBlockForm
+    |   |-- auth/                   # LoginActions, HomeSessionPanel
+    |   |-- profile/                # ProfileWorkspace, AdminRoleManager
+    |   `-- onboarding/             # PlanOnboarding
     |-- data/                       # JSON de planes publicados
-    |-- lib/                        # Carga, validacion, auth, progreso, contexto
+    |-- hooks/                      # usePlanState, useSchedule, useOnboarding
+    |-- lib/                        # Logica de negocio y servicios
+    |   |-- plan/                   # Dominio academico (evaluarCorrelativas, materiaViewModel, filtros, progreso...)
+    |   |-- data/                   # Carga y validacion de planes (carreras, planDataLoader, planValidation...)
+    |   |-- db/                     # Capa de base de datos (prisma, userProductContext, audit, actividad...)
+    |   |-- auth/                   # Permisos y autenticacion (roles, authz, authProviders)
+    |   |-- schedule/               # Validacion del planificador horario
+    |   `-- ui/                     # Tokens de diseno y estilos de cards
     |-- prisma/                     # Schema y migraciones
     `-- tests/e2e/                  # Playwright end-to-end
 ```
@@ -306,7 +320,7 @@ El flujo actual consume `onboarding=1` en modo one-shot. Si reaparece, revisar l
 - Guia web detallada: `web/README.md`
 - Esquema DB: `web/prisma/schema.prisma`
 - Contrato parser: `core/parser/contract_validator.py`
-- Carga y validacion web: `web/lib/planDataLoader.ts`, `web/lib/planValidation.ts`
+- Carga y validacion web: `web/lib/data/planDataLoader.ts`, `web/lib/data/planValidation.ts`
 
 ## 17) Checklist de produccion
 

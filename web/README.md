@@ -15,7 +15,32 @@ npm run check:prod:env
 npm run check:prod
 ```
 
-## Multiusuario (Incremento 5)
+## Estructura del proyecto
+
+```text
+web/
+|-- app/                   # Next.js App Router — paginas y API routes
+|-- components/
+|   |-- plan/              # PlanViewer, PlanHeader, PlanFilters, PlanTabBar, OrientationSelector, PlanStatus
+|   |-- materias/          # MateriaCard, MateriasGrid, AnioSection, GrupoMaterias
+|   |-- kanban/            # KanbanPlan
+|   |-- schedule/          # WeeklySchedule, ScheduleBlockForm
+|   |-- auth/              # LoginActions, HomeSessionPanel
+|   |-- profile/           # ProfileWorkspace, AdminRoleManager
+|   `-- onboarding/        # PlanOnboarding
+|-- hooks/                 # usePlanState, useSchedule, useOnboarding
+|-- lib/
+|   |-- plan/              # Logica de dominio: correlativas, estados, filtros, progreso
+|   |-- data/              # Carga y validacion: carreras, planDataLoader, planValidation
+|   |-- db/                # DB layer: prisma, audit, progreso, userProductContext, actividad
+|   |-- auth/              # Permisos: roles, authz, authProviders
+|   |-- schedule/          # Validacion de horarios
+|   `-- ui/                # Tokens de diseno, cardStyles
+|-- data/                  # JSON de planes publicados
+`-- prisma/                # Schema y migraciones
+```
+
+## Autenticacion y sincronizacion multiusuario
 
 Este incremento agrega:
 
