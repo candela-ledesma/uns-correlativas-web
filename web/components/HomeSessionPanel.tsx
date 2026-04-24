@@ -9,9 +9,9 @@ import {
   type UserSessionSummaryResponse,
 } from "@/lib/userProductContextTypes";
 
-import { TEXT, TEXT_SEC, BTN as BTN_TOKEN } from "@/lib/tokens";
-// SURFACE más prominente para el dropdown flotante (mayor blur/opacidad que el base)
-const SURFACE  = { background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.12)", backdropFilter: "blur(16px)" } as const;
+import { TEXT, TEXT_SEC, BTN as BTN_TOKEN, GLASS } from "@/lib/tokens";
+// SURFACE más prominente para el dropdown flotante (mayor blur que SURFACE base)
+const SURFACE  = { background: GLASS.base, border: `1px solid ${GLASS.raised}`, backdropFilter: "blur(16px)" } as const;
 // Botón pill con layout de inline-flex — combina el token visual con forma propia
 const BTN_BASE = { ...BTN_TOKEN, borderRadius: 999, padding: "8px 16px", fontSize: 13, fontWeight: 600, display: "inline-flex", alignItems: "center", gap: 8, whiteSpace: "nowrap" } as const;
 
@@ -142,15 +142,15 @@ export default function HomeSessionPanel() {
 
           {/* Skeleton */}
           {summaryLoading && !summary && (
-            <div style={{ marginBottom: 16, borderRadius: 12, border: "1px solid rgba(255,255,255,0.08)", background: "rgba(255,255,255,0.04)", padding: 12 }}>
-              <div style={{ height: 10, width: 96, borderRadius: 6, background: "rgba(255,255,255,0.10)", marginBottom: 8 }} />
-              <div style={{ height: 14, width: 160, borderRadius: 6, background: "rgba(255,255,255,0.08)" }} />
+            <div style={{ marginBottom: 16, borderRadius: 12, border: `1px solid ${GLASS.medium}`, background: GLASS.dim, padding: 12 }}>
+              <div style={{ height: 10, width: 96, borderRadius: 6, background: GLASS.border, marginBottom: 8 }} />
+              <div style={{ height: 14, width: 160, borderRadius: 6, background: GLASS.medium }} />
             </div>
           )}
 
           {/* Carrera activa */}
           {!summaryLoading && summary?.activeCareerName && (
-            <div style={{ marginBottom: 16, borderRadius: 12, border: "1px solid rgba(255,255,255,0.10)", background: "rgba(255,255,255,0.04)", padding: 12 }}>
+            <div style={{ marginBottom: 16, borderRadius: 12, border: `1px solid ${GLASS.border}`, background: GLASS.dim, padding: 12 }}>
               <p style={{ margin: "0 0 4px", color: TEXT_SEC, fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.07em" }}>Carrera activa</p>
               <p style={{ margin: "0 0 10px", color: TEXT, fontSize: 13, fontWeight: 600 }}>{summary.activeCareerName}</p>
               <Link

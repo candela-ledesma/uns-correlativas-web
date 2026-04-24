@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
 
-import { TEXT, TEXT_SEC, SURFACE, INPUT as INPUT_BASE, BTN as BTN_BASE, BTN_VIOLET } from "@/lib/tokens";
+import { TEXT, TEXT_SEC, SURFACE, INPUT as INPUT_BASE, BTN as BTN_BASE, BTN_VIOLET, ERROR_PANEL } from "@/lib/tokens";
 const INPUT   = { ...INPUT_BASE, borderRadius: 10, padding: "10px 14px", fontSize: 14 } as const;
 const BTN     = { ...BTN_BASE,   borderRadius: 10, padding: "10px 16px", fontSize: 14, fontWeight: 600, width: "100%", textAlign: "center" } as const;
 const BTN_VIO = { ...BTN_VIOLET, borderRadius: 10, padding: "10px 16px", fontSize: 14, fontWeight: 700, width: "100%", textAlign: "center" } as const;
@@ -76,7 +76,7 @@ export default function LoginActions({ callbackUrl, compact = false, showGoogleL
 
       {error && (
         <div role="alert" aria-live="polite"
-          style={{ background: "rgba(220,38,38,0.12)", border: "1px solid rgba(239,68,68,0.35)", borderRadius: 10, padding: "10px 14px", color: "#fca5a5", fontSize: 13 }}>
+          style={{ ...ERROR_PANEL, borderRadius: 10, padding: "10px 14px", fontSize: 13 }}>
           {error}
         </div>
       )}

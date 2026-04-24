@@ -15,7 +15,7 @@ import { useSchedule, type ScheduleBlock, type CreateBlockInput } from "@/hooks/
 import ScheduleBlockForm from "@/components/ScheduleBlockForm";
 import type { Materia } from "@/app/types/plan";
 
-import { TEXT, TEXT_SEC, SURFACE, BTN as BTN_BASE, BTN_VIOLET, BTN_RED as BTN_RED_BASE, GLASS } from "@/lib/tokens";
+import { TEXT, TEXT_SEC, SURFACE, BTN as BTN_BASE, BTN_VIOLET, BTN_RED as BTN_RED_BASE, GLASS, ERROR_PANEL } from "@/lib/tokens";
 // Variantes locales con layout específico del planificador
 const BTN     = { ...BTN_BASE,     borderRadius: 10, padding: "8px 16px",  fontSize: 13, fontWeight: 600 } as const;
 const BTN_VIO = { ...BTN_VIOLET,   borderRadius: 10, padding: "8px 16px",  fontSize: 13, fontWeight: 700 } as const;
@@ -210,7 +210,7 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
 
       {/* Error */}
       {error && (
-        <div style={{ background: "rgba(220,38,38,0.12)", border: "1px solid rgba(239,68,68,0.35)", borderRadius: 10, padding: "10px 14px", color: "#fca5a5", fontSize: 13 }}>
+        <div style={{ ...ERROR_PANEL, borderRadius: 10, padding: "10px 14px", fontSize: 13 }}>
           {error}
         </div>
       )}

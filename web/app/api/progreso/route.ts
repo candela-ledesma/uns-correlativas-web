@@ -4,7 +4,7 @@ import { auth } from "@/auth";
 import { createAuditEvent } from "@/lib/audit";
 import { getCarreraById } from "@/lib/carreras";
 import { getProgressSnapshot, upsertProgressSnapshot } from "@/lib/progressRepository";
-import { createUserActivity } from "@/lib/userProductContext";
+import { createUserActivity } from "@/lib/userActivity";
 import {
   resolveProgressSnapshotLww,
   sanitizeProgressState,

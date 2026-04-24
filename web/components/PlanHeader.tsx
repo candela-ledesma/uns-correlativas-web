@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
-import { TEXT, TEXT_SEC, SURFACE, BTN, BTN_RED as BTN_RED_BASE, INPUT, TITLE_SHADOW } from "@/lib/tokens";
+import { TEXT, TEXT_SEC, SURFACE, BTN, BTN_RED as BTN_RED_BASE, INPUT, TITLE_SHADOW, STATUS_COLORS, GLASS } from "@/lib/tokens";
 const BTN_RED = { ...BTN_RED_BASE, borderRadius: 10, padding: "10px 20px", fontWeight: 700, cursor: "pointer" } as const;
 
 type VersionOption = {
@@ -44,10 +44,10 @@ function SyncBadge({ syncStatus }: { syncStatus?: "guest" | "syncing" | "synced"
     if (!syncStatus) return null;
 
     const styles: Record<string, React.CSSProperties> = {
-        guest:   { background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.15)", color: TEXT_SEC },
-        syncing: { background: "rgba(249,199,79,0.12)",  border: "1px solid rgba(249,199,79,0.35)",  color: "#f9c74f" },
-        synced:  { background: "rgba(144,190,109,0.12)", border: "1px solid rgba(144,190,109,0.35)", color: "#90be6d" },
-        error:   { background: "rgba(231,111,81,0.12)",  border: "1px solid rgba(231,111,81,0.35)",  color: "#e76f51" },
+        guest:   { background: GLASS.base,                        border: `1px solid ${GLASS.strong}`,                         color: TEXT_SEC },
+        syncing: { background: STATUS_COLORS.disponible.badgeBg,  border: `1px solid ${STATUS_COLORS.disponible.badgeBorder}`,  color: STATUS_COLORS.disponible.accent },
+        synced:  { background: STATUS_COLORS.aprobada.badgeBg,    border: `1px solid ${STATUS_COLORS.aprobada.badgeBorder}`,    color: STATUS_COLORS.aprobada.accent },
+        error:   { background: STATUS_COLORS.danger.badgeBg,      border: `1px solid ${STATUS_COLORS.danger.badgeBorder}`,      color: STATUS_COLORS.danger.accent },
     };
     const labels: Record<string, string> = {
         guest: "Guardado local", syncing: "Sincronizando...",

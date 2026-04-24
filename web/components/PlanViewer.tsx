@@ -13,8 +13,14 @@ import PlanOnboarding from "@/components/PlanOnboarding";
 import KanbanPlan from "@/components/KanbanPlan";
 import WeeklySchedule from "@/components/WeeklySchedule";
 import { usePlanState } from "@/hooks/usePlanState";
-import { TEXT_SEC, GLASS, ACCENT } from "@/lib/tokens";
 import { usePlanStructure } from "@/hooks/usePlanStructure";
+import { useOnboarding } from "@/hooks/useOnboarding";
+import PlanTabBar, { type PlanVista } from "@/components/PlanTabBar";
+import {
+  agruparPorAnioYCuatrimestre,
+  construirPunterosGruposPorAnioYCuatrimestre,
+  combinarSeccionesPorAnioYCuatrimestre,
+} from "@/lib/planAgrupacion";
 import { getMateriaViewModel } from "@/lib/materiaViewModel";
 import { calcularProgresoPlan } from "@/lib/calcularProgresoPlan";
 import {
@@ -45,142 +51,6 @@ const FILTROS_INICIALES: FiltrosPlan = {
   orientacion: "todas",
 };
 
-function obtenerUbicacionPorOrientacion(
-  materia: Materia,
-  orientacionSeleccionada: string
-) {
-  if (orientacionSeleccionada === FILTROS_INICIALES.orientacion) {
-    return undefined;
-  }
-
-  return materia.ubicacion?.[orientacionSeleccionada];
-}
-function agruparPorAnioYCuatrimestre(
-  materias: Materia[],
-  orientacionSeleccionada: string
-) {
-  const resultado: Record<string, Record<string, Materia[]>> = {};
-
-  for (const materia of materias) {
-    const ubicacion = obtenerUbicacionPorOrientacion(
-      materia,
-      orientacionSeleccionada
-    );
-    const anio = ubicacion?.año || materia.año || "Sin año";
-    const cuatrimestre =
-      ubicacion?.cuatrimestre || materia.cuatrimestre || "Sin cuatrimestre";
-
-    if (!resultado[anio]) {
-      resultado[anio] = {};
-    }
-
-    if (!resultado[anio][cuatrimestre]) {
-      resultado[anio][cuatrimestre] = [];
-    }
-
-    resultado[anio][cuatrimestre].push(materia);
-  }
-
-  return resultado;
-}
-
-type PunteroGrupo = {
-  grupoId: string;
-  nombre: string;
-};
-
-function construirPunterosGruposPorAnioYCuatrimestre(
-  materiasFiltradas: Materia[],
-  agrupadores: PlanData["agrupadores"],
-  materiasPorId: Map<string, Materia>,
-  orientacionSeleccionada: string
-) {
-  const resultado: Record<string, Record<string, PunteroGrupo[]>> = {};
-  const vistos = new Set<string>();
-
-  for (const materia of materiasFiltradas) {
-    const grupoId = materia.grupo_opcion;
-    if (!grupoId) continue;
-
-    const grupo = agrupadores.find((a) => String(a.id) === String(grupoId));
-    if (!grupo) continue;
-
-    if (
-      grupo.tipo !== "optativa_grupo" &&
-      grupo.tipo !== "idioma_grupo" &&
-      grupo.tipo !== "seminario_grupo"
-    ) {
-      continue;
-    }
-
-    // El cuatrimestre/año del puntero debe ser el del agrupador (Gxxxx / Ixxxx / etc),
-    // porque en algunos PDFs las opciones vienen con slots inconsistentes.
-    const placeholder = materiasPorId.get(String(grupoId));
-    const ubicacionPlaceholder = placeholder
-      ? obtenerUbicacionPorOrientacion(placeholder, orientacionSeleccionada)
-      : undefined;
-    const ubicacionMateria = obtenerUbicacionPorOrientacion(
-      materia,
-      orientacionSeleccionada
-    );
-    const anio =
-      ubicacionPlaceholder?.año ||
-      placeholder?.año ||
-      ubicacionMateria?.año ||
-      materia.año ||
-      "Sin año";
-    const cuatrimestre =
-      ubicacionPlaceholder?.cuatrimestre ||
-      placeholder?.cuatrimestre ||
-      ubicacionMateria?.cuatrimestre ||
-      materia.cuatrimestre ||
-      "Sin cuatrimestre";
-
-    if (!resultado[anio]) resultado[anio] = {};
-    if (!resultado[anio][cuatrimestre]) resultado[anio][cuatrimestre] = [];
-
-    const clave = `${anio}::${cuatrimestre}::${grupoId}`;
-    if (vistos.has(clave)) continue;
-    vistos.add(clave);
-
-    resultado[anio][cuatrimestre].push({
-      grupoId: String(grupoId),
-      nombre: grupo.nombre,
-    });
-  }
-
-  return resultado;
-}
-
-function combinarSeccionesPorAnioYCuatrimestre(
-  materiasAgrupadas: Record<string, Record<string, Materia[]>>,
-  punteros: Record<string, Record<string, PunteroGrupo[]>>
-) {
-  const anios = new Set([
-    ...Object.keys(materiasAgrupadas),
-    ...Object.keys(punteros),
-  ]);
-
-  const resultado: Record<string, Record<string, Materia[]>> = {};
-
-  for (const anio of anios) {
-    const cuatrimestresMaterias = materiasAgrupadas[anio] || {};
-    const cuatrimestresPunteros = punteros[anio] || {};
-    const cuatrimestres = new Set([
-      ...Object.keys(cuatrimestresMaterias),
-      ...Object.keys(cuatrimestresPunteros),
-    ]);
-
-    resultado[anio] = {};
-
-    for (const cuatrimestre of cuatrimestres) {
-      resultado[anio][cuatrimestre] = cuatrimestresMaterias[cuatrimestre] || [];
-    }
-  }
-
-  return resultado;
-}
-
 export default function PlanViewer({
   data,
   carreraId,
@@ -194,17 +64,20 @@ export default function PlanViewer({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { idsAgrupadores } = usePlanStructure(data);
-  const [vistaActiva, setVistaActiva] = useState<"plan" | "Plan Vista" | "Planificador">("plan");
-  const [isOnboardingOpen, setIsOnboardingOpen] = useState(false);
-  const [isOnboardingSubmitting, setIsOnboardingSubmitting] = useState(false);
-  const onboardingStateKeyRef = useRef<string | null>(null);
+  const [vistaActiva, setVistaActiva] = useState<PlanVista>("plan");
   const planVisitKeyRef = useRef<string | null>(null);
 
-  const openOnboardingDeferred = () => {
-    window.requestAnimationFrame(() => {
-      setIsOnboardingOpen(true);
-    });
-  };
+  const {
+    isOpen:       isOnboardingOpen,
+    isSubmitting: isOnboardingSubmitting,
+    open:         openOnboarding,
+    dismiss:      dismissOnboarding,
+    complete:     completeOnboarding,
+  } = useOnboarding({
+    carreraId,
+    versionId:           data.plan.version_id,
+    forceShowOnboarding,
+  });
 
   const agrupadores = useMemo(() => data.agrupadores ?? [], [data.agrupadores]);
   const materiasPorId = useMemo(() => {
@@ -462,121 +335,15 @@ export default function PlanViewer({
     }).catch(() => undefined);
   }, [carreraId, data.plan.plan_id, data.plan.version_id, sessionStatus]);
 
-  useEffect(() => {
-    const key = `${carreraId}::${data.plan.version_id}::${sessionStatus}::${forceShowOnboarding ? "forced" : "auto"}`;
-    if (onboardingStateKeyRef.current === key) return;
-
-    onboardingStateKeyRef.current = key;
-
-    if (forceShowOnboarding) {
-      openOnboardingDeferred();
-
-      const params = new URLSearchParams(searchParams.toString());
-      if (params.has("onboarding")) {
-        params.delete("onboarding");
-        const query = params.toString();
-        router.replace(query ? `${pathname}?${query}` : pathname);
-      }
-
-      return;
-    }
-
-    if (sessionStatus === "authenticated") {
-      fetch("/api/perfil/onboarding")
-        .then((response) => (response.ok ? response.json() : null))
-        .then((payload: { shouldAutoShowOnboarding?: boolean } | null) => {
-          if (!payload) return;
-
-          if (payload.shouldAutoShowOnboarding) {
-            openOnboardingDeferred();
-          }
-        })
-        .catch(() => undefined);
-
-      return;
-    }
-
-    if (sessionStatus === "unauthenticated") {
-      const guestState = window.localStorage.getItem("onboarding::guest::state");
-
-      if (!guestState) {
-        openOnboardingDeferred();
-      }
-    }
-  }, [
-    carreraId,
-    data.plan.version_id,
-    forceShowOnboarding,
-    pathname,
-    router,
-    searchParams,
-    sessionStatus,
-  ]);
-
-  async function persistOnboarding(action: "dismiss" | "complete") {
-    setIsOnboardingSubmitting(true);
-
-    if (sessionStatus === "authenticated") {
-      await fetch("/api/perfil/onboarding", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          action,
-        }),
-      }).catch(() => null);
-    } else if (typeof window !== "undefined") {
-      window.localStorage.setItem("onboarding::guest::state", action);
-    }
-
-    setIsOnboardingSubmitting(false);
-    setIsOnboardingOpen(false);
-  }
-
   if (!isHydrated) return null;
-
-  // Estilos de la barra de tabs — extraídos para no ensuciar el JSX
-  const tabBarStyle    = { background: GLASS.base, border: `1px solid ${GLASS.raised}` };
-  const tabActiveStyle = { background: "rgba(157,78,221,0.30)", color: "#e2d9f3", boxShadow: `0 1px 4px ${ACCENT}44` };
-  const tabIdleStyle   = { color: TEXT_SEC };
-  const helpBtnStyle   = { background: GLASS.base, border: `1px solid ${GLASS.strong}`, color: TEXT_SEC };
 
   return (
     <main className="mx-auto max-w-7xl">
-      <div className="mb-4 flex flex-wrap items-center gap-2" data-no-print>
-        <div className="flex p-1 rounded-xl" style={tabBarStyle}>
-          {(["plan", "Plan Vista", "Planificador"] as const).map((vista) => (
-            <button
-              key={vista}
-              type="button"
-              onClick={() => setVistaActiva(vista)}
-              className="rounded-lg px-3 sm:px-4 py-1 sm:py-1.5 text-xs sm:text-sm font-semibold transition capitalize"
-              style={vistaActiva === vista ? tabActiveStyle : tabIdleStyle}
-            >
-              {vista === "plan" ? "Plan" : vista}
-            </button>
-          ))}
-        </div>
-
-        <button
-          type="button"
-          onClick={() => window.print()}
-          className="rounded-xl px-3 py-2 text-xs font-semibold uppercase tracking-wide transition"
-          style={{ background: "rgba(249,199,79,0.10)", border: "1px solid rgba(249,199,79,0.35)", color: "#f9c74f" }}
-        >
-          Exportar PDF
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setIsOnboardingOpen(true)}
-          className="rounded-xl px-3 py-2 text-xs font-semibold uppercase tracking-wide transition ml-auto"
-          style={helpBtnStyle}
-        >
-          Ver ayuda rapida
-        </button>
-      </div>
+      <PlanTabBar
+        vistaActiva={vistaActiva}
+        onChange={setVistaActiva}
+        onOpenHelp={openOnboarding}
+      />
 
       {vistaActiva === "Plan Vista" && (
         <KanbanPlan
@@ -706,12 +473,8 @@ export default function PlanViewer({
       <PlanOnboarding
         open={isOnboardingOpen}
         isSubmitting={isOnboardingSubmitting}
-        onDismiss={() => {
-          void persistOnboarding("dismiss");
-        }}
-        onComplete={() => {
-          void persistOnboarding("complete");
-        }}
+        onDismiss={() => { void dismissOnboarding(); }}
+        onComplete={() => { void completeOnboarding(); }}
       />
     </main>
   );
