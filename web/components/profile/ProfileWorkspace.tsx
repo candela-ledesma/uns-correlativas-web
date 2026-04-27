@@ -4,7 +4,6 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import {
   buildPlanHref,
-  type UserActivityItem,
   type UserProductContextResponse,
 } from "@/lib/db/userProductContextTypes";
 import styles from "@/app/perfil/page.module.css";
@@ -18,73 +17,6 @@ type Props = {
   initialContext: UserProductContextResponse;
 };
 
-const estadoLabelMap: Record<string, string> = {
-  no_cursada: "No cursada",
-  cursada: "Cursada",
-  aprobada: "Aprobada",
-};
-
-function toLocalDate(value: string) {
-  const formatted = new Intl.DateTimeFormat("es-AR", {
-    dateStyle: "short",
-    timeStyle: "short",
-  }).format(new Date(value));
-
-  // Intl puede devolver espacios no separables distintos entre runtimes
-  // (Node vs navegador), lo que genera hydration mismatch en texto.
-  return formatted
-    .replace(/\u00A0|\u202F/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-}
-
-function getMateriaCode(materiaKey: string | null) {
-  if (!materiaKey) return "desconocida";
-  if (!materiaKey.includes("::")) return materiaKey;
-
-  const [, materiaId] = materiaKey.split("::");
-  return materiaId || materiaKey;
-}
-
-function getActivityText(
-  activity: UserActivityItem,
-  careerNameById: Map<string, string>
-) {
-  if (activity.type === "MATERIA_STATUS_CHANGED") {
-    const materiaCode = getMateriaCode(activity.materiaKey);
-    const fromLabel = estadoLabelMap[activity.fromState ?? ""] ?? "Sin estado";
-    const toLabel = estadoLabelMap[activity.toState ?? ""] ?? "Sin estado";
-
-    return `Materia ${materiaCode}: ${fromLabel} -> ${toLabel}`;
-  }
-
-  if (activity.type === "ACTIVE_CAREER_CHANGED") {
-    const nextCareerName = activity.careerId
-      ? careerNameById.get(activity.careerId) ?? activity.careerId
-      : "sin carrera";
-
-    return `Carrera activa actualizada a ${nextCareerName}`;
-  }
-
-  if (activity.type === "PLAN_OPENED") {
-    const careerName = activity.careerId
-      ? careerNameById.get(activity.careerId) ?? activity.careerId
-      : activity.planId ?? "plan";
-
-    return `Se abrió el plan de ${careerName}`;
-  }
-
-  if (activity.type === "ONBOARDING_COMPLETED") {
-    return "Onboarding completado";
-  }
-
-  if (activity.type === "ONBOARDING_DISMISSED") {
-    return "Onboarding omitido";
-  }
-
-  return "Onboarding reiniciado";
-}
-
 export default function ProfileWorkspace({
   role,
   roleLabel,
@@ -93,20 +25,9 @@ export default function ProfileWorkspace({
   iniciales,
   initialContext,
 }: Props) {
-  const [context, setContext] = useState<UserProductContextResponse>(initialContext);
-  const [isSavingCareerContext, setIsSavingCareerContext] = useState(false);
-  const [isResettingOnboarding, setIsResettingOnboarding] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [context] = useState<UserProductContextResponse>(initialContext);
 
   const activeCareerId = context.activeCareerId ?? context.enrolledCareerIds[0] ?? null;
-
-  const careerNameById = useMemo(() => {
-    return new Map(context.careers.map((career) => [career.id, career.nombre]));
-  }, [context.careers]);
-
-  const activeCareer = activeCareerId
-    ? context.careers.find((career) => career.id === activeCareerId) ?? null
-    : null;
 
   const activeLastPlan = activeCareerId
     ? context.lastPlanByCareer[activeCareerId]
@@ -116,273 +37,128 @@ export default function ProfileWorkspace({
     ? buildPlanHref(activeCareerId, activeLastPlan)
     : "/";
 
+  const activeCareerName = useMemo(() => {
+    if (!activeCareerId) return null;
+    return context.careers.find((c) => c.id === activeCareerId)?.nombre ?? null;
+  }, [activeCareerId, context.careers]);
+
   const onboardingHref = `${lastPlanHref}${lastPlanHref.includes("?") ? "&" : "?"}onboarding=1`;
 
-  async function saveCareerContext(nextEnrolledCareerIds: string[], nextActiveCareerId: string) {
-    setIsSavingCareerContext(true);
-    setError(null);
-
-    const response = await fetch("/api/perfil/contexto", {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        enrolledCareerIds: nextEnrolledCareerIds,
-        activeCareerId: nextActiveCareerId,
-      }),
-    }).catch(() => null);
-
-    setIsSavingCareerContext(false);
-
-    if (!response?.ok) {
-      setError("No se pudo actualizar la carrera activa. Volvé a intentarlo.");
-      return;
-    }
-
-    const updatedContext = (await response.json()) as UserProductContextResponse;
-    setContext(updatedContext);
-  }
-
-  function handleEnrollmentToggle(careerId: string, checked: boolean) {
-    const currentSet = new Set(context.enrolledCareerIds);
-
-    if (checked) {
-      currentSet.add(careerId);
-    } else {
-      currentSet.delete(careerId);
-    }
-
-    const nextEnrolledCareerIds = context.careers
-      .map((career) => career.id)
-      .filter((id) => currentSet.has(id));
-
-    if (nextEnrolledCareerIds.length === 0) {
-      setError("El usuario debe estar inscripto en al menos una carrera.");
-      return;
-    }
-
-    const nextActiveCareerId =
-      activeCareerId && nextEnrolledCareerIds.includes(activeCareerId)
-        ? activeCareerId
-        : nextEnrolledCareerIds[0];
-
-    void saveCareerContext(nextEnrolledCareerIds, nextActiveCareerId);
-  }
-
-  function handleActiveCareerChange(nextActiveCareerId: string) {
-    if (!context.enrolledCareerIds.includes(nextActiveCareerId)) {
-      setError("La carrera activa debe estar en las carreras inscriptas.");
-      return;
-    }
-
-    void saveCareerContext(context.enrolledCareerIds, nextActiveCareerId);
-  }
-
-  async function handleResetOnboarding() {
-    setIsResettingOnboarding(true);
-    setError(null);
-
-    const response = await fetch("/api/perfil/onboarding", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        action: "reset",
-      }),
-    }).catch(() => null);
-
-    if (!response?.ok) {
-      setError("No se pudo reiniciar el onboarding.");
-      setIsResettingOnboarding(false);
-      return;
-    }
-
-    const onboardingData = (await response.json()) as {
-      onboardingCompletedAt: string | null;
-      onboardingDismissedAt: string | null;
-      shouldAutoShowOnboarding: boolean;
-    };
-
-    setContext((prev) => ({
-      ...prev,
-      onboardingCompletedAt: onboardingData.onboardingCompletedAt,
-      onboardingDismissedAt: onboardingData.onboardingDismissedAt,
-      shouldAutoShowOnboarding: onboardingData.shouldAutoShowOnboarding,
-    }));
-
-    setIsResettingOnboarding(false);
-  }
+  // Enrolled careers to show in grid
+  const enrolledCareers = useMemo(
+    () => context.careers.filter((c) => context.enrolledCareerIds.includes(c.id)),
+    [context.careers, context.enrolledCareerIds]
+  );
 
   return (
     <article className={styles.profileCard}>
-      <div className={styles.header}>
-        <div className={styles.avatar} aria-hidden="true">
-          {iniciales}
-        </div>
+
+      {/* ── SECCIÓN 1: HERO ─────────────────────────────────────────────── */}
+      <div className={styles.hero}>
+        <div className={styles.avatar} aria-hidden="true">{iniciales}</div>
 
         <div className={styles.identity}>
-          <h1 className={styles.title}>Perfil</h1>
           <p className={styles.name}>{nombreVisible}</p>
           <p className={styles.email}>{email}</p>
+          <div className={styles.pillRow}>
+            <span className={styles.pillGreen}>Cuenta activa</span>
+            <span className={styles.pillViolet}>{roleLabel}</span>
+          </div>
         </div>
 
-        <div className={styles.chips}>
-          <span className={styles.chip}>Cuenta activa</span>
-          <span className={`${styles.chip} ${styles.roleChip}`}>{roleLabel}</span>
+        <div className={styles.heroActions}>
+          <Link href="/api/auth/signout" className={styles.ghostBtn}>
+            Cerrar sesión
+          </Link>
         </div>
       </div>
 
       <div className={styles.divider} />
 
-      {error && <p className={styles.errorBanner}>{error}</p>}
+      {/* ── SECCIÓN 2: MIS CARRERAS ─────────────────────────────────────── */}
+      <section className={styles.section}>
+        <p className={styles.sectionLabel}>MIS CARRERAS</p>
 
-      <section className={styles.sectionBlock}>
-        <div className={styles.sectionHeadingRow}>
-          <h2 className={styles.sectionTitle}>Carrera activa y contexto</h2>
-          {isSavingCareerContext && <span className={styles.mutedTag}>Guardando...</span>}
-        </div>
-
-        <div className={styles.contextGrid}>
-          <div className={styles.contextCard}>
-            <p className={styles.contextLabel}>Carrera activa</p>
-            <select
-              className={styles.select}
-              value={activeCareerId ?? ""}
-              onChange={(event) => handleActiveCareerChange(event.target.value)}
-              disabled={isSavingCareerContext}
-            >
-              {context.enrolledCareerIds.map((careerId) => {
-                const careerName = careerNameById.get(careerId) ?? careerId;
-
-                return (
-                  <option key={careerId} value={careerId}>
-                    {careerName}
-                  </option>
-                );
-              })}
-            </select>
-            <p className={styles.contextDescription}>
-              {activeCareer ? activeCareer.descripcion : "Sin carrera activa"}
-            </p>
-          </div>
-
-          <div className={styles.contextCard}>
-            <p className={styles.contextLabel}>Ultimo plan abierto</p>
-            <p className={styles.contextDescription}>
-              {activeCareer
-                ? `${activeCareer.nombre} ${activeLastPlan ? `(${activeLastPlan.versionId})` : "(sin historial)"}`
-                : "No hay carrera activa"}
-            </p>
-            <Link href={lastPlanHref} className={styles.contextAction}>
-              Abrir ultimo plan
-            </Link>
-          </div>
-        </div>
-
-        <div className={styles.enrollmentList}>
-          {context.careers.map((career) => {
-            const checked = context.enrolledCareerIds.includes(career.id);
+        <div className={styles.careerGrid}>
+          {enrolledCareers.map((career) => {
+            const isActive = career.id === activeCareerId;
+            const planHref = buildPlanHref(career.id, context.lastPlanByCareer[career.id]);
 
             return (
-              <label key={career.id} className={styles.enrollmentItem}>
-                <input
-                  type="checkbox"
-                  checked={checked}
-                  disabled={isSavingCareerContext}
-                  onChange={(event) => handleEnrollmentToggle(career.id, event.target.checked)}
-                />
-                <span>{career.nombre}</span>
-              </label>
+              <div
+                key={career.id}
+                className={styles.careerCard}
+                data-active={isActive ? "true" : undefined}
+              >
+                <p className={styles.careerName}>{career.nombre}</p>
+                <p className={styles.careerSub}>Sin materias registradas aún</p>
+                <div className={styles.careerFooter}>
+                  {isActive && <span className={styles.pillVioletSm}>activa</span>}
+                  <Link href={planHref} className={styles.openPlanBtn}>
+                    Abrir plan →
+                  </Link>
+                </div>
+              </div>
             );
           })}
+
+          {enrolledCareers.length === 0 && (
+            <p className={styles.emptyState}>No estás inscripto en ninguna carrera.</p>
+          )}
         </div>
       </section>
 
-      <section className={styles.sectionBlock}>
-        <h2 className={styles.sectionTitle}>Onboarding</h2>
-        <p className={styles.contextDescription}>
-          Guia corta para marcar materias y entender habilitacion de correlativas.
-        </p>
-        <div className={styles.inlineActions}>
-          <Link href={onboardingHref} className={styles.actionButton}>
-            Ver onboarding ahora
-          </Link>
-          <button
-            type="button"
-            className={styles.actionButtonSecondary}
-            onClick={() => {
-              void handleResetOnboarding();
-            }}
-            disabled={isResettingOnboarding}
-          >
-            {isResettingOnboarding ? "Reiniciando..." : "Reiniciar onboarding"}
-          </button>
-        </div>
-      </section>
+      <div className={styles.divider} />
 
-      <section className={styles.sectionBlock}>
-        <h2 className={styles.sectionTitle}>Accesos rapidos</h2>
+      {/* ── SECCIÓN 3: ACCESOS RÁPIDOS ──────────────────────────────────── */}
+      <section className={styles.section}>
+        <p className={styles.sectionLabel}>ACCESOS RÁPIDOS</p>
 
-        <div className={styles.actionGrid}>
-          <Link href="/" className={styles.actionCard}>
-            <p className={styles.actionTitle}>Inicio</p>
-            <p className={styles.actionText}>Volver al selector de carreras</p>
-            <span className={styles.actionArrow} aria-hidden="true">
-              -&gt;
-            </span>
+        <div className={styles.quickGrid}>
+          <Link href="/" className={styles.quickCard}>
+            <div className={styles.quickText}>
+              <p className={styles.quickTitle}>Inicio</p>
+              <p className={styles.quickSub}>Selector de carreras</p>
+            </div>
+            <span className={styles.quickArrow}>→</span>
           </Link>
 
-          <Link href={lastPlanHref} className={styles.actionCard}>
-            <p className={styles.actionTitle}>Ultimo plan</p>
-            <p className={styles.actionText}>Reanudar el plan de tu carrera activa</p>
-            <span className={styles.actionArrow} aria-hidden="true">
-              -&gt;
-            </span>
+          <Link href={lastPlanHref} className={styles.quickCard}>
+            <div className={styles.quickText}>
+              <p className={styles.quickTitle}>Último plan</p>
+              <p className={styles.quickSub}>{activeCareerName ?? "Sin plan reciente"}</p>
+            </div>
+            <span className={styles.quickArrow}>→</span>
+          </Link>
+
+          <Link href={onboardingHref} className={styles.quickCard}>
+            <div className={styles.quickText}>
+              <p className={styles.quickTitle}>Ver tutorial</p>
+              <p className={styles.quickSub}>Guía de uso</p>
+            </div>
+            <span className={styles.quickArrow}>→</span>
           </Link>
 
           {(role === "MODERATOR" || role === "ADMIN") && (
-            <Link href="/moderacion" className={styles.actionCard}>
-              <p className={styles.actionTitle}>Moderacion</p>
-              <p className={styles.actionText}>Revisar cambios pendientes</p>
-              <span className={styles.actionArrow} aria-hidden="true">
-                -&gt;
-              </span>
+            <Link href="/moderacion" className={styles.quickCard}>
+              <div className={styles.quickText}>
+                <p className={styles.quickTitle}>Moderación</p>
+                <p className={styles.quickSub}>Revisar cambios pendientes</p>
+              </div>
+              <span className={styles.quickArrow}>→</span>
             </Link>
           )}
 
           {role === "ADMIN" && (
-            <Link href="/admin" className={styles.actionCard}>
-              <p className={styles.actionTitle}>Administracion</p>
-              <p className={styles.actionText}>Gestionar permisos y auditoria</p>
-              <span className={styles.actionArrow} aria-hidden="true">
-                -&gt;
-              </span>
+            <Link href="/admin" className={styles.quickCard}>
+              <div className={styles.quickText}>
+                <p className={styles.quickTitle}>Administración</p>
+                <p className={styles.quickSub}>Gestionar permisos y auditoría</p>
+              </div>
+              <span className={styles.quickArrow}>→</span>
             </Link>
           )}
         </div>
-      </section>
-
-      <section className={styles.sectionBlock}>
-        <h2 className={styles.sectionTitle}>Historial de actividad</h2>
-
-        {context.recentActivity.length === 0 && (
-          <p className={styles.emptyState}>Todavia no hay actividad registrada.</p>
-        )}
-
-        {context.recentActivity.length > 0 && (
-          <ul className={styles.activityList}>
-            {context.recentActivity.map((activity) => (
-              <li key={activity.id} className={styles.activityItem}>
-                <p className={styles.activityText}>
-                  {getActivityText(activity, careerNameById)}
-                </p>
-                <p className={styles.activityDate}>{toLocalDate(activity.createdAt)}</p>
-              </li>
-            ))}
-          </ul>
-        )}
       </section>
     </article>
   );

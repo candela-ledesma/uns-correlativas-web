@@ -4,10 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
 import LoginActions from "@/components/auth/LoginActions";
-import {
-  buildPlanHref,
-  type UserSessionSummaryResponse,
-} from "@/lib/db/userProductContextTypes";
 
 import { TEXT, TEXT_SEC, BTN as BTN_TOKEN, GLASS } from "@/lib/ui/tokens";
 // SURFACE más prominente para el dropdown flotante (mayor blur que SURFACE base)
@@ -35,37 +31,11 @@ function Chevron({ open }: { open: boolean }) {
 
 export default function HomeSessionPanel() {
   const { data: session, status } = useSession();
-  const [open,          setOpen]          = useState(false);
-  const [signingOut,    setSigningOut]    = useState(false);
-  const [summary,       setSummary]       = useState<UserSessionSummaryResponse | null>(null);
-  const [summaryLoading,setSummaryLoading]= useState(false);
+  const [open,       setOpen]       = useState(false);
+  const [signingOut, setSigningOut] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const showGoogleLogin = process.env.NEXT_PUBLIC_AUTH_GOOGLE_ENABLED === "true";
-
-  async function loadUserContext() {
-    setSummaryLoading(true);
-    const res = await fetch("/api/perfil/resumen").catch(() => null);
-    setSummaryLoading(false);
-    if (!res?.ok) return null;
-    return (await res.json()) as UserSessionSummaryResponse;
-  }
-
-  useEffect(() => {
-    if (status !== "authenticated") return;
-    let active = true;
-    void (async () => { const p = await loadUserContext(); if (active && p) setSummary(p); })();
-    return () => { active = false; };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [status]);
-
-  useEffect(() => {
-    if (!open || status !== "authenticated") return;
-    let active = true;
-    void (async () => { const p = await loadUserContext(); if (active && p) setSummary(p); })();
-    return () => { active = false; };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open, status]);
 
   useEffect(() => {
     if (!open) return;
@@ -115,10 +85,6 @@ export default function HomeSessionPanel() {
   }
 
   // ── Authenticated ──────────────────────────────────────────────────────────
-  const activeCareerId = summary?.activeCareerId;
-  const activeLastPlan = activeCareerId ? summary?.lastPlanByCareer[activeCareerId] : undefined;
-  const quickPlanHref  = activeCareerId ? buildPlanHref(activeCareerId, activeLastPlan) : "/";
-
   return (
     <div ref={containerRef} style={{ position: "relative", minWidth: 0, width: "100%" }}>
       <Trigger onClick={() => setOpen((p) => !p)} expanded={open}>
@@ -138,30 +104,7 @@ export default function HomeSessionPanel() {
           <p style={{ margin: "0 0 2px", color: TEXT, fontSize: 13, fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
             {session.user.email}
           </p>
-          <p style={{ margin: "0 0 16px", color: TEXT_SEC, fontSize: 11 }}>Rol: {session.user.role}</p>
-
-          {/* Skeleton */}
-          {summaryLoading && !summary && (
-            <div style={{ marginBottom: 16, borderRadius: 12, border: `1px solid ${GLASS.medium}`, background: GLASS.dim, padding: 12 }}>
-              <div style={{ height: 10, width: 96, borderRadius: 6, background: GLASS.border, marginBottom: 8 }} />
-              <div style={{ height: 14, width: 160, borderRadius: 6, background: GLASS.medium }} />
-            </div>
-          )}
-
-          {/* Carrera activa */}
-          {!summaryLoading && summary?.activeCareerName && (
-            <div style={{ marginBottom: 16, borderRadius: 12, border: `1px solid ${GLASS.border}`, background: GLASS.dim, padding: 12 }}>
-              <p style={{ margin: "0 0 4px", color: TEXT_SEC, fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.07em" }}>Carrera activa</p>
-              <p style={{ margin: "0 0 10px", color: TEXT, fontSize: 13, fontWeight: 600 }}>{summary.activeCareerName}</p>
-              <Link
-                href={quickPlanHref}
-                onClick={() => setOpen(false)}
-                style={{ display: "inline-flex", background: "rgba(157,78,221,0.20)", border: "1px solid rgba(157,78,221,0.35)", borderRadius: 8, padding: "6px 12px", fontSize: 12, fontWeight: 600, color: "#c084fc", textDecoration: "none" }}
-              >
-                Abrir último plan
-              </Link>
-            </div>
-          )}
+          <p style={{ margin: "0 0 14px", color: TEXT_SEC, fontSize: 11 }}>Rol: {session.user.role}</p>
 
           {/* Nav links */}
           <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
