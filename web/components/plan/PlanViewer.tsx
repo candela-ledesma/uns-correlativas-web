@@ -370,6 +370,7 @@ export default function PlanViewer({
           agrupadores={agrupadores}
           idsAgrupadores={idsAgrupadores}
           estados={estados}
+          onVerEnPlan={() => setVistaActiva("plan")}
         />
       )}
 
