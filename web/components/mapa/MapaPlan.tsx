@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo } from "react";
+import { useMemo } from "react";
 import {
   ReactFlow,
   Background,
@@ -20,7 +20,7 @@ import "@xyflow/react/dist/style.css";
 import { Agrupador, Materia } from "@/app/types/plan";
 import { EstadoMateria } from "@/lib/plan/evaluarCorrelativas";
 import { getMateriaViewModel } from "@/lib/plan/materiaViewModel";
-import { STATUS_COLORS, GLASS, TEXT, TEXT_SEC, TEXT_DET } from "@/lib/ui/tokens";
+import { STATUS_COLORS, GLASS, TEXT, TEXT_SEC, TEXT_DET, ACCENT } from "@/lib/ui/tokens";
 
 type Props = {
   materias: Materia[];
@@ -55,7 +55,7 @@ function getLabel(vm: ReturnType<typeof getMateriaViewModel>) {
   return "";
 }
 
-// ── Custom node ─────────────────────────────────────────────────────────────
+// ── Custom nodes ─────────────────────────────────────────────────────────────
 type NodeData = {
   label: string;
   horas: string;
@@ -117,7 +117,44 @@ function MateriaNode({ data }: NodeProps<Node<NodeData>>) {
   );
 }
 
-const nodeTypes = { materia: MateriaNode };
+type AgrupadorNodeData = { nombre: string; cantidad: number };
+
+function AgrupadorNode({ data }: NodeProps<Node<AgrupadorNodeData>>) {
+  const { nombre, cantidad } = data;
+  return (
+    <div
+      style={{
+        width: NODE_W,
+        minHeight: NODE_H,
+        background: "rgba(157,78,221,0.08)",
+        border: `1.5px dashed rgba(157,78,221,0.45)`,
+        borderRadius: 10,
+        padding: "8px 10px",
+        display: "flex",
+        flexDirection: "column",
+        gap: 4,
+        backdropFilter: "blur(8px)",
+      }}
+    >
+      <Handle type="target" position={Position.Top} style={{ background: ACCENT, width: 8, height: 8, border: "none" }} />
+      <div style={{ fontSize: 10, fontWeight: 700, color: ACCENT, lineHeight: 1.3, wordBreak: "break-word" }}>
+        {nombre}
+      </div>
+      <span
+        style={{
+          fontSize: 9,
+          color: TEXT_SEC,
+          marginTop: "auto",
+        }}
+      >
+        {cantidad} {cantidad === 1 ? "opción" : "opciones"}
+      </span>
+      <Handle type="source" position={Position.Bottom} style={{ background: ACCENT, width: 8, height: 8, border: "none" }} />
+    </div>
+  );
+}
+
+const nodeTypes = { materia: MateriaNode, agrupador: AgrupadorNode };
 
 // ── Build nodes & edges ──────────────────────────────────────────────────────
 function buildGraph(
@@ -126,29 +163,48 @@ function buildGraph(
   idsAgrupadores: Set<string>,
   estados: Record<string, EstadoMateria>
 ): { nodes: Node[]; edges: Edge[] } {
-  // Only real materias (no agrupadores), with year/cuatrimestre
-  const real = materias.filter(
-    (m) => !idsAgrupadores.has(String(m.id)) && m.año && m.cuatrimestre
+  const materiaById = new Map(materias.map((m) => [String(m.id), m]));
+
+  // Materias normales: excluir agrupadores y opciones dentro de un grupo
+  const normales = materias.filter(
+    (m) => !idsAgrupadores.has(String(m.id)) && !m.grupo_opcion && m.año && m.cuatrimestre
   );
 
-  // Group by year then semester for layout
-  type Grid = Map<string, Map<string, Materia[]>>;
+  // Agrupadores con año/cuatrimestre deducido de su primera opción
+  type AgrupadorConUbicacion = Agrupador & { año: string; cuatrimestre: string };
+  const agrupadorItems: AgrupadorConUbicacion[] = agrupadores
+    .map((a) => {
+      const primera = a.opciones
+        .map((id) => materiaById.get(String(id)))
+        .find((m) => m?.año && m.cuatrimestre);
+      if (!primera) return null;
+      return { ...a, año: primera.año!, cuatrimestre: primera.cuatrimestre! };
+    })
+    .filter((a): a is AgrupadorConUbicacion => a !== null);
+
+  // Unified grid: materias normales + agrupadores, grouped by year/sem
+  type GridItem = { id: string; isAgrupador: boolean };
+  type Grid = Map<string, Map<string, GridItem[]>>;
   const grid: Grid = new Map();
-  for (const m of real) {
+
+  for (const m of normales) {
     const year = m.año!;
     const sem  = m.cuatrimestre!;
     if (!grid.has(year)) grid.set(year, new Map());
     if (!grid.get(year)!.has(sem)) grid.get(year)!.set(sem, []);
-    grid.get(year)!.get(sem)!.push(m);
+    grid.get(year)!.get(sem)!.push({ id: String(m.id), isAgrupador: false });
   }
 
-  // Sort years and semesters
+  for (const a of agrupadorItems) {
+    if (!grid.has(a.año)) grid.set(a.año, new Map());
+    if (!grid.get(a.año)!.has(a.cuatrimestre)) grid.get(a.año)!.set(a.cuatrimestre, []);
+    grid.get(a.año)!.get(a.cuatrimestre)!.push({ id: String(a.id), isAgrupador: true });
+  }
+
   const sortedYears = [...grid.keys()].sort((a, b) => Number(a) - Number(b));
 
-  // Compute Y offset per (year, sem) block
   type SlotInfo = { x: number; y: number };
   const posMap = new Map<string, SlotInfo>();
-
   let yOffset = 0;
 
   for (const year of sortedYears) {
@@ -157,15 +213,16 @@ function buildGraph(
 
     for (const sem of sortedSems) {
       const items = semMap.get(sem)!;
-      items.forEach((m, idx) => {
-        posMap.set(String(m.id), { x: idx * COL_W, y: yOffset });
+      items.forEach((item, idx) => {
+        posMap.set(item.id, { x: idx * COL_W, y: yOffset });
       });
       yOffset += ROW_H;
     }
     yOffset += YEAR_GAP;
   }
 
-  const nodes: Node[] = real.map((m) => {
+  // Nodes: normales
+  const normalNodes: Node[] = normales.map((m) => {
     const vm = getMateriaViewModel({ materia: m, estados, agrupadores, idsAgrupadores });
     const visualState = resolveVisualState(vm);
     const pos = posMap.get(String(m.id)) ?? { x: 0, y: 0 };
@@ -184,15 +241,31 @@ function buildGraph(
     };
   });
 
-  // Build edges from correlativas
-  const realIds = new Set(real.map((m) => String(m.id)));
+  // Nodes: agrupadores (placeholders)
+  const agrupadorNodes: Node[] = agrupadorItems.map((a) => ({
+    id: String(a.id),
+    type: "agrupador",
+    position: posMap.get(String(a.id)) ?? { x: 0, y: 0 },
+    data: {
+      nombre: a.nombre,
+      cantidad: a.opciones.length,
+    } satisfies AgrupadorNodeData,
+  }));
+
+  const nodes = [...normalNodes, ...agrupadorNodes];
+
+  // Edges: from correlativas of normales only (source must be a normal node)
+  const visibleIds = new Set([
+    ...normales.map((m) => String(m.id)),
+    ...agrupadorItems.map((a) => String(a.id)),
+  ]);
   const edges: Edge[] = [];
   const edgeSeen = new Set<string>();
 
-  for (const m of real) {
+  for (const m of normales) {
     const targetId = String(m.id);
     for (const [reqId] of Object.entries(m.correlativas ?? {})) {
-      if (!realIds.has(reqId)) continue;
+      if (!visibleIds.has(reqId)) continue;
       const edgeId = `${reqId}->${targetId}`;
       if (edgeSeen.has(edgeId)) continue;
       edgeSeen.add(edgeId);
