@@ -55,3 +55,6 @@ tu-proyecto/
 
 # PDF fixtures (not committed — regenerate with the parser)
 pdf/
+
+# Claude Code local agents
+.claude/agents/
