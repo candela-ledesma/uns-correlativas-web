@@ -1,26 +1,57 @@
+# Python
 .venv/
+venv/
 __pycache__/
-*.pyc
-.DS_Store
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Node
+node_modules/
 **/node_modules/
+
+# Next.js
+.next/
+web/.next/
+dist/
+build/
+coverage/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables
 **/.env
 **/.env.local
 **/.env.development.local
 **/.env.test.local
 **/.env.production.local
+
+# Database
 web/prisma/*.db
 web/prisma/*.db-journal
 web/prisma/prisma/*.db
 web/prisma/prisma/*.db-journal
 
 # Playwright
-node_modules/
 /test-results/
 /playwright-report/
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
+
+# Parser generated output (mirrors web/data/)
+output/
+
+# Accidental project-template folder
+tu-proyecto/
+
+# Deployment
 .vercel
 
-# Local PDF artifacts
+# OS
+.DS_Store
+
+# Local PDF fixtures (generated, not committed)
 pdf/*.pdf
