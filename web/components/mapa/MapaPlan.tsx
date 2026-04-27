@@ -34,7 +34,7 @@ type Props = {
   agrupadores: Agrupador[];
   idsAgrupadores: Set<string>;
   estados: Record<string, EstadoMateria>;
-  onVerEnPlan?: () => void;
+  onVerEnPlan?: (materiaId: string) => void;
 };
 
 // ── Layout constants ─────────────────────────────────────────────────────────
@@ -344,7 +344,7 @@ function DetailPanel({
   estados: Record<string, EstadoMateria>;
   vmById: Map<string, VisualEstado>;
   onClose: () => void;
-  onVerEnPlan?: () => void;
+  onVerEnPlan?: (materiaId: string) => void;
 }) {
   const materiaById = useMemo(() => new Map(materias.map((m) => [String(m.id), m])), [materias]);
   const materia = materiaById.get(nodeId);
@@ -416,7 +416,7 @@ function DetailPanel({
       <div style={divider} />
 
       {onVerEnPlan && (
-        <button onClick={onVerEnPlan} style={{
+        <button onClick={() => onVerEnPlan(nodeId)} style={{
           background: "rgba(157,78,221,0.15)", border: `1px solid rgba(157,78,221,0.4)`,
           borderRadius: 7, color: "#c4a0f0", fontSize: 11, fontWeight: 600,
           padding: "6px 10px", cursor: "pointer", textAlign: "center",

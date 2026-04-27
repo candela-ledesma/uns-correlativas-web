@@ -66,7 +66,26 @@ export default function PlanViewer({
   const searchParams = useSearchParams();
   const { idsAgrupadores } = usePlanStructure(data);
   const [vistaActiva, setVistaActiva] = useState<PlanVista>("plan");
+  const [scrollTarget, setScrollTarget] = useState<string | null>(null);
   const planVisitKeyRef = useRef<string | null>(null);
+
+  // Scroll to materia when coming from Mapa "Ver en Plan"
+  useEffect(() => {
+    if (!scrollTarget) return;
+    const intento = (reintentos = 3) => {
+      const el = document.getElementById(`materia-${scrollTarget}`);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+        el.style.outline = "2px solid rgba(127,119,221,0.6)";
+        el.style.borderRadius = "6px";
+        setTimeout(() => { el.style.outline = ""; }, 1500);
+        setScrollTarget(null);
+      } else if (reintentos > 0) {
+        setTimeout(() => intento(reintentos - 1), 80);
+      }
+    };
+    intento();
+  }, [scrollTarget]);
 
   const {
     isOpen:       isOnboardingOpen,
@@ -370,7 +389,10 @@ export default function PlanViewer({
           agrupadores={agrupadores}
           idsAgrupadores={idsAgrupadores}
           estados={estados}
-          onVerEnPlan={() => setVistaActiva("plan")}
+          onVerEnPlan={(materiaId: string) => {
+            setVistaActiva("plan");
+            setScrollTarget(materiaId);
+          }}
         />
       )}
 
