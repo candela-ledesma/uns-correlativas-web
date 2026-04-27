@@ -53,5 +53,5 @@ tu-proyecto/
 # OS
 .DS_Store
 
-# Local PDF fixtures (generated, not committed)
-pdf/*.pdf
+# PDF fixtures (not committed — regenerate with the parser)
+pdf/
