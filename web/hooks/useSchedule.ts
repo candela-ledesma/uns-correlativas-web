@@ -49,6 +49,7 @@ export function useSchedule({ careerId, planId, versionId }: PlanKey) {
     setState({ status: "ready", blocks: json.blocks });
   }, [careerId, planId, versionId]);
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { void load(); }, [load]);
 
   async function createBlock(input: CreateBlockInput): Promise<{ error?: string }> {

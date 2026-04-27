@@ -25,7 +25,7 @@ export default async function LoginPage({
     ? (AUTH_ERROR_MESSAGES[errorParam] ?? AUTH_ERROR_MESSAGES.Default)
     : null;
 
-  const { hasGoogleProvider: showGoogleLogin, allowDevLogin: showDevLogin } = getAuthProviderFlags();
+  const { hasGoogleProvider: showGoogleLogin } = getAuthProviderFlags();
 
   return (
     <main style={{ minHeight: "100vh", background: BG_GRADIENT, padding: "64px 24px" }}>

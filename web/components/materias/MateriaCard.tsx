@@ -33,6 +33,7 @@ type Props = HTMLAttributes<HTMLDivElement> & {
 
 // ── Component ─────────────────────────────────────────────────────────────────
 export default function MateriaCard({
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   materia, estado, puedeCursar, puedeAprobar, puedeClickear, bloqueada,
   onToggle, onUndo, undoTestId, correlativas = [], verCorrelativasTestId, ...rest
 }: Props) {

@@ -407,10 +407,10 @@ function buildGraph(
 
 // ── Detail panel ──────────────────────────────────────────────────────────────
 function DetailPanel({
-  nodeId, materias, agrupadores, idsAgrupadores, estados, vmById, onClose, onVerEnPlan,
+  nodeId, materias, idsAgrupadores, vmById, onClose, onVerEnPlan,
 }: {
-  nodeId: string; materias: Materia[]; agrupadores: Agrupador[]; idsAgrupadores: Set<string>;
-  estados: Record<string, EstadoMateria>; vmById: Map<string, VisualEstado>;
+  nodeId: string; materias: Materia[]; idsAgrupadores: Set<string>;
+  vmById: Map<string, VisualEstado>;
   onClose: () => void; onVerEnPlan?: (materiaId: string) => void;
 }) {
   const materiaById = useMemo(() => new Map(materias.map((m) => [String(m.id), m])), [materias]);
@@ -557,7 +557,6 @@ function BestPathPanel({
 
       {/* Actions */}
       <div style={{ display: "flex", gap: 6 }}>
-        {/* TODO: onEnviarAlPlanificador(result.camino) */}
         <button
           disabled
           title="Próximamente"
@@ -577,12 +576,10 @@ type FiltroEstado = "todas" | VisualEstado;
 
 function Toolbar({
   filtro, onFiltro, busqueda, onBusqueda, contadores, onBuscar,
-  caminoActivo, onToggleCamino,
 }: {
   filtro: FiltroEstado; onFiltro: (f: FiltroEstado) => void;
   busqueda: string; onBusqueda: (s: string) => void;
   contadores: Record<VisualEstado, number>; onBuscar: () => void;
-  caminoActivo: boolean; onToggleCamino: () => void;
 }) {
   const chips: { key: FiltroEstado; label: string }[] = [
     { key: "todas", label: "Todas" }, { key: "aprobada", label: "Aprobada" },
@@ -616,7 +613,6 @@ function Toolbar({
           );
         })}
       </div>
-
 
       <span style={{ fontSize: 10, color: TEXT_SEC, marginLeft: "auto" }}>
         {contadores.aprobada} aprobadas · {contadores.cursada} cursando · {contadores.disponible} disponibles · {contadores.bloqueada} bloqueadas · {total} total
@@ -811,13 +807,6 @@ function MapaInner({ materias, agrupadores, idsAgrupadores, estados, onVerEnPlan
     setTimeout(() => setHighlightedId(null), 2000);
   }, [busqueda, baseNodes, fitView]);
 
-  const handleToggleCamino = useCallback(() => {
-    setCaminoActivo((prev) => {
-      if (!prev) setSelectedNodeId(null); // close detail panel when activating
-      return !prev;
-    });
-  }, []);
-
   const handleNodeMouseEnter = useCallback((_: React.MouseEvent, node: Node) => {
     if (isTouchDevice.current || node.type !== "materia" || caminoActivo) return;
     setHoveredDebounced(node.id);
@@ -871,7 +860,6 @@ function MapaInner({ materias, agrupadores, idsAgrupadores, estados, onVerEnPlan
         filtro={filtro} onFiltro={setFiltro}
         busqueda={busqueda} onBusqueda={setBusqueda}
         contadores={contadores} onBuscar={handleBuscar}
-        caminoActivo={caminoActivo} onToggleCamino={handleToggleCamino}
       />
 
       <div style={{ width: "100%", height: "72vh", minHeight: 480, borderRadius: 14, overflow: "hidden", border: `1px solid ${caminoActivo ? AMBER.border : GLASS.raised}`, background: "rgba(15,20,50,0.55)", transition: "border-color 0.2s" }}>
@@ -922,8 +910,8 @@ function MapaInner({ materias, agrupadores, idsAgrupadores, estados, onVerEnPlan
           {selectedMateria && selectedNodeId && !caminoActivo && (
             <Panel position={panelSide === "left" ? "top-left" : "top-right"}>
               <DetailPanel
-                nodeId={selectedNodeId} materias={materias} agrupadores={agrupadores}
-                idsAgrupadores={idsAgrupadores} estados={estados} vmById={vmById}
+                nodeId={selectedNodeId} materias={materias}
+                idsAgrupadores={idsAgrupadores} vmById={vmById}
                 onClose={() => setSelectedNodeId(null)} onVerEnPlan={onVerEnPlan}
               />
             </Panel>
