@@ -309,7 +309,7 @@ export default function KanbanPlan({ materias, agrupadores, idsAgrupadores, esta
           const hasAnual = `${anio}|A` in localOrder;
 
           // Columnas del año: siempre 1° y 2°, más "Anual" si existen materias anuales
-          const slots: CuatrSlot[] = hasAnual ? ["1", "2", "A"] : ["1", "2"];
+          const slots: CuatrSlot[] = hasAnual ? ["A", "1", "2"] : ["1", "2"];
           const colKeys = slots.map((s) => `${anio}|${s}`);
 
           // Totales del año (todas las columnas, con filtro de orientación aplicado)
@@ -343,7 +343,7 @@ export default function KanbanPlan({ materias, agrupadores, idsAgrupadores, esta
               </div>
 
               {/* Cuatrimestre sub-columns */}
-              <div className="flex flex-col sm:flex-row">
+              <div className="flex flex-col">
                 {slots.map((slot, slotIdx) => {
                   const colKey      = `${anio}|${slot}`;
                   const ids         = localOrder[colKey] ?? [];
@@ -374,9 +374,9 @@ export default function KanbanPlan({ materias, agrupadores, idsAgrupadores, esta
                     <div
                       key={colKey}
                       data-colkey={colKey}
-                      className="flex flex-col sm:w-[220px] kp-col"
+                      className="flex flex-col kp-col"
                       style={{
-                        borderLeft: slotIdx > 0 ? `1px solid ${color}22` : undefined,
+                        borderTop: slotIdx > 0 ? `1px solid ${color}22` : undefined,
                         background: isDragOver ? `${color}18` : undefined,
                         boxShadow: isDragOver ? `inset 0 0 0 2.5px ${color}` : undefined,
                         transition: "background 0.15s, box-shadow 0.15s",
