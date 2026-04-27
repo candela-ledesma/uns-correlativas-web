@@ -48,6 +48,7 @@ type DragState = {
   startX: number; startY: number;
 };
 
+// Ghost is computed imperatively during drag and only stored in state at drop time
 type Ghost = { dia: number; horaInicio: number; horaFin: number; hasConflict: boolean; color: string };
 
 type Props = { careerId: string; planId: string; versionId: string; materias: Materia[] };
@@ -60,12 +61,15 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
   const [panel,      setPanel]      = useState<Panel | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [draggingId, setDraggingId] = useState<string | null>(null);
-  const [ghost,      setGhost]      = useState<Ghost | null>(null);
 
   const dragRef          = useRef<DragState | null>(null);
   const suppressClickRef = useRef(false);
   const columnRefs       = useRef<(HTMLDivElement | null)[]>([null, null, null, null, null]);
   const gridRef          = useRef<HTMLDivElement>(null);
+  // Imperative ghost: updated directly on DOM, no React state during drag
+  const ghostElRef       = useRef<HTMLDivElement | null>(null);
+  const ghostDataRef     = useRef<Ghost | null>(null);
+  const rafRef           = useRef<number | null>(null);
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) { if (e.key === "Escape") setPanel(null); }
@@ -102,6 +106,35 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
     return { dia, horaInicio: ini, horaFin: fin, hasConflict: conflict, color: drag.block.color ?? "#9d4edd" };
   }
 
+  // Update the DOM ghost element directly — zero React re-renders during drag
+  function applyGhostToDOM(g: Ghost) {
+    const el = ghostElRef.current;
+    if (!el) return;
+    const col = columnRefs.current[g.dia - 1];
+    if (!col) return;
+    const colRect = col.getBoundingClientRect();
+    const gridRect = gridRef.current?.getBoundingClientRect();
+    if (!gridRect) return;
+
+    const top    = blockTopPx(g.horaInicio);
+    const height = blockHeightPx(g.horaInicio, g.horaFin);
+    const left   = colRect.left - gridRect.left + 2;
+    const width  = colRect.width - 4;
+
+    el.style.display  = "block";
+    el.style.top      = `${top + 1}px`;
+    el.style.height   = `${height - 2}px`;
+    el.style.left     = `${left}px`;
+    el.style.width    = `${width}px`;
+    el.style.background = g.hasConflict ? "rgba(220,38,38,0.15)" : `${g.color}20`;
+    el.style.borderColor = g.hasConflict ? "#ef4444" : g.color;
+  }
+
+  function hideGhostDOM() {
+    if (ghostElRef.current) ghostElRef.current.style.display = "none";
+    ghostDataRef.current = null;
+  }
+
   function onBlockPointerDown(e: React.PointerEvent, block: ScheduleBlock) {
     if (e.button !== 0) return;
     e.stopPropagation();
@@ -111,19 +144,36 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
     dragRef.current = { blockId: block.id, block, duration: block.horaFin - block.horaInicio, grabOffsetMinutes: grab, startX: e.clientX, startY: e.clientY };
     setDraggingId(block.id);
     gridRef.current?.setPointerCapture(e.pointerId);
+    // Fix 4: hint compositor to promote this element
+    const blockEl = e.currentTarget as HTMLElement;
+    blockEl.style.willChange = "transform";
   }
 
   function onGridPointerMove(e: React.PointerEvent) {
     const d = dragRef.current; if (!d) return;
     if (Math.abs(e.clientX - d.startX) < DRAG_THRESHOLD && Math.abs(e.clientY - d.startY) < DRAG_THRESHOLD) return;
-    setGhost((p) => buildGhost(e.clientX, e.clientY, d, p));
+    // Fix 3: throttle snap calculation to one per animation frame
+    if (rafRef.current !== null) return;
+    const cx = e.clientX; const cy = e.clientY;
+    rafRef.current = requestAnimationFrame(() => {
+      rafRef.current = null;
+      const g = buildGhost(cx, cy, d, ghostDataRef.current);
+      ghostDataRef.current = g;
+      applyGhostToDOM(g);
+    });
   }
 
   async function onGridPointerUp(e: React.PointerEvent) {
     const d = dragRef.current; if (!d) return;
+    // Fix 3: cancel pending RAF
+    if (rafRef.current !== null) { cancelAnimationFrame(rafRef.current); rafRef.current = null; }
     gridRef.current?.releasePointerCapture(e.pointerId);
+    // Fix 4: clean up will-change on the dragged block element
+    const blockEls = gridRef.current?.querySelectorAll(`[data-block-id="${d.blockId}"]`);
+    blockEls?.forEach((el) => { (el as HTMLElement).style.willChange = "auto"; });
     dragRef.current = null; setDraggingId(null);
-    const g = ghost; setGhost(null);
+    const g = ghostDataRef.current;
+    hideGhostDOM();
     const wasDrag = Math.abs(e.clientX - d.startX) >= DRAG_THRESHOLD || Math.abs(e.clientY - d.startY) >= DRAG_THRESHOLD;
     if (wasDrag) { suppressClickRef.current = true; setTimeout(() => { suppressClickRef.current = false; }, 0); }
     if (!wasDrag || !g || g.hasConflict) return;
@@ -132,7 +182,11 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
     await updateBlock(d.blockId, { dia: g.dia, horaInicio: g.horaInicio, horaFin: g.horaFin });
   }
 
-  function onGridPointerCancel() { dragRef.current = null; setDraggingId(null); setGhost(null); }
+  function onGridPointerCancel() {
+    if (rafRef.current !== null) { cancelAnimationFrame(rafRef.current); rafRef.current = null; }
+    dragRef.current = null; setDraggingId(null);
+    hideGhostDOM();
+  }
 
   // ── Cell click → create ───────────────────────────────────────────────────
   function onSlotClick(e: React.MouseEvent, dia: number) {
@@ -210,11 +264,17 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
         ) : (
           <div
             ref={gridRef}
-            style={{ display: "flex", userSelect: "none", cursor: draggingId ? "grabbing" : "default" }}
+            style={{ display: "flex", userSelect: "none", cursor: draggingId ? "grabbing" : "default", position: "relative" }}
             onPointerMove={onGridPointerMove}
             onPointerUp={(e) => void onGridPointerUp(e)}
             onPointerCancel={onGridPointerCancel}
           >
+            {/* Imperative ghost overlay — positioned and styled directly via ghostElRef, no React re-renders */}
+            <div
+              ref={ghostElRef}
+              className="pointer-events-none"
+              style={{ display: "none", position: "absolute", borderRadius: 6, border: "2px dashed", zIndex: 20 }}
+            />
             {/* Time axis */}
             <div style={{ width: 40, flexShrink: 0, height: GRID_HEIGHT + SLOT_PX }}>
               <div style={{ height: SLOT_PX }} />
@@ -231,7 +291,6 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
             {DIAS_SEMANA.map((diaLabel, diaIdx) => {
               const diaNum    = diaIdx + 1;
               const diaBlocks = blocks.filter((b) => b.dia === diaNum);
-              const diaGhost  = ghost?.dia === diaNum ? ghost : null;
 
               return (
                 <div key={diaLabel} className="ws-col" style={{ display: "flex", flex: 1, flexDirection: "column", borderLeft: COL_LINE }}>
@@ -251,21 +310,6 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
                       <div key={i} className="ws-slot-line" style={{ position: "absolute", width: "100%", top: i * SLOT_PX, height: SLOT_PX, borderBottom: SLOT_LINE }} />
                     ))}
 
-                    {/* Ghost */}
-                    {diaGhost && (
-                      <div
-                        className="pointer-events-none"
-                        style={{
-                          position: "absolute", left: 2, right: 2, borderRadius: 6,
-                          top: blockTopPx(diaGhost.horaInicio) + 1,
-                          height: blockHeightPx(diaGhost.horaInicio, diaGhost.horaFin) - 2,
-                          background: diaGhost.hasConflict ? "rgba(220,38,38,0.15)" : `${diaGhost.color}20`,
-                          border: `2px dashed ${diaGhost.hasConflict ? "#ef4444" : diaGhost.color}`,
-                          zIndex: 10,
-                        }}
-                      />
-                    )}
-
                     {/* Blocks */}
                     {diaBlocks.map((block) => {
                       const top       = blockTopPx(block.horaInicio);
@@ -277,6 +321,7 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
                       return (
                         <div
                           key={block.id}
+                          data-block-id={block.id}
                           className="ws-block"
                           style={{
                             position: "absolute", left: 2, right: 2, overflow: "hidden", borderRadius: 6,
