@@ -26,6 +26,7 @@ import { Agrupador, Materia } from "@/app/types/plan";
 import { EstadoMateria } from "@/lib/plan/evaluarCorrelativas";
 import { getMateriaViewModel } from "@/lib/plan/materiaViewModel";
 import { GLASS, TEXT, TEXT_SEC, TEXT_DET, ACCENT } from "@/lib/ui/tokens";
+import { extractOrientaciones, passesOrientationFilter } from "@/lib/plan/kanbanUtils";
 
 // ── Props ────────────────────────────────────────────────────────────────────
 type Props = {
@@ -204,6 +205,7 @@ function buildGraph(
   agrupadores: Agrupador[],
   idsAgrupadores: Set<string>,
   estados: Record<string, EstadoMateria>,
+  selectedOrientacion: string,
 ): {
   nodes: Node[];
   edges: Edge[];
@@ -213,12 +215,20 @@ function buildGraph(
   const materiaById = new Map(materias.map((m) => [String(m.id), m]));
 
   const normales = materias.filter(
-    (m) => !idsAgrupadores.has(String(m.id)) && !m.grupo_opcion && m.año && m.cuatrimestre
+    (m) =>
+      !idsAgrupadores.has(String(m.id)) &&
+      !m.grupo_opcion &&
+      m.año &&
+      m.cuatrimestre &&
+      passesOrientationFilter(m, selectedOrientacion, idsAgrupadores, agrupadores)
   );
 
   type AgrupadorConUbicacion = Agrupador & { año: string; cuatrimestre: string };
   const agrupadorItems: AgrupadorConUbicacion[] = agrupadores
     .map((a) => {
+      // Skip agrupadores that don't pass the orientation filter
+      const agAsMat = { id: a.id } as Materia;
+      if (!passesOrientationFilter(agAsMat, selectedOrientacion, idsAgrupadores, agrupadores)) return null;
       const primera = a.opciones
         .map((id) => materiaById.get(String(id)))
         .find((m) => m?.año && m.cuatrimestre);
@@ -540,9 +550,17 @@ function HoverStyleInjector({
 function MapaInner({ materias, agrupadores, idsAgrupadores, estados, onVerEnPlan }: Props) {
   const { fitView, getNodes, getNode, flowToScreenPosition } = useReactFlow();
 
+  const [selectedOrientacion, setSelectedOrientacion] = useState("todas");
+
+  const orientaciones = useMemo(
+    () => extractOrientaciones(materias, agrupadores),
+    [materias, agrupadores]
+  );
+  const hasOrientaciones = orientaciones.length > 0;
+
   const { nodes: baseNodes, edges: baseEdges, materiaById, vmById } = useMemo(
-    () => buildGraph(materias, agrupadores, idsAgrupadores, estados),
-    [materias, agrupadores, idsAgrupadores, estados]
+    () => buildGraph(materias, agrupadores, idsAgrupadores, estados, selectedOrientacion),
+    [materias, agrupadores, idsAgrupadores, estados, selectedOrientacion]
   );
 
   const [filtro, setFiltro]               = useState<FiltroEstado>("todas");
@@ -691,6 +709,31 @@ function MapaInner({ materias, agrupadores, idsAgrupadores, estados, onVerEnPlan
 
   return (
     <div style={{ position: "relative" }}>
+      {hasOrientaciones && (
+        <div style={{ marginBottom: 8, display: "flex", alignItems: "center", gap: 8 }}>
+          <span style={{ fontSize: 11, color: TEXT_SEC, flexShrink: 0 }}>Orientación:</span>
+          <select
+            value={selectedOrientacion}
+            onChange={(e) => { setSelectedOrientacion(e.target.value); setSelectedNodeId(null); }}
+            style={{
+              background: selectedOrientacion === "todas" ? GLASS.base : "rgba(157,78,221,0.15)",
+              border: selectedOrientacion === "todas" ? `1px solid ${GLASS.raised}` : "1px solid rgba(157,78,221,0.45)",
+              borderRadius: 7,
+              color: selectedOrientacion === "todas" ? TEXT_SEC : "#c084fc",
+              fontSize: 12,
+              padding: "4px 10px",
+              cursor: "pointer",
+              outline: "none",
+            }}
+          >
+            <option value="todas">Todas las orientaciones</option>
+            {orientaciones.map((ori) => (
+              <option key={ori} value={ori}>{ori}</option>
+            ))}
+          </select>
+        </div>
+      )}
+
       <Toolbar
         filtro={filtro} onFiltro={setFiltro}
         busqueda={busqueda} onBusqueda={setBusqueda}
