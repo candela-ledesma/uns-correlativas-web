@@ -39,6 +39,7 @@ export default function GrupoMaterias({
           return (
             <MateriaCard
               key={`${grupoId}-${materia.id}`}
+              id={`materia-${materia.id}`}
               data-testid={vm.testId}
               data-estado={vm.dataEstado}
               data-habilitada={vm.dataHabilitada}

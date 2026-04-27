@@ -54,6 +54,7 @@ export default function AnioSection({
                                     return (
                                         <MateriaCard
                                             key={materia.id}
+                                            id={`materia-${materia.id}`}
                                             data-testid={vm.testId}
                                             data-estado={vm.dataEstado}
                                             data-habilitada={vm.dataHabilitada}
