@@ -2,7 +2,7 @@
 
 import { TEXT_SEC, GLASS, ACCENT } from "@/lib/ui/tokens";
 
-export type PlanVista = "plan" | "Plan Vista" | "Planificador";
+export type PlanVista = "plan" | "Plan Vista" | "Planificador" | "Mapa";
 
 type Props = {
   vistaActiva: PlanVista;
@@ -19,7 +19,7 @@ export default function PlanTabBar({ vistaActiva, onChange, onOpenHelp }: Props)
   return (
     <div className="mb-4 flex flex-wrap items-center gap-2" data-no-print>
       <div className="flex p-1 rounded-xl" style={tabBarStyle}>
-        {(["plan", "Plan Vista", "Planificador"] as const).map((vista) => (
+        {(["plan", "Plan Vista", "Planificador", "Mapa"] as const).map((vista) => (
           <button
             key={vista}
             type="button"

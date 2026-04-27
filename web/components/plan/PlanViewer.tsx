@@ -12,6 +12,7 @@ import GrupoMaterias from "@/components/materias/GrupoMaterias";
 import PlanOnboarding from "@/components/onboarding/PlanOnboarding";
 import KanbanPlan from "@/components/kanban/KanbanPlan";
 import WeeklySchedule from "@/components/schedule/WeeklySchedule";
+import MapaPlan from "@/components/mapa/MapaPlan";
 import { usePlanState } from "@/hooks/usePlanState";
 import { usePlanStructure } from "@/hooks/usePlanStructure";
 import { useOnboarding } from "@/hooks/useOnboarding";
@@ -360,6 +361,15 @@ export default function PlanViewer({
           planId={data.plan.plan_id}
           versionId={data.plan.version_id}
           materias={data.materias}
+        />
+      )}
+
+      {vistaActiva === "Mapa" && (
+        <MapaPlan
+          materias={data.materias}
+          agrupadores={agrupadores}
+          idsAgrupadores={idsAgrupadores}
+          estados={estados}
         />
       )}
 
