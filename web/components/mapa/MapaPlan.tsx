@@ -30,13 +30,13 @@ type Props = {
 };
 
 // ── Layout constants ────────────────────────────────────────────────────────
-const NODE_W   = 160;
-const NODE_H   = 70;
-const GAP_X    = 48;
-const GAP_Y    = 32;
-const COL_W    = NODE_W + GAP_X;
-const ROW_H    = NODE_H + GAP_Y;
-const YEAR_GAP = 56; // extra vertical gap between years
+// Layout: columns = year+semester (left→right), rows = slot within column (top→bottom)
+const NODE_W  = 160;
+const NODE_H  = 70;
+const GAP_X   = 56;  // horizontal gap between columns (semesters)
+const GAP_Y   = 20;  // vertical gap between nodes in same column
+const COL_W   = NODE_W + GAP_X;
+const ROW_H   = NODE_H + GAP_Y;
 
 // ── Visual state → colors ───────────────────────────────────────────────────
 function resolveVisualState(vm: ReturnType<typeof getMateriaViewModel>) {
@@ -182,44 +182,56 @@ function buildGraph(
     })
     .filter((a): a is AgrupadorConUbicacion => a !== null);
 
-  // Unified grid: materias normales + agrupadores, grouped by year/sem
-  type GridItem = { id: string; isAgrupador: boolean };
-  type Grid = Map<string, Map<string, GridItem[]>>;
-  const grid: Grid = new Map();
+  // ── Column layout: each (año, cuatrimestre) pair = one vertical column ──────
+  // Columns go left→right ordered by year then semester.
+  // Within each column nodes stack top→bottom.
 
-  for (const m of normales) {
-    const year = m.año!;
-    const sem  = m.cuatrimestre!;
-    if (!grid.has(year)) grid.set(year, new Map());
-    if (!grid.get(year)!.has(sem)) grid.get(year)!.set(sem, []);
-    grid.get(year)!.get(sem)!.push({ id: String(m.id), isAgrupador: false });
+  // Build ordered list of unique (año, cuatrimestre) columns
+  type ColKey = string; // `${año}|${cuatrimestre}`
+  const colOrder: ColKey[] = [];
+  const colSet = new Set<ColKey>();
+
+  // Collect all (año, cuatrimestre) pairs from normales + agrupadores, sort them
+  const allPairs: Array<{ año: string; cuatrimestre: string }> = [
+    ...normales.map((m) => ({ año: m.año!, cuatrimestre: m.cuatrimestre! })),
+    ...agrupadorItems.map((a) => ({ año: a.año, cuatrimestre: a.cuatrimestre })),
+  ];
+
+  // Sort: by year numerically (extract leading number), then by semester numerically
+  const extractNum = (s: string) => {
+    const match = s.match(/\d+/);
+    return match ? parseInt(match[0], 10) : 0;
+  };
+
+  const uniquePairs = Array.from(
+    new Map(allPairs.map((p) => [`${p.año}|${p.cuatrimestre}`, p])).values()
+  ).sort((a, b) => {
+    const yearDiff = extractNum(a.año) - extractNum(b.año);
+    if (yearDiff !== 0) return yearDiff;
+    return extractNum(a.cuatrimestre) - extractNum(b.cuatrimestre);
+  });
+
+  for (const p of uniquePairs) {
+    const key: ColKey = `${p.año}|${p.cuatrimestre}`;
+    if (!colSet.has(key)) { colSet.add(key); colOrder.push(key); }
   }
 
-  for (const a of agrupadorItems) {
-    if (!grid.has(a.año)) grid.set(a.año, new Map());
-    if (!grid.get(a.año)!.has(a.cuatrimestre)) grid.get(a.año)!.set(a.cuatrimestre, []);
-    grid.get(a.año)!.get(a.cuatrimestre)!.push({ id: String(a.id), isAgrupador: true });
-  }
+  const colIndex = new Map(colOrder.map((k, i) => [k, i]));
 
-  const sortedYears = [...grid.keys()].sort((a, b) => Number(a) - Number(b));
+  // Assign each node to its column, track row counter per column
+  const colRowCount = new Map<ColKey, number>();
+  const posMap = new Map<string, { x: number; y: number }>();
 
-  type SlotInfo = { x: number; y: number };
-  const posMap = new Map<string, SlotInfo>();
-  let yOffset = 0;
+  const assignPos = (id: string, año: string, cuatrimestre: string) => {
+    const key: ColKey = `${año}|${cuatrimestre}`;
+    const col = colIndex.get(key) ?? 0;
+    const row = colRowCount.get(key) ?? 0;
+    colRowCount.set(key, row + 1);
+    posMap.set(id, { x: col * COL_W, y: row * ROW_H });
+  };
 
-  for (const year of sortedYears) {
-    const semMap = grid.get(year)!;
-    const sortedSems = [...semMap.keys()].sort((a, b) => Number(a) - Number(b));
-
-    for (const sem of sortedSems) {
-      const items = semMap.get(sem)!;
-      items.forEach((item, idx) => {
-        posMap.set(item.id, { x: idx * COL_W, y: yOffset });
-      });
-      yOffset += ROW_H;
-    }
-    yOffset += YEAR_GAP;
-  }
+  for (const m of normales)       assignPos(String(m.id), m.año!, m.cuatrimestre!);
+  for (const a of agrupadorItems) assignPos(String(a.id), a.año, a.cuatrimestre);
 
   // Nodes: normales
   const normalNodes: Node[] = normales.map((m) => {
@@ -372,6 +384,7 @@ export default function MapaPlan({ materias, agrupadores, idsAgrupadores, estado
           />
           <MiniMap
             nodeColor={(node) => {
+              if (node.type === "agrupador") return ACCENT;
               const d = node.data as NodeData;
               return d.visualState ? d.visualState.accent : TEXT_SEC;
             }}
