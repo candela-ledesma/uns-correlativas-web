@@ -230,6 +230,7 @@ def detectar_materias_generico(texto):
 
     materias_index = {}
     agrupadores_index = {}
+    colisiones_id = []  # IDs que colisionan entre materias y agrupadores
 
     año_actual = None
     cuatrimestre_actual = None
@@ -339,6 +340,11 @@ def detectar_materias_generico(texto):
             grupo_actual = codigo
             materia_actual = None
 
+            if codigo in materias_index:
+                colisiones_id.append(codigo)
+                materias[:] = [m for m in materias if str(m["id"]) != codigo]
+                del materias_index[codigo]
+
             if codigo not in agrupadores_index:
                 agrupador = crear_agrupador(codigo, nombre, "optativa_grupo")
                 agrupadores.append(agrupador)
@@ -365,6 +371,11 @@ def detectar_materias_generico(texto):
                 seccion_actual = "idiomas"
             elif tipo_agrupador == "seminario_grupo":
                 seccion_actual = "seminarios"
+
+            if codigo in materias_index:
+                colisiones_id.append(codigo)
+                materias[:] = [m for m in materias if str(m["id"]) != codigo]
+                del materias_index[codigo]
 
             if codigo not in agrupadores_index:
                 agrupador = crear_agrupador(codigo, nombre, tipo_agrupador)
@@ -403,6 +414,11 @@ def detectar_materias_generico(texto):
                         materia_parseada["orientacion"] = orientacion_detectada
 
                 materia_resuelta = materia_parseada
+
+                if materia_id in agrupadores_index:
+                    colisiones_id.append(materia_id)
+                    materia_actual = None
+                    continue
 
                 if materia_id not in materias_index:
                     materias.append(materia_parseada)
@@ -608,8 +624,14 @@ def detectar_materias_generico(texto):
                 materia["año"] = ubicaciones_lista[0]["año"]
                 materia["cuatrimestre"] = ubicaciones_lista[0]["cuatrimestre"]
 
-    return {
+    resultado = {
         "plan": info_plan,
         "materias": materias,
         "agrupadores": agrupadores
     }
+
+    ids_unicos = list(dict.fromkeys(colisiones_id))
+    if ids_unicos:
+        resultado["_colisiones_id"] = ids_unicos
+
+    return resultado
