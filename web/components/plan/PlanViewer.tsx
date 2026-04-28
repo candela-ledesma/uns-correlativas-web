@@ -6,7 +6,6 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { PlanData, Materia } from "@/app/types/plan";
 import PlanHeader from "@/components/plan/PlanHeader";
 import PlanFilters from "@/components/plan/PlanFilters";
-import OrientationSelector from "@/components/plan/OrientationSelector";
 import AnioSection from "@/components/materias/AnioSection";
 import GrupoMaterias from "@/components/materias/GrupoMaterias";
 import PlanOnboarding from "@/components/onboarding/PlanOnboarding";
@@ -414,12 +413,6 @@ export default function PlanViewer({
             }}
           />
 
-          <OrientationSelector
-            orientaciones={orientaciones}
-            selected={orientacionDesdeUrl}
-            onSelect={actualizarOrientacionEnUrl}
-          />
-
           <PlanFilters
             filtros={filtrosConOrientacion}
             onChange={setFiltros}
@@ -427,6 +420,9 @@ export default function PlanViewer({
             canReset={canResetFiltros}
             anios={anios}
             cuatrimestres={cuatrimestres}
+            orientaciones={orientaciones}
+            selectedOrientacion={orientacionDesdeUrl}
+            onSelectOrientacion={actualizarOrientacionEnUrl}
           />
 
           {Object.entries(seccionesPorAnioYCuatrimestre).map(([anio, cuatrimestresMap]) => (
