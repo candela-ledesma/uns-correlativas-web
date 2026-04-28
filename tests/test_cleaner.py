@@ -72,5 +72,39 @@ class RecomponerLineasPartidasTests(unittest.TestCase):
         self.assertNotIn("ORIENTACIÓN HIDRÁULICA", lineas[0])
 
 
+    def test_caso3_no_absorbe_linea_para(self):
+        """Línea que empieza con 'Para' NO debe concatenarse al nombre."""
+        texto = (
+            "0023 INTRODUCCION A LA ADMINISTRACION 64hs.\n"
+            "Para aprobar Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia 24"
+        )
+        resultado = recomponer_lineas_partidas(texto)
+        lineas = resultado.splitlines()
+        self.assertTrue(lineas[0].startswith("0023 INTRODUCCION A LA ADMINISTRACION"))
+        self.assertNotIn("Para aprobar", lineas[0])
+
+    def test_caso3_no_absorbe_linea_debe(self):
+        """Línea que empieza con 'Debe' NO debe concatenarse al nombre."""
+        texto = (
+            "1234 DERECHO CONSTITUCIONAL 96hs.\n"
+            "Debe rendir la materia 5001 antes de cursar"
+        )
+        resultado = recomponer_lineas_partidas(texto)
+        lineas = resultado.splitlines()
+        self.assertTrue(lineas[0].startswith("1234 DERECHO CONSTITUCIONAL"))
+        self.assertNotIn("Debe rendir", lineas[0])
+
+    def test_caso3_si_absorbe_continuacion_valida(self):
+        """Línea uppercase sin keyword ('PRIVADO') SÍ debe concatenarse."""
+        texto = (
+            "9167 DERECHO INTERNACIONAL\n"
+            "PRIVADO\n"
+            "9001 Aprobada Aprobada"
+        )
+        resultado = recomponer_lineas_partidas(texto)
+        lineas = resultado.splitlines()
+        self.assertEqual(lineas[0], "9167 DERECHO INTERNACIONAL PRIVADO")
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -1,0 +1,1054 @@
+{
+  "plan": {
+    "carrera": "Contador Publico",
+    "universidad": "Universidad Nacional del Sur",
+    "codigo_plan": "Plan 2016 - Versión 3"
+  },
+  "materias": [
+    {
+      "id": "1660",
+      "nombre": "INTRODUCCION A LA ADMINISTRACION",
+      "año": "Primer Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {}
+    },
+    {
+      "id": "4757",
+      "nombre": "INTRODUCCION AL ESTUDIO DE LAS CIENCIAS SOCIALES",
+      "año": "Primer Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {}
+    },
+    {
+      "id": "8116",
+      "nombre": "MATEMATICA I C",
+      "año": "Primer Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {}
+    },
+    {
+      "id": "1613",
+      "nombre": "CONTABILIDAD BASICA",
+      "año": "Primer Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {}
+    },
+    {
+      "id": "9065",
+      "nombre": "INTRODUCCION AL DERECHO C.A.",
+      "año": "Primer Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {}
+    },
+    {
+      "id": "8117",
+      "nombre": "MATEMATICA II C",
+      "año": "Primer Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "8116": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "1673",
+      "nombre": "ANALISIS FINANCIERO",
+      "año": "Segundo Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "8116": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "8117": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "9074",
+      "nombre": "DERECHO EMPRESARIO C",
+      "año": "Segundo Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "9065": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "1711",
+      "nombre": "LABORATORIO DE TECNOLOGIA DE LA INFORMACION EN LAS ORGANIZACIONES",
+      "año": "Segundo Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "1660": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "2360",
+      "nombre": "SISTEMAS ECONOMICOS",
+      "año": "Segundo Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "8116": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "1576",
+      "nombre": "CONTABILIDAD I C.P.",
+      "año": "Segundo Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "1613": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "8105",
+      "nombre": "ESTADISTICA CA",
+      "año": "Segundo Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "8116": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "8117": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "2253",
+      "nombre": "MICROECONOMIA",
+      "año": "Segundo Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "2360": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "4757": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "8117": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "1558",
+      "nombre": "ANALISIS DE SISTEMAS ADMINISTRATIVOS",
+      "año": "Tercer Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "1711": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "1643",
+      "nombre": "CONTABILIDAD II C",
+      "año": "Tercer Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "1576": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "1613": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "1645",
+      "nombre": "CONTABILIDAD SOCIAL Y AMBIENTAL",
+      "año": "Tercer Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "1576": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "1613": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "1660": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "9073",
+      "nombre": "FUNDAMENTOS DEL DERECHO PUBLICO",
+      "año": "Tercer Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "9065": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "1670",
+      "nombre": "ACTUACION PROFESIONAL, LABORAL y PREVISIONAL",
+      "año": "Tercer Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "9074": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "1644",
+      "nombre": "CONTABILIDAD III C",
+      "año": "Tercer Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "1576": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "1643": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "2128",
+      "nombre": "FINANZAS PUBLICAS C.P.",
+      "año": "Tercer Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "2253": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "1568",
+      "nombre": "ACTUACION PROFESIONAL SOCIETARIA",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "9074": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "1657",
+      "nombre": "ADMINISTRACION GENERAL C",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "1558": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "1660": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "1530",
+      "nombre": "CONTABILIDAD DE COSTOS",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "1643": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "1660": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "1673": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "1527",
+      "nombre": "COOPERATIVAS,MUTUALES Y OTROS ENTES DE LA ECONOMIA SOCIAL",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "1576": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "1643": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "1645": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "9074": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "1511",
+      "nombre": "ADMINISTRACION FINANCIERA I",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "1643": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "1644": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "1673": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "2128": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "8105": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "1532",
+      "nombre": "CONTABILIDAD PUBLICA",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "1643": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "2128": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "9073": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "1911",
+      "nombre": "TEORIA Y TECNICA TRIBUTARIA I",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "1643": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "1644": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "2128": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "9073": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "9074": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "1666",
+      "nombre": "AUDITORIA A",
+      "año": "Quinto Año",
+      "cuatrimestre": "Anual",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "1568": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "1644": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "1657": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "1670": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "1911": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "1502",
+      "nombre": "ACTUACION PROFESIONAL JUDICIAL",
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "1568": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "1670": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "1911": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "1912",
+      "nombre": "TEORIA Y TECNICA TRIBUTARIA II",
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "1911": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "1812",
+      "nombre": "PRACTICA PROFESIONAL INTEGRADORA",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "1568": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "1912": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "1813",
+      "nombre": "PRACTICA PROFESIONAL SUPERVISADA",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "4928": {
+          "para_cursar": null,
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "4928",
+      "nombre": "PRUEBA DE SUFICIENCIA EN IDIOMA EXTRANJERO:INGLES",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": "idioma",
+      "correlativas": {}
+    },
+    {
+      "id": "1516",
+      "nombre": "ADMINISTRACION DE PERSONAL",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G0045",
+      "subtipo": null,
+      "correlativas": {
+        "1657": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "1670": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "1520",
+      "nombre": "COMERCIALIZACION",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "96",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G0045",
+      "subtipo": null,
+      "correlativas": {
+        "1657": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "2253": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "1524",
+      "nombre": "ADMINISTRACION DE LA PRODUCCION",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G0045",
+      "subtipo": null,
+      "correlativas": {
+        "1657": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "1528",
+      "nombre": "COMERCIO EXTERIOR",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G0045",
+      "subtipo": null,
+      "correlativas": {
+        "1912": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "2253": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "9074": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "1618",
+      "nombre": "COSTOS Y CONTROL DE GESTION",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G0045",
+      "subtipo": null,
+      "correlativas": {
+        "1530": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "1657": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "1654",
+      "nombre": "GESTION PUBLICA PROVINCIAL Y MUNICIPAL",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G0045",
+      "subtipo": null,
+      "correlativas": {
+        "1532": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "1655",
+      "nombre": "CONTABILIDAD PUBLICA II",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G0045",
+      "subtipo": null,
+      "correlativas": {
+        "1532": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "1658",
+      "nombre": "NORMAS INTERNACIONALES DE CONTABILIDAD",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G0045",
+      "subtipo": null,
+      "correlativas": {
+        "1643": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "1644": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "1669",
+      "nombre": "ACTUACION PROFESIONAL EN EMPRESAS AGROPECUARIAS",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G0045",
+      "subtipo": null,
+      "correlativas": {
+        "1643": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "1671",
+      "nombre": "ADMINISTRACION DE PROYECTOS DE INVERSION",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G0045",
+      "subtipo": null,
+      "correlativas": {
+        "1511": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "1660": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "2253": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "1681",
+      "nombre": "ACTUACION PROFESIONAL EN CONTEXTOS DE TECNOLOGIA DE LA INFORMACION",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G0045",
+      "subtipo": null,
+      "correlativas": {
+        "1558": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "1643": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "1644": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "1682",
+      "nombre": "ANALISIS CONTABLE Y FINANCIERO DE COBERTURAS Y CONTRATOS",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G0045",
+      "subtipo": null,
+      "correlativas": {
+        "1511": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "1644": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "1673": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "1911": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "9074": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "1732",
+      "nombre": "MERCADO DE CAPITALES, INSTITUCIONES Y OPERATORIA FINANCIERA",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G0045",
+      "subtipo": null,
+      "correlativas": {
+        "1511": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "9074": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "1750",
+      "nombre": "METODOS CUANTITATIVOS PARA LA TOMA DE DECISIONES",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G0045",
+      "subtipo": null,
+      "correlativas": {
+        "8105": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "8117": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "1775",
+      "nombre": "OPTATIVA INTERNACIONAL I CP",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G0045",
+      "subtipo": null,
+      "correlativas": {}
+    },
+    {
+      "id": "1776",
+      "nombre": "OPTATIVA INTERNACIONAL II CP",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G0045",
+      "subtipo": null,
+      "correlativas": {}
+    },
+    {
+      "id": "1889",
+      "nombre": "SOCIOLOGIA DE LAS ORGANIZACIONES",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G0045",
+      "subtipo": null,
+      "correlativas": {
+        "4757": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "1950",
+      "nombre": "VALUACION DE EMPRESAS",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G0045",
+      "subtipo": null,
+      "correlativas": {
+        "1511": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        }
+      }
+    }
+  ],
+  "agrupadores": [
+    {
+      "id": "G0045",
+      "nombre": "Optativa Contador Publico, Plan 2016 Optativa Correlativas Para cursar Para rendir",
+      "tipo": "optativa_grupo",
+      "opciones": [
+        "1516",
+        "1520",
+        "1524",
+        "1528",
+        "1618",
+        "1654",
+        "1655",
+        "1658",
+        "1669",
+        "1671",
+        "1681",
+        "1682",
+        "1732",
+        "1750",
+        "1775",
+        "1776",
+        "1889",
+        "1950"
+      ]
+    }
+  ],
+  "_colisiones_id": [
+    "G0045"
+  ]
+}

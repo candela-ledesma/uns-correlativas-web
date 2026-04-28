@@ -47,6 +47,11 @@ def limpiar_texto(texto):
     return texto_limpio
 
 
+PATRON_INICIO_CORRELATIVA_PROSA = re.compile(
+    r'^(Para|Haber|Tener|Aprobar|Cursar|Debe|Deberá)\b',
+    re.IGNORECASE
+)
+
 PATRON_CORR_INCOMPLETA = re.compile(
     r'^[A-Z]?\d{4,}\s+(Aprobada|Regular|Cursada)$',
     re.IGNORECASE
@@ -113,6 +118,7 @@ def recomponer_lineas_partidas(texto):
             and not PATRON_CORRELATIVA_SOLO.match(siguiente)
             and not PATRON_CORRELATIVA_UN_ESTADO_SOLO.match(siguiente)
             and not es_linea_basura(siguiente)
+            and not PATRON_INICIO_CORRELATIVA_PROSA.match(siguiente)
         ):
             resultado.append(actual + " " + siguiente)
             i += 2
