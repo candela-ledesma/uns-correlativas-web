@@ -41,13 +41,6 @@ export const CARRERAS: CarreraConfig[] = [
             disponible: true,
             hidden: true,
             },
-            {
-            versionId: "v_invalid_shape",
-            label: "Plan inválido interno",
-            jsonFile: "arquitectura_invalid_shape.json",
-            disponible: true,
-            hidden: true,
-            },
         ]
         : []),
     ],
