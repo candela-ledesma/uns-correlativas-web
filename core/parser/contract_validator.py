@@ -97,6 +97,11 @@ def validate_plan_contract(data: Any) -> ContractValidationResult:
                 f"Colisión de ID entre materias y agrupadores: {col_id}. El elemento quedó solo en agrupadores[].",
             )
 
+    warnings_prosa = data.get("_warnings", [])
+    if isinstance(warnings_prosa, list):
+        for msg in warnings_prosa:
+            _add_issue(warnings, "warning", "_warnings", str(msg))
+
     materia_ids: set[str] = set()
     agrupador_ids: set[str] = set()
     agrupador_options: dict[str, set[str]] = {}

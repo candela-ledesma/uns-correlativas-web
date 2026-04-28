@@ -14,6 +14,7 @@ from .patterns import (
 )
 from .categorizer import detectar_categoria_y_subtipo
 from .grupo_detector import es_linea_agrupador
+from .correlativa_prosa import inferir_correlativa_en_prosa
 
 
 def extraer_orientacion_desde_nombre(nombre):
@@ -231,6 +232,7 @@ def detectar_materias_generico(texto):
     materias_index = {}
     agrupadores_index = {}
     colisiones_id = []  # IDs que colisionan entre materias y agrupadores
+    warnings_prosa = []  # Warnings de correlativas inferidas desde texto en prosa
 
     año_actual = None
     cuatrimestre_actual = None
@@ -504,6 +506,15 @@ def detectar_materias_generico(texto):
             materia_actual["correlativas"].update(correlativas)
             continue
 
+        if tipo == "desconocida" and materia_actual is not None:
+            ids_conocidos = set(materias_index.keys()) | set(agrupadores_index.keys())
+            correlativas_inferidas, ws = inferir_correlativa_en_prosa(linea, ids_conocidos)
+            if ws:
+                warnings_prosa.extend(ws)
+            if correlativas_inferidas:
+                materia_actual["correlativas"].update(correlativas_inferidas)
+            continue
+
     orientaciones_totales = set(orientaciones_ordenadas)
     orientaciones_finales_por_materia = {}
 
@@ -633,5 +644,8 @@ def detectar_materias_generico(texto):
     ids_unicos = list(dict.fromkeys(colisiones_id))
     if ids_unicos:
         resultado["_colisiones_id"] = ids_unicos
+
+    if warnings_prosa:
+        resultado["_warnings"] = warnings_prosa
 
     return resultado
