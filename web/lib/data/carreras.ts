@@ -1,4 +1,4 @@
-export type CarreraId = "arquitectura" | "lic_computacion" | "bioquimica" | "ing_civil";
+export type CarreraId = "arquitectura" | "lic_computacion" | "bioquimica" | "ing_civil" | "abogacia" | "agrimensura" | "farmacia" | "contador_publico";
 
 export type CarreraVersionConfig = {
     versionId: string;
@@ -100,6 +100,66 @@ export const CARRERAS: CarreraConfig[] = [
     ],
     disponible: true,
 
+    },
+    {
+    id: "abogacia",
+    nombre: "Abogacía",
+    descripcion: "Plan de estudios y correlativas.",
+    defaultVersionId: "v1",
+    versions: [
+        {
+        versionId: "v1",
+        label: "Plan actual",
+        jsonFile: "abogacia.json",
+        disponible: true,
+        },
+    ],
+    disponible: true,
+    },
+    {
+    id: "agrimensura",
+    nombre: "Agrimensura",
+    descripcion: "Plan de estudios y correlativas.",
+    defaultVersionId: "v1",
+    versions: [
+        {
+        versionId: "v1",
+        label: "Plan actual",
+        jsonFile: "agrimensura.json",
+        disponible: true,
+        },
+    ],
+    disponible: true,
+    },
+    {
+    id: "farmacia",
+    nombre: "Farmacia",
+    descripcion: "Plan de estudios y correlativas.",
+    defaultVersionId: "v1",
+    versions: [
+        {
+        versionId: "v1",
+        label: "Plan actual",
+        jsonFile: "farmacia.json",
+        disponible: true,
+        },
+    ],
+    disponible: true,
+    },
+    {
+    id: "contador_publico",
+    nombre: "Contador Público",
+    descripcion: "Plan de estudios y correlativas.",
+    defaultVersionId: "v1",
+    versions: [
+        {
+        versionId: "v1",
+        label: "Plan actual",
+        jsonFile: "contador_publico.json",
+        disponible: true,
+        },
+    ],
+    disponible: true,
     },
 ];
 

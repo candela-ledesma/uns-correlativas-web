@@ -1,0 +1,2157 @@
+{
+  "plan": {
+    "carrera": "Abogacia",
+    "universidad": "Universidad Nacional del Sur",
+    "codigo_plan": "Plan 2020 - Versión 2"
+  },
+  "materias": [
+    {
+      "id": "9098",
+      "nombre": "EVOLUCION INSTITUCIONAL DEL DERECHO",
+      "año": "Primer Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "64",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {}
+    },
+    {
+      "id": "4675",
+      "nombre": "HISTORIA CONSTITUCIONAL",
+      "año": "Primer Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "96",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {}
+    },
+    {
+      "id": "9001",
+      "nombre": "INTRODUCCION AL DERECHO",
+      "año": "Primer Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "96",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {}
+    },
+    {
+      "id": "9004",
+      "nombre": "DERECHO PRIVADO-PARTE GENERAL",
+      "año": "Primer Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "96",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "9001": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "4758",
+      "nombre": "INTRODUCCION AL ESTUDIO DE LAS CIENCIAS SOCIALES \"D\"",
+      "año": "Primer Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "96",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {}
+    },
+    {
+      "id": "2395",
+      "nombre": "SOCIOLOGIA",
+      "año": "Primer Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "96",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {}
+    },
+    {
+      "id": "9107",
+      "nombre": "TALLER DE TECNICAS DE ACCESO A LA INFORMACION JURIDICA",
+      "año": "Primer Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "32",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {}
+    },
+    {
+      "id": "9005",
+      "nombre": "DERECHO CONSTITUCIONAL",
+      "año": "Segundo Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "96",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "4675": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "9001": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "9093",
+      "nombre": "DERECHOS HUMANOS",
+      "año": "Segundo Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "64",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {}
+    },
+    {
+      "id": "2109",
+      "nombre": "ECONOMIA",
+      "año": "Segundo Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "96",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {}
+    },
+    {
+      "id": "4809",
+      "nombre": "TALLER DE DISCURSO ARGUMENTATIVO",
+      "año": "Segundo Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "64",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {}
+    },
+    {
+      "id": "9105",
+      "nombre": "TEORIA DEL CONFLICTO Y METODOS DE RESOLUCION",
+      "año": "Segundo Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "32",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {}
+    },
+    {
+      "id": "9055",
+      "nombre": "CIENCIA POLITICA",
+      "año": "Segundo Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "64",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {}
+    },
+    {
+      "id": "9006",
+      "nombre": "DERECHO DE LAS OBLIGACIONES",
+      "año": "Segundo Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "96",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "9004": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "9098": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "9008",
+      "nombre": "DERECHO PENAL I",
+      "año": "Segundo Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "96",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "9001": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "9005": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "9110",
+      "nombre": "TALLER DE NEGOCIACION Y METODOS DE RESOLUCION DE CONFLICTOS",
+      "año": "Segundo Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "32",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "9105": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "9019",
+      "nombre": "DERECHO DE LOS CONTRATOS",
+      "año": "Tercer Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "96",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "9004": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "9006": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "9018",
+      "nombre": "DERECHO PENAL II",
+      "año": "Tercer Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "64",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "9005": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "9008": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "9093": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "9104",
+      "nombre": "DERECHO PROCESAL CIVIL Y COMERCIAL",
+      "año": "Tercer Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "64",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "9004": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "9006": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "9139",
+      "nombre": "ETICA D",
+      "año": "Tercer Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "32",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "9001": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "9109",
+      "nombre": "TALLER DE INTERPRETACION DE LA LEY Y ANALISIS DE JURISPRUDENCIA",
+      "año": "Tercer Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "32",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "4809": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "9007",
+      "nombre": "DERECHO ADMINISTRATIVO I",
+      "año": "Tercer Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "64",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "9005": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "9093": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "9101",
+      "nombre": "DERECHO DE SOCIEDADES",
+      "año": "Tercer Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "64",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "9006": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "9049",
+      "nombre": "DERECHO PROCESAL PENAL",
+      "año": "Tercer Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "64",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "9008": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "9018": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "9010",
+      "nombre": "DERECHOS REALES E INTELECTUALES",
+      "año": "Tercer Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "96",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "9004": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "9006": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "9111",
+      "nombre": "TALLER DE LITIGACION ORAL",
+      "año": "Tercer Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "32",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "4809": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "9102",
+      "nombre": "DERECHO DE DAÑOS Y SEGUROS",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "64",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "9005": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "9019": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "9033",
+      "nombre": "DERECHO DEL TRABAJO Y DE LA SEGURIDAD SOCIAL \"D\"",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "96",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "9005": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "9019": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "9020",
+      "nombre": "FILOSOFIA DEL DERECHO",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "64",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "9001": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "9113",
+      "nombre": "TALLER DE DERECHO PROCESAL ADMINISTRATIVO",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "32",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "9007": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "9104": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "9106",
+      "nombre": "DERECHO DEL CONSUMIDOR",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "64",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "9019": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "9022",
+      "nombre": "DERECHO INTERNACIONAL PUBLICO",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "64",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "9005": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "9093": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "9099",
+      "nombre": "DERECHO, ECONOMIA Y COMPORTAMIENTO",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "64",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "2109": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "9019": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "9102": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "9104": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "9114",
+      "nombre": "TALLER DE PRACTICA CIVIL Y COMERCIAL",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "64",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "9104": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "9111": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "9112",
+      "nombre": "TALLER DE PRACTICA PENAL",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "64",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "9018": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "9049": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "9111": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "9012",
+      "nombre": "DERECHO ADMINISTRATIVO II",
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "32",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "9007": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "9102": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "9016",
+      "nombre": "DERECHO DE FAMILIA Y SUCESIONES",
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "96",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "9019": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "9101": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "9102": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "9104": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "9100",
+      "nombre": "DERECHO TRIBUTARIO",
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "96",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "9007": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "9018": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "9104": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "9113": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "9015",
+      "nombre": "DERECHO AMBIENTAL Y DE LOS RECURSOS NATURALES",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "64",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "9007": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "9019": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "9102": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "9104": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "9103",
+      "nombre": "DERECHO BANCARIO",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "64",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "9019": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "9101": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "9104": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "9106": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "9013",
+      "nombre": "DERECHO CONCURSAL",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "96",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "9019": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "9033": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "9101": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "9104": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "9023",
+      "nombre": "DERECHO INTERNACIONAL PRIVADO",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "64",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "9016": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "9101": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "9140",
+      "nombre": "PRACTICA PROFESIONAL SUPERVISADA D Para cursar Tener 30 asignaturas del plan cursadas Para aprobar Tener 30 asignaturas del",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {}
+    },
+    {
+      "id": "9115",
+      "nombre": "TALLER DE INVESTIGACION JURIDICA",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "32",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "9109": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "9116",
+      "nombre": "TALLER DE PRACTICA PROFESIONAL SUPERVISADA Para cursar Tener 30 asignaturas del plan cursadas Para aprobar Tener 30 asignaturas del",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "32",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {}
+    },
+    {
+      "id": "9141",
+      "nombre": "TRABAJO DE INVESTIGACION FINAL",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "0",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "9115": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "9014",
+      "nombre": "DERECHO DE LA NAVEGACION",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "64",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G2347",
+      "subtipo": null,
+      "correlativas": {
+        "9019": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "9082",
+      "nombre": "FILOSOFIA DE LA PENA",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "64",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G2347",
+      "subtipo": null,
+      "correlativas": {
+        "9008": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "9085",
+      "nombre": "POLITICA CRIMINAL",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "64",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G2347",
+      "subtipo": null,
+      "correlativas": {}
+    },
+    {
+      "id": "9087",
+      "nombre": "MODELOS COMPARADOS EN SEGURIDAD CIUDADANA",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "64",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G2347",
+      "subtipo": null,
+      "correlativas": {}
+    },
+    {
+      "id": "9090",
+      "nombre": "LEGISLACION EN SEGURIDAD CIUDADANA",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "64",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G2347",
+      "subtipo": null,
+      "correlativas": {}
+    },
+    {
+      "id": "9096",
+      "nombre": "EJECUCION PENAL",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "32",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G2347",
+      "subtipo": null,
+      "correlativas": {
+        "9008": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "9049": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "9117",
+      "nombre": "CRIMINOLOGIA",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "64",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G2347",
+      "subtipo": null,
+      "correlativas": {}
+    },
+    {
+      "id": "9119",
+      "nombre": "DERECHO DE LA INTEGRACION",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "32",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G2347",
+      "subtipo": null,
+      "correlativas": {
+        "9022": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "9120",
+      "nombre": "DERECHO ADMINISTRATIVO PARTE ESPECIAL",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "64",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G2347",
+      "subtipo": null,
+      "correlativas": {
+        "9007": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "9121",
+      "nombre": "DERECHO DE SEGUROS",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "32",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G2347",
+      "subtipo": null,
+      "correlativas": {
+        "9102": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "9122",
+      "nombre": "DERECHO NOTARIAL",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "64",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G2347",
+      "subtipo": null,
+      "correlativas": {
+        "9010": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "9123",
+      "nombre": "DERECHO COOPERATIVO",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "32",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G2347",
+      "subtipo": null,
+      "correlativas": {
+        "9004": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "9124",
+      "nombre": "GARANTIAS BANCARIAS Y MERCADO DE CAPITALES",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "32",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G2347",
+      "subtipo": null,
+      "correlativas": {
+        "9019": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "9101": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "9104": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "9106": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "9125",
+      "nombre": "DERECHO INTERNACIONAL PRIVADO II",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G2347",
+      "subtipo": null,
+      "correlativas": {
+        "9016": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "9018": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "9101": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "9126",
+      "nombre": "DERECHO AERONAUTICO",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "32",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G2347",
+      "subtipo": null,
+      "correlativas": {
+        "9019": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "9127",
+      "nombre": "DERECHO DE LA SALUD",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "64",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G2347",
+      "subtipo": null,
+      "correlativas": {
+        "9019": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "9129",
+      "nombre": "DERECHO AMBIENTAL II",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "32",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G2347",
+      "subtipo": null,
+      "correlativas": {
+        "9007": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "9019": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "9102": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "9104": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "9131",
+      "nombre": "TALLER DE PROCEDIMIENTO LABORAL",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "32",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G2347",
+      "subtipo": null,
+      "correlativas": {
+        "9033": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "9132",
+      "nombre": "TALLER DE PROCESO DE DAÑOS",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "32",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G2347",
+      "subtipo": null,
+      "correlativas": {
+        "9102": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "9133",
+      "nombre": "TALLER DE TECNICA LEGISLATIVA",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "32",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G2347",
+      "subtipo": null,
+      "correlativas": {
+        "9005": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "9134",
+      "nombre": "TALLER DE LITIGACION ORAL EN DERECHOS HUMANOS",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "32",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G2347",
+      "subtipo": null,
+      "correlativas": {
+        "9049": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "9111": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "9138",
+      "nombre": "PERSPECTIVAS DE GENERO EN POLITICAS DE SEGURIDAD",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "32",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G2347",
+      "subtipo": null,
+      "correlativas": {}
+    },
+    {
+      "id": "9142",
+      "nombre": "ARBITRAJE COMERCIAL INTERNACIONAL Y DERECHO INTERNACIONAL PENAL ECONOMICO",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "32",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G2347",
+      "subtipo": null,
+      "correlativas": {
+        "9018": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "9019": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "9104": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "9143",
+      "nombre": "DERECHO Y NUEVAS TECNOLOGIAS",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "32",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G2347",
+      "subtipo": null,
+      "correlativas": {
+        "9004": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "9144",
+      "nombre": "DERECHO PENAL INTERNACIONAL",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "64",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G2347",
+      "subtipo": null,
+      "correlativas": {
+        "9008": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "9018": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "9022": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "9145",
+      "nombre": "CUESTIONES ACTUALES SOBRE AUTORIA Y PARTICIPACION EN DERECHO PENAL",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "32",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G2347",
+      "subtipo": null,
+      "correlativas": {
+        "9008": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "9018": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "9146",
+      "nombre": "ANTROPOLOGIA JURIDICA",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "32",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G2347",
+      "subtipo": null,
+      "correlativas": {
+        "2395": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "9055": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "9098": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "9147",
+      "nombre": "DERECHO PROBATORIO EN MATERIA PENAL",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "64",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G2347",
+      "subtipo": null,
+      "correlativas": {
+        "9005": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "9008": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "9018": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "9049": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "9148",
+      "nombre": "DERECHO CONTRAVENCIONAL",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "32",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G2347",
+      "subtipo": null,
+      "correlativas": {
+        "9007": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "9008": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "9018": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "9049": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "9149",
+      "nombre": "GENERO, IGUALDAD Y DERECHO",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "64",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G2347",
+      "subtipo": null,
+      "correlativas": {}
+    },
+    {
+      "id": "9150",
+      "nombre": "DERECHO ANIMAL",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "64",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G2347",
+      "subtipo": null,
+      "correlativas": {}
+    },
+    {
+      "id": "9151",
+      "nombre": "DERECHO DE LA SALUD Y DE LA DISCAPACIDAD",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "64",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G2347",
+      "subtipo": null,
+      "correlativas": {
+        "9004": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "9152",
+      "nombre": "DERECHO PROCESAL Y VIOLENCIA DE GENERO",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "32",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G2347",
+      "subtipo": null,
+      "correlativas": {
+        "9008": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "9049": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "9153",
+      "nombre": "CASTIGO Y MODERNIDAD",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "32",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G2347",
+      "subtipo": null,
+      "correlativas": {
+        "9008": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "9018": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "9154",
+      "nombre": "DERECHO Y SECTORES VULNERABILIZADOS",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "64",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G2347",
+      "subtipo": null,
+      "correlativas": {
+        "9001": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "9005": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "9155",
+      "nombre": "JUICIO POR JURADOS",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "64",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G2347",
+      "subtipo": null,
+      "correlativas": {
+        "9005": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "9049": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "9111": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "9156",
+      "nombre": "LOS CRIMENES CONTRA LA HUMANIDAD EN LA REPUBLICA ARGENTINA",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "64",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G2347",
+      "subtipo": null,
+      "correlativas": {
+        "9005": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "9008": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "9161",
+      "nombre": "TALLER DE LITIGACION ORAL PENAL PROFUNDIZADO",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "64",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G2347",
+      "subtipo": null,
+      "correlativas": {
+        "9049": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "9111": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "9162",
+      "nombre": "TALLER DE CONFECCION Y REDACCION DE DICTAMENES JURIDICOS",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "64",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G2347",
+      "subtipo": null,
+      "correlativas": {
+        "9005": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "9007": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "9093": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "9163",
+      "nombre": "CRIMENES DE LESA HUMANIDAD, DE GUERRA Y GENOCIDIOS",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "32",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G2347",
+      "subtipo": null,
+      "correlativas": {
+        "9005": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "9018": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "9093": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "9164",
+      "nombre": "DERECHO E INTELIGENCIA ARTIFICIAL",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "64",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G2347",
+      "subtipo": null,
+      "correlativas": {}
+    },
+    {
+      "id": "9165",
+      "nombre": "INTRODUCCION A LA ABOGACIA COMUNITARIA",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "64",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G2347",
+      "subtipo": null,
+      "correlativas": {
+        "9001": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "9005": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "9166",
+      "nombre": "DERECHO DEL DEPORTE",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "64",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G2347",
+      "subtipo": null,
+      "correlativas": {
+        "9102": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "9167",
+      "nombre": "PROCEDIMIENTO ADMINISTRATIVO Y CONTROL JUDICIAL DE LA ADMINISTRACION PUBLICA",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "64",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G2347",
+      "subtipo": null,
+      "correlativas": {
+        "9007": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "9168",
+      "nombre": "CRIMENES INTERNACIONALES",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G2347",
+      "subtipo": null,
+      "correlativas": {
+        "9005": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "9018": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "9093": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "9173",
+      "nombre": "LEY DE BASES EN EL DERECHO ADMNISTRATIVO ARGENTINO",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "64",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G2347",
+      "subtipo": null,
+      "correlativas": {
+        "9007": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "9174",
+      "nombre": "DERECHO PENAL ECONOMICO",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "64",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G2347",
+      "subtipo": null,
+      "correlativas": {
+        "9049": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "9100": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "9175",
+      "nombre": "DERECHO MUNICIPAL",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "64",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G2347",
+      "subtipo": null,
+      "correlativas": {
+        "9005": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "9007": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "9177",
+      "nombre": "DERECHO PROCESAL CONCURSAL",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G2347",
+      "subtipo": null,
+      "correlativas": {
+        "9104": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "9178",
+      "nombre": "DERECHO CONSTITUCIONAL PRACTICO PROFUNDIZADO",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G2347",
+      "subtipo": null,
+      "correlativas": {
+        "9049": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "9055": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "9104": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "3578",
+      "nombre": "EXAMEN DE IDIOMA PORTUGUES",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "I0002",
+      "subtipo": "idioma",
+      "correlativas": {}
+    },
+    {
+      "id": "4574",
+      "nombre": "EXAMEN DE IDIOMA ALEMAN",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "I0002",
+      "subtipo": "idioma",
+      "correlativas": {}
+    },
+    {
+      "id": "4575",
+      "nombre": "EXAMEN DE IDIOMA FRANCES",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "I0002",
+      "subtipo": "idioma",
+      "correlativas": {}
+    },
+    {
+      "id": "4576",
+      "nombre": "EXAMEN DE IDIOMA INGLES",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "I0002",
+      "subtipo": "idioma",
+      "correlativas": {}
+    },
+    {
+      "id": "4577",
+      "nombre": "EXAMEN DE IDIOMA ITALIANO 0hs. Volver",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "I0002",
+      "subtipo": "idioma",
+      "correlativas": {}
+    }
+  ],
+  "agrupadores": [
+    {
+      "id": "G2347",
+      "nombre": "Optativa de Abogacía, plan 2020 Optativa Correlativas Para cursar Para rendir",
+      "tipo": "optativa_grupo",
+      "opciones": [
+        "9014",
+        "9082",
+        "9085",
+        "9087",
+        "9090",
+        "9096",
+        "9117",
+        "9119",
+        "9120",
+        "9121",
+        "9122",
+        "9123",
+        "9124",
+        "9125",
+        "9126",
+        "9127",
+        "9129",
+        "9131",
+        "9132",
+        "9133",
+        "9134",
+        "9138",
+        "9142",
+        "9143",
+        "9144",
+        "9145",
+        "9146",
+        "9147",
+        "9148",
+        "9149",
+        "9150",
+        "9151",
+        "9152",
+        "9153",
+        "9154",
+        "9155",
+        "9156",
+        "9161",
+        "9162",
+        "9163",
+        "9164",
+        "9165",
+        "9166",
+        "9167",
+        "9168",
+        "9173",
+        "9174",
+        "9175",
+        "9177",
+        "9178"
+      ]
+    },
+    {
+      "id": "G2348",
+      "nombre": "Optativa de Abogacía, plan 2020 Optativa Correlativas Para cursar Para rendir",
+      "tipo": "optativa_grupo",
+      "opciones": [
+        "9014",
+        "9082",
+        "9085",
+        "9087",
+        "9090",
+        "9096",
+        "9117",
+        "9119",
+        "9120",
+        "9121",
+        "9122",
+        "9123",
+        "9124",
+        "9125",
+        "9126",
+        "9127",
+        "9129",
+        "9131",
+        "9132",
+        "9133",
+        "9134",
+        "9138",
+        "9142",
+        "9143",
+        "9144",
+        "9145",
+        "9146",
+        "9147",
+        "9148",
+        "9149",
+        "9150",
+        "9151",
+        "9152",
+        "9153",
+        "9154",
+        "9155",
+        "9156",
+        "9161",
+        "9162",
+        "9163",
+        "9164",
+        "9165",
+        "9166",
+        "9167",
+        "9168",
+        "9173",
+        "9174",
+        "9175",
+        "9177",
+        "9178"
+      ]
+    },
+    {
+      "id": "G2349",
+      "nombre": "Optativa de Abogacía, plan 2020 Optativa Correlativas Para cursar Para rendir",
+      "tipo": "optativa_grupo",
+      "opciones": [
+        "9014",
+        "9082",
+        "9085",
+        "9087",
+        "9090",
+        "9096",
+        "9117",
+        "9119",
+        "9120",
+        "9121",
+        "9122",
+        "9123",
+        "9124",
+        "9125",
+        "9126",
+        "9127",
+        "9129",
+        "9131",
+        "9132",
+        "9133",
+        "9134",
+        "9138",
+        "9142",
+        "9143",
+        "9144",
+        "9145",
+        "9146",
+        "9147",
+        "9148",
+        "9149",
+        "9150",
+        "9151",
+        "9152",
+        "9153",
+        "9154",
+        "9155",
+        "9156",
+        "9161",
+        "9162",
+        "9163",
+        "9164",
+        "9165",
+        "9166",
+        "9167",
+        "9168",
+        "9173",
+        "9174",
+        "9175",
+        "9177",
+        "9178"
+      ]
+    },
+    {
+      "id": "G2350",
+      "nombre": "Optativa de Abogacía, plan 2020 Optativa Correlativas Para cursar Para rendir",
+      "tipo": "optativa_grupo",
+      "opciones": [
+        "9014",
+        "9082",
+        "9085",
+        "9087",
+        "9090",
+        "9096",
+        "9117",
+        "9119",
+        "9120",
+        "9121",
+        "9122",
+        "9123",
+        "9124",
+        "9125",
+        "9126",
+        "9127",
+        "9129",
+        "9131",
+        "9132",
+        "9133",
+        "9134",
+        "9138",
+        "9142",
+        "9143",
+        "9144",
+        "9145",
+        "9146",
+        "9147",
+        "9148",
+        "9149",
+        "9150",
+        "9151",
+        "9152",
+        "9153",
+        "9154",
+        "9155",
+        "9156",
+        "9161",
+        "9162",
+        "9163",
+        "9164",
+        "9165",
+        "9166",
+        "9167",
+        "9168",
+        "9173",
+        "9174",
+        "9175",
+        "9177",
+        "9178"
+      ]
+    },
+    {
+      "id": "I0002",
+      "nombre": "Idioma de Abogacia, plan 1996, v3 Optativa Correlativas Para cursar Para rendir",
+      "tipo": "idioma_grupo",
+      "opciones": [
+        "3578",
+        "4574",
+        "4575",
+        "4576",
+        "4577"
+      ]
+    }
+  ],
+  "_colisiones_id": [
+    "G2347",
+    "G2348",
+    "G2349",
+    "G2350",
+    "I0002"
+  ]
+}

@@ -87,6 +87,21 @@ def validate_plan_contract(data: Any) -> ContractValidationResult:
         _add_issue(errors, "error", "agrupadores", "Debe existir como array")
         agrupadores = []
 
+    colisiones_id = data.get("_colisiones_id", [])
+    if isinstance(colisiones_id, list):
+        for col_id in colisiones_id:
+            _add_issue(
+                warnings,
+                "warning",
+                f"_colisiones_id.{col_id}",
+                f"Colisión de ID entre materias y agrupadores: {col_id}. El elemento quedó solo en agrupadores[].",
+            )
+
+    warnings_prosa = data.get("_warnings", [])
+    if isinstance(warnings_prosa, list):
+        for msg in warnings_prosa:
+            _add_issue(warnings, "warning", "_warnings", str(msg))
+
     materia_ids: set[str] = set()
     agrupador_ids: set[str] = set()
     agrupador_options: dict[str, set[str]] = {}

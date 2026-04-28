@@ -1,4 +1,15 @@
 import re
+from .patterns import (
+    PATRON_ANIO,
+    PATRON_CUATRIMESTRE,
+    PATRON_SECCION_OPTATIVAS,
+    PATRON_SECCION_IDIOMAS,
+    PATRON_SECCION_SEMINARIOS,
+    PATRON_SECCION_ORIENTACION,
+    PATRON_MATERIA,
+    PATRON_CORRELATIVA_SOLO,
+    PATRON_CORRELATIVA_UN_ESTADO_SOLO,
+)
 
 BASURA_EXACTA = {
     "U N S",
@@ -35,6 +46,11 @@ def limpiar_texto(texto):
     texto_limpio = recomponer_lineas_partidas(texto_limpio)
     return texto_limpio
 
+
+PATRON_INICIO_CORRELATIVA_PROSA = re.compile(
+    r'^(Para|Haber|Tener|Aprobar|Cursar|Debe|Deberá)\b',
+    re.IGNORECASE
+)
 
 PATRON_CORR_INCOMPLETA = re.compile(
     r'^[A-Z]?\d{4,}\s+(Aprobada|Regular|Cursada)$',
@@ -81,6 +97,30 @@ def recomponer_lineas_partidas(texto):
             and PATRON_ESTADO_SOLO.match(lineas[i + 1])
         ):
             resultado.append(actual + " " + lineas[i + 1])
+            i += 2
+            continue
+
+        # Caso 3: continuación de nombre de materia en línea siguiente uppercase sin ID
+        # "9167 DERECHO INTERNACIONAL"
+        # "PRIVADO"   <- uppercase, sin ID numérico, no es agrupador ni correlativa
+        siguiente = lineas[i + 1] if i + 1 < len(lineas) else None
+        if (
+            siguiente is not None
+            and PATRON_MATERIA.match(actual)
+            and re.match(r'^[A-Z]', siguiente)
+            and not re.match(r'^[A-Z]?\d', siguiente)
+            and not PATRON_ANIO.match(siguiente)
+            and not PATRON_CUATRIMESTRE.match(siguiente)
+            and not PATRON_SECCION_OPTATIVAS.match(siguiente)
+            and not PATRON_SECCION_IDIOMAS.match(siguiente)
+            and not PATRON_SECCION_SEMINARIOS.match(siguiente)
+            and not PATRON_SECCION_ORIENTACION.match(siguiente)
+            and not PATRON_CORRELATIVA_SOLO.match(siguiente)
+            and not PATRON_CORRELATIVA_UN_ESTADO_SOLO.match(siguiente)
+            and not es_linea_basura(siguiente)
+            and not PATRON_INICIO_CORRELATIVA_PROSA.match(siguiente)
+        ):
+            resultado.append(actual + " " + siguiente)
             i += 2
             continue
 
