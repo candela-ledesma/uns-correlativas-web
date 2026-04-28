@@ -6,7 +6,7 @@ import {
   upsertProgressSnapshot,
 } from "@/lib/db/progressRepository";
 import { createAuditEvent } from "@/lib/db/audit";
-import { createUserActivity } from "@/lib/db/userProductContext";
+import { createUserActivity } from "@/lib/db/userActivity";
 
 vi.mock("@/auth", () => ({
   auth: vi.fn(),
@@ -21,7 +21,7 @@ vi.mock("@/lib/db/audit", () => ({
   createAuditEvent: vi.fn(),
 }));
 
-vi.mock("@/lib/db/userProductContext", () => ({
+vi.mock("@/lib/db/userActivity", () => ({
   createUserActivity: vi.fn(),
 }));
 
