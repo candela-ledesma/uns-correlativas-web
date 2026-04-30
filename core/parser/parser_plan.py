@@ -14,7 +14,7 @@ from .patterns import (
 )
 from .categorizer import detectar_categoria_y_subtipo
 from .grupo_detector import es_linea_agrupador
-from .correlativa_prosa import inferir_correlativa_en_prosa
+from .correlativa_prosa import inferir_correlativa_en_prosa, inferir_requisito_especial
 
 
 def extraer_orientacion_desde_nombre(nombre):
@@ -233,6 +233,9 @@ def detectar_materias_generico(texto):
     agrupadores_index = {}
     colisiones_id = []  # IDs que colisionan entre materias y agrupadores
     warnings_prosa = []  # Warnings de correlativas inferidas desde texto en prosa
+    # Warnings emitidos por prosa de la materia actual: {cor_id: texto_warning}
+    # Se descarta cuando aparece un requisito_especial que reemplaza esas correlativas.
+    warnings_prosa_materia_actual: dict = {}
 
     año_actual = None
     cuatrimestre_actual = None
@@ -275,7 +278,7 @@ def detectar_materias_generico(texto):
     for linea in lineas:
         tipo = clasificar_linea(linea, seccion_actual)
 
-        if tipo in ("vacia", "basura", "desconocida"):
+        if tipo in ("vacia", "basura"):
             continue
 
         if tipo == "seccion_orientacion":
@@ -449,6 +452,7 @@ def detectar_materias_generico(texto):
                     materias.append(materia_parseada)
                     materias_index[materia_id] = materia_parseada
                     materia_actual = materia_parseada
+                    warnings_prosa_materia_actual.clear()
                 else:
                     materia_existente = materias_index[materia_id]
 
@@ -530,10 +534,27 @@ def detectar_materias_generico(texto):
             continue
 
         if tipo == "desconocida" and materia_actual is not None:
+            requisito = inferir_requisito_especial(linea)
+            if requisito:
+                materia_actual["requisito_especial"] = requisito
+                # Revertir correlativas y warnings de prosa acumulados para esta
+                # materia — el requisito_especial los reemplaza completamente.
+                for cor_id in list(warnings_prosa_materia_actual.keys()):
+                    materia_actual["correlativas"].pop(cor_id, None)
+                for w in warnings_prosa_materia_actual.values():
+                    try:
+                        warnings_prosa.remove(w)
+                    except ValueError:
+                        pass
+                warnings_prosa_materia_actual.clear()
+                continue
+
             ids_conocidos = set(materias_index.keys()) | set(agrupadores_index.keys())
             correlativas_inferidas, ws = inferir_correlativa_en_prosa(linea, ids_conocidos)
             if ws:
                 warnings_prosa.extend(ws)
+                for cor_id in correlativas_inferidas:
+                    warnings_prosa_materia_actual[cor_id] = ws[0]
             if correlativas_inferidas:
                 materia_actual["correlativas"].update(correlativas_inferidas)
             continue

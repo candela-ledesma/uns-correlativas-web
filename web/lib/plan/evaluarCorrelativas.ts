@@ -5,6 +5,65 @@ export type EstadoMateria = "no_cursada" | "cursada" | "aprobada";
 
 type TipoCorrelativa = "para_cursar" | "para_rendir";
 
+const ESTADO_SCORE: Record<EstadoMateria, number> = {
+  no_cursada: 0,
+  cursada: 1,
+  aprobada: 2,
+};
+
+function getMateriaIdFromEstadoKey(estadoKey: string) {
+  if (!estadoKey.includes("::")) return estadoKey;
+  const parts = estadoKey.split("::");
+  return parts[parts.length - 1] || estadoKey;
+}
+
+function mergeEstado(actual: EstadoMateria, siguiente: EstadoMateria) {
+  return ESTADO_SCORE[siguiente] > ESTADO_SCORE[actual] ? siguiente : actual;
+}
+
+export function getEstadoMaximoPorMateria(
+  estados: Record<string, EstadoMateria>
+) {
+  const estadoPorMateria = new Map<string, EstadoMateria>();
+
+  Object.entries(estados).forEach(([estadoKey, estado]) => {
+    const materiaId = String(getMateriaIdFromEstadoKey(estadoKey));
+    const previo = estadoPorMateria.get(materiaId) ?? "no_cursada";
+    estadoPorMateria.set(materiaId, mergeEstado(previo, estado));
+  });
+
+  return estadoPorMateria;
+}
+
+export function getEstadoMateriaPorId(
+  materiaId: string,
+  estados: Record<string, EstadoMateria>
+): EstadoMateria {
+  return getEstadoMaximoPorMateria(estados).get(String(materiaId)) ?? "no_cursada";
+}
+
+export function contarMateriasCompletadas(
+  estados: Record<string, EstadoMateria>
+) {
+  const estadoPorMateria = getEstadoMaximoPorMateria(estados);
+
+  let aprobadas = 0;
+  let cursadas = 0;
+
+  estadoPorMateria.forEach((estado) => {
+    if (estado === "aprobada") {
+      aprobadas += 1;
+      return;
+    }
+
+    if (estado === "cursada") {
+      cursadas += 1;
+    }
+  });
+
+  return { aprobadas, cursadas };
+}
+
 export function cumpleNivel(estado: EstadoMateria, requisito: string | null) {
   if (!requisito) return true;
 
@@ -55,9 +114,17 @@ export function cumpleCorrelativas(
 
     const estado = esAgrupador
       ? estadoAgrupador(String(corId), agrupadores, estados)
-      : estados[String(corId)] || "no_cursada";
+      : getEstadoMateriaPorId(String(corId), estados);
 
     if (!cumpleNivel(estado, requisito[tipo])) {
+      return false;
+    }
+  }
+
+  const requisitoEspecial = materia.requisito_especial;
+  if (requisitoEspecial?.tipo === "minimo_materias_aprobadas") {
+    const { aprobadas } = contarMateriasCompletadas(estados);
+    if (aprobadas < requisitoEspecial.cantidad) {
       return false;
     }
   }

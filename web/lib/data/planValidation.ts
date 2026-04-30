@@ -196,6 +196,50 @@ function parseCorrelativas(
   return correlativas;
 }
 
+function parseRequisitoEspecial(
+  raw: unknown,
+  path: string,
+  issues: PlanValidationIssue[]
+): Materia["requisito_especial"] | undefined {
+  if (raw === undefined) return undefined;
+  if (raw === null) return null;
+
+  if (!isRecord(raw)) {
+    addIssue(issues, "shape", path, "Debe ser un objeto o null");
+    return undefined;
+  }
+
+  const tipo = asRequiredString(raw.tipo, `${path}.tipo`, issues);
+  const cantidadRaw = raw.cantidad;
+  const descripcion = asRequiredString(raw.descripcion, `${path}.descripcion`, issues);
+
+  if (tipo !== "minimo_materias_aprobadas") {
+    addIssue(
+      issues,
+      "shape",
+      `${path}.tipo`,
+      "Debe ser 'minimo_materias_aprobadas'"
+    );
+  }
+
+  let cantidad: number | null = null;
+  if (typeof cantidadRaw !== "number" || !Number.isInteger(cantidadRaw) || cantidadRaw < 1) {
+    addIssue(issues, "shape", `${path}.cantidad`, "Debe ser un entero mayor o igual a 1");
+  } else {
+    cantidad = cantidadRaw;
+  }
+
+  if (tipo !== "minimo_materias_aprobadas" || cantidad === null || descripcion === null) {
+    return undefined;
+  }
+
+  return {
+    tipo,
+    cantidad,
+    descripcion,
+  };
+}
+
 function parseMaterias(raw: unknown, issues: PlanValidationIssue[]): Materia[] | null {
   if (!Array.isArray(raw)) {
     addIssue(issues, "shape", "materias", "Debe ser un array");
@@ -260,6 +304,11 @@ function parseMaterias(raw: unknown, issues: PlanValidationIssue[]): Materia[] |
       `${path}.correlativas`,
       issues
     );
+    const requisitoEspecial = parseRequisitoEspecial(
+      materiaRaw.requisito_especial,
+      `${path}.requisito_especial`,
+      issues
+    );
 
     const categoriaRaw = materiaRaw.categoria;
     const categoria =
@@ -301,6 +350,9 @@ function parseMaterias(raw: unknown, issues: PlanValidationIssue[]): Materia[] |
       ubicacion: ubicacion ?? undefined,
       subtipo,
       correlativas,
+      ...(requisitoEspecial !== undefined
+        ? { requisito_especial: requisitoEspecial }
+        : {}),
     });
   });
 

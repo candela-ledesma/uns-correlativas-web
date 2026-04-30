@@ -3,6 +3,12 @@ export type Requisito = {
   para_rendir: string | null;
 };
 
+export type RequisitoEspecial = {
+  tipo: "minimo_materias_aprobadas";
+  cantidad: number;
+  descripcion: string;
+};
+
 export type Materia = {
   id: string;
   nombre: string;
@@ -17,6 +23,7 @@ export type Materia = {
   ubicacion?: Record<string, { año: string | null; cuatrimestre: string | null }>;
   subtipo: string | null;
   correlativas: Record<string, Requisito>;
+  requisito_especial?: RequisitoEspecial | null;
 };
 
 export type Agrupador = {

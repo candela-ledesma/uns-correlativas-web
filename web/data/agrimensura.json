@@ -774,7 +774,7 @@
     },
     {
       "id": "5464",
-      "nombre": "PRACTICA PROFESIONAL SUPERVISADA (IA) Para aprobar Para iniciar la \"Práctica Profesional Supervisada\" se deberá tener como",
+      "nombre": "PRACTICA PROFESIONAL SUPERVISADA (IA)",
       "año": "Quinto Año",
       "cuatrimestre": "Segundo Cuatrimestre",
       "horas": "",
@@ -782,11 +782,11 @@
       "categoria": "normal",
       "grupo_opcion": null,
       "subtipo": null,
-      "correlativas": {
-        "5175": {
-          "para_cursar": null,
-          "para_rendir": "aprobada"
-        }
+      "correlativas": {},
+      "requisito_especial": {
+        "tipo": "minimo_materias_aprobadas",
+        "cantidad": 26,
+        "descripcion": "mínimo 26 materias del plan aprobadas"
       }
     },
     {

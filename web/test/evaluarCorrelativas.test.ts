@@ -3,6 +3,7 @@ import {
   estadoAgrupador,
   EstadoMateria,
   estaHabilitadaParaCursar,
+  estaHabilitadaParaAprobar,
 } from "@/lib/plan/evaluarCorrelativas";
 import type { Agrupador, Materia } from "../app/types/plan";
 
@@ -387,5 +388,76 @@ describe("estaHabilitada", () => {
     expect(
       estaHabilitadaParaCursar(tallerIV, estados, agrupadores)
     ).toBe(true);
+  });
+
+  it("no pierde correlativas cuando el estado viene con clave grupo::materia", () => {
+    const proyectoFinal: Materia = {
+      id: "9000",
+      nombre: "PROYECTO FINAL",
+      año: "Quinto Año",
+      cuatrimestre: "Segundo Cuatrimestre",
+      horas: "64",
+      tipo: "materia",
+      categoria: "normal",
+      grupo_opcion: null,
+      subtipo: null,
+      correlativas: {
+        "5175": {
+          para_cursar: "aprobada",
+          para_rendir: "aprobada",
+        },
+      },
+    };
+
+    const estados: Record<string, EstadoMateria> = {
+      "G1::5175": "aprobada",
+    };
+
+    expect(estaHabilitadaParaCursar(proyectoFinal, estados, agrupadores)).toBe(true);
+    expect(estaHabilitadaParaAprobar(proyectoFinal, estados, agrupadores)).toBe(true);
+  });
+
+  it("exige minimo de materias aprobadas para requisito especial", () => {
+    const pps: Materia = {
+      id: "5464",
+      nombre: "PRACTICA PROFESIONAL SUPERVISADA",
+      año: "Quinto Año",
+      cuatrimestre: "Segundo Cuatrimestre",
+      horas: "",
+      tipo: "materia",
+      categoria: "normal",
+      grupo_opcion: null,
+      subtipo: null,
+      correlativas: {
+        "5175": {
+          para_cursar: "aprobada",
+          para_rendir: "aprobada",
+        },
+      },
+      requisito_especial: {
+        tipo: "minimo_materias_aprobadas",
+        cantidad: 3,
+        descripcion: "minimo 3 materias aprobadas",
+      },
+    };
+
+    const noAlcanza: Record<string, EstadoMateria> = {
+      "5175": "aprobada",
+      "1001": "aprobada",
+      "1002": "cursada",
+    };
+
+    const alcanza: Record<string, EstadoMateria> = {
+      "5175": "aprobada",
+      "1001": "aprobada",
+      "1002": "aprobada",
+      "1003": "cursada",
+    };
+
+    expect(estaHabilitadaParaCursar(pps, noAlcanza, agrupadores)).toBe(false);
+    expect(estaHabilitadaParaAprobar(pps, noAlcanza, agrupadores)).toBe(false);
+
+    expect(estaHabilitadaParaCursar(pps, alcanza, agrupadores)).toBe(true);
+    expect(estaHabilitadaParaAprobar(pps, alcanza, agrupadores)).toBe(true);
   });
 });

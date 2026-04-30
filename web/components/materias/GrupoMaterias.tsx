@@ -5,7 +5,10 @@ import MateriasGrid from "@/components/materias/MateriasGrid";
 import { Agrupador, Materia } from "@/app/types/plan";
 import { EstadoMateria } from "@/lib/plan/evaluarCorrelativas";
 import { getMateriaViewModel } from "@/lib/plan/materiaViewModel";
-import { obtenerCorrelativasMateria } from "@/lib/plan/correlativasMateria";
+import {
+  obtenerCorrelativasMateria,
+  obtenerRequisitoEspecialMateria,
+} from "@/lib/plan/correlativasMateria";
 
 import { TEXT, TITLE_SHADOW } from "@/lib/ui/tokens";
 
@@ -35,6 +38,7 @@ export default function GrupoMaterias({
         {materias.map((materia) => {
           const vm = getMateriaViewModel({ materia, estados, agrupadores, idsAgrupadores, grupoIdRender: grupoId });
           const correlativas = obtenerCorrelativasMateria(materia, todasLasMaterias, agrupadores, estados);
+          const requisitoEspecial = obtenerRequisitoEspecialMateria(materia, estados);
 
           return (
             <MateriaCard
@@ -53,6 +57,7 @@ export default function GrupoMaterias({
               onUndo={() => onUndo(materia, grupoId)}
               undoTestId={`${vm.testId}-undo`}
               correlativas={correlativas}
+              requisitoEspecial={requisitoEspecial}
               verCorrelativasTestId={`${vm.testId}-ver-correlativas`}
             />
           );

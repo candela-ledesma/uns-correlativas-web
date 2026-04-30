@@ -3,7 +3,10 @@
 import { HTMLAttributes, KeyboardEvent, MouseEvent, useState } from "react";
 import { Materia } from "@/app/types/plan";
 import { EstadoMateria } from "@/lib/plan/evaluarCorrelativas";
-import type { CorrelativaDetalle } from "@/lib/plan/correlativasMateria";
+import type {
+  CorrelativaDetalle,
+  RequisitoEspecialDetalle,
+} from "@/lib/plan/correlativasMateria";
 import { TEXT, TEXT_SEC, TEXT_DET } from "@/lib/ui/tokens";
 import {
   getCardTheme,
@@ -28,6 +31,7 @@ type Props = HTMLAttributes<HTMLDivElement> & {
   onUndo?: () => void;
   undoTestId?: string;
   correlativas?: CorrelativaDetalle[];
+  requisitoEspecial?: RequisitoEspecialDetalle | null;
   verCorrelativasTestId?: string;
 };
 
@@ -35,13 +39,14 @@ type Props = HTMLAttributes<HTMLDivElement> & {
 export default function MateriaCard({
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   materia, estado, puedeCursar, puedeAprobar, puedeClickear, bloqueada,
-  onToggle, onUndo, undoTestId, correlativas = [], verCorrelativasTestId, ...rest
+  onToggle, onUndo, undoTestId, correlativas = [], requisitoEspecial, verCorrelativasTestId, ...rest
 }: Props) {
   const [mostrarCorrelativas, setMostrarCorrelativas] = useState(false);
 
   const canUndo           = estado !== "no_cursada" && Boolean(onUndo);
   const puedeInteractuar  = puedeClickear || canUndo;
   const tieneCorrelativas = correlativas.length > 0;
+  const mostrarPanelCorrelativas = tieneCorrelativas || Boolean(requisitoEspecial);
   const estadoLabel       = getEstadoLabel(estado, bloqueada);
 
   const theme      = getCardTheme(estado, puedeCursar, bloqueada);
@@ -116,7 +121,7 @@ export default function MateriaCard({
       </div>
 
       <div style={{ marginTop: 12, display: "flex", alignItems: "center", gap: 8 }}>
-        {tieneCorrelativas && (
+        {mostrarPanelCorrelativas && (
           <button type="button" data-testid={verCorrelativasTestId} onClick={handleCorrelativasClick} style={CARD_ACTION_BTN}>
             {mostrarCorrelativas ? "Ocultar correlativas" : "Ver correlativas"}
           </button>
@@ -134,7 +139,7 @@ export default function MateriaCard({
         )}
       </div>
 
-      {tieneCorrelativas && mostrarCorrelativas && (
+      {mostrarPanelCorrelativas && mostrarCorrelativas && (
         <div style={CORRELATIVAS_PANEL} onClick={(e) => e.stopPropagation()}>
           <div style={{ color: TEXT_SEC, fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 8 }}>
             Correlativas
@@ -160,6 +165,34 @@ export default function MateriaCard({
               </li>
             ))}
           </ul>
+          {requisitoEspecial && (
+            <div
+              style={{
+                marginTop: 10,
+                color: TEXT_SEC,
+                fontSize: 12,
+                lineHeight: 1.5,
+              }}
+            >
+              <strong style={{ color: TEXT }}>Requisito especial:</strong>{" "}
+              Para iniciar esta materia se debe cumplir: {requisitoEspecial.descripcion}.
+              <div style={{ marginTop: 4 }}>
+                Estado: {requisitoEspecial.aprobadas} aprobadas, {requisitoEspecial.cursadas} cursadas.
+              </div>
+              <div style={{ marginTop: 2 }}>
+                Para cursar:
+                <span style={correlativaBadgeStyle(requisitoEspecial.cumpleParaCursar)}>
+                  {requisitoEspecial.cumpleParaCursar ? "Cumple" : "No cumple"}
+                </span>
+              </div>
+              <div>
+                Para rendir:
+                <span style={correlativaBadgeStyle(requisitoEspecial.cumpleParaRendir)}>
+                  {requisitoEspecial.cumpleParaRendir ? "Cumple" : "No cumple"}
+                </span>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>

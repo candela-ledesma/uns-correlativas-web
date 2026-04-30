@@ -41,6 +41,13 @@ web/prisma/prisma/*.db-journal
 /playwright/.cache/
 /playwright/.auth/
 web/test-results/
+**/playwright.local.config.ts
+
+# Claude IDE configuration
+.claude/
+.claude-workspace/
+**/.instructions.md
+**/.prompt.md
 
 # Parser generated output (mirrors web/data/)
 output/
