@@ -1,9 +1,10 @@
 "use client";
 
 import MateriaCard from "@/components/materias/MateriaCard";
+import AgrupadorCard from "@/components/materias/AgrupadorCard";
 import MateriasGrid from "@/components/materias/MateriasGrid";
 import { Agrupador, Materia } from "@/app/types/plan";
-import { EstadoMateria } from "@/lib/plan/evaluarCorrelativas";
+import { EstadoMateria, estadoAgrupador } from "@/lib/plan/evaluarCorrelativas";
 import { getMateriaViewModel } from "@/lib/plan/materiaViewModel";
 import { obtenerCorrelativasMateria } from "@/lib/plan/correlativasMateria";
 
@@ -28,6 +29,8 @@ export default function AnioSection({
     anio, cuatrimestres, punterosCuatrimestre = {}, estados,
     todasLasMaterias, agrupadores, idsAgrupadores, onToggle, onUndo,
 }: Props) {
+    const agrupadoresPorId = new Map(agrupadores.map((a) => [String(a.id), a]));
+
     return (
         <section className="mb-10">
             <h2 style={{ color: TEXT, fontSize: 36, fontWeight: 800, letterSpacing: "-0.02em", marginBottom: 20, textShadow: TITLE_SHADOW }}>
@@ -38,6 +41,7 @@ export default function AnioSection({
                 const punteros = punterosCuatrimestre[cuatrimestre] || [];
                 const idsEnCronograma = new Set(materias.map((m) => String(m.id)));
                 const punterosVisibles = punteros.filter((p) => !idsEnCronograma.has(String(p.grupoId)));
+                const hayContenido = materias.length > 0 || punterosVisibles.length > 0;
 
                 return (
                     <div key={cuatrimestre} className="mb-7">
@@ -45,7 +49,7 @@ export default function AnioSection({
                             {cuatrimestre}
                         </h3>
 
-                        {materias.length > 0 && (
+                        {hayContenido && (
                             <MateriasGrid>
                                 {materias.map((materia) => {
                                     const vm = getMateriaViewModel({ materia, estados, agrupadores, idsAgrupadores });
@@ -72,27 +76,22 @@ export default function AnioSection({
                                         />
                                     );
                                 })}
-                            </MateriasGrid>
-                        )}
 
-                        {punterosVisibles.length > 0 && (
-                            <div style={{ marginTop: 12, borderRadius: 12, padding: 12, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.10)" }}>
-                                <p style={{ color: TEXT_SEC, fontSize: 13, fontWeight: 600, marginBottom: 8, margin: "0 0 8px" }}>
-                                    También podés cursar materias agrupadas en este cuatrimestre:
-                                </p>
-                                <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                                    {punterosVisibles.map((puntero) => (
-                                        <a
+                                {punterosVisibles.map((puntero) => {
+                                    const grupo = agrupadoresPorId.get(String(puntero.grupoId));
+                                    const tipo = grupo?.tipo ?? "optativa_grupo";
+                                    const estadoGrupo = estadoAgrupador(puntero.grupoId, agrupadores, estados);
+                                    return (
+                                        <AgrupadorCard
                                             key={puntero.grupoId}
-                                            data-testid={`puntero-grupo-${puntero.grupoId}`}
-                                            href={`#grupo-${puntero.grupoId}`}
-                                            style={{ display: "inline-flex", alignItems: "center", borderRadius: 8, padding: "6px 12px", fontSize: 13, fontWeight: 600, color: TEXT, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.14)", textDecoration: "none" }}
-                                        >
-                                            Ver {puntero.nombre}
-                                        </a>
-                                    ))}
-                                </div>
-                            </div>
+                                            grupoId={puntero.grupoId}
+                                            nombre={puntero.nombre}
+                                            tipo={tipo}
+                                            estado={estadoGrupo}
+                                        />
+                                    );
+                                })}
+                            </MateriasGrid>
                         )}
                     </div>
                 );
