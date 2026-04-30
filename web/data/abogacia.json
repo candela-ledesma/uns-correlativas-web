@@ -814,10 +814,10 @@
     },
     {
       "id": "9140",
-      "nombre": "PRACTICA PROFESIONAL SUPERVISADA D Para cursar Tener 30 asignaturas del plan cursadas Para aprobar Tener 30 asignaturas del",
+      "nombre": "PRACTICA PROFESIONAL SUPERVISADA D",
       "año": "Quinto Año",
       "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "128",
+      "horas": "",
       "tipo": "materia",
       "categoria": "normal",
       "grupo_opcion": null,
@@ -843,10 +843,10 @@
     },
     {
       "id": "9116",
-      "nombre": "TALLER DE PRACTICA PROFESIONAL SUPERVISADA Para cursar Tener 30 asignaturas del plan cursadas Para aprobar Tener 30 asignaturas del",
+      "nombre": "TALLER DE PRACTICA PROFESIONAL SUPERVISADA",
       "año": "Quinto Año",
       "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "32",
+      "horas": "",
       "tipo": "materia",
       "categoria": "normal",
       "grupo_opcion": null,
@@ -1961,7 +1961,9 @@
         "9175",
         "9177",
         "9178"
-      ]
+      ],
+      "año": "Cuarto Año",
+      "cuatrimestre": "Primer Cuatrimestre"
     },
     {
       "id": "G2348",
@@ -2018,7 +2020,9 @@
         "9175",
         "9177",
         "9178"
-      ]
+      ],
+      "año": "Cuarto Año",
+      "cuatrimestre": "Segundo Cuatrimestre"
     },
     {
       "id": "G2349",
@@ -2075,7 +2079,9 @@
         "9175",
         "9177",
         "9178"
-      ]
+      ],
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre"
     },
     {
       "id": "G2350",
@@ -2132,7 +2138,9 @@
         "9175",
         "9177",
         "9178"
-      ]
+      ],
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre"
     },
     {
       "id": "I0002",
@@ -2144,7 +2152,9 @@
         "4575",
         "4576",
         "4577"
-      ]
+      ],
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre"
     }
   ],
   "_colisiones_id": [

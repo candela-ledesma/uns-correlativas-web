@@ -342,8 +342,10 @@ def detectar_materias_generico(texto):
             grupo_actual = codigo
             materia_actual = None
 
+            ubicacion_previa = None
             if codigo in materias_index:
                 colisiones_id.append(codigo)
+                ubicacion_previa = materias_index[codigo]
                 materias[:] = [m for m in materias if str(m["id"]) != codigo]
                 del materias_index[codigo]
 
@@ -351,6 +353,13 @@ def detectar_materias_generico(texto):
                 agrupador = crear_agrupador(codigo, nombre, "optativa_grupo")
                 agrupadores.append(agrupador)
                 agrupadores_index[codigo] = agrupador
+
+            if ubicacion_previa:
+                agr = agrupadores_index[codigo]
+                if not agr.get("año") and ubicacion_previa.get("año"):
+                    agr["año"] = ubicacion_previa["año"]
+                if not agr.get("cuatrimestre") and ubicacion_previa.get("cuatrimestre"):
+                    agr["cuatrimestre"] = ubicacion_previa["cuatrimestre"]
 
             orientacion_grupo = registrar_orientacion(
                 extraer_orientacion_desde_nombre(nombre)
@@ -374,8 +383,10 @@ def detectar_materias_generico(texto):
             elif tipo_agrupador == "seminario_grupo":
                 seccion_actual = "seminarios"
 
+            ubicacion_previa = None
             if codigo in materias_index:
                 colisiones_id.append(codigo)
+                ubicacion_previa = materias_index[codigo]
                 materias[:] = [m for m in materias if str(m["id"]) != codigo]
                 del materias_index[codigo]
 
@@ -383,6 +394,13 @@ def detectar_materias_generico(texto):
                 agrupador = crear_agrupador(codigo, nombre, tipo_agrupador)
                 agrupadores.append(agrupador)
                 agrupadores_index[codigo] = agrupador
+
+            if ubicacion_previa:
+                agr = agrupadores_index[codigo]
+                if not agr.get("año") and ubicacion_previa.get("año"):
+                    agr["año"] = ubicacion_previa["año"]
+                if not agr.get("cuatrimestre") and ubicacion_previa.get("cuatrimestre"):
+                    agr["cuatrimestre"] = ubicacion_previa["cuatrimestre"]
 
             orientacion_grupo = registrar_orientacion(
                 extraer_orientacion_desde_nombre(nombre)
@@ -419,6 +437,11 @@ def detectar_materias_generico(texto):
 
                 if materia_id in agrupadores_index:
                     colisiones_id.append(materia_id)
+                    agrupador_existente = agrupadores_index[materia_id]
+                    if not agrupador_existente.get("año") and materia_parseada.get("año"):
+                        agrupador_existente["año"] = materia_parseada["año"]
+                    if not agrupador_existente.get("cuatrimestre") and materia_parseada.get("cuatrimestre"):
+                        agrupador_existente["cuatrimestre"] = materia_parseada["cuatrimestre"]
                     materia_actual = None
                     continue
 

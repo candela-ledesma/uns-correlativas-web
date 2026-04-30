@@ -331,6 +331,16 @@ function parseAgrupadores(raw: unknown, issues: PlanValidationIssue[]): Agrupado
         ? undefined
         : asStringOrNull(agrupadorRaw.orientacion, `${path}.orientacion`, issues);
 
+    const año =
+      agrupadorRaw.año === undefined
+        ? undefined
+        : asStringOrNull(agrupadorRaw.año, `${path}.año`, issues);
+
+    const cuatrimestre =
+      agrupadorRaw.cuatrimestre === undefined
+        ? undefined
+        : asStringOrNull(agrupadorRaw.cuatrimestre, `${path}.cuatrimestre`, issues);
+
     const opcionesRaw = agrupadorRaw.opciones;
     if (!Array.isArray(opcionesRaw)) {
       addIssue(issues, "shape", `${path}.opciones`, "Debe ser un array de strings");
@@ -360,6 +370,8 @@ function parseAgrupadores(raw: unknown, issues: PlanValidationIssue[]): Agrupado
       tipo,
       opciones,
       orientacion: orientacion ?? undefined,
+      ...(año !== undefined ? { año } : {}),
+      ...(cuatrimestre !== undefined ? { cuatrimestre } : {}),
     });
   });
 

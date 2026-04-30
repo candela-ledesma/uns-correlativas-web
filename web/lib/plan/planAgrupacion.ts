@@ -35,18 +35,32 @@ export function construirPunterosGruposPorAnioYCuatrimestre(
   const resultado: Record<string, Record<string, PunteroGrupo[]>> = {};
   const vistos = new Set<string>();
 
+  const tiposGrupo = new Set(["optativa_grupo", "idioma_grupo", "seminario_grupo"]);
+
+  const agregarPuntero = (grupoId: string, anio: string, cuatrimestre: string, nombre: string) => {
+    const clave = `${anio}::${cuatrimestre}::${grupoId}`;
+    if (vistos.has(clave)) return;
+    vistos.add(clave);
+    if (!resultado[anio]) resultado[anio] = {};
+    if (!resultado[anio][cuatrimestre]) resultado[anio][cuatrimestre] = [];
+    resultado[anio][cuatrimestre].push({ grupoId, nombre });
+  };
+
+  // Paso 1: agrupadores con año/cuatrimestre explícitos en el JSON
+  // (caso de colisión resuelta: el agrupador aparecía posicionado en el plan normal)
+  for (const grupo of agrupadores) {
+    if (!tiposGrupo.has(grupo.tipo)) continue;
+    if (!grupo.año || !grupo.cuatrimestre) continue;
+    agregarPuntero(String(grupo.id), grupo.año, grupo.cuatrimestre, grupo.nombre);
+  }
+
+  // Paso 2: agrupadores inferidos desde las materias que los referencian
   for (const materia of materiasFiltradas) {
     const grupoId = materia.grupo_opcion;
     if (!grupoId) continue;
 
     const grupo = agrupadores.find((a) => String(a.id) === String(grupoId));
-    if (!grupo) continue;
-
-    if (
-      grupo.tipo !== "optativa_grupo" &&
-      grupo.tipo !== "idioma_grupo" &&
-      grupo.tipo !== "seminario_grupo"
-    ) continue;
+    if (!grupo || !tiposGrupo.has(grupo.tipo)) continue;
 
     const placeholder          = materiasPorId.get(String(grupoId));
     const ubicacionPlaceholder = placeholder
@@ -54,17 +68,10 @@ export function construirPunterosGruposPorAnioYCuatrimestre(
       : undefined;
     const ubicacionMateria     = obtenerUbicacionPorOrientacion(materia, orientacionSeleccionada);
 
-    const anio         = ubicacionPlaceholder?.año          || placeholder?.año          || ubicacionMateria?.año          || materia.año          || "Sin año";
-    const cuatrimestre = ubicacionPlaceholder?.cuatrimestre || placeholder?.cuatrimestre || ubicacionMateria?.cuatrimestre || materia.cuatrimestre || "Sin cuatrimestre";
+    const anio         = ubicacionPlaceholder?.año          || placeholder?.año          || grupo.año          || ubicacionMateria?.año          || materia.año          || "Sin año";
+    const cuatrimestre = ubicacionPlaceholder?.cuatrimestre || placeholder?.cuatrimestre || grupo.cuatrimestre || ubicacionMateria?.cuatrimestre || materia.cuatrimestre || "Sin cuatrimestre";
 
-    if (!resultado[anio]) resultado[anio] = {};
-    if (!resultado[anio][cuatrimestre]) resultado[anio][cuatrimestre] = [];
-
-    const clave = `${anio}::${cuatrimestre}::${grupoId}`;
-    if (vistos.has(clave)) continue;
-    vistos.add(clave);
-
-    resultado[anio][cuatrimestre].push({ grupoId: String(grupoId), nombre: grupo.nombre });
+    agregarPuntero(String(grupoId), anio, cuatrimestre, grupo.nombre);
   }
 
   return resultado;

@@ -18,6 +18,26 @@ G5001 OPTATIVAS INGENIERIA
 2002 MATERIA OPTATIVA B
 """
 
+# Texto donde el agrupador aparece primero en el plan normal (con año/cuatrimestre)
+# y luego en la sección de optativas — caso real de abogacia G2347-G2350.
+TEXTO_COLISION_CON_UBICACION = """\
+Carrera con Optativas. (Plan 2020)
+CUARTO AÑO
+Primer Cuatrimestre
+9020 FILOSOFIA DEL DERECHO 64hs.
+G2347 Optativa de Abogacia, plan 2020
+Segundo Cuatrimestre
+9022 DERECHO INTERNACIONAL 64hs.
+G2348 Optativa de Abogacia, plan 2020
+MATERIAS OPTATIVAS
+G2347 Optativa de Abogacia, plan 2020
+9014 MATERIA OPTATIVA A
+9082 MATERIA OPTATIVA B
+G2348 Optativa de Abogacia, plan 2020
+9014 MATERIA OPTATIVA A
+9082 MATERIA OPTATIVA B
+"""
+
 
 class IdCollisionTests(unittest.TestCase):
     def setUp(self):
@@ -41,6 +61,36 @@ class IdCollisionTests(unittest.TestCase):
             any("G5001" in msg and "colisi" in msg.lower() for msg in warning_msgs),
             f"Se esperaba warning de colisión para G5001, pero warnings fueron: {warning_msgs}",
         )
+
+
+class ColisionPreservaUbicacionTests(unittest.TestCase):
+
+    def setUp(self):
+        self.resultado = detectar_materias_generico(TEXTO_COLISION_CON_UBICACION)
+
+    def test_agrupador_tiene_anio(self):
+        """G2347 debe tener año=Cuarto Año copiado de su aparición en el plan normal."""
+        agr = next((a for a in self.resultado["agrupadores"] if a["id"] == "G2347"), None)
+        self.assertIsNotNone(agr)
+        self.assertEqual(agr.get("año"), "Cuarto Año")
+
+    def test_agrupador_tiene_cuatrimestre(self):
+        """G2347 debe tener cuatrimestre=Primer Cuatrimestre."""
+        agr = next((a for a in self.resultado["agrupadores"] if a["id"] == "G2347"), None)
+        self.assertIsNotNone(agr)
+        self.assertEqual(agr.get("cuatrimestre"), "Primer Cuatrimestre")
+
+    def test_agrupador_segundo_cuatri_tiene_ubicacion(self):
+        """G2348 debe tener cuatrimestre=Segundo Cuatrimestre."""
+        agr = next((a for a in self.resultado["agrupadores"] if a["id"] == "G2348"), None)
+        self.assertIsNotNone(agr)
+        self.assertEqual(agr.get("año"), "Cuarto Año")
+        self.assertEqual(agr.get("cuatrimestre"), "Segundo Cuatrimestre")
+
+    def test_agrupador_no_en_materias(self):
+        """G2347 no debe aparecer en materias[]."""
+        ids = [str(m["id"]) for m in self.resultado["materias"]]
+        self.assertNotIn("G2347", ids)
 
 
 if __name__ == "__main__":

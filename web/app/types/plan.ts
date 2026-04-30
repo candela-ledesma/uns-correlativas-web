@@ -25,6 +25,8 @@ export type Agrupador = {
   tipo: string;
   opciones: string[];
   orientacion?: string | null;
+  año?: string | null;
+  cuatrimestre?: string | null;
 };
 
 export type PlanInfo = {
