@@ -537,16 +537,22 @@ def detectar_materias_generico(texto):
             requisito = inferir_requisito_especial(linea)
             if requisito:
                 materia_actual["requisito_especial"] = requisito
-                # Revertir correlativas y warnings de prosa acumulados para esta
-                # materia — el requisito_especial los reemplaza completamente.
-                for cor_id in list(warnings_prosa_materia_actual.keys()):
-                    materia_actual["correlativas"].pop(cor_id, None)
-                for w in warnings_prosa_materia_actual.values():
-                    try:
-                        warnings_prosa.remove(w)
-                    except ValueError:
-                        pass
-                warnings_prosa_materia_actual.clear()
+                
+                # Solo reemplazar correlativas si es un requisito cuantitativo.
+                # Los requisitos de "prueba_suficiencia_idioma" se agregan sin afectar
+                # las correlativas que ya fueron detectadas.
+                if requisito.get("tipo") == "minimo_materias_aprobadas":
+                    # Revertir correlativas y warnings de prosa acumulados para esta materia
+                    # — el requisito_especial cuantitativo las reemplaza completamente.
+                    for cor_id in list(warnings_prosa_materia_actual.keys()):
+                        materia_actual["correlativas"].pop(cor_id, None)
+                    for w in warnings_prosa_materia_actual.values():
+                        try:
+                            warnings_prosa.remove(w)
+                        except ValueError:
+                            pass
+                    warnings_prosa_materia_actual.clear()
+                
                 continue
 
             ids_conocidos = set(materias_index.keys()) | set(agrupadores_index.keys())

@@ -19,6 +19,13 @@ _MINIMO_MATERIAS = re.compile(
     re.IGNORECASE,
 )
 
+# Detecta requisito de Prueba de Suficiencia de Idioma (no reemplaza correlativas).
+# Patrón: "Debe rendir la Prueba de Suficiencia de Idioma"
+_PRUEBA_SUFICIENCIA = re.compile(
+    r'(?:Debe\s+rendir\s+la\s+)?Prueba\s+de\s+Suficiencia\s+(?:de\s+)?Idioma',
+    re.IGNORECASE,
+)
+
 _ESTADOS_VALIDOS = {"aprobada", "regular", "cursada"}
 
 
@@ -27,10 +34,23 @@ def _limpiar_descripcion(texto: str) -> str:
 
 
 def inferir_requisito_especial(linea: str) -> dict | None:
-    """Detecta el patrón cuantitativo 'mínimo N materias aprobadas' en una línea.
+    """Detecta patrones de requisitos especiales en una línea.
+
+    Soporta:
+    - Requisitos cuantitativos: "mínimo N materias aprobadas"
+    - Prueba de Suficiencia de Idioma (no reemplaza correlativas)
 
     Devuelve un dict con la estructura de requisito_especial, o None si no aplica.
     """
+    # Primero verificar si es una Prueba de Suficiencia (tiene prioridad baja)
+    if _PRUEBA_SUFICIENCIA.search(linea):
+        descripcion = _limpiar_descripcion(linea)
+        return {
+            "tipo": "prueba_suficiencia_idioma",
+            "descripcion": descripcion,
+        }
+
+    # Luego verificar requisitos cuantitativos
     m = _MINIMO_MATERIAS.search(linea)
     if not m:
         return None

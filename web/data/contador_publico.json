@@ -15,7 +15,11 @@
       "categoria": "normal",
       "grupo_opcion": null,
       "subtipo": null,
-      "correlativas": {}
+      "correlativas": {},
+      "requisito_especial": {
+        "tipo": "prueba_suficiencia_idioma",
+        "descripcion": "Para aprobar Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia 24 96hs"
+      }
     },
     {
       "id": "4757",
@@ -27,7 +31,11 @@
       "categoria": "normal",
       "grupo_opcion": null,
       "subtipo": null,
-      "correlativas": {}
+      "correlativas": {},
+      "requisito_especial": {
+        "tipo": "prueba_suficiencia_idioma",
+        "descripcion": "Para aprobar Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia 24 96hs"
+      }
     },
     {
       "id": "8116",
@@ -39,7 +47,11 @@
       "categoria": "normal",
       "grupo_opcion": null,
       "subtipo": null,
-      "correlativas": {}
+      "correlativas": {},
+      "requisito_especial": {
+        "tipo": "prueba_suficiencia_idioma",
+        "descripcion": "Para aprobar Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia 24 96hs"
+      }
     },
     {
       "id": "1613",
@@ -51,7 +63,11 @@
       "categoria": "normal",
       "grupo_opcion": null,
       "subtipo": null,
-      "correlativas": {}
+      "correlativas": {},
+      "requisito_especial": {
+        "tipo": "prueba_suficiencia_idioma",
+        "descripcion": "Para aprobar Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia 24 96hs"
+      }
     },
     {
       "id": "9065",
@@ -63,7 +79,11 @@
       "categoria": "normal",
       "grupo_opcion": null,
       "subtipo": null,
-      "correlativas": {}
+      "correlativas": {},
+      "requisito_especial": {
+        "tipo": "prueba_suficiencia_idioma",
+        "descripcion": "Para aprobar Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia 24 96hs"
+      }
     },
     {
       "id": "8117",
@@ -646,6 +666,11 @@
           "para_cursar": null,
           "para_rendir": "aprobada"
         }
+      },
+      "requisito_especial": {
+        "tipo": "minimo_materias_aprobadas",
+        "cantidad": 24,
+        "descripcion": "Para aprobar Se requiere tener al menos 24 materias aprobadas del plan"
       }
     },
     {
@@ -700,6 +725,10 @@
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
+      },
+      "requisito_especial": {
+        "tipo": "prueba_suficiencia_idioma",
+        "descripcion": "Para aprobar Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia 24"
       }
     },
     {
@@ -885,6 +914,10 @@
           "para_cursar": "cursada",
           "para_rendir": "aprobada"
         }
+      },
+      "requisito_especial": {
+        "tipo": "prueba_suficiencia_idioma",
+        "descripcion": "Para aprobar Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia 24"
       }
     },
     {
@@ -972,7 +1005,11 @@
       "categoria": "optativa",
       "grupo_opcion": "G0045",
       "subtipo": null,
-      "correlativas": {}
+      "correlativas": {},
+      "requisito_especial": {
+        "tipo": "prueba_suficiencia_idioma",
+        "descripcion": "Para aprobar Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia 24"
+      }
     },
     {
       "id": "1776",
@@ -984,7 +1021,11 @@
       "categoria": "optativa",
       "grupo_opcion": "G0045",
       "subtipo": null,
-      "correlativas": {}
+      "correlativas": {},
+      "requisito_especial": {
+        "tipo": "prueba_suficiencia_idioma",
+        "descripcion": "Para aprobar Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia 24"
+      }
     },
     {
       "id": "1889",
@@ -1045,7 +1086,9 @@
         "1776",
         "1889",
         "1950"
-      ]
+      ],
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre"
     }
   ],
   "_colisiones_id": [

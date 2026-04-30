@@ -210,34 +210,44 @@ function parseRequisitoEspecial(
   }
 
   const tipo = asRequiredString(raw.tipo, `${path}.tipo`, issues);
-  const cantidadRaw = raw.cantidad;
   const descripcion = asRequiredString(raw.descripcion, `${path}.descripcion`, issues);
 
-  if (tipo !== "minimo_materias_aprobadas") {
+  if (tipo === "minimo_materias_aprobadas") {
+    const cantidadRaw = raw.cantidad;
+    let cantidad: number | null = null;
+    if (typeof cantidadRaw !== "number" || !Number.isInteger(cantidadRaw) || cantidadRaw < 1) {
+      addIssue(issues, "shape", `${path}.cantidad`, "Debe ser un entero mayor o igual a 1");
+    } else {
+      cantidad = cantidadRaw;
+    }
+
+    if (cantidad === null || descripcion === null) {
+      return undefined;
+    }
+
+    return {
+      tipo,
+      cantidad,
+      descripcion,
+    };
+  } else if (tipo === "prueba_suficiencia_idioma") {
+    if (descripcion === null) {
+      return undefined;
+    }
+
+    return {
+      tipo,
+      descripcion,
+    };
+  } else {
     addIssue(
       issues,
       "shape",
       `${path}.tipo`,
-      "Debe ser 'minimo_materias_aprobadas'"
+      "Debe ser 'minimo_materias_aprobadas' o 'prueba_suficiencia_idioma'"
     );
-  }
-
-  let cantidad: number | null = null;
-  if (typeof cantidadRaw !== "number" || !Number.isInteger(cantidadRaw) || cantidadRaw < 1) {
-    addIssue(issues, "shape", `${path}.cantidad`, "Debe ser un entero mayor o igual a 1");
-  } else {
-    cantidad = cantidadRaw;
-  }
-
-  if (tipo !== "minimo_materias_aprobadas" || cantidad === null || descripcion === null) {
     return undefined;
   }
-
-  return {
-    tipo,
-    cantidad,
-    descripcion,
-  };
 }
 
 function parseMaterias(raw: unknown, issues: PlanValidationIssue[]): Materia[] | null {

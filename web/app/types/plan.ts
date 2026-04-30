@@ -3,11 +3,16 @@ export type Requisito = {
   para_rendir: string | null;
 };
 
-export type RequisitoEspecial = {
-  tipo: "minimo_materias_aprobadas";
-  cantidad: number;
-  descripcion: string;
-};
+export type RequisitoEspecial = 
+  | {
+      tipo: "minimo_materias_aprobadas";
+      cantidad: number;
+      descripcion: string;
+    }
+  | {
+      tipo: "prueba_suficiencia_idioma";
+      descripcion: string;
+    };
 
 export type Materia = {
   id: string;

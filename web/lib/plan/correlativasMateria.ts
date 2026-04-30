@@ -34,6 +34,11 @@ export type RequisitoEspecialDetalle = {
   cumpleParaRendir: boolean;
 };
 
+export type RequisitoEspecialDetalleCompleto = RequisitoEspecialDetalle | {
+  tipo: "prueba_suficiencia_idioma";
+  descripcion: string;
+};
+
 export function obtenerCorrelativasMateria(
   materia: Materia,
   materias: Materia[],
@@ -75,23 +80,34 @@ export function obtenerCorrelativasMateria(
 export function obtenerRequisitoEspecialMateria(
   materia: Materia,
   estados: Record<string, EstadoMateria>
-): RequisitoEspecialDetalle | null {
+): RequisitoEspecialDetalleCompleto | null {
   const requisito = materia.requisito_especial;
 
-  if (!requisito || requisito.tipo !== "minimo_materias_aprobadas") {
+  if (!requisito) {
     return null;
   }
 
-  const { aprobadas, cursadas } = contarMateriasCompletadas(estados);
-  const cumple = aprobadas >= requisito.cantidad;
+  if (requisito.tipo === "prueba_suficiencia_idioma") {
+    return {
+      tipo: requisito.tipo,
+      descripcion: requisito.descripcion,
+    };
+  }
 
-  return {
-    tipo: requisito.tipo,
-    descripcion: requisito.descripcion,
-    cantidad: requisito.cantidad,
-    aprobadas,
-    cursadas,
-    cumpleParaCursar: cumple,
-    cumpleParaRendir: cumple,
-  };
+  if (requisito.tipo === "minimo_materias_aprobadas") {
+    const { aprobadas, cursadas } = contarMateriasCompletadas(estados);
+    const cumple = aprobadas >= requisito.cantidad;
+
+    return {
+      tipo: requisito.tipo,
+      descripcion: requisito.descripcion,
+      cantidad: requisito.cantidad,
+      aprobadas,
+      cursadas,
+      cumpleParaCursar: cumple,
+      cumpleParaRendir: cumple,
+    };
+  }
+
+  return null;
 }

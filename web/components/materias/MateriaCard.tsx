@@ -5,7 +5,7 @@ import { Materia } from "@/app/types/plan";
 import { EstadoMateria } from "@/lib/plan/evaluarCorrelativas";
 import type {
   CorrelativaDetalle,
-  RequisitoEspecialDetalle,
+  RequisitoEspecialDetalleCompleto,
 } from "@/lib/plan/correlativasMateria";
 import { TEXT, TEXT_SEC, TEXT_DET } from "@/lib/ui/tokens";
 import {
@@ -31,7 +31,7 @@ type Props = HTMLAttributes<HTMLDivElement> & {
   onUndo?: () => void;
   undoTestId?: string;
   correlativas?: CorrelativaDetalle[];
-  requisitoEspecial?: RequisitoEspecialDetalle | null;
+  requisitoEspecial?: RequisitoEspecialDetalleCompleto | null;
   verCorrelativasTestId?: string;
 };
 
@@ -175,22 +175,28 @@ export default function MateriaCard({
               }}
             >
               <strong style={{ color: TEXT }}>Requisito especial:</strong>{" "}
-              Para iniciar esta materia se debe cumplir: {requisitoEspecial.descripcion}.
-              <div style={{ marginTop: 4 }}>
-                Estado: {requisitoEspecial.aprobadas} aprobadas, {requisitoEspecial.cursadas} cursadas.
-              </div>
-              <div style={{ marginTop: 2 }}>
-                Para cursar:
-                <span style={correlativaBadgeStyle(requisitoEspecial.cumpleParaCursar)}>
-                  {requisitoEspecial.cumpleParaCursar ? "Cumple" : "No cumple"}
-                </span>
-              </div>
-              <div>
-                Para rendir:
-                <span style={correlativaBadgeStyle(requisitoEspecial.cumpleParaRendir)}>
-                  {requisitoEspecial.cumpleParaRendir ? "Cumple" : "No cumple"}
-                </span>
-              </div>
+              {requisitoEspecial.tipo === "prueba_suficiencia_idioma" ? (
+                <>{requisitoEspecial.descripcion}</>
+              ) : (
+                <>
+                  Para iniciar esta materia se debe cumplir: {requisitoEspecial.descripcion}.
+                  <div style={{ marginTop: 4 }}>
+                    Estado: {requisitoEspecial.aprobadas} aprobadas, {requisitoEspecial.cursadas} cursadas.
+                  </div>
+                  <div style={{ marginTop: 2 }}>
+                    Para cursar:
+                    <span style={correlativaBadgeStyle(requisitoEspecial.cumpleParaCursar)}>
+                      {requisitoEspecial.cumpleParaCursar ? "Cumple" : "No cumple"}
+                    </span>
+                  </div>
+                  <div>
+                    Para rendir:
+                    <span style={correlativaBadgeStyle(requisitoEspecial.cumpleParaRendir)}>
+                      {requisitoEspecial.cumpleParaRendir ? "Cumple" : "No cumple"}
+                    </span>
+                  </div>
+                </>
+              )}
             </div>
           )}
         </div>
