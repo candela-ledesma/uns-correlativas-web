@@ -6,10 +6,7 @@ import MateriasGrid from "@/components/materias/MateriasGrid";
 import { Agrupador, Materia } from "@/app/types/plan";
 import { EstadoMateria, estadoAgrupador } from "@/lib/plan/evaluarCorrelativas";
 import { getMateriaViewModel } from "@/lib/plan/materiaViewModel";
-import {
-    obtenerCorrelativasMateria,
-    obtenerRequisitoEspecialMateria,
-} from "@/lib/plan/correlativasMateria";
+import { obtenerCorrelativasMateria } from "@/lib/plan/correlativasMateria";
 
 import { TEXT, TEXT_SEC, TITLE_SHADOW } from "@/lib/ui/tokens";
 
@@ -57,7 +54,6 @@ export default function AnioSection({
                                 {materias.map((materia) => {
                                     const vm = getMateriaViewModel({ materia, estados, agrupadores, idsAgrupadores });
                                     const correlativas = obtenerCorrelativasMateria(materia, todasLasMaterias, agrupadores, estados);
-                                    const requisitoEspecial = obtenerRequisitoEspecialMateria(materia, estados);
 
                                     return (
                                         <MateriaCard
@@ -76,7 +72,7 @@ export default function AnioSection({
                                             onUndo={() => onUndo(materia)}
                                             undoTestId={`${vm.testId}-undo`}
                                             correlativas={correlativas}
-                                            requisitoEspecial={requisitoEspecial}
+                                            estados={estados}
                                             verCorrelativasTestId={`${vm.testId}-ver-correlativas`}
                                         />
                                     );

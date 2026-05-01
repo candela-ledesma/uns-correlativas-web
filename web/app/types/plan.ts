@@ -1,18 +1,12 @@
+import type { RequisitoEspecialType } from "@/lib/plan/requisitoEspecial";
+
 export type Requisito = {
   para_cursar: string | null;
   para_rendir: string | null;
 };
 
-export type RequisitoEspecial = 
-  | {
-      tipo: "minimo_materias_aprobadas";
-      cantidad: number;
-      descripcion: string;
-    }
-  | {
-      tipo: "prueba_suficiencia_idioma";
-      descripcion: string;
-    };
+/** @deprecated Usa RequisitoEspecialType de requisitoEspecial.ts */
+export type RequisitoEspecial = RequisitoEspecialType;
 
 export type Materia = {
   id: string;

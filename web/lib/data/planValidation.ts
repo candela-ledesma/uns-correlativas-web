@@ -210,7 +210,6 @@ function parseRequisitoEspecial(
   }
 
   const tipo = asRequiredString(raw.tipo, `${path}.tipo`, issues);
-  const descripcion = asRequiredString(raw.descripcion, `${path}.descripcion`, issues);
 
   if (tipo === "minimo_materias_aprobadas") {
     const cantidadRaw = raw.cantidad;
@@ -221,30 +220,30 @@ function parseRequisitoEspecial(
       cantidad = cantidadRaw;
     }
 
-    if (cantidad === null || descripcion === null) {
+    if (cantidad === null) {
       return undefined;
     }
 
     return {
       tipo,
       cantidad,
-      descripcion,
     };
-  } else if (tipo === "prueba_suficiencia_idioma") {
-    if (descripcion === null) {
+  } else if (tipo === "prueba_idioma") {
+    const materiaId = asRequiredString(raw.materiaId, `${path}.materiaId`, issues);
+    if (materiaId === null) {
       return undefined;
     }
 
     return {
       tipo,
-      descripcion,
+      materiaId,
     };
   } else {
     addIssue(
       issues,
       "shape",
       `${path}.tipo`,
-      "Debe ser 'minimo_materias_aprobadas' o 'prueba_suficiencia_idioma'"
+      "Debe ser 'minimo_materias_aprobadas' o 'prueba_idioma'"
     );
     return undefined;
   }

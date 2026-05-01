@@ -30,7 +30,13 @@ _ESTADOS_VALIDOS = {"aprobada", "regular", "cursada"}
 
 
 def _limpiar_descripcion(texto: str) -> str:
-    return " ".join(texto.split()).strip().rstrip(".")
+    texto_limpio = " ".join(texto.split()).strip().rstrip(".")
+    texto_limpio = re.sub(
+        r"\s+\d{4,5}\s+(?:Aprobada|Cursada|Regular)(?:\s+(?:Aprobada|Cursada|Regular))*.*$",
+        "",
+        texto_limpio,
+    )
+    return texto_limpio.rstrip(".")
 
 
 def inferir_requisito_especial(linea: str) -> dict | None:
@@ -46,7 +52,7 @@ def inferir_requisito_especial(linea: str) -> dict | None:
     if _PRUEBA_SUFICIENCIA.search(linea):
         descripcion = _limpiar_descripcion(linea)
         return {
-            "tipo": "prueba_suficiencia_idioma",
+            "tipo": "prueba_idioma",
             "descripcion": descripcion,
         }
 

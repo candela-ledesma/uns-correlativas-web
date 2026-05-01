@@ -2,7 +2,6 @@ import type { Agrupador, Materia } from "@/app/types/plan";
 import {
   cumpleNivel,
   estadoAgrupador,
-  contarMateriasCompletadas,
   getEstadoMaximoPorMateria,
   getEstadoMateriaPorId,
 } from "@/lib/plan/evaluarCorrelativas";
@@ -22,21 +21,6 @@ export type CorrelativaDetalle = {
   estadoActual: EstadoMateria;
   cumpleParaCursar: boolean;
   cumpleParaRendir: boolean;
-};
-
-export type RequisitoEspecialDetalle = {
-  tipo: "minimo_materias_aprobadas";
-  descripcion: string;
-  cantidad: number;
-  aprobadas: number;
-  cursadas: number;
-  cumpleParaCursar: boolean;
-  cumpleParaRendir: boolean;
-};
-
-export type RequisitoEspecialDetalleCompleto = RequisitoEspecialDetalle | {
-  tipo: "prueba_suficiencia_idioma";
-  descripcion: string;
 };
 
 export function obtenerCorrelativasMateria(
@@ -75,39 +59,4 @@ export function obtenerCorrelativasMateria(
       };
     })
     .sort((a, b) => a.nombre.localeCompare(b.nombre, "es"));
-}
-
-export function obtenerRequisitoEspecialMateria(
-  materia: Materia,
-  estados: Record<string, EstadoMateria>
-): RequisitoEspecialDetalleCompleto | null {
-  const requisito = materia.requisito_especial;
-
-  if (!requisito) {
-    return null;
-  }
-
-  if (requisito.tipo === "prueba_suficiencia_idioma") {
-    return {
-      tipo: requisito.tipo,
-      descripcion: requisito.descripcion,
-    };
-  }
-
-  if (requisito.tipo === "minimo_materias_aprobadas") {
-    const { aprobadas, cursadas } = contarMateriasCompletadas(estados);
-    const cumple = aprobadas >= requisito.cantidad;
-
-    return {
-      tipo: requisito.tipo,
-      descripcion: requisito.descripcion,
-      cantidad: requisito.cantidad,
-      aprobadas,
-      cursadas,
-      cumpleParaCursar: cumple,
-      cumpleParaRendir: cumple,
-    };
-  }
-
-  return null;
 }

@@ -529,6 +529,25 @@ def detectar_materias_generico(texto):
             continue
 
         if tipo == "correlativa" and materia_actual is not None:
+            requisito = inferir_requisito_especial(linea)
+            if requisito:
+                if requisito.get("tipo") == "prueba_idioma":
+                    requisito["materiaId"] = str(materia_actual.get("id", ""))
+                materia_actual["requisito_especial"] = requisito
+
+                # Solo reemplazar correlativas si es un requisito cuantitativo.
+                # Los requisitos de "prueba_idioma" se agregan sin afectar
+                # las correlativas que ya fueron detectadas.
+                if requisito.get("tipo") == "minimo_materias_aprobadas":
+                    for cor_id in list(warnings_prosa_materia_actual.keys()):
+                        materia_actual["correlativas"].pop(cor_id, None)
+                    for w in warnings_prosa_materia_actual.values():
+                        try:
+                            warnings_prosa.remove(w)
+                        except ValueError:
+                            pass
+                    warnings_prosa_materia_actual.clear()
+
             correlativas = extraer_correlativas_de_linea(linea)
             materia_actual["correlativas"].update(correlativas)
             continue
@@ -536,10 +555,12 @@ def detectar_materias_generico(texto):
         if tipo == "desconocida" and materia_actual is not None:
             requisito = inferir_requisito_especial(linea)
             if requisito:
+                if requisito.get("tipo") == "prueba_idioma":
+                    requisito["materiaId"] = str(materia_actual.get("id", ""))
                 materia_actual["requisito_especial"] = requisito
                 
                 # Solo reemplazar correlativas si es un requisito cuantitativo.
-                # Los requisitos de "prueba_suficiencia_idioma" se agregan sin afectar
+                # Los requisitos de "prueba_idioma" se agregan sin afectar
                 # las correlativas que ya fueron detectadas.
                 if requisito.get("tipo") == "minimo_materias_aprobadas":
                     # Revertir correlativas y warnings de prosa acumulados para esta materia

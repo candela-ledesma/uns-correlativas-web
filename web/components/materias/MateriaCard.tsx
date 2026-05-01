@@ -3,10 +3,8 @@
 import { HTMLAttributes, KeyboardEvent, MouseEvent, useState } from "react";
 import { Materia } from "@/app/types/plan";
 import { EstadoMateria } from "@/lib/plan/evaluarCorrelativas";
-import type {
-  CorrelativaDetalle,
-  RequisitoEspecialDetalleCompleto,
-} from "@/lib/plan/correlativasMateria";
+import type { CorrelativaDetalle } from "@/lib/plan/correlativasMateria";
+import PanelRequisitoEspecial from "@/components/materias/PanelRequisitoEspecial";
 import { TEXT, TEXT_SEC, TEXT_DET } from "@/lib/ui/tokens";
 import {
   getCardTheme,
@@ -31,7 +29,7 @@ type Props = HTMLAttributes<HTMLDivElement> & {
   onUndo?: () => void;
   undoTestId?: string;
   correlativas?: CorrelativaDetalle[];
-  requisitoEspecial?: RequisitoEspecialDetalleCompleto | null;
+  estados: Record<string, EstadoMateria>;
   verCorrelativasTestId?: string;
 };
 
@@ -39,14 +37,15 @@ type Props = HTMLAttributes<HTMLDivElement> & {
 export default function MateriaCard({
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   materia, estado, puedeCursar, puedeAprobar, puedeClickear, bloqueada,
-  onToggle, onUndo, undoTestId, correlativas = [], requisitoEspecial, verCorrelativasTestId, ...rest
+  onToggle, onUndo, undoTestId, correlativas = [], estados, verCorrelativasTestId, ...rest
 }: Props) {
   const [mostrarCorrelativas, setMostrarCorrelativas] = useState(false);
 
   const canUndo           = estado !== "no_cursada" && Boolean(onUndo);
   const puedeInteractuar  = puedeClickear || canUndo;
   const tieneCorrelativas = correlativas.length > 0;
-  const mostrarPanelCorrelativas = tieneCorrelativas || Boolean(requisitoEspecial);
+  const tieneRequisitoEspecial = Boolean(materia.requisito_especial);
+  const mostrarPanelCorrelativas = tieneCorrelativas || tieneRequisitoEspecial;
   const estadoLabel       = getEstadoLabel(estado, bloqueada);
 
   const theme      = getCardTheme(estado, puedeCursar, bloqueada);
@@ -165,39 +164,11 @@ export default function MateriaCard({
               </li>
             ))}
           </ul>
-          {requisitoEspecial && (
-            <div
-              style={{
-                marginTop: 10,
-                color: TEXT_SEC,
-                fontSize: 12,
-                lineHeight: 1.5,
-              }}
-            >
-              <strong style={{ color: TEXT }}>Requisito especial:</strong>{" "}
-              {requisitoEspecial.tipo === "prueba_suficiencia_idioma" ? (
-                <>{requisitoEspecial.descripcion}</>
-              ) : (
-                <>
-                  Para iniciar esta materia se debe cumplir: {requisitoEspecial.descripcion}.
-                  <div style={{ marginTop: 4 }}>
-                    Estado: {requisitoEspecial.aprobadas} aprobadas, {requisitoEspecial.cursadas} cursadas.
-                  </div>
-                  <div style={{ marginTop: 2 }}>
-                    Para cursar:
-                    <span style={correlativaBadgeStyle(requisitoEspecial.cumpleParaCursar)}>
-                      {requisitoEspecial.cumpleParaCursar ? "Cumple" : "No cumple"}
-                    </span>
-                  </div>
-                  <div>
-                    Para rendir:
-                    <span style={correlativaBadgeStyle(requisitoEspecial.cumpleParaRendir)}>
-                      {requisitoEspecial.cumpleParaRendir ? "Cumple" : "No cumple"}
-                    </span>
-                  </div>
-                </>
-              )}
-            </div>
+          {materia.requisito_especial && (
+            <PanelRequisitoEspecial
+              requisito={materia.requisito_especial}
+              estados={estados}
+            />
           )}
         </div>
       )}
