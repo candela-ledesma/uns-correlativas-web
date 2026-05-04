@@ -388,6 +388,7 @@ export default function PlanViewer({
           agrupadores={agrupadores}
           idsAgrupadores={idsAgrupadores}
           estados={estados}
+          reglamentoUrl={data.plan.reglamento_url}
           onVerEnPlan={(materiaId: string) => {
             setVistaActiva("plan");
             setScrollTarget(materiaId);
