@@ -25,7 +25,7 @@ _PALABRAS_CLAVE = re.compile(
 _PATRON_ID = re.compile(r"\d{4,}")
 
 
-def check_texto(texto: str) -> SanityResult:
+def check_texto(texto: str) -> None:
     errors: list[str] = []
 
     if not isinstance(texto, str) or len(texto.strip()) < 200:
@@ -46,10 +46,8 @@ def check_texto(texto: str) -> SanityResult:
     if errors:
         raise PreLLMSanityError("\n".join(errors))
 
-    return SanityResult(ok=True)
 
-
-def check_estructura_minima(data: Any) -> SanityResult:
+def check_estructura_minima(data: Any) -> None:
     if not isinstance(data, dict):
         raise LLMStructureError(
             f"El JSON del LLM no es un objeto (tipo recibido: {type(data).__name__})."
@@ -63,7 +61,6 @@ def check_estructura_minima(data: Any) -> SanityResult:
         raise LLMStructureError(
             "El JSON del LLM no contiene 'materias' como lista no vacía."
         )
-    return SanityResult(ok=True)
 
 
 def check_plandata(plan_data: dict) -> SanityResult:
@@ -96,26 +93,25 @@ def check_plandata(plan_data: dict) -> SanityResult:
             warnings.append(f"materias[{i}] no tiene 'id' ni 'nombre' válidos.")
 
         correlativas = materia.get("correlativas")
-        if correlativas is not None and not isinstance(correlativas, list):
+        if correlativas is not None and not isinstance(correlativas, dict):
             errors.append(
-                f"materias[{i}].correlativas es {type(correlativas).__name__}, se esperaba lista. "
+                f"materias[{i}].correlativas es {type(correlativas).__name__}, se esperaba dict. "
                 "El LLM devolvió formato incorrecto."
             )
 
-    if total > 0:
-        ratio_ids_nulos = ids_nulos / total
-        ratio_nombres_nulos = nombres_nulos / total
+    ratio_ids_nulos = ids_nulos / total
+    ratio_nombres_nulos = nombres_nulos / total
 
-        if ratio_ids_nulos > 0.30:
-            errors.append(
-                f"{ids_nulos}/{total} materias ({ratio_ids_nulos:.0%}) no tienen ID. "
-                "Señal de extracción fallida."
-            )
-        if ratio_nombres_nulos > 0.50:
-            errors.append(
-                f"{nombres_nulos}/{total} materias ({ratio_nombres_nulos:.0%}) no tienen nombre. "
-                "Señal de extracción fallida."
-            )
+    if ratio_ids_nulos > 0.30:
+        errors.append(
+            f"{ids_nulos}/{total} materias ({ratio_ids_nulos:.0%}) no tienen ID. "
+            "Señal de extracción fallida."
+        )
+    if ratio_nombres_nulos > 0.50:
+        errors.append(
+            f"{nombres_nulos}/{total} materias ({ratio_nombres_nulos:.0%}) no tienen nombre. "
+            "Señal de extracción fallida."
+        )
 
     return SanityResult(ok=len(errors) == 0, warnings=warnings, errors=errors)
 

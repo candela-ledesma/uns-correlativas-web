@@ -1,6 +1,6 @@
 import unittest
 
-from core.llm.gemini_normalizer import LLMParseError, _extraer_json
+from core.llm.llm_normalizer import LLMParseError, _extraer_json
 
 
 PLAN_DATA_VALIDO = {

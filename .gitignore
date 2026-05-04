@@ -66,3 +66,7 @@ pdf/
 
 # Claude Code local agents
 .claude/agents/
+
+# Google Cloud SDK (not used in this project)
+google-cloud-sdk/
+google-cloud-cli-*.tar.gz
