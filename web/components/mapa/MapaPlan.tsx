@@ -320,6 +320,68 @@ function AgrupadorNode({ data }: NodeProps<Node<AgrupadorNodeData>>) {
 
 const nodeTypes = { materia: MateriaNode, agrupador: AgrupadorNode };
 
+// ── Layout types ──────────────────────────────────────────────────────────────
+type LayoutMode = "cuatrimestre" | "topologico";
+
+// ── Topological layout ────────────────────────────────────────────────────────
+function calcularNivelTopologico(ids: string[], edges: Edge[]): Map<string, number> {
+  const idSet = new Set(ids);
+  const inDeg = new Map<string, number>(ids.map((id) => [id, 0]));
+  for (const e of edges) {
+    if (idSet.has(e.source) && idSet.has(e.target)) {
+      inDeg.set(e.target, (inDeg.get(e.target) ?? 0) + 1);
+    }
+  }
+  const nivel = new Map<string, number>();
+  const cola = ids.filter((id) => (inDeg.get(id) ?? 0) === 0);
+  for (const id of cola) nivel.set(id, 0);
+
+  while (cola.length > 0) {
+    const cur = cola.shift()!;
+    const lvl = nivel.get(cur) ?? 0;
+    for (const e of edges) {
+      if (e.source !== cur || !idSet.has(e.target)) continue;
+      const next = inDeg.get(e.target)! - 1;
+      inDeg.set(e.target, next);
+      const newLvl = lvl + 1;
+      if (!nivel.has(e.target) || newLvl > (nivel.get(e.target) ?? 0)) {
+        nivel.set(e.target, newLvl);
+      }
+      if (next === 0) cola.push(e.target);
+    }
+  }
+  // Fallback for nodes unreached (cycles or disconnected)
+  for (const id of ids) {
+    if (!nivel.has(id)) nivel.set(id, 0);
+  }
+  return nivel;
+}
+
+function posicionarTopologico(
+  ids: string[],
+  edges: Edge[],
+): Map<string, { x: number; y: number }> {
+  const nivel = calcularNivelTopologico(ids, edges);
+  const porNivel = new Map<number, string[]>();
+  for (const [id, lvl] of nivel) {
+    if (!porNivel.has(lvl)) porNivel.set(lvl, []);
+    porNivel.get(lvl)!.push(id);
+  }
+
+  const posMap = new Map<string, { x: number; y: number }>();
+  for (const [lvl, nodos] of porNivel) {
+    const totalAncho = nodos.length * NODE_W + (nodos.length - 1) * GAP_X;
+    const offsetX = -totalAncho / 2;
+    nodos.forEach((id, i) => {
+      posMap.set(id, {
+        x: offsetX + i * COL_W,
+        y: lvl * ROW_H,
+      });
+    });
+  }
+  return posMap;
+}
+
 // ── Build graph ───────────────────────────────────────────────────────────────
 // ── Edge colors ───────────────────────────────────────────────────────────────
 // Color is driven by the source node (the prerequisite):
@@ -347,6 +409,7 @@ function buildGraph(
   idsAgrupadores: Set<string>,
   estados: Record<string, EstadoMateria>,
   selectedOrientacion: string,
+  layoutMode: LayoutMode,
 ): { nodes: Node[]; edges: Edge[]; materiaById: Map<string, Materia>; vmById: Map<string, VisualEstado> } {
   const materiaById = new Map(materias.map((m) => [String(m.id), m]));
 
@@ -377,13 +440,13 @@ function buildGraph(
 
   const colIndex = new Map(uniquePairs.map((p, i) => [`${p.año}|${p.cuatrimestre}`, i]));
   const colRowCount = new Map<string, number>();
-  const posMap = new Map<string, { x: number; y: number }>();
+  const cuatPosMap = new Map<string, { x: number; y: number }>();
   const assignPos = (id: string, año: string, cuatrimestre: string) => {
     const key = `${año}|${cuatrimestre}`;
     const col = colIndex.get(key) ?? 0;
     const row = colRowCount.get(key) ?? 0;
     colRowCount.set(key, row + 1);
-    posMap.set(id, { x: col * COL_W, y: row * ROW_H });
+    cuatPosMap.set(id, { x: col * COL_W, y: row * ROW_H });
   };
   for (const m of normales)       assignPos(String(m.id), m.año!, m.cuatrimestre!);
   for (const a of agrupadorItems) assignPos(String(a.id), a.año, a.cuatrimestre);
@@ -417,18 +480,29 @@ function buildGraph(
     }
   }
 
+  // Compute final positions based on layout mode
+  const topoIds = normales.map((m) => String(m.id));
+  const topoPosMap = layoutMode === "topologico"
+    ? posicionarTopologico(topoIds, edges)
+    : null;
+
+  const posMap = (id: string, año: string, cuatrimestre: string) =>
+    layoutMode === "topologico"
+      ? (topoPosMap!.get(id) ?? cuatPosMap.get(id) ?? { x: 0, y: 0 })
+      : (cuatPosMap.get(id) ?? { x: 0, y: 0 });
+
   const nodes: Node[] = [
-    ...normales.map((m) => {
-      const hasAviso = Boolean(m.grupo_opcion) || m.nombre.toLowerCase().includes("tesis");
-      return {
-        id: String(m.id), type: "materia",
-        position: posMap.get(String(m.id)) ?? { x: 0, y: 0 },
-        data: { label: m.nombre, horas: m.horas ?? "?", visualEstado: vmById.get(String(m.id)) ?? "bloqueada", highlighted: false, dimmed: false, hasAviso } satisfies NodeData,
-      };
-    }),
+    ...normales.map((m) => ({
+    const hasAviso = Boolean(m.grupo_opcion) || m.nombre.toLowerCase().includes("tesis");
+    return {
+      id: String(m.id), type: "materia",
+      position: posMap.get(String(m.id)) ?? { x: 0, y: 0 },
+      data: { label: m.nombre, horas: m.horas ?? "?", visualEstado: vmById.get(String(m.id)) ?? "bloqueada", highlighted: false, dimmed: false } satisfies NodeData,
+    };
+  })),
     ...agrupadorItems.map((a) => ({
       id: String(a.id), type: "agrupador",
-      position: posMap.get(String(a.id)) ?? { x: 0, y: 0 },
+      position: cuatPosMap.get(String(a.id)) ?? { x: 0, y: 0 },
       data: { nombre: a.nombre, cantidad: a.opciones.length, dimmed: false } satisfies AgrupadorNodeData,
     })),
   ];
@@ -624,11 +698,12 @@ function BestPathPanel({
 type FiltroEstado = "todas" | VisualEstado;
 
 function Toolbar({
-  filtro, onFiltro, busqueda, onBusqueda, contadores, onBuscar,
+  filtro, onFiltro, busqueda, onBusqueda, contadores, onBuscar, layoutMode, onToggleLayout,
 }: {
   filtro: FiltroEstado; onFiltro: (f: FiltroEstado) => void;
   busqueda: string; onBusqueda: (s: string) => void;
   contadores: Record<VisualEstado, number>; onBuscar: () => void;
+  layoutMode: LayoutMode; onToggleLayout: () => void;
 }) {
   const chips: { key: FiltroEstado; label: string }[] = [
     { key: "todas", label: "Todas" }, { key: "aprobada", label: "Aprobada" },
@@ -658,6 +733,22 @@ function Toolbar({
             }}>
               {label}
               {key !== "todas" && <span style={{ marginLeft: 4, opacity: 0.7 }}>{contadores[key as VisualEstado]}</span>}
+            </button>
+          );
+        })}
+      </div>
+
+      <div style={{ display: "flex", gap: 4, marginLeft: 4 }}>
+        {(["cuatrimestre", "topologico"] as LayoutMode[]).map((mode) => {
+          const active = layoutMode === mode;
+          return (
+            <button key={mode} onClick={onToggleLayout} title={mode === "cuatrimestre" ? "Agrupar por año y cuatrimestre" : "Posicionar por nivel de dependencias"} style={{
+              fontSize: 10, fontWeight: 600, padding: "3px 9px", borderRadius: 6,
+              border: active ? `1px solid ${ACCENT}` : `1px solid ${GLASS.border}`,
+              background: active ? `${ACCENT}22` : GLASS.base,
+              color: active ? ACCENT : TEXT_SEC, cursor: "pointer", transition: "all 0.1s",
+            }}>
+              {mode === "cuatrimestre" ? "Por cuatrimestre" : "Topológico"}
             </button>
           );
         })}
@@ -747,9 +838,14 @@ function MapaInner({ materias, agrupadores, idsAgrupadores, estados, reglamentoU
   const orientaciones = useMemo(() => extractOrientaciones(materias, agrupadores), [materias, agrupadores]);
   const hasOrientaciones = orientaciones.length > 0;
 
+  const [layoutMode, setLayoutMode] = useState<LayoutMode>(() => {
+    if (typeof window === "undefined") return "cuatrimestre";
+    return (localStorage.getItem("mapaLayoutMode") as LayoutMode) ?? "cuatrimestre";
+  });
+
   const { nodes: baseNodes, edges: baseEdges, materiaById, vmById } = useMemo(
-    () => buildGraph(materias, agrupadores, idsAgrupadores, estados, selectedOrientacion),
-    [materias, agrupadores, idsAgrupadores, estados, selectedOrientacion]
+    () => buildGraph(materias, agrupadores, idsAgrupadores, estados, selectedOrientacion, layoutMode),
+    [materias, agrupadores, idsAgrupadores, estados, selectedOrientacion, layoutMode]
   );
 
   const hasHoras = useMemo(() => hasHorasData(materiaById), [materiaById]);
@@ -833,6 +929,15 @@ function MapaInner({ materias, agrupadores, idsAgrupadores, estados, reglamentoU
 
   const fitAll = useCallback(() => fitView({ padding: 0.15, duration: 400 }), [fitView]);
 
+  const handleToggleLayout = useCallback(() => {
+    setLayoutMode((prev) => {
+      const next: LayoutMode = prev === "cuatrimestre" ? "topologico" : "cuatrimestre";
+      localStorage.setItem("mapaLayoutMode", next);
+      setTimeout(() => fitView({ padding: 0.15, duration: 450 }), 50);
+      return next;
+    });
+  }, [fitView]);
+
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key === "f" && !e.metaKey && !e.ctrlKey && !e.altKey && !e.shiftKey) {
@@ -909,6 +1014,7 @@ function MapaInner({ materias, agrupadores, idsAgrupadores, estados, reglamentoU
         filtro={filtro} onFiltro={setFiltro}
         busqueda={busqueda} onBusqueda={setBusqueda}
         contadores={contadores} onBuscar={handleBuscar}
+        layoutMode={layoutMode} onToggleLayout={handleToggleLayout}
       />
 
       <div style={{ width: "100%", height: "72vh", minHeight: 480, borderRadius: 14, overflow: "hidden", border: `1px solid ${caminoActivo ? AMBER.border : GLASS.raised}`, background: "rgba(15,20,50,0.55)", transition: "border-color 0.2s" }}>
