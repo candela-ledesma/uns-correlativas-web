@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import {
   ReactFlow,
   Background,
@@ -317,6 +317,26 @@ function AgrupadorNode({ data }: NodeProps<Node<AgrupadorNodeData>>) {
 const nodeTypes = { materia: MateriaNode, agrupador: AgrupadorNode };
 
 // ── Build graph ───────────────────────────────────────────────────────────────
+// ── Edge colors ───────────────────────────────────────────────────────────────
+// Color is driven by the source node (the prerequisite):
+//   aprobada source → green  (requirement already met)
+//   cursada  source → blue   (requirement in progress)
+//   anything → target bloqueada → dim gray
+//   otherwise → purple (default, unknown or disponible source)
+const EDGE_COLOR = {
+  aprobada:  { stroke: "rgba(151,196,89,0.7)",  strokeWidth: 1.5, opacity: 1    },
+  cursada:   { stroke: "rgba(133,183,235,0.65)", strokeWidth: 1.5, opacity: 1    },
+  bloqueada: { stroke: "rgba(255,255,255,0.10)", strokeWidth: 1,   opacity: 0.4  },
+  default:   { stroke: "rgba(157,78,221,0.45)",  strokeWidth: 1.5, opacity: 1    },
+} as const;
+
+function getEdgeStyle(sourceVe: VisualEstado | undefined, targetVe: VisualEstado): CSSProperties {
+  if (targetVe === "bloqueada") return EDGE_COLOR.bloqueada;
+  if (sourceVe === "aprobada")  return EDGE_COLOR.aprobada;
+  if (sourceVe === "cursada")   return EDGE_COLOR.cursada;
+  return EDGE_COLOR.default;
+}
+
 function buildGraph(
   materias: Materia[],
   agrupadores: Agrupador[],
@@ -375,15 +395,19 @@ function buildGraph(
   const edgeSeen = new Set<string>();
   for (const m of normales) {
     const targetId = String(m.id);
-    const isBlocked = vmById.get(targetId) === "bloqueada";
+    const targetVe = vmById.get(targetId) ?? "bloqueada";
     for (const [reqId] of Object.entries(m.correlativas ?? {})) {
       if (!visibleIds.has(reqId)) continue;
       const edgeId = `${reqId}->${targetId}`;
       if (edgeSeen.has(edgeId)) continue;
       edgeSeen.add(edgeId);
+
+      const sourceVe = vmById.get(reqId);
+      const edgeStyle = getEdgeStyle(sourceVe, targetVe);
+
       edges.push({
         id: edgeId, source: reqId, target: targetId, type: "smoothstep",
-        style: { stroke: isBlocked ? "rgba(157,78,221,0.15)" : "rgba(157,78,221,0.45)", strokeWidth: 1.5, opacity: isBlocked ? 0.25 : 1 },
+        style: edgeStyle,
         animated: false,
       });
     }
@@ -883,7 +907,6 @@ function MapaInner({ materias, agrupadores, idsAgrupadores, estados, onVerEnPlan
             caminoSet={caminoSet} vmById={vmById}
             setEdges={setEdges} baseEdges={baseEdges}
           />
-
           <Background variant={BackgroundVariant.Dots} gap={20} size={1} color="rgba(255,255,255,0.06)" />
 
           <Controls style={{ background: GLASS.base, border: `1px solid ${GLASS.raised}`, borderRadius: 8 }}>
