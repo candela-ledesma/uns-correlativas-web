@@ -150,11 +150,8 @@ def parsear_plan_hybrid(
 
 
 def _guardar_traza(trace_dir: Path, nombre: str, contenido: str) -> None:
-    try:
-        trace_dir.mkdir(parents=True, exist_ok=True)
-        (trace_dir / nombre).write_text(contenido, encoding="utf-8")
-    except Exception as exc:
-        logging.getLogger("uns.llm").warning("No se pudo escribir traza %s: %s", nombre, exc)
+    from core.llm.llm_normalizer import _guardar_traza as _gt
+    _gt(trace_dir, nombre, contenido)
 
 
 def guardar_json_plan(
