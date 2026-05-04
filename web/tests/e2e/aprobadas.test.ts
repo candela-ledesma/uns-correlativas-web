@@ -3,8 +3,15 @@ import { test, expect, type Page, type Locator } from "@playwright/test";
 const PLAN_URL = "/planes/lic_computacion";
 
 async function resetEstado(page: Page) {
+  await page.addInitScript(() => {
+    window.localStorage.setItem("onboarding::guest::state", "dismiss");
+  });
   await page.goto(PLAN_URL);
-  await page.evaluate(() => localStorage.clear());
+  await page.evaluate(() => {
+    const onboardingKey = "onboarding::guest::state";
+    localStorage.clear();
+    localStorage.setItem(onboardingKey, "dismiss");
+  });
   await page.reload();
 }
 
