@@ -2036,7 +2036,19 @@
       "id": "G0858",
       "nombre": "Optativa de Ing. Civil, orientación Construcciones, plan 2025",
       "tipo": "optativa_grupo",
-      "opciones": [],
+      "opciones": [
+        "2710",
+        "5065",
+        "5085",
+        "5114",
+        "5122",
+        "5189",
+        "5320",
+        "5360",
+        "5362",
+        "5467",
+        "7887"
+      ],
       "orientacion": "Construcciones"
     },
     {
@@ -2044,7 +2056,18 @@
       "nombre": "Optativa de Ing. Civil, orientación Hidráulica, plan 2025",
       "tipo": "optativa_grupo",
       "opciones": [
-        "5229"
+        "2710",
+        "5065",
+        "5085",
+        "5114",
+        "5122",
+        "5189",
+        "5229",
+        "5320",
+        "5360",
+        "5362",
+        "5467",
+        "7887"
       ],
       "orientacion": "Hidráulica"
     },
@@ -2052,7 +2075,20 @@
       "id": "G0860",
       "nombre": "Optativa de Ing. Civil, orientación Hidráulica, plan 2025",
       "tipo": "optativa_grupo",
-      "opciones": [],
+      "opciones": [
+        "2710",
+        "5065",
+        "5085",
+        "5114",
+        "5122",
+        "5189",
+        "5229",
+        "5320",
+        "5360",
+        "5362",
+        "5467",
+        "7887"
+      ],
       "orientacion": "Hidráulica"
     },
     {
@@ -2060,8 +2096,19 @@
       "nombre": "Optativa de Ing. Civil, orientación Vías de Comunicación, plan 2025",
       "tipo": "optativa_grupo",
       "opciones": [
+        "2710",
+        "5065",
+        "5085",
+        "5114",
+        "5122",
+        "5189",
+        "5320",
         "5340",
-        "5341"
+        "5341",
+        "5360",
+        "5362",
+        "5467",
+        "7887"
       ],
       "orientacion": "Vías de Comunicación"
     },
@@ -2069,7 +2116,21 @@
       "id": "G0862",
       "nombre": "Optativa de Ing. Civil, orientación Vías de Comunicación, plan 2025",
       "tipo": "optativa_grupo",
-      "opciones": [],
+      "opciones": [
+        "2710",
+        "5065",
+        "5085",
+        "5114",
+        "5122",
+        "5189",
+        "5320",
+        "5340",
+        "5341",
+        "5360",
+        "5362",
+        "5467",
+        "7887"
+      ],
       "orientacion": "Vías de Comunicación"
     },
     {
