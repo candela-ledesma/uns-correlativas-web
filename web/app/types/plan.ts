@@ -41,6 +41,7 @@ export type PlanInfo = {
   codigo_plan: string;
   plan_id: string;
   version_id: string;
+  reglamento_url?: string | null;
 };
 
 export type PlanData = {

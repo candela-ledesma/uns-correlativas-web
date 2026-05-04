@@ -34,6 +34,7 @@ type Props = {
   agrupadores: Agrupador[];
   idsAgrupadores: Set<string>;
   estados: Record<string, EstadoMateria>;
+  reglamentoUrl?: string | null;
   onVerEnPlan?: (materiaId: string) => void;
 };
 
@@ -253,12 +254,12 @@ function hasHorasData(materiaById: Map<string, Materia>): boolean {
 }
 
 // ── Node data types ───────────────────────────────────────────────────────────
-type NodeData = { label: string; horas: string; visualEstado: VisualEstado; highlighted: boolean; dimmed: boolean };
+type NodeData = { label: string; horas: string; visualEstado: VisualEstado; highlighted: boolean; dimmed: boolean; hasAviso: boolean };
 type AgrupadorNodeData = { nombre: string; cantidad: number; dimmed: boolean };
 
 // ── Custom node: materia ──────────────────────────────────────────────────────
 function MateriaNode({ data, selected }: NodeProps<Node<NodeData>>) {
-  const { label, horas, visualEstado, highlighted, dimmed } = data;
+  const { label, horas, visualEstado, highlighted, dimmed, hasAviso } = data;
   const s = STATE_STYLE[visualEstado];
   const baseOpacity = dimmed ? 0.1 : visualEstado === "bloqueada" ? 0.35 : 1;
   const ringBorder = highlighted ? `2px solid ${s.text}` : `1px solid ${s.border}`;
@@ -278,11 +279,14 @@ function MateriaNode({ data, selected }: NodeProps<Node<NodeData>>) {
         display: "flex", flexDirection: "column", gap: 4,
         opacity: baseOpacity, backdropFilter: "blur(8px)",
         boxShadow: shadow, transition: "opacity 0.12s, box-shadow 0.12s",
-        cursor: "pointer", pointerEvents: "all",
+        cursor: "pointer", pointerEvents: "all", position: "relative",
       }}
     >
       <Handle type="target" position={Position.Left} style={{ background: s.text, width: 8, height: 8, border: "none", pointerEvents: "none" }} />
-      <div style={{ fontSize: 11, fontWeight: 700, color: TEXT, lineHeight: 1.3, wordBreak: "break-word", pointerEvents: "none" }}>{label}</div>
+      {hasAviso && (
+        <span title="Puede tener requisitos adicionales no reflejados en el plan" style={{ position: "absolute", top: 5, right: 8, fontSize: 10, lineHeight: 1, pointerEvents: "none", opacity: 0.85 }}>⚠</span>
+      )}
+      <div style={{ fontSize: 11, fontWeight: 700, color: TEXT, lineHeight: 1.3, wordBreak: "break-word", pointerEvents: "none", paddingRight: hasAviso ? 14 : 0 }}>{label}</div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "auto", pointerEvents: "none" }}>
         <span style={{ fontSize: 9, fontWeight: 600, color: s.text, background: `${s.bg}99`, border: `1px solid ${s.border}`, borderRadius: 4, padding: "1px 5px" }}>
           {getStateLabel(visualEstado)}
@@ -414,11 +418,14 @@ function buildGraph(
   }
 
   const nodes: Node[] = [
-    ...normales.map((m) => ({
-      id: String(m.id), type: "materia",
-      position: posMap.get(String(m.id)) ?? { x: 0, y: 0 },
-      data: { label: m.nombre, horas: m.horas ?? "?", visualEstado: vmById.get(String(m.id)) ?? "bloqueada", highlighted: false, dimmed: false } satisfies NodeData,
-    })),
+    ...normales.map((m) => {
+      const hasAviso = Boolean(m.grupo_opcion) || m.nombre.toLowerCase().includes("tesis");
+      return {
+        id: String(m.id), type: "materia",
+        position: posMap.get(String(m.id)) ?? { x: 0, y: 0 },
+        data: { label: m.nombre, horas: m.horas ?? "?", visualEstado: vmById.get(String(m.id)) ?? "bloqueada", highlighted: false, dimmed: false, hasAviso } satisfies NodeData,
+      };
+    }),
     ...agrupadorItems.map((a) => ({
       id: String(a.id), type: "agrupador",
       position: posMap.get(String(a.id)) ?? { x: 0, y: 0 },
@@ -431,10 +438,11 @@ function buildGraph(
 
 // ── Detail panel ──────────────────────────────────────────────────────────────
 function DetailPanel({
-  nodeId, materias, idsAgrupadores, vmById, onClose, onVerEnPlan,
+  nodeId, materias, idsAgrupadores, vmById, reglamentoUrl, onClose, onVerEnPlan,
 }: {
   nodeId: string; materias: Materia[]; idsAgrupadores: Set<string>;
   vmById: Map<string, VisualEstado>;
+  reglamentoUrl?: string | null;
   onClose: () => void; onVerEnPlan?: (materiaId: string) => void;
 }) {
   const materiaById = useMemo(() => new Map(materias.map((m) => [String(m.id), m])), [materias]);
@@ -451,6 +459,8 @@ function DetailPanel({
     .filter((m) => !idsAgrupadores.has(String(m.id)) && !m.grupo_opcion)
     .filter((m) => Object.keys(m.correlativas ?? {}).includes(nodeId))
     .map((m) => ({ id: String(m.id), nombre: m.nombre, ve: vmById.get(String(m.id)) ?? ("bloqueada" as VisualEstado) }));
+
+  const hasAviso = Boolean(materia.grupo_opcion) || materia.nombre.toLowerCase().includes("tesis");
 
   const sectionTitle: React.CSSProperties = { fontSize: 10, color: TEXT_SEC, marginBottom: 4, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em" };
   const emptyText: React.CSSProperties = { fontSize: 11, color: TEXT_SEC, fontStyle: "italic" };
@@ -481,6 +491,21 @@ function DetailPanel({
         {habilita.length > 0 ? renderList(habilita) : <span style={emptyText}>No habilita materias directas</span>}
       </div>
       <div style={divider} />
+      {hasAviso && (
+        <div style={{ background: "rgba(239,159,39,0.08)", border: `1px solid ${AMBER.border}44`, borderRadius: 8, padding: "10px 12px", display: "flex", flexDirection: "column", gap: 6 }}>
+          <div style={{ fontSize: 10, fontWeight: 700, color: AMBER.text, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+            ⚠ Requisitos adicionales
+          </div>
+          <p style={{ fontSize: 11, color: TEXT_DET, lineHeight: 1.5, margin: 0 }}>
+            Esta materia puede tener requisitos de porcentaje de carrera aprobada que no figuran en el plan. Verificá las condiciones actuales en la página del departamento antes de inscribirte.
+          </p>
+          {reglamentoUrl && (
+            <a href={reglamentoUrl} target="_blank" rel="noopener noreferrer" style={{ fontSize: 11, color: AMBER.text, textDecoration: "underline", alignSelf: "flex-start" }}>
+              Ver reglamento →
+            </a>
+          )}
+        </div>
+      )}
       {onVerEnPlan && (
         <button onClick={() => onVerEnPlan(nodeId)} style={{ background: "rgba(157,78,221,0.15)", border: "1px solid rgba(157,78,221,0.4)", borderRadius: 7, color: "#c4a0f0", fontSize: 11, fontWeight: 600, padding: "6px 10px", cursor: "pointer", textAlign: "center" }}>
           Ver en Plan
@@ -715,7 +740,7 @@ function CaminoStyleInjector({
 }
 
 // ── Inner component ───────────────────────────────────────────────────────────
-function MapaInner({ materias, agrupadores, idsAgrupadores, estados, onVerEnPlan }: Props) {
+function MapaInner({ materias, agrupadores, idsAgrupadores, estados, reglamentoUrl, onVerEnPlan }: Props) {
   const { fitView, getNodes, getNode, flowToScreenPosition } = useReactFlow();
 
   const [selectedOrientacion, setSelectedOrientacion] = useState("todas");
@@ -935,6 +960,7 @@ function MapaInner({ materias, agrupadores, idsAgrupadores, estados, onVerEnPlan
               <DetailPanel
                 nodeId={selectedNodeId} materias={materias}
                 idsAgrupadores={idsAgrupadores} vmById={vmById}
+                reglamentoUrl={reglamentoUrl}
                 onClose={() => setSelectedNodeId(null)} onVerEnPlan={onVerEnPlan}
               />
             </Panel>

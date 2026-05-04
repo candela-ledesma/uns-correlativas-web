@@ -147,12 +147,20 @@ function parsePlanInfo(
       ? rawVersionId
       : context.versionId;
 
+  const reglamentoUrl =
+    raw.reglamento_url === undefined || raw.reglamento_url === null
+      ? undefined
+      : typeof raw.reglamento_url === "string" && raw.reglamento_url.trim().length > 0
+        ? raw.reglamento_url.trim()
+        : undefined;
+
   return {
     carrera,
     universidad,
     codigo_plan: codigoPlan,
     plan_id: planId,
     version_id: versionId,
+    ...(reglamentoUrl !== undefined ? { reglamento_url: reglamentoUrl } : {}),
   };
 }
 
