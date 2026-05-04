@@ -3,8 +3,15 @@ import { test, expect, type Page, type Locator } from "@playwright/test";
 const PLAN_URL = "/planes/lic_computacion";
 
 async function resetEstado(page: Page) {
+  await page.addInitScript(() => {
+    window.localStorage.setItem("onboarding::guest::state", "dismiss");
+  });
   await page.goto(PLAN_URL);
-  await page.evaluate(() => localStorage.clear());
+  await page.evaluate(() => {
+    const onboardingKey = "onboarding::guest::state";
+    localStorage.clear();
+    localStorage.setItem(onboardingKey, "dismiss");
+  });
   await page.reload();
 }
 
@@ -41,7 +48,7 @@ async function filtrarPorEstado(page: Page, estado: string) {
 
 async function filtrarPorCodigo(page: Page, codigo: string) {
   await abrirFiltros(page);
-  await page.getByTestId("filtro-codigo").fill(codigo);
+  await page.getByTestId("filtro-busqueda").fill(codigo);
 }
 
 async function filtrarPorAnio(page: Page, anio: string) {
@@ -152,7 +159,7 @@ test("restaura los filtros al estado inicial", async ({ page }) => {
 
   await page.getByTestId("reset-filtros-btn").click();
 
-  await expect(page.getByTestId("filtro-codigo")).toHaveValue("");
+  await expect(page.getByTestId("filtro-busqueda")).toHaveValue("");
   await expect(page.getByTestId("filtro-anio")).toHaveValue("todos");
   await expect(page.getByTestId("filtro-cuatrimestre")).toHaveValue("todos");
   await expect(page.getByTestId("filtro-estado")).toHaveValue("todas");

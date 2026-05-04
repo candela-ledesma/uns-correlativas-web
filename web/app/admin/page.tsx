@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db/prisma";
 import AdminRoleManager from "@/components/profile/AdminRoleManager";
+import PlanUploadForm from "@/components/admin/PlanUploadForm";
 import { Role } from "@/lib/auth/roles";
 
 export default async function AdminPage() {
@@ -51,6 +52,14 @@ export default async function AdminPage() {
 
           <div className="mt-4">
             <AdminRoleManager users={users} />
+          </div>
+        </section>
+
+        <section className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm">
+          <h2 className="text-xl font-bold text-zinc-900">Subir plan</h2>
+          <p className="mt-1 text-sm text-zinc-600">Cargá un JSON generado por el parser para validarlo.</p>
+          <div className="mt-4">
+            <PlanUploadForm />
           </div>
         </section>
 

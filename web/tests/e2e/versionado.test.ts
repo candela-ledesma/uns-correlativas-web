@@ -1,8 +1,15 @@
 import { test, expect } from "@playwright/test";
 
 test("cambio de versión conserva estado separado por version_id", async ({ page }) => {
+  await page.addInitScript(() => {
+    window.localStorage.setItem("onboarding::guest::state", "dismiss");
+  });
   await page.goto("/planes/arquitectura?v=v2");
-  await page.evaluate(() => localStorage.clear());
+  await page.evaluate(() => {
+    const onboardingKey = "onboarding::guest::state";
+    localStorage.clear();
+    localStorage.setItem(onboardingKey, "dismiss");
+  });
   await page.reload();
 
   const materiaV2 = page.getByTestId("materia-8118");
@@ -35,10 +42,14 @@ test("cambio de versión conserva estado separado por version_id", async ({ page
 });
 
 test("la migración legacy ocurre una sola vez", async ({ page }) => {
+  await page.addInitScript(() => {
+    window.localStorage.setItem("onboarding::guest::state", "dismiss");
+  });
   await page.goto("/planes/arquitectura?v=v2");
 
   await page.evaluate(() => {
     localStorage.clear();
+    localStorage.setItem("onboarding::guest::state", "dismiss");
     localStorage.setItem("estadoMaterias", JSON.stringify({ "8118": "aprobada" }));
   });
 

@@ -1,5 +1,4 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import NextAuth, { DefaultSession } from "next-auth";
+import { DefaultSession } from "next-auth";
 import type { AppRole } from "@/lib/auth/roles";
 
 declare module "next-auth" {
