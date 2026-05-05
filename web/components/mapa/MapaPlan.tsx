@@ -492,14 +492,14 @@ function buildGraph(
       : (cuatPosMap.get(id) ?? { x: 0, y: 0 });
 
   const nodes: Node[] = [
-    ...normales.map((m) => ({
+    ...normales.map((m) => {
     const hasAviso = Boolean(m.grupo_opcion) || m.nombre.toLowerCase().includes("tesis");
     return {
       id: String(m.id), type: "materia",
-      position: posMap.get(String(m.id)) ?? { x: 0, y: 0 },
-      data: { label: m.nombre, horas: m.horas ?? "?", visualEstado: vmById.get(String(m.id)) ?? "bloqueada", highlighted: false, dimmed: false } satisfies NodeData,
+      position: posMap(String(m.id), String(m.año), String(m.cuatrimestre)),
+      data: { label: m.nombre, horas: m.horas ?? "?", visualEstado: vmById.get(String(m.id)) ?? "bloqueada", highlighted: false, dimmed: false, hasAviso } satisfies NodeData,
     };
-  })),
+  }),
     ...agrupadorItems.map((a) => ({
       id: String(a.id), type: "agrupador",
       position: cuatPosMap.get(String(a.id)) ?? { x: 0, y: 0 },
