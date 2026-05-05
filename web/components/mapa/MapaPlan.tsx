@@ -486,7 +486,7 @@ function buildGraph(
     ? posicionarTopologico(topoIds, edges)
     : null;
 
-  const posMap = (id: string, año: string, cuatrimestre: string) =>
+  const posMap = (id: string) =>
     layoutMode === "topologico"
       ? (topoPosMap!.get(id) ?? cuatPosMap.get(id) ?? { x: 0, y: 0 })
       : (cuatPosMap.get(id) ?? { x: 0, y: 0 });
@@ -496,7 +496,7 @@ function buildGraph(
     const hasAviso = Boolean(m.grupo_opcion) || m.nombre.toLowerCase().includes("tesis");
     return {
       id: String(m.id), type: "materia",
-      position: posMap(String(m.id), String(m.año), String(m.cuatrimestre)),
+      position: posMap(String(m.id)),
       data: { label: m.nombre, horas: m.horas ?? "?", visualEstado: vmById.get(String(m.id)) ?? "bloqueada", highlighted: false, dimmed: false, hasAviso } satisfies NodeData,
     };
   }),
@@ -843,6 +843,8 @@ function MapaInner({ materias, agrupadores, idsAgrupadores, estados, reglamentoU
     return (localStorage.getItem("mapaLayoutMode") as LayoutMode) ?? "cuatrimestre";
   });
 
+  const [customPositions, setCustomPositions] = useState<Map<string, { x: number; y: number }>>(new Map());
+
   const { nodes: baseNodes, edges: baseEdges, materiaById, vmById } = useMemo(
     () => buildGraph(materias, agrupadores, idsAgrupadores, estados, selectedOrientacion, layoutMode),
     [materias, agrupadores, idsAgrupadores, estados, selectedOrientacion, layoutMode]
@@ -893,13 +895,15 @@ function MapaInner({ materias, agrupadores, idsAgrupadores, estados, reglamentoU
 
   const displayNodes = useMemo<Node[]>(() => {
     return baseNodes.map((n) => {
-      if (n.type === "agrupador") return { ...n, data: { ...n.data, dimmed: filtro !== "todas" } };
+      const custom = customPositions.get(n.id);
+      const position = custom ?? n.position;
+      if (n.type === "agrupador") return { ...n, position, draggable: true, data: { ...n.data, dimmed: filtro !== "todas" } };
       const ve = vmById.get(n.id) ?? "bloqueada";
       const dimmed = filtro !== "todas" && ve !== filtro && !caminoActivo;
       const highlighted = n.id === highlightedId;
-      return { ...n, data: { ...n.data, dimmed, highlighted }, selected: n.id === selectedNodeId };
+      return { ...n, position, data: { ...n.data, dimmed, highlighted }, selected: n.id === selectedNodeId };
     });
-  }, [baseNodes, filtro, highlightedId, selectedNodeId, vmById, caminoActivo]);
+  }, [baseNodes, filtro, highlightedId, selectedNodeId, vmById, caminoActivo, customPositions]);
 
   const [nodes, setNodes, onNodesChange] = useNodesState(displayNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(baseEdges);
@@ -930,6 +934,7 @@ function MapaInner({ materias, agrupadores, idsAgrupadores, estados, reglamentoU
   const fitAll = useCallback(() => fitView({ padding: 0.15, duration: 400 }), [fitView]);
 
   const handleToggleLayout = useCallback(() => {
+    setCustomPositions(new Map());
     setLayoutMode((prev) => {
       const next: LayoutMode = prev === "cuatrimestre" ? "topologico" : "cuatrimestre";
       localStorage.setItem("mapaLayoutMode", next);
@@ -987,6 +992,16 @@ function MapaInner({ materias, agrupadores, idsAgrupadores, estados, reglamentoU
 
   const handlePaneClick = useCallback(() => setSelectedNodeId(null), []);
 
+  const handleNodeDragStop = useCallback((_: React.MouseEvent, _node: Node, allNodes: Node[]) => {
+    setCustomPositions((prev) => {
+      const next = new Map(prev);
+      for (const n of allNodes) {
+        if (n.selected || n.id === _node.id) next.set(n.id, n.position);
+      }
+      return next;
+    });
+  }, []);
+
   const selectedMateria = selectedNodeId ? materiaById.get(selectedNodeId) : null;
   const isMobile = typeof window !== "undefined" && window.innerWidth < 640;
 
@@ -1026,6 +1041,10 @@ function MapaInner({ materias, agrupadores, idsAgrupadores, estados, reglamentoU
           onNodeMouseLeave={handleNodeMouseLeave}
           onNodeClick={handleNodeClick}
           onPaneClick={handlePaneClick}
+          onNodeDragStop={handleNodeDragStop}
+          nodesDraggable
+          selectionOnDrag
+          multiSelectionKeyCode="Shift"
           defaultViewport={{ x: 0, y: 0, zoom: 0.85 }}
           minZoom={0.35} maxZoom={2.5}
           proOptions={{ hideAttribution: true }}
