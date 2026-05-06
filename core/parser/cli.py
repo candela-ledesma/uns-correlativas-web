@@ -1,6 +1,7 @@
 import argparse
 import json
 import logging
+import sys
 from pathlib import Path
 from typing import Any, Sequence
 
@@ -56,6 +57,7 @@ def _completar_pipeline_llm(
     model_name: str | None = None,
     llm_mode_label: str = "llm",
     trace_dir: Path | None = None,
+    skip_sanity_check: bool = False,
 ) -> dict[str, Any]:
     from core.llm import llm_normalizer, sanity_check, adapter
 
@@ -70,11 +72,17 @@ def _completar_pipeline_llm(
         trace_dir=trace_dir,
     )
 
-    sanity = sanity_check.check_plandata(plan_data)
-    if not sanity.ok:
-        raise ValueError("Sanity check del PlanData falló:\n" + "\n".join(sanity.errors))
+    if not skip_sanity_check:
+        sanity = sanity_check.check_plandata(plan_data)
+        if not sanity.ok:
+            raise ValueError("Sanity check del PlanData falló:\n" + "\n".join(sanity.errors))
+        confidence = sanity_check.calcular_confidence(plan_data)
+        logging.getLogger("uns.llm").info("Confidence score: %.3f", confidence)
+    else:
+        sanity = sanity_check.check_plandata(plan_data)
+        confidence = 0.0
+        logging.getLogger("uns.llm").warning("Sanity check omitido (--skip-sanity-check).")
 
-    confidence = sanity_check.calcular_confidence(plan_data)
     logging.getLogger("uns.llm").info("Confidence score: %.3f", confidence)
 
     resultado = adapter.adaptar(plan_data, warnings=sanity.warnings)
@@ -97,6 +105,7 @@ def parsear_plan_llm(
     *,
     model_name: str | None = None,
     trace_dir: Path | None = None,
+    skip_sanity_check: bool = False,
 ) -> dict[str, Any]:
     if not pdf_path.exists() or not pdf_path.is_file():
         raise FileNotFoundError(f"No se encontro el PDF de entrada: {pdf_path}")
@@ -110,6 +119,7 @@ def parsear_plan_llm(
         model_name=model_name,
         llm_mode_label="llm",
         trace_dir=trace_dir,
+        skip_sanity_check=skip_sanity_check,
     )
 
 
@@ -119,6 +129,7 @@ def parsear_plan_hybrid(
     allow_overwrite: bool = False,
     model_name: str | None = None,
     trace_dir: Path | None = None,
+    skip_sanity_check: bool = False,
 ) -> dict[str, Any]:
     if not pdf_path.exists() or not pdf_path.is_file():
         raise FileNotFoundError(f"No se encontro el PDF de entrada: {pdf_path}")
@@ -146,6 +157,7 @@ def parsear_plan_hybrid(
         model_name=model_name,
         llm_mode_label="hybrid",
         trace_dir=trace_dir,
+        skip_sanity_check=skip_sanity_check,
     )
 
 
@@ -212,11 +224,19 @@ def build_arg_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Omite la validacion de contrato parser->JSON (no recomendado).",
     )
+    parser.add_argument(
+        "--skip-sanity-check",
+        action="store_true",
+        help="Omite el sanity check del LLM (solo con --mode=llm o hybrid).",
+    )
 
     return parser
 
 
 def main(argv: Sequence[str] | None = None) -> int:
+    from dotenv import load_dotenv
+    load_dotenv()
+
     parser = build_arg_parser()
     args = parser.parse_args(argv)
 
@@ -233,12 +253,17 @@ def main(argv: Sequence[str] | None = None) -> int:
         trace_dir = Path(args.trace_dir).expanduser().resolve() if args.trace_dir else None
 
         if args.mode == "llm":
-            data = parsear_plan_llm(pdf_path, trace_dir=trace_dir)
+            data = parsear_plan_llm(
+                pdf_path,
+                trace_dir=trace_dir,
+                skip_sanity_check=args.skip_sanity_check,
+            )
         elif args.mode == "hybrid":
             data = parsear_plan_hybrid(
                 pdf_path,
                 allow_overwrite=args.allow_overwrite,
                 trace_dir=trace_dir,
+                skip_sanity_check=args.skip_sanity_check,
             )
         else:
             data = parsear_plan_pdf(pdf_path)
@@ -263,11 +288,13 @@ def main(argv: Sequence[str] | None = None) -> int:
             ensure_ascii=args.ensure_ascii,
         )
     except FileNotFoundError as error:
-        print(f"Error: {error}")
+        import traceback; traceback.print_exc(file=sys.stderr)
+        print(f"Error: {error}", flush=True)
         return 1
     except Exception as error:  # pragma: no cover - fallback de CLI
-        print(f"Error inesperado al generar JSON: {error}")
+        import traceback; traceback.print_exc(file=sys.stderr)
+        print(f"Error inesperado al generar JSON: {error}", flush=True)
         return 1
 
-    print(f"JSON generado en: {output_path}")
+    print(f"JSON generado en: {output_path}", flush=True)
     return 0
