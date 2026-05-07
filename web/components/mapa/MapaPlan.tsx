@@ -16,6 +16,9 @@ import {
   type Node,
   type Edge,
   type NodeProps,
+  type EdgeProps,
+  BaseEdge,
+  getSmoothStepPath,
   Handle,
   Position,
   BackgroundVariant,
@@ -320,6 +323,59 @@ function AgrupadorNode({ data }: NodeProps<Node<AgrupadorNodeData>>) {
 
 const nodeTypes = { materia: MateriaNode, agrupador: AgrupadorNode };
 
+// ── Custom edge: transitive ───────────────────────────────────────────────────
+function TransitiveEdge({
+  id, sourceX, sourceY, targetX, targetY, sourcePosition, targetPosition, style, data,
+}: EdgeProps<Edge<{ path?: string }>>) {
+  const [edgePath] = getSmoothStepPath({ sourceX, sourceY, sourcePosition, targetX, targetY, targetPosition });
+  const [hovered, setHovered] = useState(false);
+
+  const midX = (sourceX + targetX) / 2;
+  const midY = (sourceY + targetY) / 2;
+
+  return (
+    <>
+      {/* Invisible wider stroke for easier hover */}
+      <path
+        d={edgePath}
+        fill="none"
+        stroke="transparent"
+        strokeWidth={12}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        style={{ cursor: "default" }}
+      />
+      <BaseEdge id={id} path={edgePath} style={style} />
+      {hovered && data?.path && (
+        <foreignObject
+          x={midX - 90}
+          y={midY - 22}
+          width={180}
+          height={44}
+          style={{ pointerEvents: "none", overflow: "visible" }}
+        >
+          <div style={{
+            background: "rgba(10,14,40,0.95)",
+            border: "1px solid rgba(157,78,221,0.45)",
+            borderRadius: 7,
+            padding: "5px 9px",
+            fontSize: 10,
+            color: "#c4a0f0",
+            lineHeight: 1.4,
+            whiteSpace: "nowrap",
+            backdropFilter: "blur(8px)",
+            boxShadow: "0 4px 12px rgba(0,0,0,0.4)",
+          }}>
+            {data.path}
+          </div>
+        </foreignObject>
+      )}
+    </>
+  );
+}
+
+const edgeTypes = { transitive: TransitiveEdge };
+
 // ── Layout types ──────────────────────────────────────────────────────────────
 type LayoutMode = "cuatrimestre" | "topologico";
 
@@ -486,6 +542,29 @@ function buildGraph(
   for (const id of visibleIds) adjOut.set(id, []);
   for (const e of edges) adjOut.get(e.source)?.push(e.target);
 
+  // BFS to find shortest intermediate path between two nodes through direct edges only
+  const findPath = (from: string, to: string): string[] => {
+    const parentMap = new Map<string, string>();
+    const bfsVisited = new Set<string>([from]);
+    const bfsQueue = [from];
+    while (bfsQueue.length > 0) {
+      const cur = bfsQueue.shift()!;
+      for (const next of (adjOut.get(cur) ?? [])) {
+        if (bfsVisited.has(next)) continue;
+        bfsVisited.add(next);
+        parentMap.set(next, cur);
+        if (next === to) {
+          const path: string[] = [];
+          let node: string | undefined = to;
+          while (node !== undefined) { path.unshift(node); node = parentMap.get(node); }
+          return path;
+        }
+        bfsQueue.push(next);
+      }
+    }
+    return [from, to];
+  };
+
   for (const startId of visibleIds) {
     // BFS from startId; skip direct neighbors (they already have an edge)
     const directNeighbors = new Set(adjOut.get(startId) ?? []);
@@ -503,10 +582,13 @@ function buildGraph(
             const sourceVe = vmById.get(startId);
             const targetVe = vmById.get(next) ?? "bloqueada";
             const base = getEdgeStyle(sourceVe, targetVe);
+            const pathIds = findPath(startId, next);
+            const pathLabel = pathIds.map((id) => materiaById.get(id)?.nombre ?? id).join(" → ");
             edges.push({
-              id: edgeId, source: startId, target: next, type: "smoothstep",
+              id: edgeId, source: startId, target: next, type: "transitive",
               style: { ...base, strokeDasharray: "4 3", opacity: (base.opacity as number) * 0.45 },
               animated: false,
+              data: { path: pathLabel },
             });
           }
         }
@@ -1028,6 +1110,7 @@ function EditorPanel({
             onNodesChange={onEdNodesChange}
             onEdgesChange={onEdEdgesChange}
             nodeTypes={nodeTypes}
+            edgeTypes={edgeTypes}
             onNodeDragStop={handleNodeDragStop}
             onNodeClick={handleNodeClick}
             onPaneClick={handlePaneClick}
@@ -1495,6 +1578,7 @@ function MapaInner({ materias, agrupadores, idsAgrupadores, estados, reglamentoU
           nodes={nodes} edges={edges}
           onNodesChange={onNodesChange} onEdgesChange={onEdgesChange}
           nodeTypes={nodeTypes}
+          edgeTypes={edgeTypes}
           onNodeMouseEnter={handleNodeMouseEnter}
           onNodeMouseLeave={handleNodeMouseLeave}
           onNodeClick={handleNodeClick}
