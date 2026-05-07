@@ -24,6 +24,8 @@ web/
 |   |-- plan/              # PlanViewer, PlanHeader, PlanFilters, PlanTabBar, OrientationSelector, PlanStatus
 |   |-- materias/          # MateriaCard, MateriasGrid, AnioSection, GrupoMaterias
 |   |-- kanban/            # KanbanPlan
+|   |-- mapa/              # MapaPlan, Toolbar, nodeTypes
+|   |   `-- panels/        # DetailPanel, EditorPanel, BestPathPanel
 |   |-- schedule/          # WeeklySchedule, ScheduleBlockForm
 |   |-- auth/              # LoginActions, HomeSessionPanel
 |   |-- profile/           # ProfileWorkspace, AdminRoleManager
@@ -31,6 +33,7 @@ web/
 |-- hooks/                 # usePlanState, useSchedule, useOnboarding
 |-- lib/
 |   |-- plan/              # Logica de dominio: correlativas, estados, filtros, progreso
+|   |-- mapa/              # Logica pura del grafo: graphUtils, bestPath
 |   |-- data/              # Carga y validacion: carreras, planDataLoader, planValidation
 |   |-- db/                # DB layer: prisma, audit, progreso, userProductContext, actividad
 |   |-- auth/              # Permisos: roles, authz, authProviders

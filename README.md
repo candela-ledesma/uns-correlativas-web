@@ -45,6 +45,8 @@ flowchart LR
     |   |-- plan/                   # PlanViewer, PlanHeader, PlanFilters, PlanTabBar, OrientationSelector, PlanStatus
     |   |-- materias/               # MateriaCard, MateriasGrid, AnioSection, GrupoMaterias
     |   |-- kanban/                 # KanbanPlan (vista tablero con drag & drop)
+    |   |-- mapa/                   # MapaPlan, Toolbar, nodeTypes
+    |   |   `-- panels/             # DetailPanel, EditorPanel, BestPathPanel
     |   |-- schedule/               # WeeklySchedule, ScheduleBlockForm
     |   |-- auth/                   # LoginActions, HomeSessionPanel
     |   |-- profile/                # ProfileWorkspace, AdminRoleManager
@@ -53,6 +55,7 @@ flowchart LR
     |-- hooks/                      # usePlanState, useSchedule, useOnboarding
     |-- lib/                        # Logica de negocio y servicios
     |   |-- plan/                   # Dominio academico (evaluarCorrelativas, materiaViewModel, filtros, progreso...)
+    |   |-- mapa/                   # Logica pura del grafo (graphUtils, bestPath)
     |   |-- data/                   # Carga y validacion de planes (carreras, planDataLoader, planValidation...)
     |   |-- db/                     # Capa de base de datos (prisma, userProductContext, audit, actividad...)
     |   |-- auth/                   # Permisos y autenticacion (roles, authz, authProviders)
