@@ -480,6 +480,41 @@ function buildGraph(
     }
   }
 
+  // Transitive edges: A→C where no direct edge exists but a path A→...→C does
+  const directEdgeSet = new Set(edges.map((e) => `${e.source}->${e.target}`));
+  const adjOut = new Map<string, string[]>();
+  for (const id of visibleIds) adjOut.set(id, []);
+  for (const e of edges) adjOut.get(e.source)?.push(e.target);
+
+  for (const startId of visibleIds) {
+    // BFS from startId; skip direct neighbors (they already have an edge)
+    const directNeighbors = new Set(adjOut.get(startId) ?? []);
+    const visited = new Set<string>([startId]);
+    const queue: string[] = Array.from(directNeighbors);
+    for (const dn of directNeighbors) visited.add(dn);
+
+    while (queue.length > 0) {
+      const cur = queue.shift()!;
+      for (const next of (adjOut.get(cur) ?? [])) {
+        if (!directNeighbors.has(next) && !directEdgeSet.has(`${startId}->${next}`) && next !== startId) {
+          const edgeId = `transitive:${startId}->${next}`;
+          if (!directEdgeSet.has(edgeId)) {
+            directEdgeSet.add(edgeId);
+            const sourceVe = vmById.get(startId);
+            const targetVe = vmById.get(next) ?? "bloqueada";
+            const base = getEdgeStyle(sourceVe, targetVe);
+            edges.push({
+              id: edgeId, source: startId, target: next, type: "smoothstep",
+              style: { ...base, strokeDasharray: "4 3", opacity: (base.opacity as number) * 0.45 },
+              animated: false,
+            });
+          }
+        }
+        if (!visited.has(next)) { visited.add(next); queue.push(next); }
+      }
+    }
+  }
+
   // Compute final positions based on layout mode
   const topoIds = normales.map((m) => String(m.id));
   const topoPosMap = layoutMode === "topologico"
@@ -714,7 +749,7 @@ function saveMiVista(key: string, data: MiVistaData) {
 // ── EditorPanel ───────────────────────────────────────────────────────────────
 function EditorPanel({
   materias, agrupadores, idsAgrupadores, estados, reglamentoUrl, onVerEnPlan,
-  allBaseEdges, vmById, storageKey, onGuardar, onCerrar,
+  allBaseEdges, vmById, storageKey, initialData, onGuardar, onCerrar,
 }: {
   materias: Materia[];
   agrupadores: Agrupador[];
@@ -725,12 +760,14 @@ function EditorPanel({
   allBaseEdges: Edge[];
   vmById: Map<string, VisualEstado>;
   storageKey: string;
+  initialData: MiVistaData | null;
   onGuardar: (data: MiVistaData) => void;
   onCerrar: () => void;
 }) {
   const [busqueda, setBusqueda] = useState("");
-  const [addedIds, setAddedIds] = useState<Set<string>>(new Set());
-  const [positions, setPositions] = useState<Record<string, { x: number; y: number }>>({});
+  const [addedIds, setAddedIds] = useState<Set<string>>(() => new Set(initialData?.nodeIds ?? []));
+  const [positions, setPositions] = useState<Record<string, { x: number; y: number }>>(() => initialData?.positions ?? {});
+  const { fitView: edFitView } = useReactFlow();;
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
 
@@ -752,10 +789,28 @@ function EditorPanel({
     const idx = addedIds.size;
     const col = idx % 4;
     const row = Math.floor(idx / 4);
-    setPositions((prev) => ({ ...prev, [id]: { x: col * (NODE_W + GAP_X + 20), y: row * (NODE_H + GAP_Y + 20) } }));
+    const newPos = { x: col * (NODE_W + GAP_X + 20), y: row * (NODE_H + GAP_Y + 20) };
+    const ve = vmById.get(id) ?? "bloqueada";
+    const hasAviso = Boolean(m.grupo_opcion) || Boolean(m.nombre.toLowerCase().includes("tesis"));
+    const newNode: Node = {
+      id, type: "materia",
+      position: newPos,
+      data: {
+        label: m.nombre,
+        horas: m.horas ?? "?",
+        visualEstado: ve,
+        highlighted: false,
+        dimmed: false,
+        hasAviso,
+      } satisfies NodeData,
+      selected: false,
+    };
+    setPositions((prev) => ({ ...prev, [id]: newPos }));
+    setEdNodes((current) => [...current, newNode]);
     setAddedIds((prev) => new Set([...prev, id]));
     setBusqueda("");
-  }, [addedIds]);
+    if (idx === 0) setTimeout(() => edFitView({ padding: 0.3, duration: 300 }), 50);
+  }, [addedIds, vmById, edFitView]);
 
   const quitarMateria = useCallback((id: string) => {
     setAddedIds((prev) => { const s = new Set(prev); s.delete(id); return s; });
@@ -810,9 +865,20 @@ function EditorPanel({
 
   const [edNodes, setEdNodes, onEdNodesChange] = useNodesState(editorNodes);
   const [edEdges, setEdEdges, onEdEdgesChange] = useEdgesState(editorEdges);
-  const { fitView: edFitView } = useReactFlow();
 
-  useEffect(() => { setEdNodes(editorNodes); }, [editorNodes, setEdNodes]);
+  // Sync editorNodes → ReactFlow, but preserve ReactFlow's own dragged positions.
+  const prevAddedIdsRef = useRef<Set<string>>(new Set());
+
+  useEffect(() => {
+    const prev = prevAddedIdsRef.current;
+    const removedIds = Array.from(prev).filter((id) => !addedIds.has(id));
+    prevAddedIdsRef.current = new Set(addedIds);
+
+    if (removedIds.length > 0) {
+      setEdNodes((current) => current.filter((n) => addedIds.has(n.id)));
+    }
+  }, [addedIds]); // eslint-disable-line react-hooks/exhaustive-deps
+
   useEffect(() => { setEdEdges(editorEdges); }, [editorEdges, setEdEdges]);
 
   // CSS hover
@@ -968,7 +1034,6 @@ function EditorPanel({
             onNodeMouseEnter={(_, node) => setHoveredDebounced(node.id)}
             onNodeMouseLeave={() => setHoveredDebounced(null)}
             nodesDraggable
-            fitView
             defaultViewport={{ x: 0, y: 0, zoom: 0.9 }}
             minZoom={0.3} maxZoom={2.5}
             proOptions={{ hideAttribution: true }}
@@ -1506,6 +1571,7 @@ function MapaInner({ materias, agrupadores, idsAgrupadores, estados, reglamentoU
             reglamentoUrl={reglamentoUrl} onVerEnPlan={onVerEnPlan}
             allBaseEdges={baseEdges} vmById={vmById}
             storageKey={storageKey}
+            initialData={miVistaData}
             onGuardar={handleGuardarVista}
             onCerrar={() => setEditorAbierto(false)}
           />
