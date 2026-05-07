@@ -229,6 +229,11 @@ def build_arg_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Omite el sanity check del LLM (solo con --mode=llm o hybrid).",
     )
+    parser.add_argument(
+        "--model",
+        default=None,
+        help="Modelo LLM a usar (default: gemini-2.5-flash).",
+    )
 
     return parser
 
@@ -255,12 +260,14 @@ def main(argv: Sequence[str] | None = None) -> int:
         if args.mode == "llm":
             data = parsear_plan_llm(
                 pdf_path,
+                model_name=args.model,
                 trace_dir=trace_dir,
                 skip_sanity_check=args.skip_sanity_check,
             )
         elif args.mode == "hybrid":
             data = parsear_plan_hybrid(
                 pdf_path,
+                model_name=args.model,
                 allow_overwrite=args.allow_overwrite,
                 trace_dir=trace_dir,
                 skip_sanity_check=args.skip_sanity_check,
