@@ -5,7 +5,10 @@ import time
 from pathlib import Path
 from typing import Any
 
-from groq import Groq
+import os
+
+from google import genai
+from google.genai import types
 
 from .sanity_check import (
     check_estructura_minima,
@@ -14,9 +17,9 @@ from .sanity_check import (
 
 logger = logging.getLogger("uns.llm")
 
-PROMPT_VERSION = "v2"
-MODEL_DEFAULT = "llama-3.3-70b-versatile"
-MAX_CHARS_PER_CHUNK = 3_500
+PROMPT_VERSION = "v8"
+MODEL_DEFAULT = "gemini-2.5-flash"
+MAX_CHARS_PER_CHUNK = 200_000
 
 # Secciones primarias: cada año y el bloque de optativas
 _SECCION_RE = re.compile(
@@ -125,6 +128,14 @@ Return ONLY a valid JSON object.
 - If a requirement does not apply → null
 - If no prerequisites → empty object {}
 
+**RAW_TEXT correlativas format (CRITICAL):**
+Each correlativa line looks like: `<id> <Cursada|Aprobada> <Cursada|Aprobada>`
+The FIRST value is `para_cursar`, the SECOND is `para_rendir`.
+- "Cursada" → `"cursada"`
+- "Aprobada" → `"aprobada"`
+Example: `9001 Cursada Aprobada` → `{"9001": {"para_cursar": "cursada", "para_rendir": "aprobada"}}`
+If only one value appears, use it for both fields.
+
 **materias[].categoria**
 - `"normal"` for mandatory subjects
 - `"optativa"` for elective subjects that belong to an agrupador
@@ -141,9 +152,78 @@ Return ONLY a valid JSON object.
 
 **agrupadores**
 - Each agrupador groups elective options a student must choose from
-- `tipo: "optativa_grupo"` for elective subject groups
-- `tipo: "idioma"` for language exam groups
+- `tipo: "optativa_grupo"` for elective subject groups (IDs starting with G, e.g. "G2347")
+- `tipo: "idioma_grupo"` for language exam groups (IDs starting with I, e.g. "I0002")
 - `opciones`: list of materia IDs that are options within this group
+
+**Elective group nodes (CRITICAL — agrupador_requisito pattern):**
+In the RAW_TEXT, a group ID (starting with G) can appear in two distinct positions:
+
+POSITION A — Inside the year/semester plan, at the end of a subject's correlativas block:
+  The group ID appears on its own line right after the last correlativa of a mandatory subject,
+  followed immediately by the next mandatory subject. This signals that the student must complete
+  the elective group as part of that year slot. Pattern:
+    ```
+    <last_correlativa_id> Aprobada Aprobada
+    G0857 Optativa de Ing. Civil, orientación Construcciones, plan 2025
+    <next_subject_id> NOMBRE MATERIA  Xhs. ...
+    ```
+  → Generate BOTH an entry in `materias` (tipo: "agrupador_requisito") AND in `agrupadores`.
+
+POSITION B — As a section header introducing a list of elective subjects (usually under
+  "MATERIAS OPTATIVAS" or a similar heading), with no mandatory subject immediately before it:
+    ```
+    G2347 Optativa de Abogacía, plan 2020
+    9014 DERECHO DE LA NAVEGACION  64hs. ...
+    9082 FILOSOFIA DE LA PENA  64hs. ...
+    ```
+  → Generate ONLY an entry in `agrupadores`. Do NOT add it to `materias`.
+
+When POSITION A applies, generate TWO entries:
+1. An entry in `agrupadores` with `tipo: "optativa_grupo"` and all member subject IDs in `opciones`.
+2. An entry in `materias` with the same ID, `tipo: "agrupador_requisito"`, `categoria: "normal"`,
+   `grupo_opcion: null`, `correlativas: {}`, and the `año`/`cuatrimestre` of the year slot where
+   it appears.
+
+Example — G0857 appears after the last correlativa of a 4th-year subject:
+```json
+// In materias:
+{"id": "G0857", "nombre": "Optativa de Ing. Civil, orientación Construcciones, plan 2025",
+ "año": "Cuarto Año", "cuatrimestre": "Segundo Cuatrimestre", "horas": "",
+ "tipo": "agrupador_requisito", "categoria": "normal", "grupo_opcion": null,
+ "subtipo": null, "correlativas": {}}
+
+// In agrupadores:
+{"id": "G0857", "nombre": "Optativa de Ing. Civil, orientación Construcciones, plan 2025",
+ "tipo": "optativa_grupo", "opciones": ["5065", "5085", ...]}
+```
+
+**Language requirement (CRITICAL — idioma_grupo pattern):**
+When a language group (ID starting with I, e.g. "I0024") appears in the text, you MUST generate
+THREE entries:
+1. An entry in `agrupadores` with `tipo: "idioma_grupo"` and its member exam IDs in `opciones`.
+2. An entry in `materias` with the same ID, `tipo: "materia"`, `subtipo: "idioma"`,
+   `categoria: "normal"`, `grupo_opcion: null`, `correlativas: {}`, and the `año`/`cuatrimestre`
+   where the language requirement appears. This node is what other subjects reference as a correlativa.
+3. Each exam listed under the language group MUST appear in `materias` with `categoria: "optativa"`,
+   `subtipo: "idioma"`, and `grupo_opcion` set to the language group ID.
+
+Example:
+```json
+// In materias — the requirement node:
+{"id": "I0024", "nombre": "Idioma ...", "año": "Segundo Año", "cuatrimestre": "Segundo Cuatrimestre",
+ "horas": "", "tipo": "materia", "categoria": "normal", "grupo_opcion": null,
+ "subtipo": "idioma", "correlativas": {}}
+
+// In materias — the exam member:
+{"id": "5596", "nombre": "Examen de Suficiencia ...", "año": "...", "cuatrimestre": "...",
+ "horas": "", "tipo": "materia", "categoria": "optativa", "grupo_opcion": "I0024",
+ "subtipo": "idioma", "correlativas": {}}
+
+// In agrupadores:
+{"id": "I0024", "nombre": "Idioma ...", "tipo": "idioma_grupo", "opciones": ["5596"]}
+```
+Any subject that lists I0024 as a prerequisite MUST include it in its `correlativas` object.
 
 ---
 
@@ -184,7 +264,10 @@ If ALLOW_OVERWRITE = true:
 
 1. NEVER invent or infer data — if not explicitly present → use null
 
-2. Extract ALL subjects including electives (optativas). Do not skip sections.
+2. Extract ALL subjects including electives. The section "MATERIAS OPTATIVAS" (or similar) contains
+   elective subjects grouped under agrupadores (e.g. "G2347 Optativa de ..."). You MUST process
+   this entire section and include every subject listed there with `categoria: "optativa"` and
+   `grupo_opcion` set to the agrupador ID. Do NOT stop at the last mandatory subject.
 
 3. Correlativas:
    * Extract only explicit references from RAW_TEXT
@@ -193,6 +276,9 @@ If ALLOW_OVERWRITE = true:
    * If unreadable → null
 
 4. IDs must be strings, exact format. If corrupted → null.
+
+4b. `horas`: extract only the numeric value as a string. Strip any unit suffix.
+    "64hs." → "64", "128 hs" → "128". If no hours are listed → use `""`.
 
 5. año: normalize to "Primer Año", "Segundo Año", "Tercer Año", "Cuarto Año", "Quinto Año", etc.
 
@@ -203,6 +289,10 @@ If ALLOW_OVERWRITE = true:
 8. For each agrupador detected, list ALL its member subject IDs in `opciones`.
 
 9. Set `categoria: "optativa"` and `grupo_opcion: <agrupador_id>` for every elective subject.
+
+10. NEVER duplicate a subject. Each subject ID must appear exactly ONCE in the `materias` array,
+    even if it is listed under multiple agrupadores in the source text. The agrupador's `opciones`
+    field already records the membership — do not repeat the materia object.
 
 ---
 
@@ -335,17 +425,16 @@ def _partir_en_chunks(texto: str) -> list[str]:
     return _fusionar_pequenos(secciones)
 
 
-def _llamar_llm(client: Groq, model_name: str, user_message: str) -> str:
-    response = client.chat.completions.create(
+def _llamar_llm(client: genai.Client, model_name: str, user_message: str) -> str:
+    response = client.models.generate_content(
         model=model_name,
-        messages=[
-            {"role": "system", "content": SYSTEM_PROMPT},
-            {"role": "user", "content": user_message},
-        ],
-        temperature=0,
-        response_format={"type": "json_object"},
+        contents=user_message,
+        config=types.GenerateContentConfig(
+            system_instruction=SYSTEM_PROMPT,
+            temperature=0,
+        ),
     )
-    return response.choices[0].message.content
+    return response.text
 
 
 def _mergear_resultados(parciales: list[dict]) -> dict[str, Any]:
@@ -399,7 +488,7 @@ def normalizar(
     chunks = _partir_en_chunks(texto_limpio)
     mode_label = "B (refinement)" if base_json is not None else "A (full extraction)"
     logger.info(
-        "Groq API (%s, prompt_version=%s, mode=%s, total_chars=%d, chunks=%d)...",
+        "Google GenAI API (%s, prompt_version=%s, mode=%s, total_chars=%d, chunks=%d)...",
         model_name,
         PROMPT_VERSION,
         mode_label,
@@ -407,7 +496,7 @@ def normalizar(
         len(chunks),
     )
 
-    client = Groq()
+    client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
     parciales: list[dict] = []
 
     for i, chunk in enumerate(chunks):
@@ -424,12 +513,12 @@ def normalizar(
             logger.warning("Chunk %d falló el parseo JSON, se omite.", i + 1)
 
         if i < len(chunks) - 1:
-            time.sleep(62)
+            time.sleep(1)
 
     if not parciales:
         raise LLMParseError("Todos los chunks fallaron el parseo JSON.")
 
-    plan_data = _mergear_resultados(parciales) if len(parciales) > 1 else parciales[0]
+    plan_data = _mergear_resultados(parciales)
 
     if trace_dir:
         _guardar_traza(
