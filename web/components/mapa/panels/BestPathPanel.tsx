@@ -17,7 +17,6 @@ type Props = {
 
 export function BestPathPanel({ result, materiaById, vmById, mode, onModeChange, onLimpiar, hasHoras }: Props) {
   const divider: React.CSSProperties = { borderTop: `1px solid ${GLASS.border}`, margin: "4px 0" };
-  const pendingInCamino = result.pendientes;
 
   return (
     <div style={{
@@ -94,7 +93,7 @@ export function BestPathPanel({ result, materiaById, vmById, mode, onModeChange,
 
       <div style={{ display: "flex", gap: 12 }}>
         <div style={{ flex: 1, background: AMBER.bgStrong, border: `1px solid ${AMBER.border}44`, borderRadius: 8, padding: "8px 10px", textAlign: "center" }}>
-          <div style={{ fontSize: 20, fontWeight: 800, color: AMBER.text }}>{pendingInCamino.length}</div>
+          <div style={{ fontSize: 20, fontWeight: 800, color: AMBER.text }}>{result.pendientes.length}</div>
           <div style={{ fontSize: 9, color: TEXT_SEC, marginTop: 2 }}>materias restantes</div>
         </div>
         <div style={{ flex: 1, background: AMBER.bgStrong, border: `1px solid ${AMBER.border}44`, borderRadius: 8, padding: "8px 10px", textAlign: "center" }}>

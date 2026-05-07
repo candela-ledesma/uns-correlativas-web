@@ -255,14 +255,13 @@ function MapaInner({ materias, agrupadores, idsAgrupadores, estados, reglamentoU
     return simplificarGrafo ? transitiveReduction(raw) : raw;
   }, [miVistaActiva, miVistaEdges, baseEdges, simplificarGrafo]);
 
-  const activeEdges = visibleEdges;
   const activeNodes = miVistaActiva ? miVistaNodes : displayNodes;
 
   const [nodes, setNodes, onNodesChange] = useNodesState(activeNodes);
-  const [edges, setEdges] = useEdgesState(activeEdges);
+  const [edges, setEdges] = useEdgesState(visibleEdges);
 
   useEffect(() => { setNodes(activeNodes); }, [activeNodes, setNodes]);
-  useEffect(() => { setEdges(activeEdges); }, [activeEdges, setEdges]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { setEdges(visibleEdges); }, [visibleEdges, setEdges]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const toggleMinimap = useCallback(() => {
     setMinimapVisible((v) => {
@@ -436,11 +435,11 @@ function MapaInner({ materias, agrupadores, idsAgrupadores, estados, reglamentoU
         >
           <HoverStyleInjector
             hoveredNodeId={hoveredNodeId} activeChain={activeChain}
-            setEdges={setEdges} baseEdges={activeEdges} caminoActivo={caminoActivo}
+            setEdges={setEdges} baseEdges={visibleEdges} caminoActivo={caminoActivo}
           />
           <CaminoStyleInjector
             caminoSet={caminoSet} vmById={vmById}
-            setEdges={setEdges} baseEdges={activeEdges}
+            setEdges={setEdges} baseEdges={visibleEdges}
           />
           <Background variant={BackgroundVariant.Dots} gap={20} size={1} color="rgba(255,255,255,0.06)" />
 

@@ -7,8 +7,6 @@ export type OptMode = "materias" | "cuatrimestres" | "horas";
 export type BestPathResult = {
   camino: string[];
   pendientes: string[];
-  destino: string;
-  totalPendientes: number;
   cuatrimestresEstimados: number;
 };
 
@@ -153,8 +151,6 @@ export function calcularMejorCamino(
   return {
     camino: ordenTopologico,
     pendientes,
-    destino: destino.id,
-    totalPendientes: pendientes.length,
     cuatrimestresEstimados: maxNivel + 1,
   };
 }

@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import type { Materia } from "@/app/types/plan";
 import { GLASS, TEXT, TEXT_SEC, TEXT_DET } from "@/lib/ui/tokens";
-import { STATE_STYLE, AMBER, getStateLabel, type VisualEstado } from "../graphUtils";
+import { STATE_STYLE, AMBER, getStateLabel, tieneAviso, type VisualEstado } from "../graphUtils";
 
 type Props = {
   nodeId: string;
@@ -41,8 +41,7 @@ export function DetailPanel({ nodeId, materias, idsAgrupadores, vmById, reglamen
       ve: vmById.get(String(m.id)) ?? ("bloqueada" as VisualEstado),
     }));
 
-  const hasAviso =
-    Boolean(materia.grupo_opcion) || materia.nombre.toLowerCase().includes("tesis");
+  const hasAviso = tieneAviso(materia);
 
   const sectionTitle: React.CSSProperties = {
     fontSize: 10, color: TEXT_SEC, marginBottom: 4,

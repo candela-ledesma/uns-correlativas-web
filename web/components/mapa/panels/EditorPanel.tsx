@@ -11,7 +11,7 @@ import type { EstadoMateria } from "@/lib/plan/evaluarCorrelativas";
 import { GLASS, TEXT, TEXT_SEC, ACCENT } from "@/lib/ui/tokens";
 import {
   STATE_STYLE, AMBER, getStateLabel, buildAdjacency, getAncestors, getDescendants,
-  NODE_W, NODE_H, GAP_X, GAP_Y,
+  tieneAviso, NODE_W, NODE_H, GAP_X, GAP_Y,
   type VisualEstado, type NodeData,
 } from "../graphUtils";
 import { nodeTypes, edgeTypes } from "../nodeTypes";
@@ -83,7 +83,7 @@ export function EditorPanel({
     const row = Math.floor(idx / 4);
     const newPos = { x: col * (NODE_W + GAP_X + 20), y: row * (NODE_H + GAP_Y + 20) };
     const ve = vmById.get(id) ?? "bloqueada";
-    const hasAviso = Boolean(m.grupo_opcion) || m.nombre.toLowerCase().includes("tesis");
+    const hasAviso = tieneAviso(m);
     const newNode: Node = {
       id, type: "materia",
       position: newPos,
@@ -107,7 +107,7 @@ export function EditorPanel({
     return Array.from(addedIds).map((id) => {
       const m = materiaById.get(id);
       const ve = vmById.get(id) ?? "bloqueada";
-      const hasAviso = Boolean(m?.grupo_opcion) || Boolean(m?.nombre.toLowerCase().includes("tesis"));
+      const hasAviso = m ? tieneAviso(m) : false;
       return {
         id, type: "materia",
         position: positions[id] ?? { x: 0, y: 0 },
@@ -148,9 +148,9 @@ export function EditorPanel({
   const prevAddedIdsRef = useRef<Set<string>>(new Set());
   useEffect(() => {
     const prev = prevAddedIdsRef.current;
-    const removedIds = Array.from(prev).filter((id) => !addedIds.has(id));
+    const hadRemovals = Array.from(prev).some((id) => !addedIds.has(id));
     prevAddedIdsRef.current = new Set(addedIds);
-    if (removedIds.length > 0) {
+    if (hadRemovals) {
       setEdNodes((current) => current.filter((n) => addedIds.has(n.id)));
     }
   }, [addedIds]); // eslint-disable-line react-hooks/exhaustive-deps

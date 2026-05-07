@@ -59,6 +59,10 @@ export type NodeData = {
 
 export type AgrupadorNodeData = { nombre: string; cantidad: number; dimmed: boolean };
 
+export function tieneAviso(m: { grupo_opcion?: unknown; nombre: string }): boolean {
+  return Boolean(m.grupo_opcion) || m.nombre.toLowerCase().includes("tesis");
+}
+
 // ── Layout types ──────────────────────────────────────────────────────────────
 export type LayoutMode = "cuatrimestre" | "topologico";
 
@@ -70,11 +74,11 @@ const EDGE_COLOR = {
   default:   { stroke: "rgba(157,78,221,0.85)",         strokeWidth: 1.5, opacity: 1   },
 } as const;
 
-export const TRANSITIVE_EDGE_STYLE = {
+const TRANSITIVE_EDGE_STYLE = {
   stroke: "rgba(251,146,60,0.70)", strokeWidth: 1, opacity: 1,
 } as const;
 
-export const REDUCED_EDGE_STYLE = {
+const REDUCED_EDGE_STYLE = {
   stroke: "rgba(239,68,68,0.9)", strokeWidth: 1.6, opacity: 1,
 } as const;
 
@@ -450,8 +454,7 @@ export function buildGraph(
 
   const nodes: Node[] = [
     ...normales.map((m) => {
-      const hasAviso =
-        Boolean(m.grupo_opcion) || m.nombre.toLowerCase().includes("tesis");
+      const hasAviso = tieneAviso(m);
       return {
         id: String(m.id),
         type: "materia",

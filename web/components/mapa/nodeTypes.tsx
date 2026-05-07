@@ -4,7 +4,7 @@ import { useState } from "react";
 import type { NodeProps, EdgeProps } from "@xyflow/react";
 import type { Node, Edge } from "@xyflow/react";
 import { BaseEdge, getSmoothStepPath, Handle, Position } from "@xyflow/react";
-import { GLASS, TEXT, TEXT_DET, ACCENT } from "@/lib/ui/tokens";
+import { TEXT, TEXT_DET, ACCENT } from "@/lib/ui/tokens";
 import { STATE_STYLE, AMBER, getStateLabel, type NodeData, type AgrupadorNodeData } from "./graphUtils";
 
 // ── MateriaNode ───────────────────────────────────────────────────────────────
