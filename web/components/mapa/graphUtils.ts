@@ -195,41 +195,67 @@ export function posicionarTopologico(
 
 // ── Transitive reduction ──────────────────────────────────────────────────────
 // True transitive reduction of the direct-edge DAG (Hasse diagram).
-// For each direct edge (u→v), temporarily remove it and BFS the remaining
-// direct edges. If v is still reachable from u, the edge is redundant.
-// Artificial transitive edges (isTransitive:true) are always dropped in
-// simplified mode.
+//
+// Algorithm: precompute the full reachability set for every node in O(V*(V+E))
+// using DFS in reverse topological order. Then for each edge (u→v), it is
+// redundant iff any *other* neighbor w of u can reach v — O(1) lookup.
+// Total: O(V*(V+E) + E), vs the naive O(E*(V+E)) with a BFS per edge.
+//
+// Artificial transitive edges (isTransitive:true) are always dropped.
 export function transitiveReduction(allEdges: Edge[]): Edge[] {
   const directEdges = allEdges.filter((e) => !e.data?.isTransitive);
 
-  const adj = new Map<string, Set<string>>();
+  // Build adjacency list and collect all node ids.
+  const adjOut = new Map<string, string[]>();
+  const nodes  = new Set<string>();
   for (const e of directEdges) {
-    if (!adj.has(e.source)) adj.set(e.source, new Set());
-    adj.get(e.source)!.add(e.target);
+    if (!adjOut.has(e.source)) adjOut.set(e.source, []);
+    adjOut.get(e.source)!.push(e.target);
+    nodes.add(e.source);
+    nodes.add(e.target);
   }
 
-  const reachable = (source: string, target: string): boolean => {
-    const visited = new Set<string>();
-    const queue = [source];
-    visited.add(source);
-    while (queue.length > 0) {
-      const cur = queue.shift()!;
-      for (const next of adj.get(cur) ?? []) {
-        if (next === target) return true;
-        if (!visited.has(next)) {
-          visited.add(next);
-          queue.push(next);
-        }
-      }
+  // Topological order via Kahn (reuse inDeg pattern already in this file).
+  const inDeg = new Map<string, number>();
+  for (const id of nodes) inDeg.set(id, 0);
+  for (const e of directEdges) inDeg.set(e.target, inDeg.get(e.target)! + 1);
+  const topoOrder: string[] = [];
+  const queue = Array.from(nodes).filter((id) => inDeg.get(id) === 0);
+  let head = 0;
+  while (head < queue.length) {
+    const cur = queue[head++];
+    topoOrder.push(cur);
+    for (const nxt of adjOut.get(cur) ?? []) {
+      const d = inDeg.get(nxt)! - 1;
+      inDeg.set(nxt, d);
+      if (d === 0) queue.push(nxt);
     }
-    return false;
-  };
+  }
 
+  // Reachability sets computed in reverse topological order (leaves first).
+  // reach[u] = set of all nodes reachable from u via ≥1 edge.
+  const reach = new Map<string, Set<string>>();
+  for (const id of nodes) reach.set(id, new Set());
+
+  for (let i = topoOrder.length - 1; i >= 0; i--) {
+    const u = topoOrder[i];
+    const ru = reach.get(u)!;
+    for (const v of adjOut.get(u) ?? []) {
+      ru.add(v);
+      for (const w of reach.get(v)!) ru.add(w);
+    }
+  }
+
+  // An edge (u→v) is redundant iff u can reach v through another neighbor.
   const redundant = new Set<string>();
   for (const e of directEdges) {
-    adj.get(e.source)!.delete(e.target);
-    if (reachable(e.source, e.target)) redundant.add(e.id);
-    adj.get(e.source)!.add(e.target);
+    const { source: u, target: v } = e;
+    for (const w of adjOut.get(u) ?? []) {
+      if (w !== v && reach.get(w)!.has(v)) {
+        redundant.add(e.id);
+        break;
+      }
+    }
   }
 
   return directEdges
