@@ -10,7 +10,6 @@ import {
   Panel,
   useNodesState,
   useEdgesState,
-  useEdges,
   useReactFlow,
   ReactFlowProvider,
   type Node,
@@ -28,7 +27,7 @@ import "@xyflow/react/dist/style.css";
 import { Agrupador, Materia } from "@/app/types/plan";
 import { EstadoMateria } from "@/lib/plan/evaluarCorrelativas";
 import { getMateriaViewModel } from "@/lib/plan/materiaViewModel";
-import { GLASS, TEXT, TEXT_SEC, TEXT_DET, ACCENT } from "@/lib/ui/tokens";
+import { GLASS, TEXT, TEXT_SEC, TEXT_DET, ACCENT, STATUS_COLORS } from "@/lib/ui/tokens";
 import { extractOrientaciones, passesOrientationFilter } from "@/lib/plan/kanbanUtils";
 
 // ── Props ────────────────────────────────────────────────────────────────────
@@ -53,10 +52,10 @@ const ROW_H  = NODE_H + GAP_Y;
 const AMBER = { border: "#EF9F27", text: "#FAC775", bg: "rgba(239,159,39,0.12)", bgStrong: "rgba(186,117,23,0.12)" };
 
 const STATE_STYLE = {
-  aprobada:  { bg: "#3B6D11",               text: "#97C459", border: "rgba(151,196,89,0.5)"  },
-  cursada:   { bg: "#185FA5",               text: "#85B7EB", border: "rgba(133,183,235,0.5)" },
-  disponible:{ bg: "#534AB7",               text: "#AFA9EC", border: "rgba(175,169,236,0.5)" },
-  bloqueada: { bg: "rgba(255,255,255,0.04)", text: "#9CA3AF", border: "rgba(255,255,255,0.12)"},
+  aprobada:  { bg: "rgba(144,190,109,0.30)", text: STATUS_COLORS.aprobada.accent,    border: STATUS_COLORS.aprobada.cardBorder    },
+  cursada:   { bg: "rgba(76,201,240,0.25)",  text: STATUS_COLORS.cursada.accent,     border: STATUS_COLORS.cursada.cardBorder     },
+  disponible:{ bg: "rgba(249,199,79,0.22)",  text: STATUS_COLORS.disponible.accent,  border: STATUS_COLORS.disponible.cardBorder  },
+  bloqueada: { bg: "#2a2a3a",               text: "#888898",                        border: "#4a4a5a"                            },
 } as const;
 
 type VisualEstado = keyof typeof STATE_STYLE;
@@ -66,7 +65,8 @@ function getVisualEstado(vm: ReturnType<typeof getMateriaViewModel>): VisualEsta
   if (vm.estado === "cursada")  return "cursada";
   if (vm.bloqueada)             return "bloqueada";
   if (vm.puedeCursar)           return "disponible";
-  return "bloqueada";
+  // no_cursada + no bloqueada + no puede cursar → sin correlativas, tratar como disponible
+  return "disponible";
 }
 
 function getStateLabel(ve: VisualEstado) {
@@ -264,7 +264,7 @@ type AgrupadorNodeData = { nombre: string; cantidad: number; dimmed: boolean };
 function MateriaNode({ data, selected }: NodeProps<Node<NodeData>>) {
   const { label, horas, visualEstado, highlighted, dimmed, hasAviso } = data;
   const s = STATE_STYLE[visualEstado];
-  const baseOpacity = dimmed ? 0.1 : visualEstado === "bloqueada" ? 0.35 : 1;
+  const baseOpacity = dimmed ? 0.1 : visualEstado === "bloqueada" ? 0.85 : 1;
   const ringBorder = highlighted ? `2px solid ${s.text}` : `1px solid ${s.border}`;
   const shadow = highlighted ? `0 0 0 3px ${s.text}44` : "none";
 
@@ -291,7 +291,7 @@ function MateriaNode({ data, selected }: NodeProps<Node<NodeData>>) {
       )}
       <div style={{ fontSize: 11, fontWeight: 700, color: TEXT, lineHeight: 1.3, wordBreak: "break-word", pointerEvents: "none", paddingRight: hasAviso ? 14 : 0 }}>{label}</div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "auto", pointerEvents: "none" }}>
-        <span style={{ fontSize: 9, fontWeight: 600, color: s.text, background: `${s.bg}99`, border: `1px solid ${s.border}`, borderRadius: 4, padding: "1px 5px" }}>
+        <span style={{ fontSize: 9, fontWeight: 600, color: s.text, background: visualEstado === "bloqueada" ? "#3a3a4a" : `${s.bg}99`, border: `1px solid ${s.border}`, borderRadius: 4, padding: "1px 5px" }}>
           {getStateLabel(visualEstado)}
         </span>
         <span style={{ fontSize: 9, color: TEXT_DET }}>{horas}h</span>
@@ -356,11 +356,11 @@ function TransitiveEdge({
         >
           <div style={{
             background: "rgba(10,14,40,0.95)",
-            border: "1px solid rgba(157,78,221,0.45)",
+            border: "1px solid rgba(251,146,60,0.45)",
             borderRadius: 7,
             padding: "5px 9px",
             fontSize: 10,
-            color: "#c4a0f0",
+            color: "rgba(251,146,60,0.9)",
             lineHeight: 1.4,
             whiteSpace: "nowrap",
             backdropFilter: "blur(8px)",
@@ -446,17 +446,63 @@ function posicionarTopologico(
 //   anything → target bloqueada → dim gray
 //   otherwise → purple (default, unknown or disponible source)
 const EDGE_COLOR = {
-  aprobada:  { stroke: "rgba(151,196,89,0.7)",  strokeWidth: 1.5, opacity: 1    },
-  cursada:   { stroke: "rgba(133,183,235,0.65)", strokeWidth: 1.5, opacity: 1    },
-  bloqueada: { stroke: "rgba(255,255,255,0.10)", strokeWidth: 1,   opacity: 0.4  },
-  default:   { stroke: "rgba(157,78,221,0.45)",  strokeWidth: 1.5, opacity: 1    },
+  aprobada:  { stroke: STATUS_COLORS.aprobada.accent,   strokeWidth: 1.5, opacity: 1    },
+  cursada:   { stroke: STATUS_COLORS.cursada.accent,    strokeWidth: 1.5, opacity: 1    },
+  bloqueada: { stroke: "rgba(255,255,255,0.25)",  strokeWidth: 1,   opacity: 0.6  },
+  default:   { stroke: "rgba(157,78,221,0.85)",   strokeWidth: 1.5, opacity: 1    },
 } as const;
+
+// Transitive edges always use amber regardless of source/target state
+const TRANSITIVE_EDGE_STYLE = { stroke: "rgba(251,146,60,0.70)", strokeWidth: 1, opacity: 1 } as const;
 
 function getEdgeStyle(sourceVe: VisualEstado | undefined, targetVe: VisualEstado): CSSProperties {
   if (targetVe === "bloqueada") return EDGE_COLOR.bloqueada;
   if (sourceVe === "aprobada")  return EDGE_COLOR.aprobada;
   if (sourceVe === "cursada")   return EDGE_COLOR.cursada;
   return EDGE_COLOR.default;
+}
+
+// Removes transitive edges that are redundant: A→C is redundant if C is reachable
+// from A through at least one intermediate node using only direct edges.
+function transitiveReduction(allEdges: Edge[]): Edge[] {
+  const directEdges = allEdges.filter(e => !e.data?.isTransitive);
+  const transitiveEdges = allEdges.filter(e => e.data?.isTransitive);
+
+  // Construir mapa de adyacencia usando todas las aristas
+  const adj = new Map<string, Set<string>>();
+  for (const e of allEdges) {
+    if (!adj.has(e.source)) adj.set(e.source, new Set());
+    adj.get(e.source)!.add(e.target);
+  }
+
+  // BFS: ¿es target alcanzable desde source pasando por al menos un nodo intermedio?
+  function isReachableViaIntermediate(source: string, target: string): boolean {
+    const visited = new Set<string>();
+    const queue: string[] = [];
+    for (const neighbor of adj.get(source) ?? []) {
+      if (neighbor !== target) queue.push(neighbor);
+    }
+    while (queue.length > 0) {
+      const curr = queue.shift()!;
+      if (visited.has(curr)) continue;
+      visited.add(curr);
+      for (const next of adj.get(curr) ?? []) {
+        if (next === target) return true;
+        if (!visited.has(next)) queue.push(next);
+      }
+    }
+    return false;
+  }
+
+  const essentialDirect = directEdges.filter(
+    e => !isReachableViaIntermediate(e.source, e.target)
+  );
+
+  const essentialTransitive = transitiveEdges.filter(
+    e => !isReachableViaIntermediate(e.source, e.target)
+  );
+
+  return [...essentialDirect, ...essentialTransitive];
 }
 
 function buildGraph(
@@ -579,16 +625,13 @@ function buildGraph(
           const edgeId = `transitive:${startId}->${next}`;
           if (!directEdgeSet.has(edgeId)) {
             directEdgeSet.add(edgeId);
-            const sourceVe = vmById.get(startId);
-            const targetVe = vmById.get(next) ?? "bloqueada";
-            const base = getEdgeStyle(sourceVe, targetVe);
             const pathIds = findPath(startId, next);
             const pathLabel = pathIds.map((id) => materiaById.get(id)?.nombre ?? id).join(" → ");
             edges.push({
               id: edgeId, source: startId, target: next, type: "transitive",
-              style: { ...base, strokeDasharray: "4 3", opacity: (base.opacity as number) * 0.45 },
+              style: { ...TRANSITIVE_EDGE_STYLE, strokeDasharray: "4 3" },
               animated: false,
-              data: { path: pathLabel },
+              data: { isTransitive: true, path: pathLabel },
             });
           }
         }
@@ -1148,9 +1191,17 @@ function EditorPanel({
 // ── Toolbar ───────────────────────────────────────────────────────────────────
 type FiltroEstado = "todas" | VisualEstado;
 
+const FILTER_DOT: Record<VisualEstado, string> = {
+  aprobada:  STATE_STYLE.aprobada.text,
+  cursada:   STATE_STYLE.cursada.text,
+  disponible: STATE_STYLE.disponible.text,
+  bloqueada: STATE_STYLE.bloqueada.text,
+};
+
 function Toolbar({
   filtro, onFiltro, busqueda, onBusqueda, contadores, onBuscar, layoutMode, onToggleLayout,
   miVistaActiva, onToggleMiVista, tieneVistaGuardada, onAbrirEditor,
+  simplificarGrafo, onToggleSimplificar,
 }: {
   filtro: FiltroEstado; onFiltro: (f: FiltroEstado) => void;
   busqueda: string; onBusqueda: (s: string) => void;
@@ -1158,6 +1209,7 @@ function Toolbar({
   layoutMode: LayoutMode; onToggleLayout: () => void;
   miVistaActiva: boolean; onToggleMiVista: (v: boolean) => void;
   tieneVistaGuardada: boolean; onAbrirEditor: () => void;
+  simplificarGrafo: boolean; onToggleSimplificar: () => void;
 }) {
   const chips: { key: FiltroEstado; label: string }[] = [
     { key: "todas", label: "Todas" }, { key: "aprobada", label: "Aprobada" },
@@ -1174,42 +1226,60 @@ function Toolbar({
         onKeyDown={(e) => e.key === "Enter" && onBuscar()}
         style={{ background: GLASS.elevated, border: `1px solid ${GLASS.strong}`, borderRadius: 7, color: TEXT, fontSize: 12, padding: "5px 10px", outline: "none", width: 160 }}
       />
+
+      {/* Grupo izquierdo — filtros de estado */}
       <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
         {chips.map(({ key, label }) => {
           const active = filtro === key;
           const accentColor = key === "todas" ? ACCENT : STATE_STYLE[key as VisualEstado].text;
+          const dotColor = key !== "todas" ? FILTER_DOT[key as VisualEstado] : null;
           return (
             <button key={key} onClick={() => onFiltro(key)} style={{
+              display: "flex", alignItems: "center", gap: 5,
               fontSize: 10, fontWeight: 600, padding: "3px 9px", borderRadius: 6,
               border: active ? `1px solid ${accentColor}` : `1px solid ${GLASS.border}`,
               background: active ? `${accentColor}22` : GLASS.base,
               color: active ? accentColor : TEXT_SEC, cursor: "pointer", transition: "all 0.1s",
             }}>
+              {dotColor && (
+                <span style={{ width: 6, height: 6, borderRadius: "50%", background: dotColor, flexShrink: 0, opacity: active ? 1 : 0.5 }} />
+              )}
               {label}
-              {key !== "todas" && <span style={{ marginLeft: 4, opacity: 0.7 }}>{contadores[key as VisualEstado]}</span>}
+              {key !== "todas" && <span style={{ opacity: 0.7 }}>{contadores[key as VisualEstado]}</span>}
             </button>
           );
         })}
       </div>
 
-      <div style={{ display: "flex", gap: 4, marginLeft: 4 }}>
-        {(["cuatrimestre", "topologico"] as LayoutMode[]).map((mode) => {
-          const active = layoutMode === mode;
-          return (
-            <button key={mode} onClick={onToggleLayout} title={mode === "cuatrimestre" ? "Agrupar por año y cuatrimestre" : "Posicionar por nivel de dependencias"} style={{
-              fontSize: 10, fontWeight: 600, padding: "3px 9px", borderRadius: 6,
-              border: active ? `1px solid ${ACCENT}` : `1px solid ${GLASS.border}`,
-              background: active ? `${ACCENT}22` : GLASS.base,
-              color: active ? ACCENT : TEXT_SEC, cursor: "pointer", transition: "all 0.1s",
-            }}>
-              {mode === "cuatrimestre" ? "Por cuatrimestre" : "Topológico"}
-            </button>
-          );
-        })}
-      </div>
+      {/* Divisor vertical */}
+      <div style={{ width: 1, height: 22, background: GLASS.strong, margin: "0 4px", flexShrink: 0 }} />
 
-      {/* Mi vista */}
-      <div style={{ display: "flex", gap: 4, marginLeft: 4 }}>
+      {/* Grupo derecho — modos de vista y acciones */}
+      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+        {/* Toggle segmentado layout */}
+        <div style={{ display: "flex", background: GLASS.elevated, border: `1px solid ${GLASS.border}`, borderRadius: 7, overflow: "hidden" }}>
+          {(["cuatrimestre", "topologico"] as LayoutMode[]).map((mode, i) => {
+            const active = layoutMode === mode;
+            return (
+              <button
+                key={mode}
+                onClick={onToggleLayout}
+                title={mode === "cuatrimestre" ? "Agrupar por año y cuatrimestre" : "Posicionar por nivel de dependencias"}
+                style={{
+                  fontSize: 10, fontWeight: 600, padding: "3px 10px",
+                  border: "none",
+                  borderLeft: i > 0 ? `1px solid ${GLASS.border}` : "none",
+                  background: active ? `${ACCENT}33` : "transparent",
+                  color: active ? ACCENT : TEXT_SEC, cursor: "pointer", transition: "all 0.1s",
+                }}
+              >
+                {mode === "cuatrimestre" ? "Por cuatrimestre" : "Topológico"}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Mi vista */}
         {tieneVistaGuardada && (
           <button
             onClick={() => onToggleMiVista(!miVistaActiva)}
@@ -1222,6 +1292,20 @@ function Toolbar({
             }}
           >Mi vista</button>
         )}
+
+        {/* Simplificar grafo */}
+        <button
+          onClick={onToggleSimplificar}
+          title="Ocultar aristas redundantes (reducción transitiva)"
+          style={{
+            fontSize: 10, fontWeight: 600, padding: "3px 9px", borderRadius: 6,
+            border: simplificarGrafo ? `1px solid ${ACCENT}` : `1px solid ${GLASS.border}`,
+            background: simplificarGrafo ? `${ACCENT}22` : GLASS.base,
+            color: simplificarGrafo ? ACCENT : TEXT_SEC, cursor: "pointer", transition: "all 0.1s",
+          }}
+        >Simplificar</button>
+
+        {/* + Editar */}
         <button
           onClick={onAbrirEditor}
           title="Armar mi propia vista del mapa"
@@ -1249,8 +1333,6 @@ function HoverStyleInjector({
   setEdges: (edges: Edge[]) => void; baseEdges: Edge[];
   caminoActivo: boolean;
 }) {
-  const liveEdges = useEdges();
-
   const css = useMemo(() => {
     if (caminoActivo) return ""; // camino mode handles its own CSS
     if (!hoveredNodeId || !activeChain) return "";
@@ -1261,13 +1343,13 @@ function HoverStyleInjector({
   }, [hoveredNodeId, activeChain, caminoActivo]);
 
   useEffect(() => {
-    if (caminoActivo) return; // camino mode handles edges separately
-    if (!hoveredNodeId || !activeChain) { setEdges(baseEdges); return; }
-    setEdges(liveEdges.map((e) => {
+    if (caminoActivo) return;
+    if (!hoveredNodeId || !activeChain) return; // padre sincroniza baseEdges via su propio useEffect
+    setEdges(baseEdges.map((e) => {
       const inChain = activeChain.has(e.source) && activeChain.has(e.target);
       return { ...e, style: inChain ? { stroke: "rgba(157,78,221,0.9)", strokeWidth: 2, opacity: 1 } : { stroke: "rgba(157,78,221,0.08)", strokeWidth: 1.5, opacity: 0.04 } };
     }));
-  }, [hoveredNodeId, activeChain, caminoActivo]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [hoveredNodeId, activeChain, caminoActivo, baseEdges]);
 
   if (!css) return null;
   return <style>{css}</style>;
@@ -1280,8 +1362,6 @@ function CaminoStyleInjector({
   caminoSet: Set<string> | null; vmById: Map<string, VisualEstado>;
   setEdges: (edges: Edge[]) => void; baseEdges: Edge[];
 }) {
-  const liveEdges = useEdges();
-
   const css = useMemo(() => {
     if (!caminoSet) return "";
     const inCamino = Array.from(caminoSet);
@@ -1299,12 +1379,12 @@ function CaminoStyleInjector({
   }, [caminoSet, vmById]);
 
   useEffect(() => {
-    if (!caminoSet) { setEdges(baseEdges); return; }
-    setEdges(liveEdges.map((e) => {
+    if (!caminoSet) return; // padre sincroniza baseEdges via su propio useEffect
+    setEdges(baseEdges.map((e) => {
       const inPath = caminoSet.has(e.source) && caminoSet.has(e.target);
       return { ...e, style: inPath ? { stroke: AMBER.border, strokeWidth: 2, opacity: 1 } : { stroke: "rgba(157,78,221,0.08)", strokeWidth: 1.5, opacity: 0.04 } };
     }));
-  }, [caminoSet]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [caminoSet, baseEdges]);
 
   if (!css) return null;
   return <style>{css}</style>;
@@ -1356,6 +1436,7 @@ function MapaInner({ materias, agrupadores, idsAgrupadores, estados, reglamentoU
   const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
   const [caminoActivo, setCaminoActivo]   = useState(false);
   const [optMode, setOptMode]             = useState<OptMode>("materias");
+  const [simplificarGrafo, setSimplificarGrafo] = useState(false);
   const [minimapVisible, setMinimapVisible] = useState<boolean>(() => {
     if (typeof window === "undefined") return true;
     const stored = localStorage.getItem("mapaMinimapVisible");
@@ -1430,14 +1511,20 @@ function MapaInner({ materias, agrupadores, idsAgrupadores, estados, reglamentoU
     return baseEdges.filter((e) => ids.has(e.source) && ids.has(e.target));
   }, [miVistaData, baseEdges]);
 
-  const activeEdges = miVistaActiva ? miVistaEdges : baseEdges;
+  const visibleEdges = useMemo<Edge[]>(() => {
+    const raw = miVistaActiva ? miVistaEdges : baseEdges;
+    return simplificarGrafo ? transitiveReduction(raw) : raw;
+  }, [miVistaActiva, miVistaEdges, baseEdges, simplificarGrafo]);
+
+  const activeEdges = visibleEdges;
   const activeNodes = miVistaActiva ? miVistaNodes : displayNodes;
 
   const [nodes, setNodes, onNodesChange] = useNodesState(activeNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(activeEdges);
+  const [edges, setEdges] = useEdgesState(activeEdges);
 
   useEffect(() => { setNodes(activeNodes); }, [activeNodes, setNodes]);
   useEffect(() => { setEdges(activeEdges); }, [activeEdges, setEdges]); // eslint-disable-line react-hooks/exhaustive-deps
+
 
   const toggleMinimap = useCallback(() => {
     setMinimapVisible((v) => { const next = !v; localStorage.setItem("mapaMinimapVisible", String(next)); return next; });
@@ -1495,8 +1582,12 @@ function MapaInner({ materias, agrupadores, idsAgrupadores, estados, reglamentoU
 
   const handleBuscar = useCallback(() => {
     if (!busqueda.trim()) return;
-    const q = busqueda.toLowerCase();
-    const match = baseNodes.find((n) => n.type === "materia" && (n.data as NodeData).label.toLowerCase().includes(q));
+    const q = busqueda.trim().toLowerCase();
+    const match = baseNodes.find((n) => {
+      if (n.type !== "materia") return false;
+      const label = (n.data as NodeData).label.toLowerCase();
+      return label.includes(q) || n.id.toLowerCase().includes(q);
+    });
     if (!match) return;
     setHighlightedId(match.id);
     setSelectedNodeId(match.id);
@@ -1571,12 +1662,13 @@ function MapaInner({ materias, agrupadores, idsAgrupadores, estados, reglamentoU
         miVistaActiva={miVistaActiva} onToggleMiVista={setMiVistaActiva}
         tieneVistaGuardada={miVistaData !== null}
         onAbrirEditor={() => setEditorAbierto(true)}
+        simplificarGrafo={simplificarGrafo} onToggleSimplificar={() => setSimplificarGrafo((v) => !v)}
       />
 
       <div style={{ width: "100%", height: "72vh", minHeight: 480, borderRadius: 14, overflow: "hidden", border: `1px solid ${caminoActivo ? AMBER.border : GLASS.raised}`, background: "rgba(15,20,50,0.55)", transition: "border-color 0.2s" }}>
         <ReactFlow
           nodes={nodes} edges={edges}
-          onNodesChange={onNodesChange} onEdgesChange={onEdgesChange}
+          onNodesChange={onNodesChange}
           nodeTypes={nodeTypes}
           edgeTypes={edgeTypes}
           onNodeMouseEnter={handleNodeMouseEnter}
