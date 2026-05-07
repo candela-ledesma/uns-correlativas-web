@@ -24,7 +24,7 @@ import { GLASS, TEXT_SEC, ACCENT } from "@/lib/ui/tokens";
 import { extractOrientaciones } from "@/lib/plan/kanbanUtils";
 
 import {
-  buildGraph, hasHorasData, getAncestors, getDescendants,
+  buildGraph, hasHorasData, buildAdjacency, getAncestors, getDescendants,
   transitiveReduction, STATE_STYLE, AMBER,
   type VisualEstado, type NodeData, type LayoutMode,
 } from "./graphUtils";
@@ -155,6 +155,12 @@ function MapaInner({ materias, agrupadores, idsAgrupadores, estados, reglamentoU
     [materias, agrupadores, idsAgrupadores, estados, selectedOrientacion, layoutMode],
   );
 
+  // Adjacency maps built once per edge array — reused by hover and camino BFS.
+  const { adjIn, adjOut: baseAdjOut } = useMemo(
+    () => buildAdjacency(baseEdges),
+    [baseEdges],
+  );
+
   const hasHoras = useMemo(() => hasHorasData(materiaById), [materiaById]);
 
   const [filtro, setFiltro]               = useState<FiltroEstado>("todas");
@@ -196,10 +202,10 @@ function MapaInner({ materias, agrupadores, idsAgrupadores, estados, reglamentoU
   const activeChain = useMemo<Set<string> | null>(() => {
     if (!hoveredNodeId || caminoActivo) return null;
     const chain = new Set<string>([hoveredNodeId]);
-    for (const id of getAncestors(hoveredNodeId, baseEdges)) chain.add(id);
-    for (const id of getDescendants(hoveredNodeId, baseEdges)) chain.add(id);
+    for (const id of getAncestors(hoveredNodeId, adjIn)) chain.add(id);
+    for (const id of getDescendants(hoveredNodeId, baseAdjOut)) chain.add(id);
     return chain;
-  }, [hoveredNodeId, baseEdges, caminoActivo]);
+  }, [hoveredNodeId, adjIn, baseAdjOut, caminoActivo]);
 
   const displayNodes = useMemo<Node[]>(() => {
     return baseNodes.map((n) => {

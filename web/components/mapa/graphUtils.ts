@@ -89,31 +89,42 @@ export function getEdgeStyle(
 }
 
 // ── Graph traversal ───────────────────────────────────────────────────────────
-export function getAncestors(nodeId: string, edges: Edge[]): Set<string> {
+// Both functions expect a pre-built adjacency map to avoid O(E) edge scans
+// inside the BFS loop. Build it once per edge array with buildAdjacency().
+export function buildAdjacency(edges: Edge[]): {
+  adjIn:  Map<string, string[]>;
+  adjOut: Map<string, string[]>;
+} {
+  const adjIn  = new Map<string, string[]>();
+  const adjOut = new Map<string, string[]>();
+  for (const e of edges) {
+    if (!adjIn.has(e.target))  adjIn.set(e.target, []);
+    if (!adjOut.has(e.source)) adjOut.set(e.source, []);
+    adjIn.get(e.target)!.push(e.source);
+    adjOut.get(e.source)!.push(e.target);
+  }
+  return { adjIn, adjOut };
+}
+
+export function getAncestors(nodeId: string, adjIn: Map<string, string[]>): Set<string> {
   const result = new Set<string>();
   const queue = [nodeId];
   while (queue.length > 0) {
     const cur = queue.pop()!;
-    for (const e of edges) {
-      if (e.target === cur && !result.has(e.source)) {
-        result.add(e.source);
-        queue.push(e.source);
-      }
+    for (const src of adjIn.get(cur) ?? []) {
+      if (!result.has(src)) { result.add(src); queue.push(src); }
     }
   }
   return result;
 }
 
-export function getDescendants(nodeId: string, edges: Edge[]): Set<string> {
+export function getDescendants(nodeId: string, adjOut: Map<string, string[]>): Set<string> {
   const result = new Set<string>();
   const queue = [nodeId];
   while (queue.length > 0) {
     const cur = queue.pop()!;
-    for (const e of edges) {
-      if (e.source === cur && !result.has(e.target)) {
-        result.add(e.target);
-        queue.push(e.target);
-      }
+    for (const tgt of adjOut.get(cur) ?? []) {
+      if (!result.has(tgt)) { result.add(tgt); queue.push(tgt); }
     }
   }
   return result;

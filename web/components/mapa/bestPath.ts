@@ -56,22 +56,24 @@ export function calcularMejorCamino(
     if (mode === "cuatrimestres") {
       const pendSet = new Set(pending);
       const inDeg2 = new Map<string, number>(pending.map((id) => [id, 0]));
+      // Build adjOut scoped to pending nodes — O(E) once, not O(E) per level.
+      const adjOut2 = new Map<string, string[]>(pending.map((id) => [id, []]));
       for (const e of edges) {
-        if (pendSet.has(e.source) && pendSet.has(e.target))
-          inDeg2.set(e.target, (inDeg2.get(e.target) ?? 0) + 1);
+        if (pendSet.has(e.source) && pendSet.has(e.target)) {
+          inDeg2.set(e.target, inDeg2.get(e.target)! + 1);
+          adjOut2.get(e.source)!.push(e.target);
+        }
       }
       let lvl = 0;
-      let cur2 = [...inDeg2.entries()].filter(([, d]) => d === 0).map(([id]) => id);
+      let cur2 = pending.filter((id) => inDeg2.get(id) === 0);
       while (cur2.length > 0) {
         lvl++;
         const nxt: string[] = [];
         for (const c of cur2) {
-          for (const e of edges) {
-            if (e.source === c && pendSet.has(e.target)) {
-              const d = (inDeg2.get(e.target) ?? 0) - 1;
-              inDeg2.set(e.target, d);
-              if (d === 0) nxt.push(e.target);
-            }
+          for (const t of adjOut2.get(c) ?? []) {
+            const d = inDeg2.get(t)! - 1;
+            inDeg2.set(t, d);
+            if (d === 0) nxt.push(t);
           }
         }
         cur2 = nxt;
@@ -139,15 +141,12 @@ export function calcularMejorCamino(
   const nivel: Record<string, number> = {};
   for (const id of ordenTopologico) {
     const predsEnSub = (predecesores[id] ?? []).filter((p) => todosAntecesores.has(p));
-    nivel[id] =
-      predsEnSub.length === 0
-        ? 0
-        : Math.max(...predsEnSub.map((p) => nivel[p] ?? 0)) + 1;
+    let max = 0;
+    for (const p of predsEnSub) if ((nivel[p] ?? 0) > max) max = nivel[p] ?? 0;
+    nivel[id] = predsEnSub.length === 0 ? 0 : max + 1;
   }
-  const maxNivel =
-    ordenTopologico.length > 0
-      ? Math.max(...ordenTopologico.map((id) => nivel[id] ?? 0))
-      : 0;
+  let maxNivel = 0;
+  for (const id of ordenTopologico) if ((nivel[id] ?? 0) > maxNivel) maxNivel = nivel[id] ?? 0;
 
   const pendientes = ordenTopologico.filter((id) => vmById.get(id) !== "aprobada");
 

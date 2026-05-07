@@ -10,7 +10,7 @@ import type { Agrupador, Materia } from "@/app/types/plan";
 import type { EstadoMateria } from "@/lib/plan/evaluarCorrelativas";
 import { GLASS, TEXT, TEXT_SEC, ACCENT } from "@/lib/ui/tokens";
 import {
-  STATE_STYLE, AMBER, getStateLabel, getAncestors, getDescendants,
+  STATE_STYLE, AMBER, getStateLabel, buildAdjacency, getAncestors, getDescendants,
   NODE_W, NODE_H, GAP_X, GAP_Y,
   type VisualEstado, type NodeData,
 } from "../graphUtils";
@@ -129,13 +129,18 @@ export function EditorPanel({
     else hoverTimerRef.current = setTimeout(() => setHoveredNodeId(id), 30);
   }, []);
 
+  const { adjIn: edAdjIn, adjOut: edAdjOut } = useMemo(
+    () => buildAdjacency(editorEdges),
+    [editorEdges],
+  );
+
   const activeChain = useMemo<Set<string> | null>(() => {
     if (!hoveredNodeId) return null;
     const chain = new Set<string>([hoveredNodeId]);
-    for (const id of getAncestors(hoveredNodeId, editorEdges)) chain.add(id);
-    for (const id of getDescendants(hoveredNodeId, editorEdges)) chain.add(id);
+    for (const id of getAncestors(hoveredNodeId, edAdjIn)) chain.add(id);
+    for (const id of getDescendants(hoveredNodeId, edAdjOut)) chain.add(id);
     return chain;
-  }, [hoveredNodeId, editorEdges]);
+  }, [hoveredNodeId, edAdjIn, edAdjOut]);
 
   const [edNodes, setEdNodes, onEdNodesChange] = useNodesState(editorNodes);
   const [edEdges, setEdEdges, onEdEdgesChange] = useEdgesState(editorEdges);
