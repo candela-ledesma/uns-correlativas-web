@@ -454,6 +454,8 @@ const EDGE_COLOR = {
 
 // Transitive edges always use amber regardless of source/target state
 const TRANSITIVE_EDGE_STYLE = { stroke: "rgba(251,146,60,0.70)", strokeWidth: 1, opacity: 1 } as const;
+// Reduced edges (Simplificar) use a distinct red style
+const REDUCED_EDGE_STYLE = { stroke: "rgba(239,68,68,0.9)", strokeWidth: 1.6, opacity: 1 } as const;
 
 function getEdgeStyle(sourceVe: VisualEstado | undefined, targetVe: VisualEstado): CSSProperties {
   if (targetVe === "bloqueada") return EDGE_COLOR.bloqueada;
@@ -462,47 +464,52 @@ function getEdgeStyle(sourceVe: VisualEstado | undefined, targetVe: VisualEstado
   return EDGE_COLOR.default;
 }
 
-// Removes transitive edges that are redundant: A→C is redundant if C is reachable
-// from A through at least one intermediate node using only direct edges.
+// True transitive reduction of the direct-edge DAG (Hasse diagram).
+// For each direct edge (u→v), temporarily remove it and BFS the remaining
+// direct edges. If v is still reachable from u, the edge is redundant.
+// Artificial transitive edges (isTransitive:true) are always dropped in
+// simplified mode — they exist only for decoration on the full view.
 function transitiveReduction(allEdges: Edge[]): Edge[] {
-  const directEdges = allEdges.filter(e => !e.data?.isTransitive);
-  const transitiveEdges = allEdges.filter(e => e.data?.isTransitive);
+  const directEdges = allEdges.filter((e) => !e.data?.isTransitive);
 
-  // Construir mapa de adyacencia usando todas las aristas
+  // Build mutable adjacency sets so we can remove one edge at a time cheaply.
   const adj = new Map<string, Set<string>>();
-  for (const e of allEdges) {
+  for (const e of directEdges) {
     if (!adj.has(e.source)) adj.set(e.source, new Set());
     adj.get(e.source)!.add(e.target);
   }
 
-  // BFS: ¿es target alcanzable desde source pasando por al menos un nodo intermedio?
-  function isReachableViaIntermediate(source: string, target: string): boolean {
+  // BFS over adj (with the edge u→v already removed from adj[u]).
+  // Returns true if target is reachable from source using remaining direct edges.
+  const reachable = (source: string, target: string): boolean => {
     const visited = new Set<string>();
-    const queue: string[] = [];
-    for (const neighbor of adj.get(source) ?? []) {
-      if (neighbor !== target) queue.push(neighbor);
-    }
+    const queue = [source];
+    visited.add(source);
     while (queue.length > 0) {
-      const curr = queue.shift()!;
-      if (visited.has(curr)) continue;
-      visited.add(curr);
-      for (const next of adj.get(curr) ?? []) {
+      const cur = queue.shift()!;
+      for (const next of adj.get(cur) ?? []) {
         if (next === target) return true;
-        if (!visited.has(next)) queue.push(next);
+        if (!visited.has(next)) {
+          visited.add(next);
+          queue.push(next);
+        }
       }
     }
     return false;
+  };
+
+  const redundant = new Set<string>();
+  for (const e of directEdges) {
+    // Temporarily remove this edge from the adjacency map.
+    adj.get(e.source)!.delete(e.target);
+    if (reachable(e.source, e.target)) redundant.add(e.id);
+    // Restore the edge.
+    adj.get(e.source)!.add(e.target);
   }
 
-  const essentialDirect = directEdges.filter(
-    e => !isReachableViaIntermediate(e.source, e.target)
-  );
-
-  const essentialTransitive = transitiveEdges.filter(
-    e => !isReachableViaIntermediate(e.source, e.target)
-  );
-
-  return [...essentialDirect, ...essentialTransitive];
+  return directEdges
+    .filter((e) => !redundant.has(e.id))
+    .map((e) => ({ ...e, style: { ...e.style, ...REDUCED_EDGE_STYLE } }));
 }
 
 function buildGraph(
