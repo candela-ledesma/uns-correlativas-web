@@ -17,8 +17,8 @@ from .sanity_check import (
 
 logger = logging.getLogger("uns.llm")
 
-PROMPT_VERSION = "v6"
-MODEL_DEFAULT = "gemini-2.5-flash-lite"
+PROMPT_VERSION = "v8"
+MODEL_DEFAULT = "gemini-2.5-flash"
 MAX_CHARS_PER_CHUNK = 200_000
 
 # Secciones primarias: cada año y el bloque de optativas
@@ -157,23 +157,45 @@ If only one value appears, use it for both fields.
 - `opciones`: list of materia IDs that are options within this group
 
 **Elective group nodes (CRITICAL — agrupador_requisito pattern):**
-When an elective group (ID starting with G, e.g. "G2324") is referenced as a prerequisite by other
-subjects, you MUST generate TWO entries for it:
+In the RAW_TEXT, a group ID (starting with G) can appear in two distinct positions:
+
+POSITION A — Inside the year/semester plan, at the end of a subject's correlativas block:
+  The group ID appears on its own line right after the last correlativa of a mandatory subject,
+  followed immediately by the next mandatory subject. This signals that the student must complete
+  the elective group as part of that year slot. Pattern:
+    ```
+    <last_correlativa_id> Aprobada Aprobada
+    G0857 Optativa de Ing. Civil, orientación Construcciones, plan 2025
+    <next_subject_id> NOMBRE MATERIA  Xhs. ...
+    ```
+  → Generate BOTH an entry in `materias` (tipo: "agrupador_requisito") AND in `agrupadores`.
+
+POSITION B — As a section header introducing a list of elective subjects (usually under
+  "MATERIAS OPTATIVAS" or a similar heading), with no mandatory subject immediately before it:
+    ```
+    G2347 Optativa de Abogacía, plan 2020
+    9014 DERECHO DE LA NAVEGACION  64hs. ...
+    9082 FILOSOFIA DE LA PENA  64hs. ...
+    ```
+  → Generate ONLY an entry in `agrupadores`. Do NOT add it to `materias`.
+
+When POSITION A applies, generate TWO entries:
 1. An entry in `agrupadores` with `tipo: "optativa_grupo"` and all member subject IDs in `opciones`.
 2. An entry in `materias` with the same ID, `tipo: "agrupador_requisito"`, `categoria: "normal"`,
-   `grupo_opcion: null`, `correlativas: {}`, and the `año`/`cuatrimestre` where it appears.
-   This node exists so that mandatory subjects can reference the elective group as a prerequisite.
+   `grupo_opcion: null`, `correlativas: {}`, and the `año`/`cuatrimestre` of the year slot where
+   it appears.
 
-Example:
+Example — G0857 appears after the last correlativa of a 4th-year subject:
 ```json
 // In materias:
-{"id": "G2324", "nombre": "Optativa de Arquitectura, Plan 2016", "año": "Quinto Año",
- "cuatrimestre": "Primer Cuatrimestre", "horas": "", "tipo": "agrupador_requisito",
- "categoria": "normal", "grupo_opcion": null, "subtipo": null, "correlativas": {}}
+{"id": "G0857", "nombre": "Optativa de Ing. Civil, orientación Construcciones, plan 2025",
+ "año": "Cuarto Año", "cuatrimestre": "Segundo Cuatrimestre", "horas": "",
+ "tipo": "agrupador_requisito", "categoria": "normal", "grupo_opcion": null,
+ "subtipo": null, "correlativas": {}}
 
 // In agrupadores:
-{"id": "G2324", "nombre": "Optativa de Arquitectura, Plan 2016",
- "tipo": "optativa_grupo", "opciones": ["2146", "2371", ...]}
+{"id": "G0857", "nombre": "Optativa de Ing. Civil, orientación Construcciones, plan 2025",
+ "tipo": "optativa_grupo", "opciones": ["5065", "5085", ...]}
 ```
 
 **Language requirement (CRITICAL — idioma_grupo pattern):**
