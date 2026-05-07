@@ -13,7 +13,7 @@ import {
   STATE_STYLE, AMBER, getStateLabel, buildAdjacency, getAncestors, getDescendants,
   tieneAviso, NODE_W, NODE_H, GAP_X, GAP_Y,
   type VisualEstado, type NodeData,
-} from "../graphUtils";
+} from "@/lib/mapa/graphUtils";
 import { nodeTypes, edgeTypes } from "../nodeTypes";
 import { DetailPanel } from "./DetailPanel";
 

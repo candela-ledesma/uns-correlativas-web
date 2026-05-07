@@ -1,7 +1,7 @@
 "use client";
 
 import { GLASS, TEXT, TEXT_SEC, ACCENT } from "@/lib/ui/tokens";
-import { STATE_STYLE, type VisualEstado, type LayoutMode } from "./graphUtils";
+import { STATE_STYLE, type VisualEstado, type LayoutMode } from "@/lib/mapa/graphUtils";
 
 export type FiltroEstado = "todas" | VisualEstado;
 

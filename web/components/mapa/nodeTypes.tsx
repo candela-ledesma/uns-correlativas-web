@@ -5,7 +5,7 @@ import type { NodeProps, EdgeProps } from "@xyflow/react";
 import type { Node, Edge } from "@xyflow/react";
 import { BaseEdge, getSmoothStepPath, Handle, Position } from "@xyflow/react";
 import { TEXT, TEXT_DET, ACCENT } from "@/lib/ui/tokens";
-import { STATE_STYLE, AMBER, getStateLabel, type NodeData, type AgrupadorNodeData } from "./graphUtils";
+import { STATE_STYLE, AMBER, getStateLabel, type NodeData, type AgrupadorNodeData } from "@/lib/mapa/graphUtils";
 
 // ── MateriaNode ───────────────────────────────────────────────────────────────
 export function MateriaNode({ data, selected }: NodeProps<Node<NodeData>>) {

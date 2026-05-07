@@ -27,8 +27,8 @@ import {
   buildGraph, hasHorasData, buildAdjacency, getAncestors, getDescendants,
   transitiveReduction, STATE_STYLE, AMBER,
   type VisualEstado, type NodeData, type LayoutMode,
-} from "./graphUtils";
-import { calcularMejorCamino, type OptMode, type BestPathResult } from "./bestPath";
+} from "@/lib/mapa/graphUtils";
+import { calcularMejorCamino, type OptMode, type BestPathResult } from "@/lib/mapa/bestPath";
 import { nodeTypes, edgeTypes } from "./nodeTypes";
 import { Toolbar, type FiltroEstado } from "./Toolbar";
 import { DetailPanel } from "./panels/DetailPanel";

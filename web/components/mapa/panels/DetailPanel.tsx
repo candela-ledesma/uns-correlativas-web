@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import type { Materia } from "@/app/types/plan";
 import { GLASS, TEXT, TEXT_SEC, TEXT_DET } from "@/lib/ui/tokens";
-import { STATE_STYLE, AMBER, getStateLabel, tieneAviso, type VisualEstado } from "../graphUtils";
+import { STATE_STYLE, AMBER, getStateLabel, tieneAviso, type VisualEstado } from "@/lib/mapa/graphUtils";
 
 type Props = {
   nodeId: string;

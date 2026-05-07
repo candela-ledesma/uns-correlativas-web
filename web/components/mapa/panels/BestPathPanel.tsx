@@ -2,8 +2,8 @@
 
 import type { Materia } from "@/app/types/plan";
 import { GLASS, TEXT_SEC } from "@/lib/ui/tokens";
-import { STATE_STYLE, AMBER, getStateLabel, type VisualEstado } from "../graphUtils";
-import type { BestPathResult, OptMode } from "../bestPath";
+import { STATE_STYLE, AMBER, getStateLabel, type VisualEstado } from "@/lib/mapa/graphUtils";
+import type { BestPathResult, OptMode } from "@/lib/mapa/bestPath";
 
 type Props = {
   result: BestPathResult;
