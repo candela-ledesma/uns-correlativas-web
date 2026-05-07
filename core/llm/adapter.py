@@ -52,6 +52,19 @@ def adaptar(plan_data: dict[str, Any], *, warnings: list[str] | None = None) -> 
             "cuatrimestre": _str(agr.get("cuatrimestre")),
         })
 
+    agrupadores_por_id = {a["id"]: a for a in agrupadores if a.get("id")}
+
+    # Filtrar de materias los items que el LLM duplicó también en agrupadores
+    materias = [m for m in materias if m.get("id") not in agrupadores_por_id]
+
+    # Heredar año/cuatrimestre del agrupador para optativas sin ubicación
+    for materia in materias:
+        if materia["año"] is None and materia.get("grupo_opcion"):
+            agr = agrupadores_por_id.get(materia["grupo_opcion"])
+            if agr:
+                materia["año"] = agr.get("año")
+                materia["cuatrimestre"] = agr.get("cuatrimestre")
+
     resultado: dict[str, Any] = {
         "plan": plan,
         "materias": materias,
