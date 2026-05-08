@@ -141,7 +141,7 @@ function MapaInner({ materias, agrupadores, idsAgrupadores, estados, carreraId, 
   const storageKey = `mapaVistaGuardada:${carreraId}`;
   const [miVistaData, setMiVistaData] = useState<MiVistaData | null>(() => {
     if (typeof window === "undefined") return null;
-    localStorage.removeItem("mapaVistaGuardada"); // limpiar key legacy sin carreraId
+    localStorage.removeItem("mapaVistaGuardada");
     return loadMiVista(storageKey);
   });
   const [miVistaActiva, setMiVistaActiva] = useState(false);
