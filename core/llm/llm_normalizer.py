@@ -17,7 +17,7 @@ from .sanity_check import (
 
 logger = logging.getLogger("uns.llm")
 
-PROMPT_VERSION = "v14"
+PROMPT_VERSION = "v15"
 MODEL_DEFAULT = "gemini-2.5-flash"
 MAX_CHARS_PER_CHUNK = 200_000
 
@@ -350,6 +350,9 @@ If ALLOW_OVERWRITE = true:
 
 4b. `horas`: extract only the numeric value as a string. Strip any unit suffix.
     "64hs." → "64", "128 hs" → "128". If no hours are listed → use `""`.
+    Some subjects appear without hours between the name and the correlativas:
+    `20103 EPIDEMIOLOGIA CLINICA 8170 Aprobada Aprobada` — here "8170" is the first
+    correlativa ID, not the hours. Recognize this pattern and set horas: "".
 
 5. año: normalize to "Primer Año", "Segundo Año", "Tercer Año", "Cuarto Año", "Quinto Año", etc.
 
