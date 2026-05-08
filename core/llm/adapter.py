@@ -54,14 +54,6 @@ def adaptar(plan_data: dict[str, Any], *, warnings: list[str] | None = None) -> 
 
     agrupadores_por_id = {a["id"]: a for a in agrupadores if a.get("id")}
 
-    # Filtrar de materias los agrupadores duplicados no deseados, pero preservar
-    # agrupador_requisito e idioma que deben existir en ambos arrays
-    _TIPOS_DUALES = {"agrupador_requisito", "materia"}
-    materias = [
-        m for m in materias
-        if m.get("id") not in agrupadores_por_id or m.get("tipo") in _TIPOS_DUALES
-    ]
-
     # Heredar año/cuatrimestre del agrupador para optativas sin ubicación
     for materia in materias:
         if materia["año"] is None and materia.get("grupo_opcion"):
