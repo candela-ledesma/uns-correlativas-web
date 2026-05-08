@@ -1,7 +1,7 @@
 {
   "plan": {
     "carrera": "FARMACIA",
-    "universidad": "UNIVERSIDAD NACIONAL DEL SUR",
+    "universidad": "Universidad Nacional del Sur",
     "codigo_plan": "Plan 2025 - Versión 1"
   },
   "materias": [
@@ -149,10 +149,6 @@
       "grupo_opcion": null,
       "subtipo": null,
       "correlativas": {
-        "3089": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        },
         "8161": {
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
@@ -683,8 +679,8 @@
     {
       "id": "1049",
       "nombre": "BIOANALITICA",
-      "año": null,
-      "cuatrimestre": null,
+      "año": "Cuarto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
       "horas": "112",
       "tipo": "materia",
       "categoria": "optativa",
@@ -700,8 +696,8 @@
     {
       "id": "1203",
       "nombre": "GENETICA MOLECULAR BASICA Y APLICADA",
-      "año": null,
-      "cuatrimestre": null,
+      "año": "Cuarto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
       "horas": "112",
       "tipo": "materia",
       "categoria": "optativa",
@@ -725,8 +721,8 @@
     {
       "id": "1264",
       "nombre": "INTRODUCCION A LA FARMACIA INDUSTRIAL",
-      "año": null,
-      "cuatrimestre": null,
+      "año": "Cuarto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
       "horas": "",
       "tipo": "materia",
       "categoria": "optativa",
@@ -750,8 +746,8 @@
     {
       "id": "1285",
       "nombre": "MICROBIOLOGIA INDUSTRIAL ORIENTADA A LOS ALIMENTOS",
-      "año": null,
-      "cuatrimestre": null,
+      "año": "Cuarto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
       "horas": "32",
       "tipo": "materia",
       "categoria": "optativa",
@@ -771,8 +767,8 @@
     {
       "id": "2106",
       "nombre": "ECONOMIA DE LA EMPRESA",
-      "año": null,
-      "cuatrimestre": null,
+      "año": "Cuarto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
       "horas": "96",
       "tipo": "materia",
       "categoria": "optativa",
@@ -783,8 +779,8 @@
     {
       "id": "4525",
       "nombre": "BIOÉTICA",
-      "año": null,
-      "cuatrimestre": null,
+      "año": "Cuarto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
       "horas": "96",
       "tipo": "materia",
       "categoria": "optativa",
@@ -795,8 +791,8 @@
     {
       "id": "6023",
       "nombre": "ANALISIS ESPECTROSCOPICO DE FARMACOS",
-      "año": null,
-      "cuatrimestre": null,
+      "año": "Cuarto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
       "horas": "64",
       "tipo": "materia",
       "categoria": "optativa",
@@ -816,8 +812,8 @@
     {
       "id": "8129",
       "nombre": "ANALISIS DE REGRESION",
-      "año": null,
-      "cuatrimestre": null,
+      "año": "Cuarto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
       "horas": "50",
       "tipo": "materia",
       "categoria": "optativa",
@@ -868,11 +864,11 @@
         "6023",
         "8129"
       ],
-      "año": null,
-      "cuatrimestre": null
+      "año": "Cuarto Año",
+      "cuatrimestre": "Primer Cuatrimestre"
     }
   ],
   "_llm_confidence": 1.0,
-  "_llm_prompt_version": "v10",
+  "_llm_prompt_version": "v13",
   "_llm_mode": "llm"
 }

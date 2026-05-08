@@ -6,191 +6,77 @@
   },
   "materias": [
     {
-      "id": "5912",
-      "nombre": "ELEMENTOS DE ALGEBRA Y DE GEOMETRIA",
-      "año": "Primer Año",
+      "id": "2116",
+      "nombre": "ECONOMIA DE LA EMPRESA ISS - OPTATIVA",
+      "año": "Quinto Año",
       "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "128",
+      "horas": "",
       "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {}
-    },
-    {
-      "id": "5793",
-      "nombre": "RESOLUCION DE PROBLEMAS Y ALGORITMOS",
-      "año": "Primer Año",
-      "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "128",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {}
-    },
-    {
-      "id": "5551",
-      "nombre": "ANALISIS MATEMATICO I",
-      "año": "Primer Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "128",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {}
-    },
-    {
-      "id": "7713",
-      "nombre": "INTRODUCCION A LA PROGRAMACION ORIENTADA A OBJETOS",
-      "año": "Primer Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "128",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
+      "categoria": "optativa",
+      "grupo_opcion": "G0037",
       "subtipo": null,
       "correlativas": {
-        "5793": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        },
-        "5912": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        }
-      }
-    },
-    {
-      "id": "7791",
-      "nombre": "LENGUAJES FORMALES Y AUTOMATAS",
-      "año": "Primer Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "128",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "5793": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        },
-        "5912": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        }
-      }
-    },
-    {
-      "id": "7655",
-      "nombre": "ESTRUCTURAS DE DATOS",
-      "año": "Segundo Año",
-      "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "128",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "5551": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        },
-        "5793": {
+        "I0024": {
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
-        },
-        "7713": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
         }
+      },
+      "requisito_especial": {
+        "tipo": "minimo_materias_aprobadas",
+        "cantidad": 15,
+        "descripcion": "Para aprobar Debe tener al menos 15 materias aprobadas o 18 materias cursadas Para cursar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
       }
     },
     {
-      "id": "7949",
-      "nombre": "TEORIA DE LA COMPUTABILIDAD",
-      "año": "Segundo Año",
+      "id": "5515",
+      "nombre": "ALGEBRA DE BOOLE",
+      "año": "Quinto Año",
       "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "128",
+      "horas": "",
       "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
+      "categoria": "optativa",
+      "grupo_opcion": "G0037",
       "subtipo": null,
       "correlativas": {
         "5912": {
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         },
-        "7713": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        },
-        "7791": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        }
-      }
-    },
-    {
-      "id": "5552",
-      "nombre": "ANALISIS MATEMATICO II",
-      "año": "Segundo Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "128",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "5551": {
+        "I0024": {
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
+      },
+      "requisito_especial": {
+        "tipo": "minimo_materias_aprobadas",
+        "cantidad": 15,
+        "descripcion": "Para aprobar Debe tener al menos 15 materias aprobadas o 18 cursadas Para cursar Debe tener al menos 15 materias aprobadas o 18 cursadas"
       }
     },
     {
-      "id": "5744",
-      "nombre": "ORGANIZACION DE COMPUTADORAS",
-      "año": "Segundo Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
+      "id": "5523",
+      "nombre": "ALGORITMOS Y COMPLEJIDAD",
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
       "horas": "128",
       "tipo": "materia",
       "categoria": "normal",
       "grupo_opcion": null,
       "subtipo": null,
       "correlativas": {
-        "7655": {
+        "5704": {
           "para_cursar": "cursada",
           "para_rendir": "aprobada"
         },
-        "7713": {
+        "7810": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "7951": {
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         },
-        "7791": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        }
-      }
-    },
-    {
-      "id": "7951",
-      "nombre": "TECNOLOGIA DE PROGRAMACION",
-      "año": "Segundo Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "128",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "7655": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        },
-        "7713": {
+        "I0024": {
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
@@ -222,6 +108,61 @@
       }
     },
     {
+      "id": "5551",
+      "nombre": "ANALISIS MATEMATICO I",
+      "año": "Primer Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {}
+    },
+    {
+      "id": "5552",
+      "nombre": "ANALISIS MATEMATICO II",
+      "año": "Segundo Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5551": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "5559",
+      "nombre": "ARQUITECTURAS MODERNAS",
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G0037",
+      "subtipo": null,
+      "correlativas": {
+        "5561": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "I0024": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      },
+      "requisito_especial": {
+        "tipo": "minimo_materias_aprobadas",
+        "cantidad": 15,
+        "descripcion": "Para aprobar Debe tener al menos 15 materias aprobadas o 18 materias cursadas Para cursar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
+      }
+    },
+    {
       "id": "5561",
       "nombre": "ARQUITECTURA DE COMPUTADORAS",
       "año": "Tercer Año",
@@ -247,34 +188,9 @@
       }
     },
     {
-      "id": "5704",
-      "nombre": "LOGICA PARA CIENCIAS DE LA COMPUTACION",
-      "año": "Tercer Año",
-      "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "128",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "7949": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "7951": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        },
-        "I0024": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
-      }
-    },
-    {
-      "id": "7552",
-      "nombre": "BASES DE DATOS",
-      "año": "Tercer Año",
+      "id": "5576",
+      "nombre": "COMPILADORES E INTERPRETES",
+      "año": "Cuarto Año",
       "cuatrimestre": "Segundo Cuatrimestre",
       "horas": "128",
       "tipo": "materia",
@@ -282,95 +198,8 @@
       "grupo_opcion": null,
       "subtipo": null,
       "correlativas": {
-        "5534": {
+        "5696": {
           "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        },
-        "5704": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        },
-        "I0024": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
-      }
-    },
-    {
-      "id": "7810",
-      "nombre": "METODOS DE COMPUTACION CIENTIFICA",
-      "año": "Tercer Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "64",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "5552": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        },
-        "7655": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "7791": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "I0024": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
-      }
-    },
-    {
-      "id": "7820",
-      "nombre": "MODELOS ESTADISTICOS PARA CIENCIAS DE LA COMPUTACION",
-      "año": "Tercer Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "64",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "5551": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "5793": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "7791": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        },
-        "I0024": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
-      }
-    },
-    {
-      "id": "7925",
-      "nombre": "SISTEMAS OPERATIVOS Y DISTRIBUIDOS",
-      "año": "Tercer Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "128",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "5561": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        },
-        "5744": {
-          "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         },
         "I0024": {
@@ -391,6 +220,43 @@
       "subtipo": null,
       "correlativas": {
         "5534": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "7552": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "I0024": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "5596",
+      "nombre": "EXAMEN DE SUFICIENCIA DE IDIOMA:INGLES",
+      "año": "Segundo Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "I0024",
+      "subtipo": "idioma",
+      "correlativas": {}
+    },
+    {
+      "id": "5684",
+      "nombre": "INTELIGENCIA ARTIFICIAL",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5704": {
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         },
@@ -434,9 +300,9 @@
       }
     },
     {
-      "id": "7903",
-      "nombre": "REDES DE COMPUTADORAS",
-      "año": "Cuarto Año",
+      "id": "5704",
+      "nombre": "LOGICA PARA CIENCIAS DE LA COMPUTACION",
+      "año": "Tercer Año",
       "cuatrimestre": "Primer Cuatrimestre",
       "horas": "128",
       "tipo": "materia",
@@ -444,12 +310,86 @@
       "grupo_opcion": null,
       "subtipo": null,
       "correlativas": {
-        "7925": {
+        "7949": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "7951": {
           "para_cursar": "cursada",
           "para_rendir": "aprobada"
         },
         "I0024": {
           "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "5744",
+      "nombre": "ORGANIZACION DE COMPUTADORAS",
+      "año": "Segundo Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "7655": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "7713": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "7791": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "5793",
+      "nombre": "RESOLUCION DE PROBLEMAS Y ALGORITMOS",
+      "año": "Primer Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {}
+    },
+    {
+      "id": "5912",
+      "nombre": "ELEMENTOS DE ALGEBRA Y DE GEOMETRIA",
+      "año": "Primer Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {}
+    },
+    {
+      "id": "5979",
+      "nombre": "TESIS DE LICENCIATURA",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5696": {
+          "para_cursar": null,
+          "para_rendir": "aprobada"
+        },
+        "I0024": {
+          "para_cursar": null,
           "para_rendir": "aprobada"
         }
       }
@@ -476,42 +416,21 @@
       }
     },
     {
-      "id": "5576",
-      "nombre": "COMPILADORES E INTERPRETES",
-      "año": "Cuarto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "128",
+      "id": "7534",
+      "nombre": "AUDITORIA DE SISTEMAS",
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "64",
       "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
+      "categoria": "optativa",
+      "grupo_opcion": "G0037",
       "subtipo": null,
       "correlativas": {
-        "5696": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        },
-        "I0024": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
-      }
-    },
-    {
-      "id": "5684",
-      "nombre": "INTELIGENCIA ARTIFICIAL",
-      "año": "Cuarto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "128",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "5704": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
         "7552": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "7925": {
           "para_cursar": "cursada",
           "para_rendir": "aprobada"
         },
@@ -519,24 +438,219 @@
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
+      },
+      "requisito_especial": {
+        "tipo": "minimo_materias_aprobadas",
+        "cantidad": 15,
+        "descripcion": "Para aprobar Debe tener al menos 15 materias aprobadas o 18 cursadas Para cursar Debe tener al menos 15 materias aprobadas o 18 cursadas"
       }
     },
     {
-      "id": "5523",
-      "nombre": "ALGORITMOS Y COMPLEJIDAD",
+      "id": "7538",
+      "nombre": "SIMULACION DE EVENTOS DISCRETOS",
       "año": "Quinto Año",
       "cuatrimestre": "Primer Cuatrimestre",
       "horas": "128",
       "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G0037",
+      "subtipo": null,
+      "correlativas": {
+        "I0024": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      },
+      "requisito_especial": {
+        "tipo": "minimo_materias_aprobadas",
+        "cantidad": 15,
+        "descripcion": "Para cursar Debe tener al menos 15 materias aprobadas o 18 materias cursadas. Para aprobar Debe tener al menos 15 materias aprobadas o 18 materias cursadas."
+      }
+    },
+    {
+      "id": "7539",
+      "nombre": "OPTIMIZACION Y PLANEAMIENTO MEDIANTE INTELIGENCIA ARTIFICIAL",
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G0037",
+      "subtipo": null,
+      "correlativas": {
+        "I0024": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      },
+      "requisito_especial": {
+        "tipo": "minimo_materias_aprobadas",
+        "cantidad": 15,
+        "descripcion": "Para cursar Debe tener al menos 15 materias aprobadas o 18 materias cursadas Para aprobar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
+      }
+    },
+    {
+      "id": "7541",
+      "nombre": "DISEÑO DE VISUALIZACIONES",
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G0037",
+      "subtipo": null,
+      "correlativas": {
+        "7655": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "7820": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      },
+      "requisito_especial": {
+        "tipo": "minimo_materias_aprobadas",
+        "cantidad": 15,
+        "descripcion": "Para cursar Debe tener al menos 15 materias aprobadas o 18 materias cursadas Para aprobar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
+      }
+    },
+    {
+      "id": "7542",
+      "nombre": "ADMINISTRACION DE SISTEMAS Y GESTION DE INFRAESTRUCTURA IT",
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G0037",
+      "subtipo": null,
+      "correlativas": {
+        "7903": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "7925": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "I0024": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      },
+      "requisito_especial": {
+        "tipo": "minimo_materias_aprobadas",
+        "cantidad": 15,
+        "descripcion": "Para aprobar Debe tener al menos 15 materias aprobadas o 18 cursadas Para cursar Debe tener al menos 15 materias aprobadas o 18 cursadas."
+      }
+    },
+    {
+      "id": "7552",
+      "nombre": "BASES DE DATOS",
+      "año": "Tercer Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
       "categoria": "normal",
       "grupo_opcion": null,
       "subtipo": null,
       "correlativas": {
+        "5534": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
         "5704": {
           "para_cursar": "cursada",
           "para_rendir": "aprobada"
         },
-        "7810": {
+        "I0024": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "7565",
+      "nombre": "FUNDAMENTOS DEL ENTRETENIMIENTO DIGITAL",
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G0037",
+      "subtipo": null,
+      "correlativas": {},
+      "requisito_especial": {
+        "tipo": "minimo_materias_aprobadas",
+        "cantidad": 15,
+        "descripcion": "Para aprobar Debe tener al menos 15 materias aprobadas o 18 materias cursadas. Para cursar Debe tener al menos 15 materias aprobadas o 18 materias cursadas."
+      }
+    },
+    {
+      "id": "7598",
+      "nombre": "COMUNICACION E INTERACCION EN REDES SOCIALES",
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G0037",
+      "subtipo": null,
+      "correlativas": {
+        "I0024": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      },
+      "requisito_especial": {
+        "tipo": "minimo_materias_aprobadas",
+        "cantidad": 15,
+        "descripcion": "Para aprobar Debe tener al menos 15 materias aprobadas o 18 materias cursadas Para cursar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
+      }
+    },
+    {
+      "id": "7626",
+      "nombre": "DESARROLLO DE APLICACIONES MOVILES SENSIBLES AL CONTEXTO",
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G0037",
+      "subtipo": null,
+      "correlativas": {
+        "5596": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "7925": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "7951": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      },
+      "requisito_especial": {
+        "tipo": "minimo_materias_aprobadas",
+        "cantidad": 15,
+        "descripcion": "Para aprobar Debe tener al menos 15 materias aprobadas o 18 materias cursadas Para cursar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
+      }
+    },
+    {
+      "id": "7627",
+      "nombre": "DESARROLLO DE APLICACIONES EMPRESARIALES",
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G0037",
+      "subtipo": null,
+      "correlativas": {
+        "7552": {
           "para_cursar": "cursada",
           "para_rendir": "aprobada"
         },
@@ -548,6 +662,166 @@
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
+      },
+      "requisito_especial": {
+        "tipo": "minimo_materias_aprobadas",
+        "cantidad": 15,
+        "descripcion": "Para cursar Debe tener al menos 15 materias aprobadas o 18 materias cursadas Para aprobar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
+      }
+    },
+    {
+      "id": "7629",
+      "nombre": "DATAMINING Y APRENDIZAJE AUTOMATIZADO",
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G0037",
+      "subtipo": null,
+      "correlativas": {
+        "7552": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "I0024": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      },
+      "requisito_especial": {
+        "tipo": "minimo_materias_aprobadas",
+        "cantidad": 15,
+        "descripcion": "Para aprobar Debe tener al menos 15 materias aprobadas o 18 materias cursadas Para cursar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
+      }
+    },
+    {
+      "id": "7631",
+      "nombre": "DESARROLLO AGIL DE SOFTWARE",
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G0037",
+      "subtipo": null,
+      "correlativas": {
+        "5587": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "I0024": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      },
+      "requisito_especial": {
+        "tipo": "minimo_materias_aprobadas",
+        "cantidad": 15,
+        "descripcion": "Para cursar Debe tener al menos 15 materias aprobadas o 18 materias cursadas Para aprobar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
+      }
+    },
+    {
+      "id": "7655",
+      "nombre": "ESTRUCTURAS DE DATOS",
+      "año": "Segundo Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5551": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "5793": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "7713": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "7661",
+      "nombre": "FUNDAMENTOS DE LA WEB SEMANTICA",
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G0037",
+      "subtipo": null,
+      "correlativas": {
+        "7552": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "I0024": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      },
+      "requisito_especial": {
+        "tipo": "minimo_materias_aprobadas",
+        "cantidad": 15,
+        "descripcion": "Para cursar Debe tener al menos 15 materias aprobadas o 18 materias cursadas Para aprobar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
+      }
+    },
+    {
+      "id": "7663",
+      "nombre": "FUNDAMENTOS Y APLICACIONES DE ARGUMENTACION",
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G0037",
+      "subtipo": null,
+      "correlativas": {
+        "5704": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "I0024": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      },
+      "requisito_especial": {
+        "tipo": "minimo_materias_aprobadas",
+        "cantidad": 15,
+        "descripcion": "Para cursar Debe tener al menos 15 materias aprobadas o 18 materias cursadas Para aprobar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
+      }
+    },
+    {
+      "id": "7676",
+      "nombre": "HERRAMIENTAS DE LA INGENIERIA DE SOFTWARE",
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G0037",
+      "subtipo": null,
+      "correlativas": {
+        "7951": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "I0024": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      },
+      "requisito_especial": {
+        "tipo": "minimo_materias_aprobadas",
+        "cantidad": 15,
+        "descripcion": "Para aprobar Debe tener al menos 15 materias aprobadas o 18 materias cursadas Para cursar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
       }
     },
     {
@@ -580,469 +854,10 @@
       }
     },
     {
-      "id": "5979",
-      "nombre": "TESIS DE LICENCIATURA",
-      "año": "Quinto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "5696": {
-          "para_cursar": "aprobada",
-          "para_rendir": null
-        },
-        "I0024": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
-      },
-      "requisito_especial": {
-        "tipo": "minimo_materias_aprobadas",
-        "cantidad": 3,
-        "descripcion": "Tercer año aprobado"
-      }
-    },
-    {
-      "id": "2116",
-      "nombre": "ECONOMIA DE LA EMPRESA ISS - OPTATIVA",
-      "año": "Quinto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "",
-      "tipo": "materia",
-      "categoria": "optativa",
-      "grupo_opcion": "G0037",
-      "subtipo": null,
-      "correlativas": {
-        "I0024": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
-      },
-      "requisito_especial": {
-        "tipo": "minimo_materias_aprobadas",
-        "cantidad": 15,
-        "descripcion": "Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
-      }
-    },
-    {
-      "id": "5515",
-      "nombre": "ALGEBRA DE BOOLE",
-      "año": "Quinto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "",
-      "tipo": "materia",
-      "categoria": "optativa",
-      "grupo_opcion": "G0037",
-      "subtipo": null,
-      "correlativas": {
-        "5912": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "I0024": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
-      },
-      "requisito_especial": {
-        "tipo": "minimo_materias_aprobadas",
-        "cantidad": 15,
-        "descripcion": "Debe tener al menos 15 materias aprobadas o 18 cursadas"
-      }
-    },
-    {
-      "id": "5559",
-      "nombre": "ARQUITECTURAS MODERNAS",
-      "año": "Quinto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "",
-      "tipo": "materia",
-      "categoria": "optativa",
-      "grupo_opcion": "G0037",
-      "subtipo": null,
-      "correlativas": {
-        "5561": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        },
-        "I0024": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
-      },
-      "requisito_especial": {
-        "tipo": "minimo_materias_aprobadas",
-        "cantidad": 15,
-        "descripcion": "Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
-      }
-    },
-    {
-      "id": "7534",
-      "nombre": "AUDITORIA DE SISTEMAS",
-      "año": "Quinto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "64",
-      "tipo": "materia",
-      "categoria": "optativa",
-      "grupo_opcion": "G0037",
-      "subtipo": null,
-      "correlativas": {
-        "7552": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "7925": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        },
-        "I0024": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
-      },
-      "requisito_especial": {
-        "tipo": "minimo_materias_aprobadas",
-        "cantidad": 15,
-        "descripcion": "Debe tener al menos 15 materias aprobadas o 18 cursadas"
-      }
-    },
-    {
-      "id": "7538",
-      "nombre": "SIMULACION DE EVENTOS DISCRETOS",
-      "año": "Quinto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "128",
-      "tipo": "materia",
-      "categoria": "optativa",
-      "grupo_opcion": "G0037",
-      "subtipo": null,
-      "correlativas": {
-        "I0024": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
-      },
-      "requisito_especial": {
-        "tipo": "minimo_materias_aprobadas",
-        "cantidad": 15,
-        "descripcion": "Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
-      }
-    },
-    {
-      "id": "7539",
-      "nombre": "OPTIMIZACION Y PLANEAMIENTO MEDIANTE INTELIGENCIA ARTIFICIAL",
-      "año": "Quinto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "",
-      "tipo": "materia",
-      "categoria": "optativa",
-      "grupo_opcion": "G0037",
-      "subtipo": null,
-      "correlativas": {
-        "I0024": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
-      },
-      "requisito_especial": {
-        "tipo": "minimo_materias_aprobadas",
-        "cantidad": 15,
-        "descripcion": "Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
-      }
-    },
-    {
-      "id": "7541",
-      "nombre": "DISEÑO DE VISUALIZACIONES",
-      "año": "Quinto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "",
-      "tipo": "materia",
-      "categoria": "optativa",
-      "grupo_opcion": "G0037",
-      "subtipo": null,
-      "correlativas": {
-        "7655": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "7820": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
-      },
-      "requisito_especial": {
-        "tipo": "minimo_materias_aprobadas",
-        "cantidad": 15,
-        "descripcion": "Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
-      }
-    },
-    {
-      "id": "7542",
-      "nombre": "ADMINISTRACION DE SISTEMAS Y GESTION DE INFRAESTRUCTURA IT",
-      "año": "Quinto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "128",
-      "tipo": "materia",
-      "categoria": "optativa",
-      "grupo_opcion": "G0037",
-      "subtipo": null,
-      "correlativas": {
-        "7903": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        },
-        "7925": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "I0024": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
-      },
-      "requisito_especial": {
-        "tipo": "minimo_materias_aprobadas",
-        "cantidad": 15,
-        "descripcion": "Debe tener al menos 15 materias aprobadas o 18 cursadas"
-      }
-    },
-    {
-      "id": "7565",
-      "nombre": "FUNDAMENTOS DEL ENTRETENIMIENTO DIGITAL",
-      "año": "Quinto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "",
-      "tipo": "materia",
-      "categoria": "optativa",
-      "grupo_opcion": "G0037",
-      "subtipo": null,
-      "correlativas": {},
-      "requisito_especial": {
-        "tipo": "minimo_materias_aprobadas",
-        "cantidad": 15,
-        "descripcion": "Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
-      }
-    },
-    {
-      "id": "7598",
-      "nombre": "COMUNICACION E INTERACCION EN REDES SOCIALES",
-      "año": "Quinto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "128",
-      "tipo": "materia",
-      "categoria": "optativa",
-      "grupo_opcion": "G0037",
-      "subtipo": null,
-      "correlativas": {
-        "I0024": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
-      },
-      "requisito_especial": {
-        "tipo": "minimo_materias_aprobadas",
-        "cantidad": 15,
-        "descripcion": "Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
-      }
-    },
-    {
-      "id": "7626",
-      "nombre": "DESARROLLO DE APLICACIONES MOVILES SENSIBLES AL CONTEXTO",
-      "año": "Quinto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "128",
-      "tipo": "materia",
-      "categoria": "optativa",
-      "grupo_opcion": "G0037",
-      "subtipo": null,
-      "correlativas": {
-        "5596": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "7925": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        },
-        "7951": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
-      },
-      "requisito_especial": {
-        "tipo": "minimo_materias_aprobadas",
-        "cantidad": 15,
-        "descripcion": "Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
-      }
-    },
-    {
-      "id": "7627",
-      "nombre": "DESARROLLO DE APLICACIONES EMPRESARIALES",
-      "año": "Quinto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "",
-      "tipo": "materia",
-      "categoria": "optativa",
-      "grupo_opcion": "G0037",
-      "subtipo": null,
-      "correlativas": {
-        "7552": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        },
-        "7951": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "I0024": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
-      },
-      "requisito_especial": {
-        "tipo": "minimo_materias_aprobadas",
-        "cantidad": 15,
-        "descripcion": "Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
-      }
-    },
-    {
-      "id": "7629",
-      "nombre": "DATAMINING Y APRENDIZAJE AUTOMATIZADO",
-      "año": "Quinto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "",
-      "tipo": "materia",
-      "categoria": "optativa",
-      "grupo_opcion": "G0037",
-      "subtipo": null,
-      "correlativas": {
-        "7552": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "I0024": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
-      },
-      "requisito_especial": {
-        "tipo": "minimo_materias_aprobadas",
-        "cantidad": 15,
-        "descripcion": "Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
-      }
-    },
-    {
-      "id": "7631",
-      "nombre": "DESARROLLO AGIL DE SOFTWARE",
-      "año": "Quinto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "",
-      "tipo": "materia",
-      "categoria": "optativa",
-      "grupo_opcion": "G0037",
-      "subtipo": null,
-      "correlativas": {
-        "5587": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        },
-        "I0024": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
-      },
-      "requisito_especial": {
-        "tipo": "minimo_materias_aprobadas",
-        "cantidad": 15,
-        "descripcion": "Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
-      }
-    },
-    {
-      "id": "7661",
-      "nombre": "FUNDAMENTOS DE LA WEB SEMANTICA",
-      "año": "Quinto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "128",
-      "tipo": "materia",
-      "categoria": "optativa",
-      "grupo_opcion": "G0037",
-      "subtipo": null,
-      "correlativas": {
-        "7552": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "I0024": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
-      },
-      "requisito_especial": {
-        "tipo": "minimo_materias_aprobadas",
-        "cantidad": 15,
-        "descripcion": "Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
-      }
-    },
-    {
-      "id": "7663",
-      "nombre": "FUNDAMENTOS Y APLICACIONES DE ARGUMENTACION",
-      "año": "Quinto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "128",
-      "tipo": "materia",
-      "categoria": "optativa",
-      "grupo_opcion": "G0037",
-      "subtipo": null,
-      "correlativas": {
-        "5704": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "I0024": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
-      },
-      "requisito_especial": {
-        "tipo": "minimo_materias_aprobadas",
-        "cantidad": 15,
-        "descripcion": "Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
-      }
-    },
-    {
-      "id": "7676",
-      "nombre": "HERRAMIENTAS DE LA INGENIERIA DE SOFTWARE",
-      "año": "Quinto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "",
-      "tipo": "materia",
-      "categoria": "optativa",
-      "grupo_opcion": "G0037",
-      "subtipo": null,
-      "correlativas": {
-        "7951": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "I0024": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
-      },
-      "requisito_especial": {
-        "tipo": "minimo_materias_aprobadas",
-        "cantidad": 15,
-        "descripcion": "Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
-      }
-    },
-    {
       "id": "7682",
       "nombre": "INGENIERIA DE LA SEGURIDAD EN LA GESTION DE CALIDAD DEL SOFTWARE",
-      "año": "Qu Fifth Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
       "horas": "",
       "tipo": "materia",
       "categoria": "optativa",
@@ -1061,14 +876,14 @@
       "requisito_especial": {
         "tipo": "minimo_materias_aprobadas",
         "cantidad": 15,
-        "descripcion": "Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
+        "descripcion": "Para aprobar Debe tener al menos 15 materias aprobadas o 18 materias cursadas Para cursar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
       }
     },
     {
       "id": "7699",
       "nombre": "INTELIGENCIA ARTIFICIAL PARA JUEGOS",
       "año": "Quinto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
+      "cuatrimestre": "Primer Cuatrimestre",
       "horas": "",
       "tipo": "materia",
       "categoria": "optativa",
@@ -1087,14 +902,14 @@
       "requisito_especial": {
         "tipo": "minimo_materias_aprobadas",
         "cantidad": 15,
-        "descripcion": "Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
+        "descripcion": "Para cursar Debe tener al menos 15 materias aprobadas o 18 materias cursadas Para aprobar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
       }
     },
     {
       "id": "7702",
       "nombre": "INTERFACES E INTERACCIONES HUMANO COMPUTADORA",
       "año": "Quinto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
+      "cuatrimestre": "Primer Cuatrimestre",
       "horas": "128",
       "tipo": "materia",
       "categoria": "optativa",
@@ -1113,14 +928,14 @@
       "requisito_especial": {
         "tipo": "minimo_materias_aprobadas",
         "cantidad": 15,
-        "descripcion": "Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
+        "descripcion": "Para aprobar Debe tener al menos 15 materias aprobadas o 18 materias cursadas Para cursar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
       }
     },
     {
       "id": "7703",
       "nombre": "INTERACCION HUMANO-COMPUTADORA",
       "año": "Quinto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
+      "cuatrimestre": "Primer Cuatrimestre",
       "horas": "64",
       "tipo": "materia",
       "categoria": "optativa",
@@ -1139,14 +954,14 @@
       "requisito_especial": {
         "tipo": "minimo_materias_aprobadas",
         "cantidad": 15,
-        "descripcion": "Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
+        "descripcion": "Para aprobar Debe tener al menos 15 materias aprobadas o 18 materias cursadas Para cursar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
       }
     },
     {
       "id": "7705",
       "nombre": "INTERNET DE LAS COSAS. SENSORES, REDES Y ANALISIS VISUAL",
       "año": "Quinto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
+      "cuatrimestre": "Primer Cuatrimestre",
       "horas": "128",
       "tipo": "materia",
       "categoria": "optativa",
@@ -1165,14 +980,14 @@
       "requisito_especial": {
         "tipo": "minimo_materias_aprobadas",
         "cantidad": 15,
-        "descripcion": "Debe tener al menos 15 materias aprobadas o 18 cursadas"
+        "descripcion": "Para aprobar Debe tener al menos 15 materias aprobadas o 18 cursadas Para cursar Debe tener al menos 15 materias aprobadas o 18 cursadas"
       }
     },
     {
       "id": "7706",
       "nombre": "INTERNET DE TODO. SENSORES, REDES Y ANALISIS VISUAL",
       "año": "Quinto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
+      "cuatrimestre": "Primer Cuatrimestre",
       "horas": "",
       "tipo": "materia",
       "categoria": "optativa",
@@ -1191,14 +1006,35 @@
       "requisito_especial": {
         "tipo": "minimo_materias_aprobadas",
         "cantidad": 15,
-        "descripcion": "Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
+        "descripcion": "Para aprobar Debe tener al menos 15 materias aprobadas o 18 cursadas Para cursar Debe tener al menos 15 materias aprobadas o 18 cursadas"
+      }
+    },
+    {
+      "id": "7713",
+      "nombre": "INTRODUCCION A LA PROGRAMACION ORIENTADA A OBJETOS",
+      "año": "Primer Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5793": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "5912": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        }
       }
     },
     {
       "id": "7737",
       "nombre": "INTRODUCCION A LA COMPUTACION GRAFICA",
       "año": "Quinto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
+      "cuatrimestre": "Primer Cuatrimestre",
       "horas": "128",
       "tipo": "materia",
       "categoria": "optativa",
@@ -1225,14 +1061,64 @@
       "requisito_especial": {
         "tipo": "minimo_materias_aprobadas",
         "cantidad": 15,
-        "descripcion": "Debe tener al menos 15 materias aprobadas o 18 cursadas"
+        "descripcion": "Para aprobar Debe tener al menos 15 materias aprobadas o 18 cursadas Para cursar Debe tener al menos 15 materias aprobadas o 18 cursadas"
+      }
+    },
+    {
+      "id": "7791",
+      "nombre": "LENGUAJES FORMALES Y AUTOMATAS",
+      "año": "Primer Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5793": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "5912": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "7810",
+      "nombre": "METODOS DE COMPUTACION CIENTIFICA",
+      "año": "Tercer Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "64",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5552": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "7655": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "7791": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "I0024": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
       }
     },
     {
       "id": "7812",
       "nombre": "METODOS FORMALES EN INGENIERIA DEL SOFTWARE",
       "año": "Quinto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
+      "cuatrimestre": "Primer Cuatrimestre",
       "horas": "",
       "tipo": "materia",
       "categoria": "optativa",
@@ -1255,14 +1141,14 @@
       "requisito_especial": {
         "tipo": "minimo_materias_aprobadas",
         "cantidad": 15,
-        "descripcion": "Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
+        "descripcion": "Para cursar Debe tener al menos 15 materias aprobadas o 18 cursadas Para aprobar Debe tener al menos 15 materias aprobadas o 18 cursadas"
       }
     },
     {
       "id": "7813",
       "nombre": "METODOS FORMALES",
       "año": "Quinto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
+      "cuatrimestre": "Primer Cuatrimestre",
       "horas": "",
       "tipo": "materia",
       "categoria": "optativa",
@@ -1285,14 +1171,14 @@
       "requisito_especial": {
         "tipo": "minimo_materias_aprobadas",
         "cantidad": 15,
-        "descripcion": "Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
+        "descripcion": "Para cursar Debe tener al menos 15 materias aprobadas o 18 materias cursadas Para aprobar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
       }
     },
     {
       "id": "7815",
       "nombre": "MINERIA DE LA WEB",
       "año": "Quinto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
+      "cuatrimestre": "Primer Cuatrimestre",
       "horas": "128",
       "tipo": "materia",
       "categoria": "optativa",
@@ -1319,14 +1205,14 @@
       "requisito_especial": {
         "tipo": "minimo_materias_aprobadas",
         "cantidad": 15,
-        "descripcion": "Debe tener al menos 15 materias aprobadas o 18 cursadas"
+        "descripcion": "Para aprobar Debe tener al menos 15 materias aprobadas o 18 cursadas Para cursar Debe tener al menos 15 materias aprobadas o 18 cursadas"
       }
     },
     {
       "id": "7816",
       "nombre": "MINERIA DE TEXTO Y APRENDIZAJE AUTOMATICO",
-      "año": "Qu Fifth Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
       "horas": "128",
       "tipo": "materia",
       "categoria": "optativa",
@@ -1336,14 +1222,43 @@
       "requisito_especial": {
         "tipo": "minimo_materias_aprobadas",
         "cantidad": 15,
-        "descripcion": "Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
+        "descripcion": "Para aprobar Debe tener al menos 15 materias aprobadas o 18 materias cursadas Para cursar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
+      }
+    },
+    {
+      "id": "7820",
+      "nombre": "MODELOS ESTADISTICOS PARA CIENCIAS DE LA COMPUTACION",
+      "año": "Tercer Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "64",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5551": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "5793": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "7791": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "I0024": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
       }
     },
     {
       "id": "7830",
       "nombre": "MOVILIDAD Y UBICUIDAD EN SISTEMAS P2P",
-      "año": "Qu Fifth Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
       "horas": "",
       "tipo": "materia",
       "categoria": "optativa",
@@ -1366,14 +1281,14 @@
       "requisito_especial": {
         "tipo": "minimo_materias_aprobadas",
         "cantidad": 15,
-        "descripcion": "Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
+        "descripcion": "Para cursar Debe tener al menos 15 materias aprobadas o 18 materias cursadas Para aprobar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
       }
     },
     {
       "id": "7873",
       "nombre": "PARADIGMAS DE INTELIGENCIA COMPUTACIONAL",
-      "año": "Qu Fifth Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
       "horas": "128",
       "tipo": "materia",
       "categoria": "optativa",
@@ -1396,14 +1311,14 @@
       "requisito_especial": {
         "tipo": "minimo_materias_aprobadas",
         "cantidad": 15,
-        "descripcion": "Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
+        "descripcion": "Para aprobar Debe tener al menos 15 materias aprobadas o 18 materias cursadas Para cursar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
       }
     },
     {
       "id": "7883",
       "nombre": "PROCESAMIENTO INTELIGENTE DE FLUJOS DE DATOS EN LA WEB SOCIAL",
-      "año": "Qu Fifth Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
       "horas": "",
       "tipo": "materia",
       "categoria": "optativa",
@@ -1418,14 +1333,14 @@
       "requisito_especial": {
         "tipo": "minimo_materias_aprobadas",
         "cantidad": 15,
-        "descripcion": "Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
+        "descripcion": "Para aprobar Debe tener al menos 15 materias aprobadas o 18 materias cursadas Para cursar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
       }
     },
     {
       "id": "7885",
       "nombre": "PRACTICA PROFESIONAL SUPERVISADA",
-      "año": "Qu Fifth Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
       "horas": "",
       "tipo": "materia",
       "categoria": "optativa",
@@ -1440,14 +1355,14 @@
       "requisito_especial": {
         "tipo": "minimo_materias_aprobadas",
         "cantidad": 15,
-        "descripcion": "Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
+        "descripcion": "Para cursar Debe tener al menos 15 materias aprobadas o 18 materias cursadas Para aprobar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
       }
     },
     {
       "id": "7888",
       "nombre": "PROCESAMIENTO Y ANALISIS DE IMAGENES DIGITALES",
-      "año": "Qu Fifth Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
       "horas": "128",
       "tipo": "materia",
       "categoria": "optativa",
@@ -1470,14 +1385,14 @@
       "requisito_especial": {
         "tipo": "minimo_materias_aprobadas",
         "cantidad": 15,
-        "descripcion": "Debe tener al menos 15 materias aprobadas o 18 cursadas"
+        "descripcion": "Para aprobar Debe tener al menos 15 materias aprobadas o 18 cursadas Para cursar Debe tener al menos 15 materias aprobadas o 18 cursadas"
       }
     },
     {
       "id": "7889",
       "nombre": "PROCESOS DE DESARROLLO DE SOFTWARE",
-      "año": "Qu Fifth Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
       "horas": "",
       "tipo": "materia",
       "categoria": "optativa",
@@ -1500,14 +1415,14 @@
       "requisito_especial": {
         "tipo": "minimo_materias_aprobadas",
         "cantidad": 15,
-        "descripcion": "Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
+        "descripcion": "Para cursar Debe tener al menos 15 materias aprobadas o 18 materias cursadas Para aprobar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
       }
     },
     {
       "id": "7901",
       "nombre": "SEGURIDAD EN SISTEMAS",
-      "año": "Qu Fifth Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
       "horas": "128",
       "tipo": "materia",
       "categoria": "optativa",
@@ -1526,14 +1441,14 @@
       "requisito_especial": {
         "tipo": "minimo_materias_aprobadas",
         "cantidad": 15,
-        "descripcion": "Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
+        "descripcion": "Para aprobar Debe tener al menos 15 materias aprobadas o 18 materias cursadas Para cursar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
       }
     },
     {
       "id": "7902",
       "nombre": "PARADIGMAS DE PROGRAMACION PARALELA",
-      "año": "Qu Fifth Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
       "horas": "",
       "tipo": "materia",
       "categoria": "optativa",
@@ -1552,14 +1467,35 @@
       "requisito_especial": {
         "tipo": "minimo_materias_aprobadas",
         "cantidad": 15,
-        "descripcion": "Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
+        "descripcion": "Para cursar Debe tener al menos 15 materias aprobadas o 18 materias cursadas Para aprobar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
+      }
+    },
+    {
+      "id": "7903",
+      "nombre": "REDES DE COMPUTADORAS",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "7925": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "I0024": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
       }
     },
     {
       "id": "7905",
       "nombre": "REALIDAD VIRTUAL, AUMENTADA Y MIXTA: TEORIA Y APLICACION PRACTICA",
-      "año": "Qu Fifth Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
       "horas": "128",
       "tipo": "materia",
       "categoria": "optativa",
@@ -1574,14 +1510,14 @@
       "requisito_especial": {
         "tipo": "minimo_materias_aprobadas",
         "cantidad": 15,
-        "descripcion": "Debe tener al menos 15 materias aprobadas o 18 cursadas"
+        "descripcion": "Para cursar Debe tener al menos 15 materias aprobadas o 18 cursadas. Para aprobar Debe tener al menos 15 materias aprobadas o 18 cursadas."
       }
     },
     {
       "id": "7906",
       "nombre": "REVISION DE CREENCIAS Y DINAMICA DEL CONOCIMIENTO",
-      "año": "Qu Fifth Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
       "horas": "",
       "tipo": "materia",
       "categoria": "optativa",
@@ -1600,14 +1536,14 @@
       "requisito_especial": {
         "tipo": "minimo_materias_aprobadas",
         "cantidad": 15,
-        "descripcion": "Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
+        "descripcion": "Para aprobar debe tener al menos 15 materias aprobadas o 18 materias cursadas Para cursar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
       }
     },
     {
       "id": "7907",
       "nombre": "TECNICAS DE COMPUTACION EVOLUTIVA",
-      "año": "Qu Fifth Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
       "horas": "128",
       "tipo": "materia",
       "categoria": "optativa",
@@ -1630,14 +1566,14 @@
       "requisito_especial": {
         "tipo": "minimo_materias_aprobadas",
         "cantidad": 15,
-        "descripcion": "Debe tener al menos 15 materias aprobadas o 18 cursadas"
+        "descripcion": "Para aprobar Debe tener al menos 15 materias aprobadas o 18 cursadas Para cursar Debe tener al menos 15 materias aprobadas o 18 cursadas"
       }
     },
     {
       "id": "7921",
       "nombre": "SISTEMAS MULTIAGENTES Y APLICACIONES",
-      "año": "Qu Fifth Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
       "horas": "128",
       "tipo": "materia",
       "categoria": "optativa",
@@ -1647,14 +1583,85 @@
       "requisito_especial": {
         "tipo": "minimo_materias_aprobadas",
         "cantidad": 15,
-        "descripcion": "Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
+        "descripcion": "Para aprobar Debe tener al menos 15 materias aprobadas o 18 materias cursadas Para cursar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
+      }
+    },
+    {
+      "id": "7925",
+      "nombre": "SISTEMAS OPERATIVOS Y DISTRIBUIDOS",
+      "año": "Tercer Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5561": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "5744": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "I0024": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "7949",
+      "nombre": "TEORIA DE LA COMPUTABILIDAD",
+      "año": "Segundo Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5912": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "7713": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "7791": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "7951",
+      "nombre": "TECNOLOGIA DE PROGRAMACION",
+      "año": "Segundo Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "7655": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "7713": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
       }
     },
     {
       "id": "7952",
       "nombre": "TECNICAS AVANZADAS DE MINERIA DE TEXTO Y APRENDIZAJE AUTOMATICO",
-      "año": "Qu Fifth Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
       "horas": "128",
       "tipo": "materia",
       "categoria": "optativa",
@@ -1669,14 +1676,14 @@
       "requisito_especial": {
         "tipo": "minimo_materias_aprobadas",
         "cantidad": 15,
-        "descripcion": "Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
+        "descripcion": "Para cursar Debe tener al menos 15 materias aprobadas o 18 materias cursadas Para aprobar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
       }
     },
     {
       "id": "7958",
       "nombre": "TESTING DE SOFTWARE",
-      "año": "Qu Fifth Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
       "horas": "128",
       "tipo": "materia",
       "categoria": "optativa",
@@ -1695,14 +1702,14 @@
       "requisito_especial": {
         "tipo": "minimo_materias_aprobadas",
         "cantidad": 15,
-        "descripcion": "Debe tener al menos 15 materias aprobadas o 18 cursadas"
+        "descripcion": "Para aprobar Debe tener al menos 15 materias aprobadas o 18 cursadas Para cursar Debe tener al menos 15 materias aprobadas o 18 cursadas"
       }
     },
     {
       "id": "7967",
       "nombre": "TOPICOS AVANZADOS DE DESARROLLO WEB",
-      "año": "Qu Fifth Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
       "horas": "128",
       "tipo": "materia",
       "categoria": "optativa",
@@ -1717,14 +1724,14 @@
       "requisito_especial": {
         "tipo": "minimo_materias_aprobadas",
         "cantidad": 15,
-        "descripcion": "Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
+        "descripcion": "Para aprobar Debe tener al menos 15 materias aprobadas o 18 materias cursadas Para cursar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
       }
     },
     {
       "id": "7994",
       "nombre": "VISUALIZACION DE INFORMACION",
-      "año": "Qu Fifth Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
       "horas": "128",
       "tipo": "materia",
       "categoria": "optativa",
@@ -1743,33 +1750,11 @@
       "requisito_especial": {
         "tipo": "minimo_materias_aprobadas",
         "cantidad": 15,
-        "descripcion": "Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
+        "descripcion": "Para cursar Debe tener al menos 15 materias aprobadas o 18 materias cursadas Para aprobar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
       }
-    },
-    {
-      "id": "5596",
-      "nombre": "EXAMEN DE SUFICIENCIA DE IDIOMA:INGLES",
-      "año": "Segundo Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "",
-      "tipo": "materia",
-      "categoria": "optativa",
-      "grupo_opcion": "I0024",
-      "subtipo": "idioma",
-      "correlativas": {}
     }
   ],
   "agrupadores": [
-    {
-      "id": "I0024",
-      "nombre": "Idioma de Lic. en Ciencias de la Computación, plan 2012",
-      "tipo": "idioma_grupo",
-      "opciones": [
-        "5596"
-      ],
-      "año": "Segundo Año",
-      "cuatrimestre": "Segundo Cuatrimestre"
-    },
     {
       "id": "G0037",
       "nombre": "Optativa de Lic. en Ciencias de la Computación, plan 2012",
@@ -1875,9 +1860,19 @@
       ],
       "año": "Quinto Año",
       "cuatrimestre": "Segundo Cuatrimestre"
+    },
+    {
+      "id": "I0024",
+      "nombre": "Idioma de Lic. en Ciencias de la Computación, plan 2012",
+      "tipo": "idioma_grupo",
+      "opciones": [
+        "5596"
+      ],
+      "año": "Segundo Año",
+      "cuatrimestre": "Segundo Cuatrimestre"
     }
   ],
   "_llm_confidence": 1.0,
-  "_llm_prompt_version": "v10",
+  "_llm_prompt_version": "v13",
   "_llm_mode": "llm"
 }

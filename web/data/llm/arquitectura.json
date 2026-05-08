@@ -1,7 +1,7 @@
 {
   "plan": {
-    "carrera": "ARQUITECTURA",
-    "universidad": "UNIVERSIDAD NACIONAL DEL SUR",
+    "carrera": "Arquitectura",
+    "universidad": "Universidad Nacional del Sur",
     "codigo_plan": "Plan 2016 - Versión 2"
   },
   "materias": [
@@ -213,10 +213,6 @@
       "subtipo": null,
       "correlativas": {
         "3059": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        },
-        "5489": {
           "para_cursar": "cursada",
           "para_rendir": "aprobada"
         }
@@ -572,7 +568,7 @@
       "nombre": "ESTRUCTURAS III",
       "año": "Cuarto Año",
       "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "375",
+      "horas": "",
       "tipo": "materia",
       "categoria": "normal",
       "grupo_opcion": null,
@@ -1172,35 +1168,35 @@
       "correlativas": {
         "2405": {
           "para_cursar": "aprobada",
-          "para_rendir": null
+          "para_rendir": "aprobada"
         },
         "3752": {
           "para_cursar": "aprobada",
-          "para_rendir": null
+          "para_rendir": "aprobada"
         },
         "3821": {
           "para_cursar": "aprobada",
-          "para_rendir": null
+          "para_rendir": "aprobada"
         },
         "3944": {
           "para_cursar": "aprobada",
-          "para_rendir": null
+          "para_rendir": "aprobada"
         },
         "5077": {
           "para_cursar": "aprobada",
-          "para_rendir": null
+          "para_rendir": "aprobada"
         },
         "5206": {
           "para_cursar": "aprobada",
-          "para_rendir": null
+          "para_rendir": "aprobada"
         },
         "5288": {
           "para_cursar": "aprobada",
-          "para_rendir": null
+          "para_rendir": "aprobada"
         },
         "I2201": {
           "para_cursar": "aprobada",
-          "para_rendir": null
+          "para_rendir": "aprobada"
         }
       }
     },
@@ -1272,26 +1268,59 @@
       "requisito_especial": {
         "tipo": "minimo_materias_aprobadas",
         "cantidad": 35,
-        "descripcion": "Debe tener 35 materias del plan aprobadas"
+        "descripcion": "Para aprobar Debe tener 35 materias del plan aprobadas"
       }
     },
     {
-      "id": "4804",
-      "nombre": "SUFICIENCIA DE IDIOMA INGLES ARQ",
-      "año": "Tercer Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "",
+      "id": "858",
+      "nombre": "AMBIENTE E INTERPRETACION DEL PAISAJE ARQ",
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "60",
       "tipo": "materia",
       "categoria": "optativa",
-      "grupo_opcion": "I2201",
-      "subtipo": "idioma",
-      "correlativas": {}
+      "grupo_opcion": "G2324",
+      "subtipo": null,
+      "correlativas": {
+        "2405": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "3752": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "3821": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "3944": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "5077": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "5206": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "5288": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "I2201": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
     },
     {
       "id": "2146",
       "nombre": "ECONOMIA DEL ARTE Y LA CULTURA",
       "año": "Quinto Año",
-      "cuatrimestre": null,
+      "cuatrimestre": "Primer Cuatrimestre",
       "horas": "64",
       "tipo": "materia",
       "categoria": "optativa",
@@ -1336,7 +1365,7 @@
       "id": "2371",
       "nombre": "SEMINARIO DE INNOVACION, CREATIVIDAD Y EMPRENDEDORISMO",
       "año": "Quinto Año",
-      "cuatrimestre": null,
+      "cuatrimestre": "Primer Cuatrimestre",
       "horas": "64",
       "tipo": "materia",
       "categoria": "optativa",
@@ -1381,7 +1410,7 @@
       "id": "2710",
       "nombre": "FUENTES ALTERNATIVAS DE ENERGIA",
       "año": "Quinto Año",
-      "cuatrimestre": null,
+      "cuatrimestre": "Primer Cuatrimestre",
       "horas": "96",
       "tipo": "materia",
       "categoria": "optativa",
@@ -1426,7 +1455,7 @@
       "id": "3521",
       "nombre": "BIOGEOGRAFIA CULTURAL",
       "año": "Quinto Año",
-      "cuatrimestre": null,
+      "cuatrimestre": "Primer Cuatrimestre",
       "horas": "96",
       "tipo": "materia",
       "categoria": "optativa",
@@ -1471,7 +1500,7 @@
       "id": "3543",
       "nombre": "CARTOGRAFIA APLICADA",
       "año": "Quinto Año",
-      "cuatrimestre": null,
+      "cuatrimestre": "Primer Cuatrimestre",
       "horas": "96",
       "tipo": "materia",
       "categoria": "optativa",
@@ -1516,7 +1545,7 @@
       "id": "3659",
       "nombre": "GEOGRAFIA URBANA",
       "año": "Quinto Año",
-      "cuatrimestre": null,
+      "cuatrimestre": "Primer Cuatrimestre",
       "horas": "96",
       "tipo": "materia",
       "categoria": "optativa",
@@ -1561,7 +1590,7 @@
       "id": "3724",
       "nombre": "GESTION DEL PATRIMONIO URBANO",
       "año": "Quinto Año",
-      "cuatrimestre": null,
+      "cuatrimestre": "Primer Cuatrimestre",
       "horas": "96",
       "tipo": "materia",
       "categoria": "optativa",
@@ -1606,7 +1635,7 @@
       "id": "3785",
       "nombre": "LA INTERVENCION ARQUITECTONICA EN CONTEXTOS PATRIMONIALES",
       "año": "Quinto Año",
-      "cuatrimestre": null,
+      "cuatrimestre": "Primer Cuatrimestre",
       "horas": "",
       "tipo": "materia",
       "categoria": "optativa",
@@ -1651,7 +1680,7 @@
       "id": "3841",
       "nombre": "OPTATIVA ELECTIVA GR1",
       "año": "Quinto Año",
-      "cuatrimestre": null,
+      "cuatrimestre": "Primer Cuatrimestre",
       "horas": "",
       "tipo": "materia",
       "categoria": "optativa",
@@ -1696,7 +1725,7 @@
       "id": "3892",
       "nombre": "PERCEPCION Y VALORACION SOCIAL DEL PAISAJE",
       "año": "Quinto Año",
-      "cuatrimestre": null,
+      "cuatrimestre": "Primer Cuatrimestre",
       "horas": "64",
       "tipo": "materia",
       "categoria": "optativa",
@@ -1737,7 +1766,7 @@
       "id": "3903",
       "nombre": "SEMINARIO: GESTION DE RECURSOS NATURALES Y MEDIO AMBIENTE",
       "año": "Quinto Año",
-      "cuatrimestre": null,
+      "cuatrimestre": "Primer Cuatrimestre",
       "horas": "64",
       "tipo": "materia",
       "categoria": "optativa",
@@ -1782,7 +1811,7 @@
       "id": "3959",
       "nombre": "TELEDETECCION Y SIG",
       "año": "Quinto Año",
-      "cuatrimestre": null,
+      "cuatrimestre": "Primer Cuatrimestre",
       "horas": "96",
       "tipo": "materia",
       "categoria": "optativa",
@@ -1824,62 +1853,19 @@
       }
     },
     {
-      "id": "858",
-      "nombre": "AMBIENTE E INTERPRETACION DEL PAISAJE ARQ",
-      "año": "Quinto Año",
-      "cuatrimestre": null,
-      "horas": "60",
+      "id": "4804",
+      "nombre": "SUFICIENCIA DE IDIOMA INGLES ARQ",
+      "año": "Tercer Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
       "tipo": "materia",
       "categoria": "optativa",
-      "grupo_opcion": "G2324",
-      "subtipo": null,
-      "correlativas": {
-        "2405": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "3752": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "3821": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "3944": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "5077": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "5206": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "5288": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "I2201": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
-      }
+      "grupo_opcion": "I2201",
+      "subtipo": "idioma",
+      "correlativas": {}
     }
   ],
   "agrupadores": [
-    {
-      "id": "I2201",
-      "nombre": "Idioma de Arquitectura, plan 2016 v2",
-      "tipo": "idioma_grupo",
-      "opciones": [
-        "4804"
-      ],
-      "año": "Tercer Año",
-      "cuatrimestre": "Segundo Cuatrimestre"
-    },
     {
       "id": "G2324",
       "nombre": "Optativa de Arquitectura, Plan 2016",
@@ -1900,10 +1886,20 @@
         "858"
       ],
       "año": "Quinto Año",
-      "cuatrimestre": null
+      "cuatrimestre": "Primer Cuatrimestre"
+    },
+    {
+      "id": "I2201",
+      "nombre": "Idioma de Arquitectura, plan 2016 v2",
+      "tipo": "idioma_grupo",
+      "opciones": [
+        "4804"
+      ],
+      "año": "Tercer Año",
+      "cuatrimestre": "Segundo Cuatrimestre"
     }
   ],
   "_llm_confidence": 1.0,
-  "_llm_prompt_version": "v10",
+  "_llm_prompt_version": "v13",
   "_llm_mode": "llm"
 }
