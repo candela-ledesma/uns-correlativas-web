@@ -65,12 +65,27 @@ NO: `PDF → LLM → adapter → parser → fixups`
 
 ## Estado actual (mayo 2026)
 
-- **Modelo principal**: `gemini-2.5-flash` (prompt v8, temperatura 0)
+- **Modelo principal**: `gemini-2.5-flash` (prompt v13, temperatura 0)
 - **Modelos alternativos probados**: `gemma-4-31b-it`, `gemini-2.5-flash-lite`, `gemma-4-26b-a4b-it`
 - **JSONs LLM generados**: 8/8 carreras en `web/data/llm/`
-- **Score promedio vs ground truth**: 93.4/100
-- **Problema sistemático conocido**: año/cuatrimestre de optativas cuando el agrupador no tiene año explícito en el PDF (afecta principalmente abogacia y lic_computacion)
+- **Score promedio vs ground truth**: 95.5/100
 - **Script de evaluación**: `python -m scripts.comparar_json <ref.json> <candidato.json>`
+- **Flag CLI**: `--model <nombre>` para cambiar modelo sin tocar código
+
+### Scores por carrera (v13)
+| Carrera | Score |
+|---|---|
+| agrimensura | 100.0 |
+| contador_publico | 100.0 |
+| arquitectura | 98.4 |
+| lic_computacion | 98.1 |
+| farmacia | 93.6 |
+| ing_civil | 92.7 |
+| bioquimica | 91.1 |
+| abogacia | 89.9 |
+
+### Problema pendiente conocido
+`agrupador_requisito` (G####) e `idioma` (I####) que el modelo pone en `agrupadores[]` pero omite en `materias[]`, a pesar de ser requeridos ahí. Afecta ing_civil (6 agrupadores de orientación) y bioquimica (G0654, I0654). El modelo aplica la regla "no duplicar" incorrectamente en estos casos. Las correlativas y nombres están correctos en todas las carreras.
 
 ## Prioridad actual
 

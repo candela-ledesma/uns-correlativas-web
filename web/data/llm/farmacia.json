@@ -1,7 +1,7 @@
 {
   "plan": {
     "carrera": "FARMACIA",
-    "universidad": "Universidad Nacional del Sur",
+    "universidad": "UNIVERSIDAD NACIONAL DEL SUR",
     "codigo_plan": "Plan 2025 - Versión 1"
   },
   "materias": [
@@ -149,6 +149,10 @@
       "grupo_opcion": null,
       "subtipo": null,
       "correlativas": {
+        "3089": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
         "8161": {
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
@@ -345,6 +349,18 @@
       }
     },
     {
+      "id": "I0902",
+      "nombre": "Idioma de Farmacia, plan 2025",
+      "año": "Tercer Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": "idioma",
+      "correlativas": {}
+    },
+    {
       "id": "1126",
       "nombre": "FARMACOGNOSIA Y FITOTERAPIA",
       "año": "Cuarto Año",
@@ -422,6 +438,18 @@
           "para_rendir": "aprobada"
         }
       }
+    },
+    {
+      "id": "G0903",
+      "nombre": "Optativa de Farmacia Plan 2025",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "",
+      "tipo": "agrupador_requisito",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {}
     },
     {
       "id": "6018",
@@ -723,7 +751,7 @@
       "nombre": "INTRODUCCION A LA FARMACIA INDUSTRIAL",
       "año": "Cuarto Año",
       "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "",
+      "horas": "112",
       "tipo": "materia",
       "categoria": "optativa",
       "grupo_opcion": "G0903",
@@ -829,8 +857,8 @@
     {
       "id": "4578",
       "nombre": "EXAMEN DE SUFICIENCIA DE IDIOMA INGLES",
-      "año": "Tercer Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
       "horas": "",
       "tipo": "materia",
       "categoria": "optativa",
@@ -869,6 +897,6 @@
     }
   ],
   "_llm_confidence": 1.0,
-  "_llm_prompt_version": "v13",
+  "_llm_prompt_version": "v14",
   "_llm_mode": "llm"
 }

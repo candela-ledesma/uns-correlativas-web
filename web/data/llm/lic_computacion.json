@@ -6,6 +6,630 @@
   },
   "materias": [
     {
+      "id": "5912",
+      "nombre": "ELEMENTOS DE ALGEBRA Y DE GEOMETRIA",
+      "año": "Primer Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {}
+    },
+    {
+      "id": "5793",
+      "nombre": "RESOLUCION DE PROBLEMAS Y ALGORITMOS",
+      "año": "Primer Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {}
+    },
+    {
+      "id": "5551",
+      "nombre": "ANALISIS MATEMATICO I",
+      "año": "Primer Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {}
+    },
+    {
+      "id": "7713",
+      "nombre": "INTRODUCCION A LA PROGRAMACION ORIENTADA A OBJETOS",
+      "año": "Primer Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5793": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "5912": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "7791",
+      "nombre": "LENGUAJES FORMALES Y AUTOMATAS",
+      "año": "Primer Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5793": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "5912": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "7655",
+      "nombre": "ESTRUCTURAS DE DATOS",
+      "año": "Segundo Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5551": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "5793": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "7713": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "7949",
+      "nombre": "TEORIA DE LA COMPUTABILIDAD",
+      "año": "Segundo Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5912": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "7713": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "7791": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "5552",
+      "nombre": "ANALISIS MATEMATICO II",
+      "año": "Segundo Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5551": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "5744",
+      "nombre": "ORGANIZACION DE COMPUTADORAS",
+      "año": "Segundo Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "7655": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "7713": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "7791": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "7951",
+      "nombre": "TECNOLOGIA DE PROGRAMACION",
+      "año": "Segundo Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "7655": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "7713": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "5534",
+      "nombre": "ANALISIS Y DISEÑO DE SISTEMAS",
+      "año": "Tercer Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "7655": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "7951": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "I0024": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "5561",
+      "nombre": "ARQUITECTURA DE COMPUTADORAS",
+      "año": "Tercer Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5744": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "7791": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "I0024": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "5704",
+      "nombre": "LOGICA PARA CIENCIAS DE LA COMPUTACION",
+      "año": "Tercer Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "7949": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "7951": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "I0024": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "7552",
+      "nombre": "BASES DE DATOS",
+      "año": "Tercer Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5534": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "5704": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "I0024": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "7810",
+      "nombre": "METODOS DE COMPUTACION CIENTIFICA",
+      "año": "Tercer Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "64",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5552": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "7655": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "7791": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "I0024": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "7820",
+      "nombre": "MODELOS ESTADISTICOS PARA CIENCIAS DE LA COMPUTACION",
+      "año": "Tercer Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "64",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5551": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "5793": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "7791": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "I0024": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "7925",
+      "nombre": "SISTEMAS OPERATIVOS Y DISTRIBUIDOS",
+      "año": "Tercer Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5561": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "5744": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "I0024": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "5587",
+      "nombre": "DISEÑO Y DESARROLLO DE SOFTWARE",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5534": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "7552": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "I0024": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "5696",
+      "nombre": "LENGUAJES DE PROGRAMACION",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5704": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "7552": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "7925": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "I0024": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "7903",
+      "nombre": "REDES DE COMPUTADORAS",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "7925": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "I0024": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "7502",
+      "nombre": "ADMINISTRACION DE PROYECTOS DE SOFTWARE",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5587": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "I0024": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "5576",
+      "nombre": "COMPILADORES E INTERPRETES",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5696": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "I0024": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "5684",
+      "nombre": "INTELIGENCIA ARTIFICIAL",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5704": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "7552": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "I0024": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "5523",
+      "nombre": "ALGORITMOS Y COMPLEJIDAD",
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5704": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "7810": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "7951": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "I0024": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "7680",
+      "nombre": "INGENIERIA DE APLICACIONES DE WEB",
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5587": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "7552": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "7903": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "I0024": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "G0037",
+      "nombre": "Optativa de Lic. en Ciencias de la Computación, plan 2012",
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "",
+      "tipo": "agrupador_requisito",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {}
+    },
+    {
+      "id": "G0038",
+      "nombre": "Optativa de Lic. en Ciencias de la Computación, plan 2012",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "agrupador_requisito",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {}
+    },
+    {
+      "id": "5979",
+      "nombre": "TESIS DE LICENCIATURA",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5696": {
+          "para_cursar": "aprobada",
+          "para_rendir": null
+        },
+        "I0024": {
+          "para_cursar": "aprobada",
+          "para_rendir": null
+        }
+      },
+      "requisito_especial": {
+        "tipo": "minimo_materias_aprobadas",
+        "cantidad": 3,
+        "descripcion": "Para aprobar Se requiere tener tercer año aprobado"
+      }
+    },
+    {
       "id": "2116",
       "nombre": "ECONOMIA DE LA EMPRESA ISS - OPTATIVA",
       "año": "Quinto Año",
@@ -50,90 +674,7 @@
       "requisito_especial": {
         "tipo": "minimo_materias_aprobadas",
         "cantidad": 15,
-        "descripcion": "Para aprobar Debe tener al menos 15 materias aprobadas o 18 cursadas Para cursar Debe tener al menos 15 materias aprobadas o 18 cursadas"
-      }
-    },
-    {
-      "id": "5523",
-      "nombre": "ALGORITMOS Y COMPLEJIDAD",
-      "año": "Quinto Año",
-      "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "128",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "5704": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        },
-        "7810": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        },
-        "7951": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "I0024": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
-      }
-    },
-    {
-      "id": "5534",
-      "nombre": "ANALISIS Y DISEÑO DE SISTEMAS",
-      "año": "Tercer Año",
-      "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "128",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "7655": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "7951": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        },
-        "I0024": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
-      }
-    },
-    {
-      "id": "5551",
-      "nombre": "ANALISIS MATEMATICO I",
-      "año": "Primer Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "128",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {}
-    },
-    {
-      "id": "5552",
-      "nombre": "ANALISIS MATEMATICO II",
-      "año": "Segundo Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "128",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "5551": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
+        "descripcion": "Debe tener al menos 15 materias aprobadas o 18 cursadas Para cursar Debe tener al menos 15 materias aprobadas o 18 cursadas"
       }
     },
     {
@@ -159,260 +700,7 @@
       "requisito_especial": {
         "tipo": "minimo_materias_aprobadas",
         "cantidad": 15,
-        "descripcion": "Para aprobar Debe tener al menos 15 materias aprobadas o 18 materias cursadas Para cursar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
-      }
-    },
-    {
-      "id": "5561",
-      "nombre": "ARQUITECTURA DE COMPUTADORAS",
-      "año": "Tercer Año",
-      "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "128",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "5744": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        },
-        "7791": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "I0024": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
-      }
-    },
-    {
-      "id": "5576",
-      "nombre": "COMPILADORES E INTERPRETES",
-      "año": "Cuarto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "128",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "5696": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        },
-        "I0024": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
-      }
-    },
-    {
-      "id": "5587",
-      "nombre": "DISEÑO Y DESARROLLO DE SOFTWARE",
-      "año": "Cuarto Año",
-      "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "128",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "5534": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "7552": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        },
-        "I0024": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
-      }
-    },
-    {
-      "id": "5596",
-      "nombre": "EXAMEN DE SUFICIENCIA DE IDIOMA:INGLES",
-      "año": "Segundo Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "",
-      "tipo": "materia",
-      "categoria": "optativa",
-      "grupo_opcion": "I0024",
-      "subtipo": "idioma",
-      "correlativas": {}
-    },
-    {
-      "id": "5684",
-      "nombre": "INTELIGENCIA ARTIFICIAL",
-      "año": "Cuarto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "128",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "5704": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "7552": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        },
-        "I0024": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
-      }
-    },
-    {
-      "id": "5696",
-      "nombre": "LENGUAJES DE PROGRAMACION",
-      "año": "Cuarto Año",
-      "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "128",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "5704": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "7552": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        },
-        "7925": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        },
-        "I0024": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
-      }
-    },
-    {
-      "id": "5704",
-      "nombre": "LOGICA PARA CIENCIAS DE LA COMPUTACION",
-      "año": "Tercer Año",
-      "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "128",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "7949": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "7951": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        },
-        "I0024": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
-      }
-    },
-    {
-      "id": "5744",
-      "nombre": "ORGANIZACION DE COMPUTADORAS",
-      "año": "Segundo Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "128",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "7655": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        },
-        "7713": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "7791": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        }
-      }
-    },
-    {
-      "id": "5793",
-      "nombre": "RESOLUCION DE PROBLEMAS Y ALGORITMOS",
-      "año": "Primer Año",
-      "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "128",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {}
-    },
-    {
-      "id": "5912",
-      "nombre": "ELEMENTOS DE ALGEBRA Y DE GEOMETRIA",
-      "año": "Primer Año",
-      "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "128",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {}
-    },
-    {
-      "id": "5979",
-      "nombre": "TESIS DE LICENCIATURA",
-      "año": "Quinto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "5696": {
-          "para_cursar": null,
-          "para_rendir": "aprobada"
-        },
-        "I0024": {
-          "para_cursar": null,
-          "para_rendir": "aprobada"
-        }
-      }
-    },
-    {
-      "id": "7502",
-      "nombre": "ADMINISTRACION DE PROYECTOS DE SOFTWARE",
-      "año": "Cuarto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "128",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "5587": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        },
-        "I0024": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
+        "descripcion": "Debe tener al menos 15 materias aprobadas o 18 materias cursadas Para cursar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
       }
     },
     {
@@ -442,7 +730,7 @@
       "requisito_especial": {
         "tipo": "minimo_materias_aprobadas",
         "cantidad": 15,
-        "descripcion": "Para aprobar Debe tener al menos 15 materias aprobadas o 18 cursadas Para cursar Debe tener al menos 15 materias aprobadas o 18 cursadas"
+        "descripcion": "Debe tener al menos 15 materias aprobadas o 18 cursadas Para cursar Debe tener al menos 15 materias aprobadas o 18 cursadas"
       }
     },
     {
@@ -543,31 +831,6 @@
         "tipo": "minimo_materias_aprobadas",
         "cantidad": 15,
         "descripcion": "Para aprobar Debe tener al menos 15 materias aprobadas o 18 cursadas Para cursar Debe tener al menos 15 materias aprobadas o 18 cursadas."
-      }
-    },
-    {
-      "id": "7552",
-      "nombre": "BASES DE DATOS",
-      "año": "Tercer Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "128",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "5534": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        },
-        "5704": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        },
-        "I0024": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
       }
     },
     {
@@ -722,31 +985,6 @@
       }
     },
     {
-      "id": "7655",
-      "nombre": "ESTRUCTURAS DE DATOS",
-      "año": "Segundo Año",
-      "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "128",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "5551": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        },
-        "5793": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "7713": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        }
-      }
-    },
-    {
       "id": "7661",
       "nombre": "FUNDAMENTOS DE LA WEB SEMANTICA",
       "año": "Quinto Año",
@@ -822,35 +1060,6 @@
         "tipo": "minimo_materias_aprobadas",
         "cantidad": 15,
         "descripcion": "Para aprobar Debe tener al menos 15 materias aprobadas o 18 materias cursadas Para cursar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
-      }
-    },
-    {
-      "id": "7680",
-      "nombre": "INGENIERIA DE APLICACIONES DE WEB",
-      "año": "Quinto Año",
-      "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "128",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "5587": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        },
-        "7552": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "7903": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        },
-        "I0024": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
       }
     },
     {
@@ -1010,27 +1219,6 @@
       }
     },
     {
-      "id": "7713",
-      "nombre": "INTRODUCCION A LA PROGRAMACION ORIENTADA A OBJETOS",
-      "año": "Primer Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "128",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "5793": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        },
-        "5912": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        }
-      }
-    },
-    {
       "id": "7737",
       "nombre": "INTRODUCCION A LA COMPUTACION GRAFICA",
       "año": "Quinto Año",
@@ -1062,56 +1250,6 @@
         "tipo": "minimo_materias_aprobadas",
         "cantidad": 15,
         "descripcion": "Para aprobar Debe tener al menos 15 materias aprobadas o 18 cursadas Para cursar Debe tener al menos 15 materias aprobadas o 18 cursadas"
-      }
-    },
-    {
-      "id": "7791",
-      "nombre": "LENGUAJES FORMALES Y AUTOMATAS",
-      "año": "Primer Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "128",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "5793": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        },
-        "5912": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        }
-      }
-    },
-    {
-      "id": "7810",
-      "nombre": "METODOS DE COMPUTACION CIENTIFICA",
-      "año": "Tercer Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "64",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "5552": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        },
-        "7655": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "7791": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "I0024": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
       }
     },
     {
@@ -1223,35 +1361,6 @@
         "tipo": "minimo_materias_aprobadas",
         "cantidad": 15,
         "descripcion": "Para aprobar Debe tener al menos 15 materias aprobadas o 18 materias cursadas Para cursar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
-      }
-    },
-    {
-      "id": "7820",
-      "nombre": "MODELOS ESTADISTICOS PARA CIENCIAS DE LA COMPUTACION",
-      "año": "Tercer Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "64",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "5551": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "5793": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "7791": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        },
-        "I0024": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
       }
     },
     {
@@ -1471,27 +1580,6 @@
       }
     },
     {
-      "id": "7903",
-      "nombre": "REDES DE COMPUTADORAS",
-      "año": "Cuarto Año",
-      "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "128",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "7925": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        },
-        "I0024": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
-      }
-    },
-    {
       "id": "7905",
       "nombre": "REALIDAD VIRTUAL, AUMENTADA Y MIXTA: TEORIA Y APLICACION PRACTICA",
       "año": "Quinto Año",
@@ -1584,77 +1672,6 @@
         "tipo": "minimo_materias_aprobadas",
         "cantidad": 15,
         "descripcion": "Para aprobar Debe tener al menos 15 materias aprobadas o 18 materias cursadas Para cursar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
-      }
-    },
-    {
-      "id": "7925",
-      "nombre": "SISTEMAS OPERATIVOS Y DISTRIBUIDOS",
-      "año": "Tercer Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "128",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "5561": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        },
-        "5744": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "I0024": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
-      }
-    },
-    {
-      "id": "7949",
-      "nombre": "TEORIA DE LA COMPUTABILIDAD",
-      "año": "Segundo Año",
-      "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "128",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "5912": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "7713": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        },
-        "7791": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        }
-      }
-    },
-    {
-      "id": "7951",
-      "nombre": "TECNOLOGIA DE PROGRAMACION",
-      "año": "Segundo Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "128",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "7655": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        },
-        "7713": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
       }
     },
     {
@@ -1752,9 +1769,55 @@
         "cantidad": 15,
         "descripcion": "Para cursar Debe tener al menos 15 materias aprobadas o 18 materias cursadas Para aprobar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
       }
+    },
+    {
+      "id": "8013",
+      "nombre": "OPTATIVA CO (ELECTIVA)",
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G0037",
+      "subtipo": null,
+      "correlativas": {}
+    },
+    {
+      "id": "I0024",
+      "nombre": "Idioma de Lic. en Ciencias de la Computación, plan 2012",
+      "año": "Segundo Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": "idioma",
+      "correlativas": {}
+    },
+    {
+      "id": "5596",
+      "nombre": "EXAMEN DE SUFICIENCIA DE IDIOMA:INGLES",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "I0024",
+      "subtipo": "idioma",
+      "correlativas": {}
     }
   ],
   "agrupadores": [
+    {
+      "id": "I0024",
+      "nombre": "Idioma de Lic. en Ciencias de la Computación, plan 2012",
+      "tipo": "idioma_grupo",
+      "opciones": [
+        "5596"
+      ],
+      "año": "Segundo Año",
+      "cuatrimestre": "Segundo Cuatrimestre"
+    },
     {
       "id": "G0037",
       "nombre": "Optativa de Lic. en Ciencias de la Computación, plan 2012",
@@ -1803,7 +1866,8 @@
         "7952",
         "7958",
         "7967",
-        "7994"
+        "7994",
+        "8013"
       ],
       "año": "Quinto Año",
       "cuatrimestre": "Primer Cuatrimestre"
@@ -1856,23 +1920,14 @@
         "7952",
         "7958",
         "7967",
-        "7994"
+        "7994",
+        "8013"
       ],
       "año": "Quinto Año",
-      "cuatrimestre": "Segundo Cuatrimestre"
-    },
-    {
-      "id": "I0024",
-      "nombre": "Idioma de Lic. en Ciencias de la Computación, plan 2012",
-      "tipo": "idioma_grupo",
-      "opciones": [
-        "5596"
-      ],
-      "año": "Segundo Año",
       "cuatrimestre": "Segundo Cuatrimestre"
     }
   ],
   "_llm_confidence": 1.0,
-  "_llm_prompt_version": "v13",
+  "_llm_prompt_version": "v14",
   "_llm_mode": "llm"
 }
