@@ -17,7 +17,7 @@ from .sanity_check import (
 
 logger = logging.getLogger("uns.llm")
 
-PROMPT_VERSION = "v13"
+PROMPT_VERSION = "v14"
 MODEL_DEFAULT = "gemini-2.5-flash"
 MAX_CHARS_PER_CHUNK = 200_000
 
@@ -361,13 +361,16 @@ If ALLOW_OVERWRITE = true:
 
 9. Set `categoria: "optativa"` and `grupo_opcion: <agrupador_id>` for every elective subject.
 
-10. NEVER duplicate a subject. Each subject ID must appear exactly ONCE in the `materias` array,
-    even if it is listed under multiple agrupadores in the source text. The agrupador's `opciones`
-    field already records the membership — do not repeat the materia object.
-    EXCEPTION: `agrupador_requisito` entries (G#### in POSITION A) and `idioma` materia entries
-    (I#### nodes) MUST appear in `materias[]` even though they also appear in `agrupadores[]`.
-    These are dual-purpose nodes: the agrupador entry defines the pool, the materia entry is the
-    year-slot requirement. If the same G#### or I#### appears in POSITION A, it MUST be in materias.
+10. NEVER duplicate a regular subject. Each numeric subject ID must appear exactly ONCE in the
+    `materias` array, even if listed under multiple agrupadores. The agrupador's `opciones` field
+    already records membership — do not repeat the materia object.
+
+11. G#### and I#### IDs follow different rules — they appear in BOTH arrays:
+    - Always add them to `agrupadores[]` (defining the pool or language group).
+    - ALSO add them to `materias[]` whenever they appear in POSITION A (inside the year/semester
+      plan, not just in the MATERIAS OPTATIVAS section). Rule 10 does NOT apply to G#### and I####.
+    - A G#### or I#### node in `materias[]` has tipo="agrupador_requisito" (for G) or
+      tipo="materia", subtipo="idioma" (for I). These are required — do not omit them.
 
 ---
 
