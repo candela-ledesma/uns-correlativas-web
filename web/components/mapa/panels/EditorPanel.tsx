@@ -310,6 +310,16 @@ export function EditorPanel({
                   reglamentoUrl={reglamentoUrl}
                   onClose={() => setSelectedNodeId(null)} onVerEnPlan={onVerEnPlan}
                 />
+                <button
+                  onClick={() => quitarMateria(selectedNodeId)}
+                  style={{
+                    marginTop: 6, width: "100%", fontSize: 11, fontWeight: 600,
+                    padding: "5px 12px", borderRadius: 7, cursor: "pointer",
+                    background: "rgba(239,68,68,0.12)", border: "1px solid rgba(239,68,68,0.35)",
+                    color: "#f87171",
+                  }}>
+                  Quitar de Mi vista
+                </button>
               </Panel>
             )}
           </ReactFlow>

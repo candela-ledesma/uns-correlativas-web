@@ -43,6 +43,7 @@ type Props = {
   agrupadores: Agrupador[];
   idsAgrupadores: Set<string>;
   estados: Record<string, EstadoMateria>;
+  carreraId: string;
   reglamentoUrl?: string | null;
   onVerEnPlan?: (materiaId: string) => void;
 };
@@ -123,7 +124,7 @@ function CaminoStyleInjector({
 }
 
 // ── MapaInner ─────────────────────────────────────────────────────────────────
-function MapaInner({ materias, agrupadores, idsAgrupadores, estados, reglamentoUrl, onVerEnPlan }: Props) {
+function MapaInner({ materias, agrupadores, idsAgrupadores, estados, carreraId, reglamentoUrl, onVerEnPlan }: Props) {
   const { fitView, getNodes, getNode, flowToScreenPosition } = useReactFlow();
 
   const [selectedOrientacion, setSelectedOrientacion] = useState("todas");
@@ -137,10 +138,12 @@ function MapaInner({ materias, agrupadores, idsAgrupadores, estados, reglamentoU
 
   const [customPositions, setCustomPositions] = useState<Map<string, { x: number; y: number }>>(new Map());
 
-  const storageKey = "mapaVistaGuardada";
-  const [miVistaData, setMiVistaData] = useState<MiVistaData | null>(() =>
-    typeof window !== "undefined" ? loadMiVista(storageKey) : null,
-  );
+  const storageKey = `mapaVistaGuardada:${carreraId}`;
+  const [miVistaData, setMiVistaData] = useState<MiVistaData | null>(() => {
+    if (typeof window === "undefined") return null;
+    localStorage.removeItem("mapaVistaGuardada"); // limpiar key legacy sin carreraId
+    return loadMiVista(storageKey);
+  });
   const [miVistaActiva, setMiVistaActiva] = useState(false);
   const [editorAbierto, setEditorAbierto] = useState(false);
 
@@ -407,17 +410,28 @@ function MapaInner({ materias, agrupadores, idsAgrupadores, estados, reglamentoU
         contadores={contadores} onBuscar={handleBuscar}
         layoutMode={layoutMode} onToggleLayout={handleToggleLayout}
         miVistaActiva={miVistaActiva} onToggleMiVista={setMiVistaActiva}
-        tieneVistaGuardada={miVistaData !== null}
         onAbrirEditor={() => setEditorAbierto(true)}
         simplificarGrafo={simplificarGrafo} onToggleSimplificar={() => setSimplificarGrafo((v) => !v)}
       />
 
       <div style={{
         width: "100%", height: "72vh", minHeight: 480, borderRadius: 14,
-        overflow: "hidden",
+        overflow: "hidden", position: "relative",
         border: `1px solid ${caminoActivo ? AMBER.border : GLASS.raised}`,
         background: "rgba(15,20,50,0.55)", transition: "border-color 0.2s",
       }}>
+        {miVistaActiva && miVistaNodes.length === 0 && (
+          <div style={{
+            position: "absolute", inset: 0, display: "flex", flexDirection: "column",
+            alignItems: "center", justifyContent: "center", gap: 8, zIndex: 10,
+            pointerEvents: "none",
+          }}>
+            <span style={{ fontSize: 28, opacity: 0.25 }}>◻</span>
+            <span style={{ fontSize: 13, color: TEXT_SEC, opacity: 0.6 }}>
+              Agregá materias con el botón <strong>+ Editar</strong>
+            </span>
+          </div>
+        )}
         <ReactFlow
           nodes={nodes} edges={edges}
           onNodesChange={onNodesChange}

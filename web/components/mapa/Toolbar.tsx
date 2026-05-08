@@ -23,7 +23,6 @@ type Props = {
   onToggleLayout: () => void;
   miVistaActiva: boolean;
   onToggleMiVista: (v: boolean) => void;
-  tieneVistaGuardada: boolean;
   onAbrirEditor: () => void;
   simplificarGrafo: boolean;
   onToggleSimplificar: () => void;
@@ -32,7 +31,7 @@ type Props = {
 export function Toolbar({
   filtro, onFiltro, busqueda, onBusqueda, contadores, onBuscar,
   layoutMode, onToggleLayout,
-  miVistaActiva, onToggleMiVista, tieneVistaGuardada, onAbrirEditor,
+  miVistaActiva, onToggleMiVista, onAbrirEditor,
   simplificarGrafo, onToggleSimplificar,
 }: Props) {
   const chips: { key: FiltroEstado; label: string }[] = [
@@ -99,18 +98,16 @@ export function Toolbar({
           })}
         </div>
 
-        {tieneVistaGuardada && (
-          <button
-            onClick={() => onToggleMiVista(!miVistaActiva)}
-            style={{
-              fontSize: 10, fontWeight: 600, padding: "3px 9px", borderRadius: 6,
-              border: miVistaActiva ? `1px solid ${ACCENT}` : `1px solid ${GLASS.border}`,
-              background: miVistaActiva ? `${ACCENT}22` : GLASS.base,
-              color: miVistaActiva ? ACCENT : TEXT_SEC, cursor: "pointer", transition: "all 0.1s",
-            }}>
-            Mi vista
-          </button>
-        )}
+        <button
+          onClick={() => onToggleMiVista(!miVistaActiva)}
+          style={{
+            fontSize: 10, fontWeight: 600, padding: "3px 9px", borderRadius: 6,
+            border: miVistaActiva ? `1px solid ${ACCENT}` : `1px solid ${GLASS.border}`,
+            background: miVistaActiva ? `${ACCENT}22` : GLASS.base,
+            color: miVistaActiva ? ACCENT : TEXT_SEC, cursor: "pointer", transition: "all 0.1s",
+          }}>
+          Mi vista
+        </button>
 
         <button
           onClick={onToggleSimplificar}
