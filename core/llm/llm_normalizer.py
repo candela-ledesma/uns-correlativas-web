@@ -17,7 +17,7 @@ from .sanity_check import (
 
 logger = logging.getLogger("uns.llm")
 
-PROMPT_VERSION = "v10"
+PROMPT_VERSION = "v13"
 MODEL_DEFAULT = "gemini-2.5-flash"
 MAX_CHARS_PER_CHUNK = 200_000
 
@@ -185,11 +185,41 @@ When POSITION A applies, generate TWO entries:
    `grupo_opcion: null`, `correlativas: {}`, and the `año`/`cuatrimestre` of the year slot where
    it appears.
 
-Example — G0857 appears after the last correlativa of a 4th-year subject:
+IMPORTANT — same G#### appearing in multiple year slots (POSITION A multiple times):
+  Each appearance in a different year/cuatrimestre is a SEPARATE slot requirement. Each one
+  MUST generate its own entry in `materias[]` with the correct `año`/`cuatrimestre`.
+  The ID is the same for all of them — this is intentional (same elective pool, different slots).
+  Example: G0857 appears in 4th year 2nd semester AND in 5th year 1st semester →
+    Two entries in materias: one with "Cuarto Año/Segundo Cuatrimestre", one with "Quinto Año/Primer Cuatrimestre".
+  There is only ONE entry in `agrupadores` (the pool is shared).
+
+The same applies to idioma_grupo (I####) nodes that appear in POSITION A.
+
+Example — G0857 appears after the last correlativa of a subject in 5th year 1st semester:
+```
+QUINTO AÑO
+Primer Cuatrimestre
+...
+5462 Aprobada Aprobada
+I0012 Aprobada Aprobada      ← last correlativa (can be an idioma ID)
+G0857 Optativa de Ing. Civil, orientación Construcciones, plan 2025   ← POSITION A
+5405 PRACTICA PROFESIONAL SUPERVISADA IC  ← next mandatory subject
+```
+→ G0857 entry in materias with año="Quinto Año", cuatrimestre="Primer Cuatrimestre"
+
+Two agrupadores appearing consecutively are BOTH POSITION A:
+```
+I0012 Aprobada Aprobada
+G0859 Optativa de Ing. Civil, orientación Hidráulica, plan 2025
+G0860 Optativa de Ing. Civil, orientación Hidráulica, plan 2025
+5410 PUERTOS Y VIAS NAVEGABLES ...
+```
+→ Both G0859 and G0860 get entries in materias with the same año/cuatrimestre.
+
 ```json
 // In materias:
 {"id": "G0857", "nombre": "Optativa de Ing. Civil, orientación Construcciones, plan 2025",
- "año": "Cuarto Año", "cuatrimestre": "Segundo Cuatrimestre", "horas": "",
+ "año": "Quinto Año", "cuatrimestre": "Primer Cuatrimestre", "horas": "",
  "tipo": "agrupador_requisito", "categoria": "normal", "grupo_opcion": null,
  "subtipo": null, "correlativas": {}}
 
@@ -334,6 +364,10 @@ If ALLOW_OVERWRITE = true:
 10. NEVER duplicate a subject. Each subject ID must appear exactly ONCE in the `materias` array,
     even if it is listed under multiple agrupadores in the source text. The agrupador's `opciones`
     field already records the membership — do not repeat the materia object.
+    EXCEPTION: `agrupador_requisito` entries (G#### in POSITION A) and `idioma` materia entries
+    (I#### nodes) MUST appear in `materias[]` even though they also appear in `agrupadores[]`.
+    These are dual-purpose nodes: the agrupador entry defines the pool, the materia entry is the
+    year-slot requirement. If the same G#### or I#### appears in POSITION A, it MUST be in materias.
 
 ---
 
