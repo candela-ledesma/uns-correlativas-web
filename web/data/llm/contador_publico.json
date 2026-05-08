@@ -18,7 +18,7 @@
       "correlativas": {},
       "requisito_especial": {
         "tipo": "prueba_idioma",
-        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia 24"
+        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia"
       }
     },
     {
@@ -34,7 +34,7 @@
       "correlativas": {},
       "requisito_especial": {
         "tipo": "prueba_idioma",
-        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia 24"
+        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia"
       }
     },
     {
@@ -50,7 +50,7 @@
       "correlativas": {},
       "requisito_especial": {
         "tipo": "prueba_idioma",
-        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia 24"
+        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia"
       }
     },
     {
@@ -66,7 +66,7 @@
       "correlativas": {},
       "requisito_especial": {
         "tipo": "prueba_idioma",
-        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia 24"
+        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia"
       }
     },
     {
@@ -82,7 +82,7 @@
       "correlativas": {},
       "requisito_especial": {
         "tipo": "prueba_idioma",
-        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia 24"
+        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia"
       }
     },
     {
@@ -103,7 +103,7 @@
       },
       "requisito_especial": {
         "tipo": "prueba_idioma",
-        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia 24"
+        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia"
       }
     },
     {
@@ -128,7 +128,7 @@
       },
       "requisito_especial": {
         "tipo": "prueba_idioma",
-        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia 24"
+        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia"
       }
     },
     {
@@ -149,7 +149,7 @@
       },
       "requisito_especial": {
         "tipo": "prueba_idioma",
-        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia 24"
+        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia"
       }
     },
     {
@@ -170,7 +170,7 @@
       },
       "requisito_especial": {
         "tipo": "prueba_idioma",
-        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia 24"
+        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia"
       }
     },
     {
@@ -191,7 +191,7 @@
       },
       "requisito_especial": {
         "tipo": "prueba_idioma",
-        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia 24"
+        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia"
       }
     },
     {
@@ -212,7 +212,7 @@
       },
       "requisito_especial": {
         "tipo": "prueba_idioma",
-        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia 24"
+        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia"
       }
     },
     {
@@ -237,7 +237,7 @@
       },
       "requisito_especial": {
         "tipo": "prueba_idioma",
-        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia 24"
+        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia"
       }
     },
     {
@@ -266,7 +266,7 @@
       },
       "requisito_especial": {
         "tipo": "prueba_idioma",
-        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia 24"
+        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia"
       }
     },
     {
@@ -287,7 +287,7 @@
       },
       "requisito_especial": {
         "tipo": "prueba_idioma",
-        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia 24"
+        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia"
       }
     },
     {
@@ -312,7 +312,7 @@
       },
       "requisito_especial": {
         "tipo": "prueba_idioma",
-        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia 24"
+        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia"
       }
     },
     {
@@ -320,7 +320,7 @@
       "nombre": "CONTABILIDAD SOCIAL Y AMBIENTAL",
       "año": "Tercer Año",
       "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "",
+      "horas": "96",
       "tipo": "materia",
       "categoria": "normal",
       "grupo_opcion": null,
@@ -341,7 +341,7 @@
       },
       "requisito_especial": {
         "tipo": "prueba_idioma",
-        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia 24"
+        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia"
       }
     },
     {
@@ -362,7 +362,7 @@
       },
       "requisito_especial": {
         "tipo": "prueba_idioma",
-        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia 24"
+        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia"
       }
     },
     {
@@ -383,7 +383,7 @@
       },
       "requisito_especial": {
         "tipo": "prueba_idioma",
-        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia 24"
+        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia"
       }
     },
     {
@@ -408,7 +408,7 @@
       },
       "requisito_especial": {
         "tipo": "prueba_idioma",
-        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia 24"
+        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia"
       }
     },
     {
@@ -429,7 +429,7 @@
       },
       "requisito_especial": {
         "tipo": "prueba_idioma",
-        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia 24"
+        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia"
       }
     },
     {
@@ -450,7 +450,7 @@
       },
       "requisito_especial": {
         "tipo": "prueba_idioma",
-        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia 24"
+        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia"
       }
     },
     {
@@ -475,7 +475,7 @@
       },
       "requisito_especial": {
         "tipo": "prueba_idioma",
-        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia 24"
+        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia"
       }
     },
     {
@@ -483,7 +483,7 @@
       "nombre": "CONTABILIDAD DE COSTOS",
       "año": "Cuarto Año",
       "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "",
+      "horas": "24",
       "tipo": "materia",
       "categoria": "normal",
       "grupo_opcion": null,
@@ -504,7 +504,7 @@
       },
       "requisito_especial": {
         "tipo": "prueba_idioma",
-        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia 24"
+        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia"
       }
     },
     {
@@ -537,7 +537,7 @@
       },
       "requisito_especial": {
         "tipo": "prueba_idioma",
-        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia 24"
+        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia"
       }
     },
     {
@@ -574,7 +574,7 @@
       },
       "requisito_especial": {
         "tipo": "prueba_idioma",
-        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia 24"
+        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia"
       }
     },
     {
@@ -603,7 +603,7 @@
       },
       "requisito_especial": {
         "tipo": "prueba_idioma",
-        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia 24"
+        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia"
       }
     },
     {
@@ -640,14 +640,14 @@
       },
       "requisito_especial": {
         "tipo": "prueba_idioma",
-        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia 24"
+        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia"
       }
     },
     {
       "id": "1666",
       "nombre": "AUDITORIA A",
       "año": "Quinto Año",
-      "cuatrimestre": null,
+      "cuatrimestre": "Anual",
       "horas": "128",
       "tipo": "materia",
       "categoria": "normal",
@@ -677,7 +677,7 @@
       },
       "requisito_especial": {
         "tipo": "prueba_idioma",
-        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia 24"
+        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia"
       }
     },
     {
@@ -706,7 +706,7 @@
       },
       "requisito_especial": {
         "tipo": "prueba_idioma",
-        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia 24"
+        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia"
       }
     },
     {
@@ -727,7 +727,7 @@
       },
       "requisito_especial": {
         "tipo": "prueba_idioma",
-        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia 24"
+        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia"
       }
     },
     {
@@ -752,7 +752,7 @@
       },
       "requisito_especial": {
         "tipo": "prueba_idioma",
-        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia 24"
+        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia"
       }
     },
     {
@@ -811,7 +811,7 @@
       },
       "requisito_especial": {
         "tipo": "prueba_idioma",
-        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia 24"
+        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia"
       }
     },
     {
@@ -836,7 +836,7 @@
       },
       "requisito_especial": {
         "tipo": "prueba_idioma",
-        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia 24"
+        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia"
       }
     },
     {
@@ -857,7 +857,7 @@
       },
       "requisito_especial": {
         "tipo": "prueba_idioma",
-        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia 24"
+        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia"
       }
     },
     {
@@ -886,7 +886,7 @@
       },
       "requisito_especial": {
         "tipo": "prueba_idioma",
-        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia 24"
+        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia"
       }
     },
     {
@@ -911,7 +911,7 @@
       },
       "requisito_especial": {
         "tipo": "prueba_idioma",
-        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia 24"
+        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia"
       }
     },
     {
@@ -932,7 +932,7 @@
       },
       "requisito_especial": {
         "tipo": "prueba_idioma",
-        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia 24"
+        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia"
       }
     },
     {
@@ -953,7 +953,7 @@
       },
       "requisito_especial": {
         "tipo": "prueba_idioma",
-        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia 24"
+        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia"
       }
     },
     {
@@ -978,7 +978,7 @@
       },
       "requisito_especial": {
         "tipo": "prueba_idioma",
-        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia 24"
+        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia"
       }
     },
     {
@@ -999,7 +999,7 @@
       },
       "requisito_especial": {
         "tipo": "prueba_idioma",
-        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia 24"
+        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia"
       }
     },
     {
@@ -1028,7 +1028,7 @@
       },
       "requisito_especial": {
         "tipo": "prueba_idioma",
-        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia 24"
+        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia"
       }
     },
     {
@@ -1057,7 +1057,7 @@
       },
       "requisito_especial": {
         "tipo": "prueba_idioma",
-        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia 24"
+        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia"
       }
     },
     {
@@ -1094,7 +1094,7 @@
       },
       "requisito_especial": {
         "tipo": "prueba_idioma",
-        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia 24"
+        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia"
       }
     },
     {
@@ -1119,7 +1119,7 @@
       },
       "requisito_especial": {
         "tipo": "prueba_idioma",
-        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia 24"
+        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia"
       }
     },
     {
@@ -1144,7 +1144,7 @@
       },
       "requisito_especial": {
         "tipo": "prueba_idioma",
-        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia 24"
+        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia"
       }
     },
     {
@@ -1160,7 +1160,7 @@
       "correlativas": {},
       "requisito_especial": {
         "tipo": "prueba_idioma",
-        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia 24"
+        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia"
       }
     },
     {
@@ -1176,7 +1176,7 @@
       "correlativas": {},
       "requisito_especial": {
         "tipo": "prueba_idioma",
-        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia 24"
+        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia"
       }
     },
     {
@@ -1197,7 +1197,7 @@
       },
       "requisito_especial": {
         "tipo": "prueba_idioma",
-        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia 24"
+        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia"
       }
     },
     {
@@ -1218,7 +1218,7 @@
       },
       "requisito_especial": {
         "tipo": "prueba_idioma",
-        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia 24"
+        "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar la materia"
       }
     }
   ],
@@ -1252,6 +1252,6 @@
     }
   ],
   "_llm_confidence": 1.0,
-  "_llm_prompt_version": "v8",
+  "_llm_prompt_version": "v10",
   "_llm_mode": "llm"
 }

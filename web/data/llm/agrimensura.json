@@ -9,7 +9,7 @@
       "id": "5293",
       "nombre": "INTRODUCCION A LAS INGENIERIAS",
       "año": "Primer Año",
-      "cuatrimestre": null,
+      "cuatrimestre": "Anual",
       "horas": "64",
       "tipo": "materia",
       "categoria": "normal",
@@ -823,6 +823,6 @@
     }
   ],
   "_llm_confidence": 1.0,
-  "_llm_prompt_version": "v8",
+  "_llm_prompt_version": "v9",
   "_llm_mode": "llm"
 }

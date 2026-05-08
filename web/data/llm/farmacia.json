@@ -1,26 +1,45 @@
 {
   "plan": {
-    "carrera": "Farmacia",
-    "universidad": "Universidad Nacional del Sur",
+    "carrera": "FARMACIA",
+    "universidad": "UNIVERSIDAD NACIONAL DEL SUR",
     "codigo_plan": "Plan 2025 - Versión 1"
   },
   "materias": [
     {
-      "id": "1049",
-      "nombre": "BIOANALITICA",
-      "año": "Cuarto Año",
+      "id": "8161",
+      "nombre": "CALCULO B",
+      "año": "Primer Año",
       "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "112",
+      "horas": "128",
       "tipo": "materia",
-      "categoria": "optativa",
-      "grupo_opcion": "G0903",
+      "categoria": "normal",
+      "grupo_opcion": null,
       "subtipo": null,
-      "correlativas": {
-        "6019": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        }
-      }
+      "correlativas": {}
+    },
+    {
+      "id": "1263",
+      "nombre": "INTRODUCCION A LA FARMACIA",
+      "año": "Primer Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "32",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {}
+    },
+    {
+      "id": "6154",
+      "nombre": "QUIMICA GENERAL PARA FARMACIA",
+      "año": "Primer Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {}
     },
     {
       "id": "1054",
@@ -40,38 +59,38 @@
       }
     },
     {
-      "id": "1055",
-      "nombre": "ANALISIS FARMACEUTICO",
-      "año": "Quinto Año",
+      "id": "1243",
+      "nombre": "HISTOLOGIA Y BIOLOGIA CELULAR",
+      "año": "Primer Año",
       "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "112",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {}
+    },
+    {
+      "id": "6155",
+      "nombre": "QUIMICA ORGANICA IF",
+      "año": "Primer Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "96",
       "tipo": "materia",
       "categoria": "normal",
       "grupo_opcion": null,
       "subtipo": null,
       "correlativas": {
-        "1424": {
+        "6154": {
           "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        },
-        "6019": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "8170": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "I0902": {
-          "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
       }
     },
     {
-      "id": "1115",
-      "nombre": "FARMACIA ASISTENCIAL Y CLINICA",
-      "año": "Quinto Año",
+      "id": "8170",
+      "nombre": "ESTADISTICA BF",
+      "año": "Segundo Año",
       "cuatrimestre": "Primer Cuatrimestre",
       "horas": "96",
       "tipo": "materia",
@@ -79,54 +98,114 @@
       "grupo_opcion": null,
       "subtipo": null,
       "correlativas": {
-        "1130": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "1131": {
+        "8161": {
           "para_cursar": "cursada",
           "para_rendir": "cursada"
-        },
-        "1265": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "I0902": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
         }
       }
     },
     {
-      "id": "1116",
-      "nombre": "FARMACOQUIMICA",
-      "año": "Cuarto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "112",
+      "id": "3089",
+      "nombre": "FISICA GENERAL B",
+      "año": "Segundo Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "96",
       "tipo": "materia",
       "categoria": "normal",
       "grupo_opcion": null,
       "subtipo": null,
       "correlativas": {
-        "1130": {
+        "8161": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "6156",
+      "nombre": "QUIMICA ORGANICA IIF",
+      "año": "Segundo Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "96",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "6155": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "6008",
+      "nombre": "FISICOQUIMICA F",
+      "año": "Segundo Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "96",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "3089": {
           "para_cursar": "cursada",
           "para_rendir": "cursada"
         },
-        "3089": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "6156": {
+        "8161": {
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         },
         "8170": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "6182",
+      "nombre": "PRINCIPIOS DE QUIMICA ANALITICA",
+      "año": "Segundo Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "96",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "6154": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "1376",
+      "nombre": "QUIMICA BIOLOGICA F",
+      "año": "Segundo Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "96",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "1054": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "1243": {
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         },
-        "I0902": {
+        "6155": {
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
+        },
+        "6156": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
         }
       }
     },
@@ -148,6 +227,124 @@
         "6156": {
           "para_cursar": "cursada",
           "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "1149",
+      "nombre": "FISIOLOGIA",
+      "año": "Tercer Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "112",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "1054": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "1376": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "6008": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "1291",
+      "nombre": "MICROBIOLOGIA BASICA",
+      "año": "Tercer Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "90",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "1376": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "6019",
+      "nombre": "ANALISIS INSTRUMENTAL PARA FARMACIA",
+      "año": "Tercer Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "96",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "6182": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "1142",
+      "nombre": "FISIOPATOLOGIA HUMANA",
+      "año": "Tercer Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "100",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "1149": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "1376": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "1228",
+      "nombre": "HIGIENE Y SANIDAD",
+      "año": "Tercer Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "50",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "1291": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "1265",
+      "nombre": "INMUNOLOGIA HUMANA",
+      "año": "Tercer Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "56",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "1291": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "1376": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
         }
       }
     },
@@ -206,193 +403,6 @@
       }
     },
     {
-      "id": "1131",
-      "nombre": "FARMACOLOGIA II",
-      "año": "Cuarto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "128",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "1130": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        },
-        "1142": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "1291": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "I0902": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
-      }
-    },
-    {
-      "id": "1142",
-      "nombre": "FISIOPATOLOGIA HUMANA",
-      "año": "Tercer Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "100",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "1149": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        },
-        "1376": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
-      }
-    },
-    {
-      "id": "1149",
-      "nombre": "FISIOLOGIA",
-      "año": "Tercer Año",
-      "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "112",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "1054": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "1376": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        },
-        "6008": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        }
-      }
-    },
-    {
-      "id": "1203",
-      "nombre": "GENETICA MOLECULAR BASICA Y APLICADA",
-      "año": "Cuarto Año",
-      "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "112",
-      "tipo": "materia",
-      "categoria": "optativa",
-      "grupo_opcion": "G0903",
-      "subtipo": null,
-      "correlativas": {
-        "1243": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "6156": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        },
-        "8170": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        }
-      }
-    },
-    {
-      "id": "1228",
-      "nombre": "HIGIENE Y SANIDAD",
-      "año": "Tercer Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "50",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "1291": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        }
-      }
-    },
-    {
-      "id": "1243",
-      "nombre": "HISTOLOGIA Y BIOLOGIA CELULAR",
-      "año": "Primer Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "128",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {}
-    },
-    {
-      "id": "1263",
-      "nombre": "INTRODUCCION A LA FARMACIA",
-      "año": "Primer Año",
-      "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "32",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {}
-    },
-    {
-      "id": "1264",
-      "nombre": "INTRODUCCION A LA FARMACIA INDUSTRIAL",
-      "año": "Cuarto Año",
-      "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "",
-      "tipo": "materia",
-      "categoria": "optativa",
-      "grupo_opcion": "G0903",
-      "subtipo": null,
-      "correlativas": {
-        "1263": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "6019": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        },
-        "6156": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        }
-      }
-    },
-    {
-      "id": "1265",
-      "nombre": "INMUNOLOGIA HUMANA",
-      "año": "Tercer Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "56",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "1291": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        },
-        "1376": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
-      }
-    },
-    {
       "id": "1275",
       "nombre": "LEGISLACION FARMACEUTICA",
       "año": "Cuarto Año",
@@ -414,255 +424,6 @@
         "I0902": {
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
-        }
-      }
-    },
-    {
-      "id": "1285",
-      "nombre": "MICROBIOLOGIA INDUSTRIAL ORIENTADA A LOS ALIMENTOS",
-      "año": "Cuarto Año",
-      "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "32",
-      "tipo": "materia",
-      "categoria": "optativa",
-      "grupo_opcion": "G0903",
-      "subtipo": null,
-      "correlativas": {
-        "1291": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "1376": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
-      }
-    },
-    {
-      "id": "1291",
-      "nombre": "MICROBIOLOGIA BASICA",
-      "año": "Tercer Año",
-      "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "90",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "1376": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        }
-      }
-    },
-    {
-      "id": "1356",
-      "nombre": "PRACTICANATO PROFESIONAL DE FARMACIA",
-      "año": "Quinto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "362",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "1126": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "1131": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "1424": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        },
-        "I0902": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
-      }
-    },
-    {
-      "id": "1376",
-      "nombre": "QUIMICA BIOLOGICA F",
-      "año": "Segundo Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "96",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "1054": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        },
-        "1243": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "6155": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "6156": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        }
-      }
-    },
-    {
-      "id": "1424",
-      "nombre": "TECNOLOGIA FARMACEUTICA I",
-      "año": "Quinto Año",
-      "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "112",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "1126": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        },
-        "6008": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "I0902": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
-      }
-    },
-    {
-      "id": "1427",
-      "nombre": "TECNOLOGIA FARMACEUTICA II",
-      "año": "Quinto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "112",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "1228": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "1424": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        },
-        "I0902": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
-      }
-    },
-    {
-      "id": "1442",
-      "nombre": "TOXICOLOGIA F",
-      "año": "Quinto Año",
-      "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "112",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "1130": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "1131": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        },
-        "I0902": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
-      }
-    },
-    {
-      "id": "2106",
-      "nombre": "ECONOMIA DE LA EMPRESA",
-      "año": "Cuarto Año",
-      "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "96",
-      "tipo": "materia",
-      "categoria": "optativa",
-      "grupo_opcion": "G0903",
-      "subtipo": null,
-      "correlativas": {}
-    },
-    {
-      "id": "3089",
-      "nombre": "FISICA GENERAL B",
-      "año": "Segundo Año",
-      "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "96",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "8161": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        }
-      }
-    },
-    {
-      "id": "4525",
-      "nombre": "BIOÉTICA",
-      "año": "Cuarto Año",
-      "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "96",
-      "tipo": "materia",
-      "categoria": "optativa",
-      "grupo_opcion": "G0903",
-      "subtipo": null,
-      "correlativas": {}
-    },
-    {
-      "id": "4578",
-      "nombre": "EXAMEN DE SUFICIENCIA DE IDIOMA INGLES",
-      "año": "Tercer Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "",
-      "tipo": "materia",
-      "categoria": "optativa",
-      "grupo_opcion": "I0902",
-      "subtipo": "idioma",
-      "correlativas": {}
-    },
-    {
-      "id": "6008",
-      "nombre": "FISICOQUIMICA F",
-      "año": "Segundo Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "96",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "3089": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        },
-        "8161": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "8170": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
         }
       }
     },
@@ -696,27 +457,346 @@
       }
     },
     {
-      "id": "6019",
-      "nombre": "ANALISIS INSTRUMENTAL PARA FARMACIA",
-      "año": "Tercer Año",
+      "id": "1131",
+      "nombre": "FARMACOLOGIA II",
+      "año": "Cuarto Año",
       "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "96",
+      "horas": "128",
       "tipo": "materia",
       "categoria": "normal",
       "grupo_opcion": null,
       "subtipo": null,
       "correlativas": {
-        "6182": {
+        "1130": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "1142": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "1291": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "I0902": {
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
       }
     },
     {
+      "id": "1116",
+      "nombre": "FARMACOQUIMICA",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "112",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "1130": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "3089": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "6156": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "8170": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "I0902": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "1115",
+      "nombre": "FARMACIA ASISTENCIAL Y CLINICA",
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "96",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "1130": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "1131": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "1265": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "I0902": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "1424",
+      "nombre": "TECNOLOGIA FARMACEUTICA I",
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "112",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "1126": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "6008": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "I0902": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "1442",
+      "nombre": "TOXICOLOGIA F",
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "112",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "1130": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "1131": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "I0902": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "1055",
+      "nombre": "ANALISIS FARMACEUTICO",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "112",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "1424": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "6019": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "8170": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "I0902": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "1356",
+      "nombre": "PRACTICANATO PROFESIONAL DE FARMACIA",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "362",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "1126": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "1131": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "1424": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "I0902": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "1427",
+      "nombre": "TECNOLOGIA FARMACEUTICA II",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "112",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "1228": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "1424": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "I0902": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "1049",
+      "nombre": "BIOANALITICA",
+      "año": null,
+      "cuatrimestre": null,
+      "horas": "112",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G0903",
+      "subtipo": null,
+      "correlativas": {
+        "6019": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "1203",
+      "nombre": "GENETICA MOLECULAR BASICA Y APLICADA",
+      "año": null,
+      "cuatrimestre": null,
+      "horas": "112",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G0903",
+      "subtipo": null,
+      "correlativas": {
+        "1243": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "6156": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "8170": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "1264",
+      "nombre": "INTRODUCCION A LA FARMACIA INDUSTRIAL",
+      "año": null,
+      "cuatrimestre": null,
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G0903",
+      "subtipo": null,
+      "correlativas": {
+        "1263": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "6019": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "6156": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "1285",
+      "nombre": "MICROBIOLOGIA INDUSTRIAL ORIENTADA A LOS ALIMENTOS",
+      "año": null,
+      "cuatrimestre": null,
+      "horas": "32",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G0903",
+      "subtipo": null,
+      "correlativas": {
+        "1291": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "1376": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "2106",
+      "nombre": "ECONOMIA DE LA EMPRESA",
+      "año": null,
+      "cuatrimestre": null,
+      "horas": "96",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G0903",
+      "subtipo": null,
+      "correlativas": {}
+    },
+    {
+      "id": "4525",
+      "nombre": "BIOÉTICA",
+      "año": null,
+      "cuatrimestre": null,
+      "horas": "96",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G0903",
+      "subtipo": null,
+      "correlativas": {}
+    },
+    {
       "id": "6023",
       "nombre": "ANALISIS ESPECTROSCOPICO DE FARMACOS",
-      "año": "Cuarto Año",
-      "cuatrimestre": "Primer Cuatrimestre",
+      "año": null,
+      "cuatrimestre": null,
       "horas": "64",
       "tipo": "materia",
       "categoria": "optativa",
@@ -734,73 +814,10 @@
       }
     },
     {
-      "id": "6154",
-      "nombre": "QUIMICA GENERAL PARA FARMACIA",
-      "año": "Primer Año",
-      "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "128",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {}
-    },
-    {
-      "id": "6155",
-      "nombre": "QUIMICA ORGANICA IF",
-      "año": "Primer Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "96",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "6154": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        }
-      }
-    },
-    {
-      "id": "6156",
-      "nombre": "QUIMICA ORGANICA IIF",
-      "año": "Segundo Año",
-      "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "96",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "6155": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        }
-      }
-    },
-    {
-      "id": "6182",
-      "nombre": "PRINCIPIOS DE QUIMICA ANALITICA",
-      "año": "Segundo Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "96",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "6154": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        }
-      }
-    },
-    {
       "id": "8129",
       "nombre": "ANALISIS DE REGRESION",
-      "año": "Cuarto Año",
-      "cuatrimestre": "Primer Cuatrimestre",
+      "año": null,
+      "cuatrimestre": null,
       "horas": "50",
       "tipo": "materia",
       "categoria": "optativa",
@@ -814,60 +831,29 @@
       }
     },
     {
-      "id": "8161",
-      "nombre": "CALCULO B",
-      "año": "Primer Año",
-      "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "128",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {}
-    },
-    {
-      "id": "8170",
-      "nombre": "ESTADISTICA BF",
-      "año": "Segundo Año",
-      "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "96",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "8161": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        }
-      }
-    },
-    {
-      "id": "G0903",
-      "nombre": "Optativa de Farmacia Plan 2025",
-      "año": "Cuarto Año",
-      "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "",
-      "tipo": "agrupador_requisito",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {}
-    },
-    {
-      "id": "I0902",
-      "nombre": "Idioma de Farmacia, plan 2025",
+      "id": "4578",
+      "nombre": "EXAMEN DE SUFICIENCIA DE IDIOMA INGLES",
       "año": "Tercer Año",
       "cuatrimestre": "Segundo Cuatrimestre",
       "horas": "",
       "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
+      "categoria": "optativa",
+      "grupo_opcion": "I0902",
       "subtipo": "idioma",
       "correlativas": {}
     }
   ],
   "agrupadores": [
+    {
+      "id": "I0902",
+      "nombre": "Idioma de Farmacia, plan 2025",
+      "tipo": "idioma_grupo",
+      "opciones": [
+        "4578"
+      ],
+      "año": "Tercer Año",
+      "cuatrimestre": "Segundo Cuatrimestre"
+    },
     {
       "id": "G0903",
       "nombre": "Optativa de Farmacia Plan 2025",
@@ -882,21 +868,11 @@
         "6023",
         "8129"
       ],
-      "año": "Cuarto Año",
-      "cuatrimestre": "Primer Cuatrimestre"
-    },
-    {
-      "id": "I0902",
-      "nombre": "Idioma de Farmacia, plan 2025",
-      "tipo": "idioma_grupo",
-      "opciones": [
-        "4578"
-      ],
-      "año": "Tercer Año",
-      "cuatrimestre": "Segundo Cuatrimestre"
+      "año": null,
+      "cuatrimestre": null
     }
   ],
   "_llm_confidence": 1.0,
-  "_llm_prompt_version": "v8",
+  "_llm_prompt_version": "v10",
   "_llm_mode": "llm"
 }

@@ -9,7 +9,7 @@
       "id": "5293",
       "nombre": "INTRODUCCION A LAS INGENIERIAS",
       "año": "Primer Año",
-      "cuatrimestre": "Anual",
+      "cuatrimestre": null,
       "horas": "64",
       "tipo": "materia",
       "categoria": "normal",
@@ -286,7 +286,7 @@
       "id": "5014",
       "nombre": "DISEÑO E INNOVACION",
       "año": "Tercer Año",
-      "cuatrimestre": "Anual",
+      "cuatrimestre": null,
       "horas": "32",
       "tipo": "materia",
       "categoria": "normal",
@@ -712,39 +712,6 @@
       }
     },
     {
-      "id": "5013",
-      "nombre": "MEDIO AMBIENTE IC",
-      "año": "Cuarto Año",
-      "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "32",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "5006": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        },
-        "5070": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        },
-        "5176": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "5462": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        },
-        "I0012": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
-      }
-    },
-    {
       "id": "5009",
       "nombre": "DESARROLLOS URBANOS Y EDILICIOS",
       "año": "Cuarto Año",
@@ -885,7 +852,7 @@
         },
         "5230": {
           "para_cursar": "cursada",
-          "para_rendir": "cursada"
+          "para_rendir": "aprobada"
         },
         "5462": {
           "para_cursar": "aprobada",
@@ -924,7 +891,7 @@
       "requisito_especial": {
         "tipo": "minimo_materias_aprobadas",
         "cantidad": 32,
-        "descripcion": "El alumno deberá tener 32 materias aprobadas, sin contar las suficiencias."
+        "descripcion": "El alumno deberá tener 32 materias aprobadas, sin contar las suficiencias ."
       }
     },
     {
@@ -974,6 +941,64 @@
         "5241": {
           "para_cursar": "cursada",
           "para_rendir": "cursada"
+        },
+        "5375": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "I0012": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "5013",
+      "nombre": "MEDIO AMBIENTE IC",
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "32",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5006": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "5070": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "5176": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "5462": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "I0012": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "5410",
+      "nombre": "PUERTOS Y VIAS NAVEGABLES",
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "96",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5176": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
         },
         "5375": {
           "para_cursar": "aprobada",
@@ -1157,7 +1182,7 @@
     {
       "id": "5335",
       "nombre": "MAQUINAS HIDRAULICAS Y USINAS HIDROELECTRICAS",
-      "año": "Segundo Año",
+      "año": "Cuarto Año",
       "cuatrimestre": "Segundo Cuatrimestre",
       "horas": "96",
       "tipo": "materia",
@@ -1217,27 +1242,31 @@
       }
     },
     {
-      "id": "5180",
-      "nombre": "FERROCARRILES",
-      "año": "Cuarto Año",
+      "id": "5412",
+      "nombre": "PUENTES A",
+      "año": "Quinto Año",
       "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "96",
+      "horas": "64",
       "tipo": "materia",
       "categoria": "normal",
       "grupo_opcion": null,
       "subtipo": null,
       "correlativas": {
+        "5080": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
         "5176": {
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         },
-        "5375": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        },
-        "5475": {
+        "5241": {
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
+        },
+        "5242": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
         },
         "I0012": {
           "para_cursar": "aprobada",
@@ -1308,31 +1337,27 @@
       }
     },
     {
-      "id": "5412",
-      "nombre": "PUENTES A",
-      "año": "Quinto Año",
+      "id": "5180",
+      "nombre": "FERROCARRILES",
+      "año": "Cuarto Año",
       "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "64",
+      "horas": "96",
       "tipo": "materia",
       "categoria": "normal",
       "grupo_opcion": null,
       "subtipo": null,
       "correlativas": {
-        "5080": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
         "5176": {
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         },
-        "5241": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "5242": {
+        "5375": {
           "para_cursar": "cursada",
           "para_rendir": "cursada"
+        },
+        "5475": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
         },
         "I0012": {
           "para_cursar": "aprobada",
@@ -1347,8 +1372,8 @@
       "cuatrimestre": "Segundo Cuatrimestre",
       "horas": "",
       "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
+      "categoria": "optativa",
+      "grupo_opcion": "G0861",
       "subtipo": null,
       "correlativas": {
         "5041": {
@@ -1368,8 +1393,8 @@
     {
       "id": "2710",
       "nombre": "FUENTES ALTERNATIVAS DE ENERGIA",
-      "año": "Cuarto Año",
-      "cuatrimestre": "Primer Cuatrimestre",
+      "año": "Null",
+      "cuatrimestre": "null",
       "horas": "96",
       "tipo": "materia",
       "categoria": "optativa",
@@ -1397,8 +1422,8 @@
     {
       "id": "5065",
       "nombre": "COMUNICACION GRAFICA DE PROYECTOS EDILICIOS",
-      "año": "Cuarto Año",
-      "cuatrimestre": "Primer Cuatrimestre",
+      "año": "Null",
+      "cuatrimestre": "null",
       "horas": "32",
       "tipo": "materia",
       "categoria": "optativa",
@@ -1418,8 +1443,8 @@
     {
       "id": "5085",
       "nombre": "DESAGÜES PLUVIALES",
-      "año": "Cuarto Año",
-      "cuatrimestre": "Primer Cuatrimestre",
+      "año": "Null",
+      "cuatrimestre": "null",
       "horas": "32",
       "tipo": "materia",
       "categoria": "optativa",
@@ -1432,7 +1457,7 @@
         },
         "5230": {
           "para_cursar": "cursada",
-          "para_rendir": "cursada"
+          "para_rendir": "aprobada"
         },
         "I0012": {
           "para_cursar": "aprobada",
@@ -1443,8 +1468,8 @@
     {
       "id": "5114",
       "nombre": "DURABILIDAD DE LAS ESTRUCTURAS DE HORMIGON",
-      "año": "Cuarto Año",
-      "cuatrimestre": "Primer Cuatrimestre",
+      "año": "Null",
+      "cuatrimestre": "null",
       "horas": "96",
       "tipo": "materia",
       "categoria": "optativa",
@@ -1476,8 +1501,8 @@
     {
       "id": "5122",
       "nombre": "ELEMENTOS FINITOS CON APLICACIONES EN INGENIERIA",
-      "año": "Cuarto Año",
-      "cuatrimestre": "Primer Cuatrimestre",
+      "año": "Null",
+      "cuatrimestre": "null",
       "horas": "32",
       "tipo": "materia",
       "categoria": "optativa",
@@ -1505,8 +1530,8 @@
     {
       "id": "5189",
       "nombre": "GEOTECNIA AMBIENTAL Y APLICACION DE GEOSINTETICOS",
-      "año": "Cuarto Año",
-      "cuatrimestre": "Primer Cuatrimestre",
+      "año": "Null",
+      "cuatrimestre": "null",
       "horas": "32",
       "tipo": "materia",
       "categoria": "optativa",
@@ -1538,8 +1563,8 @@
     {
       "id": "5229",
       "nombre": "HIDRAULICA FLUVIAL",
-      "año": "Cuarto Año",
-      "cuatrimestre": "Primer Cuatrimestre",
+      "año": "Null",
+      "cuatrimestre": "null",
       "horas": "32",
       "tipo": "materia",
       "categoria": "optativa",
@@ -1567,8 +1592,8 @@
     {
       "id": "5320",
       "nombre": "LAMINAS",
-      "año": "Cuarto Año",
-      "cuatrimestre": "Primer Cuatrimestre",
+      "año": "Null",
+      "cuatrimestre": "null",
       "horas": "96",
       "tipo": "materia",
       "categoria": "optativa",
@@ -1596,8 +1621,8 @@
     {
       "id": "5340",
       "nombre": "PROYECTO GEOMETRICO DE CARRETERAS ASISTIDO POR COMPUTADORA",
-      "año": "Cuarto Año",
-      "cuatrimestre": "Primer Cuatrimestre",
+      "año": "Null",
+      "cuatrimestre": "null",
       "horas": "32",
       "tipo": "materia",
       "categoria": "optativa",
@@ -1621,8 +1646,8 @@
     {
       "id": "5360",
       "nombre": "PLANIFICACION Y GESTION AMBIENTAL PORTUARIA",
-      "año": "Cuarto Año",
-      "cuatrimestre": "Primer Cuatrimestre",
+      "año": "Null",
+      "cuatrimestre": "null",
       "horas": "96",
       "tipo": "materia",
       "categoria": "optativa",
@@ -1646,8 +1671,8 @@
     {
       "id": "5362",
       "nombre": "PROCESO DE EVALUACION PARA LA LICITACION DE UNA OBRA CIVIL",
-      "año": "Cuarto Año",
-      "cuatrimestre": "Primer Cuatrimestre",
+      "año": "Null",
+      "cuatrimestre": "null",
       "horas": "32",
       "tipo": "materia",
       "categoria": "optativa",
@@ -1675,8 +1700,8 @@
     {
       "id": "5467",
       "nombre": "TECNOLOGIA DE LOS POLIMEROS",
-      "año": "Cuarto Año",
-      "cuatrimestre": "Primer Cuatrimestre",
+      "año": "Null",
+      "cuatrimestre": "null",
       "horas": "32",
       "tipo": "materia",
       "categoria": "optativa",
@@ -1704,8 +1729,8 @@
     {
       "id": "7887",
       "nombre": "PRINCIPIOS Y HERRAMIENTAS DE PROGRAMACION",
-      "año": "Cuarto Año",
-      "cuatrimestre": "Primer Cuatrimestre",
+      "año": "Null",
+      "cuatrimestre": "null",
       "horas": "128",
       "tipo": "materia",
       "categoria": "optativa",
@@ -1725,8 +1750,8 @@
     {
       "id": "5175",
       "nombre": "EXAMEN DE SUFICIENCIA DE IDIOMA: INGLES",
-      "año": "Tercer Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
+      "año": "Null",
+      "cuatrimestre": "null",
       "horas": "",
       "tipo": "materia",
       "categoria": "optativa",
@@ -1736,6 +1761,16 @@
     }
   ],
   "agrupadores": [
+    {
+      "id": "I0012",
+      "nombre": "Idioma de Ingeniería Civil, plan 2025",
+      "tipo": "idioma_grupo",
+      "opciones": [
+        "5175"
+      ],
+      "año": "Tercer Año",
+      "cuatrimestre": "Segundo Cuatrimestre"
+    },
     {
       "id": "G0857",
       "nombre": "Optativa de Ing. Civil, orientación Construcciones, plan 2025",
@@ -1755,8 +1790,8 @@
         "5467",
         "7887"
       ],
-      "año": "Cuarto Año",
-      "cuatrimestre": "Segundo Cuatrimestre"
+      "año": "Null",
+      "cuatrimestre": "null"
     },
     {
       "id": "G0858",
@@ -1777,8 +1812,8 @@
         "5467",
         "7887"
       ],
-      "año": "Cuarto Año",
-      "cuatrimestre": "Segundo Cuatrimestre"
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre"
     },
     {
       "id": "G0859",
@@ -1795,7 +1830,9 @@
         "5320",
         "5340",
         "5360",
-        "5362"
+        "5362",
+        "5467",
+        "7887"
       ],
       "año": "Quinto Año",
       "cuatrimestre": "Primer Cuatrimestre"
@@ -1815,10 +1852,12 @@
         "5320",
         "5340",
         "5360",
-        "5362"
+        "5362",
+        "5467",
+        "7887"
       ],
       "año": "Quinto Año",
-      "cuatrimestre": "Segundo Cuatrimestre"
+      "cuatrimestre": "Primer Cuatrimestre"
     },
     {
       "id": "G0861",
@@ -1836,10 +1875,12 @@
         "5340",
         "5341",
         "5360",
-        "5362"
+        "5362",
+        "5467",
+        "7887"
       ],
       "año": "Quinto Año",
-      "cuatrimestre": "Segundo Cuatrimestre"
+      "cuatrimestre": "Primer Cuatrimestre"
     },
     {
       "id": "G0862",
@@ -1857,23 +1898,15 @@
         "5340",
         "5341",
         "5360",
-        "5362"
+        "5362",
+        "5467",
+        "7887"
       ],
       "año": "Quinto Año",
-      "cuatrimestre": "Segundo Cuatrimestre"
-    },
-    {
-      "id": "I0012",
-      "nombre": "Idioma de Ingeniería Civil, plan 2025",
-      "tipo": "idioma_grupo",
-      "opciones": [
-        "5175"
-      ],
-      "año": "Tercer Año",
       "cuatrimestre": "Segundo Cuatrimestre"
     }
   ],
   "_llm_confidence": 1.0,
-  "_llm_prompt_version": "v8",
+  "_llm_prompt_version": "v10",
   "_llm_mode": "llm"
 }
