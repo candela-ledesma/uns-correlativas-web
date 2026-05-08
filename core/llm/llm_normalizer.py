@@ -17,7 +17,7 @@ from .sanity_check import (
 
 logger = logging.getLogger("uns.llm")
 
-PROMPT_VERSION = "v8"
+PROMPT_VERSION = "v10"
 MODEL_DEFAULT = "gemini-2.5-flash"
 MAX_CHARS_PER_CHUNK = 200_000
 
@@ -198,6 +198,44 @@ Example — G0857 appears after the last correlativa of a 4th-year subject:
  "tipo": "optativa_grupo", "opciones": ["5065", "5085", ...]}
 ```
 
+**CRITICAL — año/cuatrimestre inference for agrupadores:**
+The `año` and `cuatrimestre` of an agrupador MUST be inferred from the year/semester heading
+that immediately precedes it in the RAW_TEXT. Scan upward from the agrupador line to find
+the nearest "CUARTO AÑO", "Segundo Cuatrimestre", etc.
+
+Example (abogacía): the text reads:
+```
+CUARTO AÑO
+Primer Cuatrimestre
+...
+9020 FILOSOFIA DEL DERECHO 64hs. ...
+G2347 Optativa de Abogacía, plan 2020
+9113 TALLER DE ...
+...
+Segundo Cuatrimestre
+...
+G2348 Optativa de Abogacía, plan 2020
+...
+QUINTO AÑO
+Primer Cuatrimestre
+...
+G2349 Optativa de Abogacía, plan 2020
+...
+Segundo Cuatrimestre
+...
+G2350 Optativa de Abogacía, plan 2020
+```
+→ G2347: `"año": "Cuarto Año", "cuatrimestre": "Primer Cuatrimestre"`
+→ G2348: `"año": "Cuarto Año", "cuatrimestre": "Segundo Cuatrimestre"`
+→ G2349: `"año": "Quinto Año", "cuatrimestre": "Primer Cuatrimestre"`
+→ G2350: `"año": "Quinto Año", "cuatrimestre": "Segundo Cuatrimestre"`
+
+The same rule applies to idioma_grupo (I####) nodes.
+
+Elective subjects (`categoria: "optativa"`) listed in the "MATERIAS OPTATIVAS" section
+do NOT have an explicit year in that section. Assign them the `año`/`cuatrimestre` of
+their agrupador (the one referenced by their `grupo_opcion` field).
+
 **Language requirement (CRITICAL — idioma_grupo pattern):**
 When a language group (ID starting with I, e.g. "I0024") appears in the text, you MUST generate
 THREE entries:
@@ -223,7 +261,10 @@ Example:
 // In agrupadores:
 {"id": "I0024", "nombre": "Idioma ...", "tipo": "idioma_grupo", "opciones": ["5596"]}
 ```
-Any subject that lists I0024 as a prerequisite MUST include it in its `correlativas` object.
+Only include an ID in `correlativas` if it appears explicitly as `<ID> Cursada|Aprobada` in
+the structured correlativas block of that subject in the RAW_TEXT. Do NOT infer correlativas
+from free-text descriptions such as "Debe rendir la Prueba de Suficiencia de Idioma" — those
+are plan-level requirements, not subject-level correlativas.
 
 ---
 
