@@ -2,10 +2,10 @@ import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { Role } from "@/lib/auth/roles";
 import { GoogleGenAI } from "@google/genai";
-import { extractPdfText } from "@/lib/server/extractPdfText";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
+export const maxDuration = 120;
 
 const MAX_SIZE_MB = 20;
 const PROMPT_VERSION = "v15";
@@ -163,15 +163,6 @@ When a language group (ID starting with I, e.g. "I0024") appears in the text, ge
 
 Your response MUST be strict JSON, schema-compliant and safe for automatic validation. If unsure → use null.`;
 
-function limpiarTexto(texto: string): string {
-  return texto
-    .replace(/\r\n/g, "\n")
-    .replace(/\r/g, "\n")
-    .replace(/[ \t]+/g, " ")
-    .replace(/\n{3,}/g, "\n\n")
-    .trim();
-}
-
 function extraerJSON(raw: string): unknown {
   const direct = raw.trim();
   try { return JSON.parse(direct); } catch {}
@@ -194,9 +185,12 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
-  const formData = await request.formData().catch(() => null);
-  if (!formData) {
-    return NextResponse.json({ error: "Request inválido" }, { status: 400 });
+  let formData: FormData;
+  try {
+    formData = await request.formData();
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    return NextResponse.json({ error: `Error leyendo el formulario: ${msg}` }, { status: 400 });
   }
 
   const file = formData.get("file");
@@ -215,22 +209,30 @@ export async function POST(request: Request) {
   }
 
   try {
-    // 1. Extraer texto del PDF en memoria — sin guardar nada en disco
+    // 1. Enviar el PDF directamente a Gemini como documento nativo
     const bytes = await file.arrayBuffer();
-    const textoRaw = await extractPdfText(Buffer.from(bytes));
-    const textoLimpio = limpiarTexto(textoRaw);
+    const pdfBase64 = Buffer.from(bytes).toString("base64");
 
-    if (textoLimpio.length < 200) {
-      return NextResponse.json({ error: "El PDF no contiene texto extraíble o está vacío" }, { status: 400 });
-    }
-
-    // 2. Llamar a Gemini directamente
     const ai = new GoogleGenAI({ apiKey });
-    const userMessage = `RAW_TEXT:\n${textoLimpio}\n\nOPTIONAL_BASE_JSON:\nnone\n\nALLOW_OVERWRITE:\nfalse`;
 
     const response = await ai.models.generateContent({
       model,
-      contents: userMessage,
+      contents: [
+        {
+          role: "user",
+          parts: [
+            {
+              inlineData: {
+                mimeType: "application/pdf",
+                data: pdfBase64,
+              },
+            },
+            {
+              text: "OPTIONAL_BASE_JSON:\nnone\n\nALLOW_OVERWRITE:\nfalse",
+            },
+          ],
+        },
+      ],
       config: {
         systemInstruction: SYSTEM_PROMPT,
         temperature: 0,
@@ -247,7 +249,12 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ ok: true, data });
   } catch (err) {
-    const msg = err instanceof Error ? err.message : String(err);
-    return NextResponse.json({ error: msg }, { status: 500 });
+    let msg = err instanceof Error ? err.message : String(err);
+    try {
+      const parsed = JSON.parse(msg);
+      if (parsed?.error?.message) msg = parsed.error.message;
+    } catch {}
+    const status = msg.includes("429") || msg.includes("quota") || msg.includes("RESOURCE_EXHAUSTED") ? 429 : 500;
+    return NextResponse.json({ error: msg }, { status });
   }
 }
