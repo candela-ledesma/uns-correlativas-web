@@ -1,0 +1,253 @@
+import { NextResponse } from "next/server";
+import { auth } from "@/auth";
+import { Role } from "@/lib/auth/roles";
+import { GoogleGenAI } from "@google/genai";
+import { extractPdfText } from "@/lib/server/extractPdfText";
+
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
+
+const MAX_SIZE_MB = 20;
+const PROMPT_VERSION = "v15";
+
+const SYSTEM_PROMPT = `You are a deterministic data normalization engine for academic curricula.
+
+Your task is to transform raw, unstructured academic plan content into a strictly valid JSON object that follows the PlanData schema.
+
+---
+
+## INPUT
+
+You will receive:
+
+1. RAW_TEXT:
+   Unstructured text extracted from a PDF (may contain noise, broken formatting, OCR issues).
+
+---
+
+## OUTPUT (STRICT)
+
+Return ONLY a valid JSON object.
+
+* No explanations
+* No comments
+* No markdown
+* No extra text
+
+---
+
+## TARGET SCHEMA (PlanData)
+
+\`\`\`json
+{
+  "plan": {
+    "carrera": "string | null",
+    "universidad": "string | null",
+    "codigo_plan": "string | null"
+  },
+  "materias": [
+    {
+      "id": "string | null",
+      "nombre": "string | null",
+      "año": "string | null",
+      "cuatrimestre": "string | null",
+      "horas": "string | null",
+      "tipo": "materia | null",
+      "categoria": "normal | optativa | null",
+      "grupo_opcion": "string (ID of agrupador) | null",
+      "subtipo": "string | null",
+      "correlativas": {
+        "<id_materia>": {
+          "para_cursar": "cursada | aprobada | null",
+          "para_rendir": "cursada | aprobada | null"
+        }
+      }
+    }
+  ],
+  "agrupadores": [
+    {
+      "id": "string",
+      "nombre": "string | null",
+      "tipo": "optativa_grupo | idioma_grupo | null",
+      "opciones": ["string (IDs of materias)"],
+      "año": "string | null",
+      "cuatrimestre": "string | null"
+    }
+  ]
+}
+\`\`\`
+
+### Field details
+
+**plan**
+- \`carrera\`: name of the degree (e.g. "Abogacia", "Ingeniería en Sistemas")
+- \`universidad\`: university name (e.g. "Universidad Nacional del Sur")
+- \`codigo_plan\`: plan code/version (e.g. "Plan 2020 - Versión 2")
+
+**materias[].correlativas**
+- Object keyed by the prerequisite subject ID (string)
+- \`para_cursar\`: requirement to enroll — "cursada" (passed) or "aprobada" (approved/final exam passed)
+- \`para_rendir\`: requirement to take the final exam — same values
+- If a requirement does not apply → null
+- If no prerequisites → empty object {}
+
+**RAW_TEXT correlativas format (CRITICAL):**
+Each correlativa line looks like: \`<id> <Cursada|Aprobada> <Cursada|Aprobada>\`
+The FIRST value is \`para_cursar\`, the SECOND is \`para_rendir\`.
+Example: \`9001 Cursada Aprobada\` → \`{"9001": {"para_cursar": "cursada", "para_rendir": "aprobada"}}\`
+If only one value appears, use it for both fields.
+
+**materias[].categoria**
+- \`"normal"\` for mandatory subjects
+- \`"optativa"\` for elective subjects that belong to an agrupador
+
+**Elective group nodes (CRITICAL — agrupador_requisito pattern):**
+In the RAW_TEXT, a group ID (starting with G) can appear in two distinct positions:
+
+POSITION A — Inside the year/semester plan, at the end of a subject's correlativas block:
+  → Generate BOTH an entry in \`materias\` (tipo: "agrupador_requisito") AND in \`agrupadores\`.
+
+POSITION B — As a section header introducing a list of elective subjects (under "MATERIAS OPTATIVAS"):
+  → Generate ONLY an entry in \`agrupadores\`. Do NOT add it to \`materias\`.
+
+**CRITICAL — año/cuatrimestre inference for agrupadores:**
+The \`año\` and \`cuatrimestre\` of an agrupador MUST be inferred from the year/semester heading
+that immediately precedes it in the RAW_TEXT.
+
+Elective subjects listed in the "MATERIAS OPTATIVAS" section do NOT have an explicit year.
+Assign them the \`año\`/\`cuatrimestre\` of their agrupador (referenced by their \`grupo_opcion\` field).
+
+**Language requirement (CRITICAL — idioma_grupo pattern):**
+When a language group (ID starting with I, e.g. "I0024") appears in the text, generate THREE entries:
+1. An entry in \`agrupadores\` with \`tipo: "idioma_grupo"\`.
+2. An entry in \`materias\` with the same ID, \`tipo: "materia"\`, \`subtipo: "idioma"\`.
+3. Each exam listed under the language group in \`materias\` with \`categoria: "optativa"\`, \`subtipo: "idioma"\`.
+
+---
+
+## CRITICAL RULES (MUST FOLLOW)
+
+1. NEVER invent or infer data — if not explicitly present → use null
+
+2. Extract ALL subjects including electives. Process the entire "MATERIAS OPTATIVAS" section.
+
+3. Extract only explicit correlativas from RAW_TEXT. Do NOT infer from free-text descriptions.
+
+4. IDs must be strings, exact format.
+
+4b. \`horas\`: extract only the numeric value. Strip unit suffix. If no hours listed → use \`""\`.
+    Some subjects appear without hours: \`20103 EPIDEMIOLOGIA CLINICA 8170 Aprobada Aprobada\`
+    — here "8170" is the first correlativa ID, not hours. Set horas: "".
+
+5. año: normalize to "Primer Año", "Segundo Año", "Tercer Año", "Cuarto Año", "Quinto Año", etc.
+
+6. cuatrimestre: normalize to "Primer Cuatrimestre" or "Segundo Cuatrimestre". If annual → null.
+
+7. Each subject must be a separate object. Do NOT merge subjects.
+
+8. For each agrupador, list ALL its member subject IDs in \`opciones\`.
+
+9. Set \`categoria: "optativa"\` and \`grupo_opcion: <agrupador_id>\` for every elective subject.
+
+10. NEVER duplicate a regular subject. Each numeric subject ID appears exactly ONCE in \`materias\`.
+
+11. G#### and I#### IDs appear in BOTH \`materias[]\` and \`agrupadores[]\` when in POSITION A.
+
+## VALIDATION CONSTRAINTS
+
+* "materias" must be non-empty if any subjects are detected
+* "correlativas" must always be an object (never null or array)
+* "agrupadores" must always be an array (empty [] if none detected)
+
+## FINAL INSTRUCTION
+
+Your response MUST be strict JSON, schema-compliant and safe for automatic validation. If unsure → use null.`;
+
+function limpiarTexto(texto: string): string {
+  return texto
+    .replace(/\r\n/g, "\n")
+    .replace(/\r/g, "\n")
+    .replace(/[ \t]+/g, " ")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}
+
+function extraerJSON(raw: string): unknown {
+  const direct = raw.trim();
+  try { return JSON.parse(direct); } catch {}
+
+  const mdMatch = direct.match(/```(?:json)?\s*([\s\S]*?)```/);
+  if (mdMatch) try { return JSON.parse(mdMatch[1]); } catch {}
+
+  const braceStart = direct.indexOf("{");
+  const braceEnd = direct.lastIndexOf("}");
+  if (braceStart !== -1 && braceEnd !== -1) {
+    try { return JSON.parse(direct.slice(braceStart, braceEnd + 1)); } catch {}
+  }
+
+  throw new Error("No se pudo extraer JSON de la respuesta del modelo");
+}
+
+export async function POST(request: Request) {
+  const session = await auth();
+  if (!session?.user?.id || session.user.role !== Role.ADMIN) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
+  const formData = await request.formData().catch(() => null);
+  if (!formData) {
+    return NextResponse.json({ error: "Request inválido" }, { status: 400 });
+  }
+
+  const file = formData.get("file");
+  if (!(file instanceof File)) {
+    return NextResponse.json({ error: "No se recibió ningún archivo" }, { status: 400 });
+  }
+  if (file.size > MAX_SIZE_MB * 1024 * 1024) {
+    return NextResponse.json({ error: `El archivo supera los ${MAX_SIZE_MB} MB` }, { status: 400 });
+  }
+
+  const model = (formData.get("model") as string) || "gemini-2.5-flash";
+
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    return NextResponse.json({ error: "GEMINI_API_KEY no configurada" }, { status: 500 });
+  }
+
+  try {
+    // 1. Extraer texto del PDF en memoria — sin guardar nada en disco
+    const bytes = await file.arrayBuffer();
+    const textoRaw = await extractPdfText(Buffer.from(bytes));
+    const textoLimpio = limpiarTexto(textoRaw);
+
+    if (textoLimpio.length < 200) {
+      return NextResponse.json({ error: "El PDF no contiene texto extraíble o está vacío" }, { status: 400 });
+    }
+
+    // 2. Llamar a Gemini directamente
+    const ai = new GoogleGenAI({ apiKey });
+    const userMessage = `RAW_TEXT:\n${textoLimpio}\n\nOPTIONAL_BASE_JSON:\nnone\n\nALLOW_OVERWRITE:\nfalse`;
+
+    const response = await ai.models.generateContent({
+      model,
+      contents: userMessage,
+      config: {
+        systemInstruction: SYSTEM_PROMPT,
+        temperature: 0,
+      },
+    });
+
+    const rawText = response.text ?? "";
+    const data = extraerJSON(rawText) as Record<string, unknown>;
+
+    // 3. Agregar metadata — nada se guarda en disco
+    data._llm_confidence = 1.0;
+    data._llm_prompt_version = PROMPT_VERSION;
+    data._llm_mode = "llm";
+
+    return NextResponse.json({ ok: true, data });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    return NextResponse.json({ error: msg }, { status: 500 });
+  }
+}
