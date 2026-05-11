@@ -1,6 +1,6 @@
 "use client";
 
-import { TEXT, TEXT_DET, STATUS_COLORS, GLASS } from "@/lib/ui/tokens";
+import { TEXT, TEXT_DET, STATUS_COLORS } from "@/lib/ui/tokens";
 import { CARD_ACTION_BTN } from "@/lib/ui/cardStyles";
 import type { EstadoMateria } from "@/lib/plan/evaluarCorrelativas";
 

@@ -1,13 +1,13 @@
 {
   "plan": {
-    "carrera": "FARMACIA",
+    "carrera": "INGENIERIA EN SISTEMAS DE INFORMACION.",
     "universidad": "UNIVERSIDAD NACIONAL DEL SUR",
-    "codigo_plan": "Plan 2025 - Versión 1"
+    "codigo_plan": "Plan 2012 - Versión 1"
   },
   "materias": [
     {
-      "id": "8161",
-      "nombre": "CALCULO B",
+      "id": "5551",
+      "nombre": "ANALISIS MATEMATICO I",
       "año": "Primer Año",
       "cuatrimestre": "Primer Cuatrimestre",
       "horas": "128",
@@ -18,20 +18,8 @@
       "correlativas": {}
     },
     {
-      "id": "1263",
-      "nombre": "INTRODUCCION A LA FARMACIA",
-      "año": "Primer Año",
-      "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "32",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {}
-    },
-    {
-      "id": "6154",
-      "nombre": "QUIMICA GENERAL PARA FARMACIA",
+      "id": "5912",
+      "nombre": "ELEMENTOS DE ALGEBRA Y DE GEOMETRIA",
       "año": "Primer Año",
       "cuatrimestre": "Primer Cuatrimestre",
       "horas": "128",
@@ -42,25 +30,20 @@
       "correlativas": {}
     },
     {
-      "id": "1054",
-      "nombre": "ANATOMIA DEL CUERPO HUMANO",
+      "id": "5793",
+      "nombre": "RESOLUCION DE PROBLEMAS Y ALGORITMOS",
       "año": "Primer Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "96",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "128",
       "tipo": "materia",
       "categoria": "normal",
       "grupo_opcion": null,
       "subtipo": null,
-      "correlativas": {
-        "1263": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        }
-      }
+      "correlativas": {}
     },
     {
-      "id": "1243",
-      "nombre": "HISTOLOGIA Y BIOLOGIA CELULAR",
+      "id": "7714",
+      "nombre": "INTRODUCCION A LA INGENIERIA DE SOFTWARE",
       "año": "Primer Año",
       "cuatrimestre": "Segundo Cuatrimestre",
       "horas": "128",
@@ -71,324 +54,230 @@
       "correlativas": {}
     },
     {
-      "id": "6155",
-      "nombre": "QUIMICA ORGANICA IF",
+      "id": "7713",
+      "nombre": "INTRODUCCION A LA PROGRAMACION ORIENTADA A OBJETOS",
       "año": "Primer Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "96",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "6154": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        }
-      }
-    },
-    {
-      "id": "8170",
-      "nombre": "ESTADISTICA BF",
-      "año": "Segundo Año",
-      "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "96",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "8161": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        }
-      }
-    },
-    {
-      "id": "3089",
-      "nombre": "FISICA GENERAL B",
-      "año": "Segundo Año",
-      "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "96",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "8161": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        }
-      }
-    },
-    {
-      "id": "6156",
-      "nombre": "QUIMICA ORGANICA IIF",
-      "año": "Segundo Año",
-      "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "96",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "6155": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        }
-      }
-    },
-    {
-      "id": "6008",
-      "nombre": "FISICOQUIMICA F",
-      "año": "Segundo Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "96",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "3089": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        },
-        "8161": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "8170": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        }
-      }
-    },
-    {
-      "id": "6182",
-      "nombre": "PRINCIPIOS DE QUIMICA ANALITICA",
-      "año": "Segundo Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "96",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "6154": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        }
-      }
-    },
-    {
-      "id": "1376",
-      "nombre": "QUIMICA BIOLOGICA F",
-      "año": "Segundo Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "96",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "1054": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        },
-        "1243": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "6155": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "6156": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        }
-      }
-    },
-    {
-      "id": "1121",
-      "nombre": "FARMACOBOTANICA GENERAL",
-      "año": "Tercer Año",
-      "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "96",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "1243": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "6156": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        }
-      }
-    },
-    {
-      "id": "1149",
-      "nombre": "FISIOLOGIA",
-      "año": "Tercer Año",
-      "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "112",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "1054": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "1376": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        },
-        "6008": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        }
-      }
-    },
-    {
-      "id": "1291",
-      "nombre": "MICROBIOLOGIA BASICA",
-      "año": "Tercer Año",
-      "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "90",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "1376": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        }
-      }
-    },
-    {
-      "id": "6019",
-      "nombre": "ANALISIS INSTRUMENTAL PARA FARMACIA",
-      "año": "Tercer Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "96",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "6182": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
-      }
-    },
-    {
-      "id": "1142",
-      "nombre": "FISIOPATOLOGIA HUMANA",
-      "año": "Tercer Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "100",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "1149": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        },
-        "1376": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
-      }
-    },
-    {
-      "id": "1228",
-      "nombre": "HIGIENE Y SANIDAD",
-      "año": "Tercer Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "50",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "1291": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        }
-      }
-    },
-    {
-      "id": "1265",
-      "nombre": "INMUNOLOGIA HUMANA",
-      "año": "Tercer Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "56",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "1291": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        },
-        "1376": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
-      }
-    },
-    {
-      "id": "I0902",
-      "nombre": "Idioma de Farmacia, plan 2025",
-      "año": "Tercer Año",
       "cuatrimestre": "Segundo Cuatrimestre",
       "horas": "",
       "tipo": "materia",
       "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5793": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "5912": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "7791",
+      "nombre": "LENGUAJES FORMALES Y AUTOMATAS",
+      "año": "Primer Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5793": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "5912": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "5552",
+      "nombre": "ANALISIS MATEMATICO II",
+      "año": "Segundo Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5551": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "5912": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "7655",
+      "nombre": "ESTRUCTURAS DE DATOS",
+      "año": "Segundo Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5551": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "5793": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "7713": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "7949",
+      "nombre": "TEORIA DE LA COMPUTABILIDAD",
+      "año": "Segundo Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5912": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "7713": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "7791": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "I0022",
+      "nombre": "Examen de Suficiencia de Idioma Inglés, Dpto de Computación",
+      "año": "Segundo Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": null,
       "grupo_opcion": null,
       "subtipo": "idioma",
       "correlativas": {}
     },
     {
-      "id": "1126",
-      "nombre": "FARMACOGNOSIA Y FITOTERAPIA",
-      "año": "Cuarto Año",
-      "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "112",
+      "id": "7821",
+      "nombre": "MODELOS DE SOFTWARE",
+      "año": "Segundo Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "64",
       "tipo": "materia",
       "categoria": "normal",
       "grupo_opcion": null,
       "subtipo": null,
       "correlativas": {
-        "1121": {
+        "7713": {
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         },
-        "6019": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
+        "7714": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
         },
-        "I0902": {
+        "7791": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "7820",
+      "nombre": "MODELOS ESTADISTICOS PARA CIENCIAS DE LA COMPUTACION",
+      "año": "Segundo Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "64",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5551": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "5793": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "7791": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "5744",
+      "nombre": "ORGANIZACION DE COMPUTADORAS",
+      "año": "Segundo Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "7655": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "7713": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "7791": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "7951",
+      "nombre": "TECNOLOGIA DE PROGRAMACION",
+      "año": "Segundo Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "7655": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "7713": {
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
       }
     },
     {
-      "id": "1130",
-      "nombre": "FARMACOLOGIA I",
-      "año": "Cuarto Año",
+      "id": "5561",
+      "nombre": "ARQUITECTURA DE COMPUTADORAS",
+      "año": "Tercer Año",
       "cuatrimestre": "Primer Cuatrimestre",
       "horas": "128",
       "tipo": "materia",
@@ -396,93 +285,276 @@
       "grupo_opcion": null,
       "subtipo": null,
       "correlativas": {
-        "1142": {
+        "5744": {
           "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        },
-        "1149": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "6008": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        },
-        "I0902": {
-          "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
       }
     },
     {
-      "id": "1275",
-      "nombre": "LEGISLACION FARMACEUTICA",
-      "año": "Cuarto Año",
+      "id": "5704",
+      "nombre": "LOGICA PARA CIENCIAS DE LA COMPUTACION",
+      "año": "Tercer Año",
       "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "50",
+      "horas": "",
       "tipo": "materia",
       "categoria": "normal",
       "grupo_opcion": null,
       "subtipo": null,
       "correlativas": {
-        "1121": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        },
-        "1263": {
+        "7791": {
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         },
-        "I0902": {
+        "7949": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "7951": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "I0022": {
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
       }
     },
     {
-      "id": "G0903",
-      "nombre": "Optativa de Farmacia Plan 2025",
+      "id": "7911",
+      "nombre": "REQUERIMIENTOS DE SISTEMAS",
+      "año": "Tercer Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "7655": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "7821": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "7951": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "I0022": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "7552",
+      "nombre": "BASES DE DATOS",
+      "año": "Tercer Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5704": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "7821": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "7911": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "I0022": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "7811",
+      "nombre": "METODOS FORMALES PARA INGENIERIA DE SOFTWARE",
+      "año": "Tercer Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "64",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5704": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "7821": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "7911": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "7951": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "I0022": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "6601",
+      "nombre": "QUIMICA IS",
+      "año": "Tercer Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "65",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5551": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "I0022": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "5949",
+      "nombre": "SISTEMAS OPERATIVOS",
+      "año": "Tercer Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5561": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "5744": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "I0022": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "5523",
+      "nombre": "ALGORITMOS Y COMPLEJIDAD",
       "año": "Cuarto Año",
       "cuatrimestre": "Primer Cuatrimestre",
       "horas": "",
-      "tipo": "agrupador_requisito",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {}
-    },
-    {
-      "id": "6018",
-      "nombre": "CIENCIA Y ANALISIS DE LOS ALIMENTOS F",
-      "año": "Cuarto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "112",
       "tipo": "materia",
       "categoria": "normal",
       "grupo_opcion": null,
       "subtipo": null,
       "correlativas": {
-        "1376": {
+        "5704": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "7951": {
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         },
-        "6182": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "8170": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "I0902": {
+        "I0022": {
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
       }
     },
     {
-      "id": "1131",
-      "nombre": "FARMACOLOGIA II",
+      "id": "7527",
+      "nombre": "ARQUITECTURA Y DISEÑO DE SISTEMAS",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "7552": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "7811": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "7911": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "I0022": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "7680",
+      "nombre": "INGENIERIA DE APLICACIONES DE WEB",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5949": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "7552": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "7911": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "I0022": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "I0023",
+      "nombre": "Examen Integral de Idioma Inglés ISS, Ing.en Sist. de Software",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": null,
+      "grupo_opcion": null,
+      "subtipo": "idioma",
+      "correlativas": {}
+    },
+    {
+      "id": "3051",
+      "nombre": "FISICA I",
       "año": "Cuarto Año",
       "cuatrimestre": "Segundo Cuatrimestre",
       "horas": "128",
@@ -491,60 +563,77 @@
       "grupo_opcion": null,
       "subtipo": null,
       "correlativas": {
-        "1130": {
+        "5551": {
           "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        },
-        "1142": {
-          "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         },
-        "1291": {
-          "para_cursar": "aprobada",
+        "5912": {
+          "para_cursar": "cursada",
           "para_rendir": "aprobada"
         },
-        "I0902": {
+        "I0022": {
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
       }
     },
     {
-      "id": "1116",
-      "nombre": "FARMACOQUIMICA",
+      "id": "7891",
+      "nombre": "PROYECTOS DE SISTEMAS DE SOFTWARE",
       "año": "Cuarto Año",
       "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "112",
+      "horas": "128",
       "tipo": "materia",
       "categoria": "normal",
       "grupo_opcion": null,
       "subtipo": null,
       "correlativas": {
-        "1130": {
+        "7527": {
           "para_cursar": "cursada",
-          "para_rendir": "cursada"
+          "para_rendir": "aprobada"
         },
-        "3089": {
+        "7552": {
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         },
-        "6156": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "8170": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "I0902": {
+        "I0022": {
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
       }
     },
     {
-      "id": "1115",
-      "nombre": "FARMACIA ASISTENCIAL Y CLINICA",
+      "id": "7993",
+      "nombre": "VERIFICACION Y VALIDACION DE SOFTWARE",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5523": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "7527": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "7811": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "I0022": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "2115",
+      "nombre": "ECONOMIA DE LA EMPRESA ISS",
       "año": "Quinto Año",
       "cuatrimestre": "Primer Cuatrimestre",
       "horas": "96",
@@ -553,350 +642,260 @@
       "grupo_opcion": null,
       "subtipo": null,
       "correlativas": {
-        "1130": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "1131": {
+        "7891": {
           "para_cursar": "cursada",
-          "para_rendir": "cursada"
+          "para_rendir": "aprobada"
         },
-        "1265": {
+        "I0022": {
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         },
-        "I0902": {
+        "I0023": {
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
       }
     },
     {
-      "id": "1424",
-      "nombre": "TECNOLOGIA FARMACEUTICA I",
+      "id": "7668",
+      "nombre": "GESTION DE CALIDAD EN EL SOFTWARE",
       "año": "Quinto Año",
-      "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "112",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "1126": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        },
-        "6008": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "I0902": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
-      }
-    },
-    {
-      "id": "1442",
-      "nombre": "TOXICOLOGIA F",
-      "año": "Quinto Año",
-      "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "112",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "1130": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "1131": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        },
-        "I0902": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
-      }
-    },
-    {
-      "id": "1055",
-      "nombre": "ANALISIS FARMACEUTICO",
-      "año": "Quinto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "112",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "1424": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        },
-        "6019": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "8170": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "I0902": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
-      }
-    },
-    {
-      "id": "1356",
-      "nombre": "PRACTICANATO PROFESIONAL DE FARMACIA",
-      "año": "Quinto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "362",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "1126": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "1131": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "1424": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        },
-        "I0902": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
-      }
-    },
-    {
-      "id": "1427",
-      "nombre": "TECNOLOGIA FARMACEUTICA II",
-      "año": "Quinto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "112",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "1228": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "1424": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        },
-        "I0902": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
-      }
-    },
-    {
-      "id": "1049",
-      "nombre": "BIOANALITICA",
-      "año": "Cuarto Año",
-      "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "112",
-      "tipo": "materia",
-      "categoria": "optativa",
-      "grupo_opcion": "G0903",
-      "subtipo": null,
-      "correlativas": {
-        "6019": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        }
-      }
-    },
-    {
-      "id": "1203",
-      "nombre": "GENETICA MOLECULAR BASICA Y APLICADA",
-      "año": "Cuarto Año",
-      "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "112",
-      "tipo": "materia",
-      "categoria": "optativa",
-      "grupo_opcion": "G0903",
-      "subtipo": null,
-      "correlativas": {
-        "1243": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "6156": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        },
-        "8170": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        }
-      }
-    },
-    {
-      "id": "1264",
-      "nombre": "INTRODUCCION A LA FARMACIA INDUSTRIAL",
-      "año": "Cuarto Año",
-      "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "112",
-      "tipo": "materia",
-      "categoria": "optativa",
-      "grupo_opcion": "G0903",
-      "subtipo": null,
-      "correlativas": {
-        "1263": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "6019": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        },
-        "6156": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        }
-      }
-    },
-    {
-      "id": "1285",
-      "nombre": "MICROBIOLOGIA INDUSTRIAL ORIENTADA A LOS ALIMENTOS",
-      "año": "Cuarto Año",
-      "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "32",
-      "tipo": "materia",
-      "categoria": "optativa",
-      "grupo_opcion": "G0903",
-      "subtipo": null,
-      "correlativas": {
-        "1291": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "1376": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
-      }
-    },
-    {
-      "id": "2106",
-      "nombre": "ECONOMIA DE LA EMPRESA",
-      "año": "Cuarto Año",
-      "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "96",
-      "tipo": "materia",
-      "categoria": "optativa",
-      "grupo_opcion": "G0903",
-      "subtipo": null,
-      "correlativas": {}
-    },
-    {
-      "id": "4525",
-      "nombre": "BIOÉTICA",
-      "año": "Cuarto Año",
-      "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "96",
-      "tipo": "materia",
-      "categoria": "optativa",
-      "grupo_opcion": "G0903",
-      "subtipo": null,
-      "correlativas": {}
-    },
-    {
-      "id": "6023",
-      "nombre": "ANALISIS ESPECTROSCOPICO DE FARMACOS",
-      "año": "Cuarto Año",
       "cuatrimestre": "Primer Cuatrimestre",
       "horas": "64",
       "tipo": "materia",
-      "categoria": "optativa",
-      "grupo_opcion": "G0903",
+      "categoria": "normal",
+      "grupo_opcion": null,
       "subtipo": null,
       "correlativas": {
-        "6008": {
+        "7527": {
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         },
-        "6156": {
+        "7891": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "7993": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "I0022": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "I0023": {
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
       }
     },
     {
-      "id": "8129",
-      "nombre": "ANALISIS DE REGRESION",
-      "año": "Cuarto Año",
-      "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "50",
-      "tipo": "materia",
-      "categoria": "optativa",
-      "grupo_opcion": "G0903",
-      "subtipo": null,
-      "correlativas": {
-        "8170": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
-      }
-    },
-    {
-      "id": "4578",
-      "nombre": "EXAMEN DE SUFICIENCIA DE IDIOMA INGLES",
-      "año": "Cuarto Año",
+      "id": "7886",
+      "nombre": "PRACTICA PROFESIONAL SUPERVISADA PARA INGENIERIA DE SOFTWARE",
+      "año": "Quinto Año",
       "cuatrimestre": "Primer Cuatrimestre",
       "horas": "",
       "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "I0022": {
+          "para_cursar": null,
+          "para_rendir": "aprobada"
+        },
+        "I0023": {
+          "para_cursar": null,
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "7903",
+      "nombre": "REDES DE COMPUTADORAS",
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5561": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "5949": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "I0022": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "I0023": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "7534",
+      "nombre": "AUDITORIA DE SISTEMAS",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "64",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "7891": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "I0022": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "I0023": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "3058",
+      "nombre": "FISICA II IS",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "3051": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "5552": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "I0022": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "I0023": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "7895",
+      "nombre": "PROYECTO FINAL",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "7886": {
+          "para_cursar": null,
+          "para_rendir": "aprobada"
+        },
+        "I0022": {
+          "para_cursar": null,
+          "para_rendir": "aprobada"
+        },
+        "I0023": {
+          "para_cursar": null,
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "7922",
+      "nombre": "SISTEMAS INTELIGENTES ARTIFICIALES",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "64",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "7552": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "7820": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "I0022": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "I0023": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "5596",
+      "nombre": "EXAMEN DE SUFICIENCIA DE IDIOMA: INGLES",
+      "año": "Segundo Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
       "categoria": "optativa",
-      "grupo_opcion": "I0902",
+      "grupo_opcion": "I0022",
+      "subtipo": "idioma",
+      "correlativas": {}
+    },
+    {
+      "id": "7659",
+      "nombre": "EXAMEN INTEGRAL DE IDIOMA INGLES ISS",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "I0023",
       "subtipo": "idioma",
       "correlativas": {}
     }
   ],
   "agrupadores": [
     {
-      "id": "I0902",
-      "nombre": "Idioma de Farmacia, plan 2025",
+      "id": "I0022",
+      "nombre": "Examen de Suficiencia de Idioma Inglés, Dpto de Computación",
       "tipo": "idioma_grupo",
       "opciones": [
-        "4578"
+        "5596"
       ],
-      "año": "Tercer Año",
+      "año": "Segundo Año",
       "cuatrimestre": "Segundo Cuatrimestre"
     },
     {
-      "id": "G0903",
-      "nombre": "Optativa de Farmacia Plan 2025",
-      "tipo": "optativa_grupo",
+      "id": "I0023",
+      "nombre": "Examen Integral de Idioma Inglés ISS, Ing.en Sist. de Software",
+      "tipo": "idioma_grupo",
       "opciones": [
-        "1049",
-        "1203",
-        "1264",
-        "1285",
-        "2106",
-        "4525",
-        "6023",
-        "8129"
+        "7659"
       ],
       "año": "Cuarto Año",
-      "cuatrimestre": "Primer Cuatrimestre"
+      "cuatrimestre": "Segundo Cuatrimestre"
     }
   ],
-  "_llm_confidence": 1.0,
-  "_llm_prompt_version": "v14",
-  "_llm_mode": "llm"
+  "_llm_confidence": 1,
+  "_llm_prompt_version": "v20",
+  "_llm_mode": "llm",
+  "_auto_saved_at": "2026-05-11T22:01:40.194Z"
 }

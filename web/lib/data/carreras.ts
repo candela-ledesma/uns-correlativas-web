@@ -161,6 +161,22 @@ export const CARRERAS: CarreraConfig[] = [
     ],
     disponible: true,
     },
+
+    {
+    id: "ingenieria_en_sistemas_de_informacion" as unknown as CarreraId,
+    nombre: "Ingenieria En Sistemas De Informacion",
+    descripcion: "Plan de estudios y correlativas.",
+    defaultVersionId: "v1",
+    versions: [
+        {
+        versionId: "v1",
+        label: "Plan actual",
+        jsonFile: "ingenieria_en_sistemas_de_informacion.json",
+        disponible: true,
+        },
+    ],
+    disponible: true,
+    },
 ];
 
 export function getCarreraById(id: string) {

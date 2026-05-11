@@ -72,13 +72,66 @@ export function formatValidationIssues(
   return issues.slice(0, max).map((issue) => `${issue.path}: ${issue.message}`);
 }
 
+async function loadPlanDataFromFile(
+  carreraId: string,
+  jsonFile: string,
+  carreraInfo: CarreraInfo,
+  version: VersionInfo
+): Promise<PlanLoadResult> {
+  const filePath = path.join(process.cwd(), "data", jsonFile);
+  const fileContents = await fs.readFile(filePath, "utf8");
+
+  let raw: unknown;
+  try {
+    raw = JSON.parse(fileContents);
+  } catch {
+    return {
+      status: "invalid",
+      carrera: carreraInfo,
+      errorKind: "shape",
+      issues: [{ kind: "shape", path: "$", message: "El archivo no contiene JSON válido" }],
+    };
+  }
+
+  const validation = validatePlanData(raw, { carreraId, versionId: version.versionId });
+
+  if (!validation.ok) {
+    return { status: "invalid", carrera: carreraInfo, errorKind: validation.kind, issues: validation.issues };
+  }
+
+  return {
+    status: "ok",
+    carrera: {
+      ...carreraInfo,
+      defaultVersionId: version.versionId,
+      versions: [{ versionId: version.versionId, label: version.label, disponible: true, hidden: false }],
+    },
+    version,
+    data: validation.data,
+    warnings: validation.warnings,
+  };
+}
+
 export async function loadPlanData(
   carreraId: string,
   requestedVersionId: string | null
 ): Promise<PlanLoadResult> {
   const carrera = getCarreraById(carreraId);
+
+  // Fallback: si la carrera no está registrada, buscar <carreraId>.json en data/
   if (!carrera) {
-    return { status: "not-found", carreraId };
+    const jsonFile = `${carreraId}.json`;
+    const filePath = path.join(process.cwd(), "data", jsonFile);
+    const exists = await fs.access(filePath).then(() => true).catch(() => false);
+    if (!exists) return { status: "not-found", carreraId };
+
+    const carreraInfo: CarreraInfo = { id: carreraId, nombre: carreraId.replace(/_/g, " ") };
+    const version: VersionInfo = { versionId: "v1", label: "Plan actual", jsonFile, disponible: true };
+    try {
+      return await loadPlanDataFromFile(carreraId, jsonFile, carreraInfo, version);
+    } catch {
+      return { status: "not-found", carreraId };
+    }
   }
 
   const carreraInfo: CarreraInfo = {

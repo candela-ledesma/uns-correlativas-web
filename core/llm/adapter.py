@@ -1,3 +1,4 @@
+# DEPRECATED: pendiente de borrar (ver core/llm/)
 from typing import Any
 
 from core.parser.normalizers import normalizar_anio

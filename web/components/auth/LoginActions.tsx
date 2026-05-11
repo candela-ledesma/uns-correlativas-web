@@ -16,7 +16,7 @@ type Props = {
 };
 
 export default function LoginActions({ callbackUrl, compact = false, showGoogleLogin = false }: Props) {
-  const [email,   setEmail]   = useState("tester@uns.local");
+  const [email,   setEmail]   = useState("");
   const [role,    setRole]    = useState("USER");
   const [loading, setLoading] = useState(false);
   const [error,   setError]   = useState<string | null>(null);

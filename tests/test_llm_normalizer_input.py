@@ -1,3 +1,4 @@
+# DEPRECATED: pendiente de borrar (junto con core/llm/)
 import unittest
 
 from core.llm.llm_normalizer import _construir_user_message, PROMPT_VERSION

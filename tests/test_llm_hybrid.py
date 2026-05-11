@@ -1,3 +1,4 @@
+# DEPRECATED: pendiente de borrar (junto con core/llm/)
 import unittest
 
 from core.parser.cli import _uns_a_plandata

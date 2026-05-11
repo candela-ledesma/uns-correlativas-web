@@ -1,34 +1,10 @@
 {
   "plan": {
-    "carrera": "AGRIMENSURA",
-    "universidad": "UNIVERSIDAD NACIONAL DEL SUR",
-    "codigo_plan": "Plan 2011 - Versión 1"
+    "carrera": "Ingenieria En Sistemas De Informacion",
+    "universidad": "Universidad Nacional del Sur",
+    "codigo_plan": "Plan 2012 - Versión 1"
   },
   "materias": [
-    {
-      "id": "5293",
-      "nombre": "INTRODUCCION A LAS INGENIERIAS",
-      "año": "Primer Año",
-      "cuatrimestre": null,
-      "horas": "64",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {}
-    },
-    {
-      "id": "5539",
-      "nombre": "ALGEBRA Y GEOMETRIA",
-      "año": "Primer Año",
-      "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "128",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {}
-    },
     {
       "id": "5551",
       "nombre": "ANALISIS MATEMATICO I",
@@ -42,74 +18,86 @@
       "correlativas": {}
     },
     {
-      "id": "5415",
-      "nombre": "SISTEMAS DE REPRESENTACION",
+      "id": "5912",
+      "nombre": "ELEMENTOS DE ALGEBRA Y DE GEOMETRIA",
       "año": "Primer Año",
       "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "96",
+      "horas": "128",
       "tipo": "materia",
       "categoria": "normal",
       "grupo_opcion": null,
       "subtipo": null,
       "correlativas": {}
+    },
+    {
+      "id": "5793",
+      "nombre": "RESOLUCION DE PROBLEMAS Y ALGORITMOS",
+      "año": "Primer Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {}
+    },
+    {
+      "id": "7714",
+      "nombre": "INTRODUCCION A LA INGENIERIA DE SOFTWARE",
+      "año": "Primer Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {}
+    },
+    {
+      "id": "7713",
+      "nombre": "INTRODUCCION A LA PROGRAMACION ORIENTADA A OBJETOS",
+      "año": "Primer Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5793": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "5912": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "7791",
+      "nombre": "LENGUAJES FORMALES Y AUTOMATAS",
+      "año": "Primer Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5793": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "5912": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        }
+      }
     },
     {
       "id": "5552",
       "nombre": "ANALISIS MATEMATICO II",
-      "año": "Primer Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "128",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "5539": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        },
-        "5551": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        }
-      }
-    },
-    {
-      "id": "3051",
-      "nombre": "FISICA I",
-      "año": "Primer Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "128",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "5539": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        },
-        "5551": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        }
-      }
-    },
-    {
-      "id": "6323",
-      "nombre": "QUIMICA GENERAL PARA INGENIERIA",
-      "año": "Primer Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "96",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {}
-    },
-    {
-      "id": "5030",
-      "nombre": "CALCULO DE COMPENSACION",
       "año": "Segundo Año",
       "cuatrimestre": "Primer Cuatrimestre",
       "horas": "128",
@@ -122,15 +110,40 @@
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         },
-        "5552": {
+        "5912": {
           "para_cursar": "cursada",
-          "para_rendir": "cursada"
+          "para_rendir": "aprobada"
         }
       }
     },
     {
-      "id": "3057",
-      "nombre": "FISICA II - IC",
+      "id": "7655",
+      "nombre": "ESTRUCTURAS DE DATOS",
+      "año": "Segundo Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5551": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "5793": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "7713": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "7949",
+      "nombre": "TEORIA DE LA COMPUTABILIDAD",
       "año": "Segundo Año",
       "cuatrimestre": "Primer Cuatrimestre",
       "horas": "128",
@@ -139,86 +152,23 @@
       "grupo_opcion": null,
       "subtipo": null,
       "correlativas": {
-        "3051": {
+        "5912": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "7713": {
           "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        },
-        "5539": {
-          "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         },
-        "5551": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "5552": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        }
-      }
-    },
-    {
-      "id": "7662",
-      "nombre": "FUNDAMENTOS DE INFORMATICA",
-      "año": "Segundo Año",
-      "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "64",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "5539": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
-      }
-    },
-    {
-      "id": "8101",
-      "nombre": "TOPICOS DE CALCULO AVANZADO",
-      "año": "Segundo Año",
-      "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "32",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "5551": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "5552": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        }
-      }
-    },
-    {
-      "id": "5106",
-      "nombre": "DIBUJO TOPOGRAFICO Y CARTOGRAFICO",
-      "año": "Segundo Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "128",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "5415": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "7662": {
+        "7791": {
           "para_cursar": "cursada",
           "para_rendir": "aprobada"
         }
       }
     },
     {
-      "id": "5175",
-      "nombre": "EXAMEN DE SUFICIENCIA DE IDIOMA: INGLES",
+      "id": "I0022",
+      "nombre": "Examen de Suficiencia de Idioma Inglés, Dpto de Computación",
       "año": "Segundo Año",
       "cuatrimestre": "Segundo Cuatrimestre",
       "horas": "",
@@ -229,8 +179,83 @@
       "correlativas": {}
     },
     {
-      "id": "3616",
-      "nombre": "GEOGRAFIA FISICA",
+      "id": "7821",
+      "nombre": "MODELOS DE SOFTWARE",
+      "año": "Segundo Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "64",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "7713": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "7714": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "7791": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "7820",
+      "nombre": "MODELOS ESTADISTICOS PARA CIENCIAS DE LA COMPUTACION",
+      "año": "Segundo Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "64",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5551": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "5793": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "7791": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "5744",
+      "nombre": "ORGANIZACION DE COMPUTADORAS",
+      "año": "Segundo Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "7655": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "7713": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "7791": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "7951",
+      "nombre": "TECNOLOGIA DE PROGRAMACION",
       "año": "Segundo Año",
       "cuatrimestre": "Segundo Cuatrimestre",
       "horas": "128",
@@ -239,16 +264,514 @@
       "grupo_opcion": null,
       "subtipo": null,
       "correlativas": {
-        "6323": {
+        "7655": {
           "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "7713": {
+          "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
       }
     },
     {
-      "id": "5471",
-      "nombre": "TOPOGRAFIA I",
-      "año": "Segundo Año",
+      "id": "5561",
+      "nombre": "ARQUITECTURA DE COMPUTADORAS",
+      "año": "Tercer Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5744": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "7791": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "I0022": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "5704",
+      "nombre": "LOGICA PARA CIENCIAS DE LA COMPUTACION",
+      "año": "Tercer Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "7949": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "7951": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "I0022": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "7911",
+      "nombre": "REQUERIMIENTOS DE SISTEMAS",
+      "año": "Tercer Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "7655": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "7821": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "7951": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "I0022": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "7552",
+      "nombre": "BASES DE DATOS",
+      "año": "Tercer Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5704": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "7821": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "7911": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "I0022": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "7811",
+      "nombre": "METODOS FORMALES PARA INGENIERIA DE SOFTWARE",
+      "año": "Tercer Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "64",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5704": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "7821": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "7911": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "7951": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "I0022": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "6601",
+      "nombre": "QUIMICA IS",
+      "año": "Tercer Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "65",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5551": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "I0022": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "5949",
+      "nombre": "SISTEMAS OPERATIVOS",
+      "año": "Tercer Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5561": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "5744": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "I0022": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "5523",
+      "nombre": "ALGORITMOS Y COMPLEJIDAD",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5704": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "7951": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "I0022": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "7527",
+      "nombre": "ARQUITECTURA Y DISEÑO DE SISTEMAS",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "7552": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "7811": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "7911": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "I0022": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "7680",
+      "nombre": "INGENIERIA DE APLICACIONES DE WEB",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5949": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "7552": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "7911": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "I0022": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "I0023",
+      "nombre": "Examen Integral de Idioma Inglés ISS, Ing.en Sist. de Software",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": "idioma",
+      "correlativas": {}
+    },
+    {
+      "id": "3051",
+      "nombre": "FISICA I",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5551": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "5912": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "I0022": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "7891",
+      "nombre": "PROYECTOS DE SISTEMAS DE SOFTWARE",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "7527": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "7552": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "I0022": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "7993",
+      "nombre": "VERIFICACION Y VALIDACION DE SOFTWARE",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5523": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "7527": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "7811": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "I0022": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "2115",
+      "nombre": "ECONOMIA DE LA EMPRESA ISS",
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "96",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "7891": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "I0022": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "I0023": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "7668",
+      "nombre": "GESTION DE CALIDAD EN EL SOFTWARE",
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "64",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "7527": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "7891": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "7993": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "I0022": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "I0023": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "7886",
+      "nombre": "PRACTICA PROFESIONAL SUPERVISADA PARA INGENIERIA DE SOFTWARE",
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "I0022": {
+          "para_cursar": null,
+          "para_rendir": "aprobada"
+        },
+        "I0023": {
+          "para_cursar": null,
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "7903",
+      "nombre": "REDES DE COMPUTADORAS",
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5561": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "5949": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "I0022": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "I0023": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "7534",
+      "nombre": "AUDITORIA DE SISTEMAS",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "64",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "7891": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "I0022": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "I0023": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "3058",
+      "nombre": "FISICA II IS",
+      "año": "Quinto Año",
       "cuatrimestre": "Segundo Cuatrimestre",
       "horas": "128",
       "tipo": "materia",
@@ -260,521 +783,23 @@
           "para_cursar": "cursada",
           "para_rendir": "aprobada"
         },
-        "5415": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
+        "5552": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
         },
-        "5539": {
+        "I0022": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "I0023": {
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
       }
     },
     {
-      "id": "5002",
-      "nombre": "AGRIMENSURA LEGAL I",
-      "año": "Tercer Año",
-      "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "128",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "5175": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "5293": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        }
-      }
-    },
-    {
-      "id": "5004",
-      "nombre": "AGROLOGIA E INFORMACION RURAL",
-      "año": "Tercer Año",
-      "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "128",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "3616": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        },
-        "5175": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "5471": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        },
-        "6323": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
-      }
-    },
-    {
-      "id": "5472",
-      "nombre": "TOPOGRAFIA II",
-      "año": "Tercer Año",
-      "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "128",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "5030": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        },
-        "5175": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "5415": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "5471": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        }
-      }
-    },
-    {
-      "id": "5003",
-      "nombre": "AGRIMENSURA LEGAL II",
-      "año": "Tercer Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "128",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "5002": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        },
-        "5175": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "5472": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        }
-      }
-    },
-    {
-      "id": "5159",
-      "nombre": "ELEMENTOS DE OBRAS",
-      "año": "Tercer Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "64",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "3057": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        },
-        "5004": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        },
-        "5106": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "5175": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
-      }
-    },
-    {
-      "id": "5183",
-      "nombre": "FOTOGRAMETRIA",
-      "año": "Tercer Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "128",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "3057": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "5106": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        },
-        "5175": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "5472": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        }
-      }
-    },
-    {
-      "id": "5463",
-      "nombre": "SEGURIDAD DEL TRABAJO Y GESTION AMBIENTAL",
-      "año": "Tercer Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "64",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "5002": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        },
-        "5004": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        },
-        "5175": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "5472": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        }
-      }
-    },
-    {
-      "id": "5185",
-      "nombre": "FOTOINTERPRETACION Y TELEDETECCION",
-      "año": "Cuarto Año",
-      "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "128",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "5004": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        },
-        "5030": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "5175": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "5183": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        }
-      }
-    },
-    {
-      "id": "5191",
-      "nombre": "GEODESIA I",
-      "año": "Cuarto Año",
-      "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "128",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "3057": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        },
-        "5030": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "5175": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "5472": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        }
-      }
-    },
-    {
-      "id": "5482",
-      "nombre": "VALUACIONES Y TASACIONES",
-      "año": "Cuarto Año",
-      "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "128",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "5003": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        },
-        "5004": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "5159": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        },
-        "5175": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
-      }
-    },
-    {
-      "id": "5046",
-      "nombre": "CARTOGRAFIA",
-      "año": "Cuarto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "128",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "5175": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "5185": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        },
-        "5191": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        },
-        "5472": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
-      }
-    },
-    {
-      "id": "5050",
-      "nombre": "CATASTRO",
-      "año": "Cuarto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "128",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "5003": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        },
-        "5175": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "5183": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "5482": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        }
-      }
-    },
-    {
-      "id": "5192",
-      "nombre": "GEODESIA II",
-      "año": "Cuarto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "128",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "3057": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "5175": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "5191": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        },
-        "5472": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
-      }
-    },
-    {
-      "id": "5399",
-      "nombre": "PLANEAMIENTO Y URBANISMO",
-      "año": "Quinto Año",
-      "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "128",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "5003": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "5050": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        },
-        "5175": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "5185": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        }
-      }
-    },
-    {
-      "id": "5466",
-      "nombre": "SISTEMAS DE INFORMACION TERRITORIAL",
-      "año": "Quinto Año",
-      "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "128",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "5046": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        },
-        "5050": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        },
-        "5175": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "5183": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
-      }
-    },
-    {
-      "id": "5469",
-      "nombre": "TOPOGRAFIA APLICADA",
-      "año": "Quinto Año",
-      "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "128",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "5175": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "5183": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "5192": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        }
-      }
-    },
-    {
-      "id": "2108",
-      "nombre": "ECONOMIA Y GESTION EMPRESARIAL",
-      "año": "Quinto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "64",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "5050": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        },
-        "5175": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "5482": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
-      }
-    },
-    {
-      "id": "5404",
-      "nombre": "PRACTICA PROFESIONAL",
-      "año": "Quinto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "128",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "5003": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "5050": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        },
-        "5175": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "5482": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        }
-      }
-    },
-    {
-      "id": "5464",
-      "nombre": "PRACTICA PROFESIONAL SUPERVISADA (IA)",
+      "id": "7895",
+      "nombre": "PROYECTO FINAL",
       "año": "Quinto Año",
       "cuatrimestre": "Segundo Cuatrimestre",
       "horas": "",
@@ -782,54 +807,104 @@
       "categoria": "normal",
       "grupo_opcion": null,
       "subtipo": null,
-      "correlativas": {},
-      "requisito_especial": {
-        "tipo": "minimo_materias_aprobadas",
-        "cantidad": 26,
-        "descripcion": "Para aprobar Para iniciar la \"Práctica Profesional Supervisada\" se deberá tener como mínimo 26 materias del plan aprobadas."
+      "correlativas": {
+        "7886": {
+          "para_cursar": null,
+          "para_rendir": "aprobada"
+        },
+        "I0022": {
+          "para_cursar": null,
+          "para_rendir": "aprobada"
+        },
+        "I0023": {
+          "para_cursar": null,
+          "para_rendir": "aprobada"
+        }
       }
     },
     {
-      "id": "5485",
-      "nombre": "VIAS DE COMUNICACION E HIDRAULICA",
+      "id": "7922",
+      "nombre": "SISTEMAS INTELIGENTES ARTIFICIALES",
       "año": "Quinto Año",
       "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "128",
+      "horas": "64",
       "tipo": "materia",
       "categoria": "normal",
       "grupo_opcion": null,
       "subtipo": null,
       "correlativas": {
-        "5159": {
-          "para_cursar": "cursada",
-          "para_rendir": "aprobada"
-        },
-        "5175": {
+        "7552": {
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         },
-        "5183": {
+        "7820": {
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         },
-        "5185": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
+        "I0022": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "I0023": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
         }
       }
+    },
+    {
+      "id": "5596",
+      "nombre": "EXAMEN DE SUFICIENCIA DE IDIOMA: INGLES",
+      "año": "Segundo Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "I0022",
+      "subtipo": "idioma",
+      "correlativas": {}
+    },
+    {
+      "id": "7659",
+      "nombre": "EXAMEN INTEGRAL DE IDIOMA INGLES ISS",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "I0023",
+      "subtipo": "idioma",
+      "correlativas": {}
     }
   ],
   "agrupadores": [
     {
-      "id": "5175",
-      "nombre": "EXAMEN DE SUFICIENCIA DE IDIOMA: INGLES",
+      "id": "I0022",
+      "nombre": "Examen de Suficiencia de Idioma Inglés, Dpto de Computación",
       "tipo": "idioma_grupo",
-      "opciones": [],
+      "opciones": [
+        "5596"
+      ],
       "año": "Segundo Año",
+      "cuatrimestre": "Segundo Cuatrimestre"
+    },
+    {
+      "id": "I0023",
+      "nombre": "Examen Integral de Idioma Inglés ISS, Ing.en Sist. de Software",
+      "tipo": "idioma_grupo",
+      "opciones": [
+        "7659"
+      ],
+      "año": "Cuarto Año",
       "cuatrimestre": "Segundo Cuatrimestre"
     }
   ],
-  "_llm_confidence": 1.0,
-  "_llm_prompt_version": "v14",
-  "_llm_mode": "llm"
+  "_colisiones_id": [
+    "I0022",
+    "I0023"
+  ],
+  "_saved_at": "2026-05-11T22:03:52.949Z",
+  "_saved_by": "cmo2fwlcf00005xdv4536cc0l",
+  "_saved_fuente": "parser",
+  "_publicado": true,
+  "_motivo_cambio": "parser local"
 }

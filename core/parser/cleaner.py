@@ -20,12 +20,45 @@ BASURA_EXACTA = {
     "Correlativas",
     "Para cursar",
     "Para rendir",
-    "Ir a Moodle UNS"
+    "Ir a Moodle UNS",
+    "Materia Correlativas Para cursar Para rendir",
+    "Optativa Correlativas Para cursar Para rendir",
+    "Carga Horaria",
+    "Volver",
 }
+
+BASURA_PREFIJOS = (
+    "Visite el Departamento",
+    "Universidad Nacional del Sur",
+    "Avda.",
+)
+
+# Sufijos de encabezado de tabla que pueden aparecer pegados al nombre de una materia
+# cuando el limpiador fusiona líneas. Se eliminan del final del nombre.
+_SUFIJOS_ENCABEZADO = (
+    " Optativa Correlativas Para cursar Para rendir",
+    " Materia Correlativas Para cursar Para rendir",
+    " Correlativas Para cursar Para rendir",
+    " Para cursar Para rendir",
+    " Carga Horaria",
+)
 
 
 def es_linea_basura(linea):
-    return linea.strip() in BASURA_EXACTA
+    linea = linea.strip()
+    if linea in BASURA_EXACTA:
+        return True
+    normalizada = " ".join(linea.split())
+    if normalizada in BASURA_EXACTA:
+        return True
+    return any(linea.startswith(p) for p in BASURA_PREFIJOS)
+
+
+def limpiar_sufijos_encabezado(nombre: str) -> str:
+    for sufijo in _SUFIJOS_ENCABEZADO:
+        if nombre.endswith(sufijo):
+            return nombre[: -len(sufijo)].strip()
+    return nombre
 
 
 def limpiar_texto(texto):
