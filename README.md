@@ -18,13 +18,17 @@ Este repo transforma planes de estudio en PDF a una estructura JSON consistente 
 
 ```mermaid
 flowchart LR
-  A[PDF de plan] --> B[Parser Python]
-  B --> C[JSON en web/data]
+  A[PDF de plan] --> B1[Parser Python]
+  A --> B2[Gemini API]
+  B1 --> C[JSON en web/data]
+  B2 --> C
   C --> D[Validador de datos Web]
   D --> E[App Next.js]
   E --> F[APIs /api/*]
   F --> G[(PostgreSQL + Prisma)]
   E --> H[Playwright + Vitest]
+  I[Admin /admin] --> B1
+  I --> B2
 ```
 
 ## 3) Estructura principal del repositorio
@@ -33,15 +37,16 @@ flowchart LR
 .
 |-- app.py                          # Entrypoint parser CLI
 |-- core/
-|   |-- parser/                     # Extraccion, limpieza, parseo y contrato
-|   `-- correlativas/               # Evaluacion de habilitacion por estado
+|   `-- parser/                     # Extraccion, limpieza, parseo y contrato
 |-- scripts/
-|   `-- generar_json.py             # Wrapper CLI legado
+|   `-- comparar_json.py            # Evaluacion de similitud entre dos JSONs
 |-- tests/                          # Tests parser + contrato + fixtures
 |-- pdf/                            # Fixtures PDF
 `-- web/
     |-- app/                        # Next.js App Router (paginas + api routes)
+    |   `-- api/admin/planes/       # parsear/ (Gemini), parsear-local/ (parser), guardar/
     |-- components/                 # Componentes React por dominio
+    |   |-- admin/                  # AdminPanel, CargarPlanTab, HistorialTab, ConfigTab, DiffExportDrawer, GuardarPlanDrawer
     |   |-- plan/                   # PlanViewer, PlanHeader, PlanFilters, PlanTabBar, OrientationSelector, PlanStatus
     |   |-- materias/               # MateriaCard, MateriasGrid, AnioSection, GrupoMaterias
     |   |-- kanban/                 # KanbanPlan (vista tablero con drag & drop)
@@ -51,9 +56,10 @@ flowchart LR
     |   |-- auth/                   # LoginActions, HomeSessionPanel
     |   |-- profile/                # ProfileWorkspace, AdminRoleManager
     |   `-- onboarding/             # PlanOnboarding
-    |-- data/                       # JSON de planes publicados
+    |-- data/                       # JSON de planes publicados (ground truth)
     |-- hooks/                      # usePlanState, useSchedule, useOnboarding
     |-- lib/                        # Logica de negocio y servicios
+    |   |-- ai/                     # Modelos Gemini disponibles y default
     |   |-- plan/                   # Dominio academico (evaluarCorrelativas, materiaViewModel, filtros, progreso...)
     |   |-- mapa/                   # Logica pura del grafo (graphUtils, bestPath)
     |   |-- data/                   # Carga y validacion de planes (carreras, planDataLoader, planValidation...)
@@ -67,11 +73,11 @@ flowchart LR
 
 ## 4) Flujo completo (end-to-end)
 
-1. Un PDF de carrera entra al parser.
-2. El parser extrae texto, limpia ruido y detecta materias/correlativas.
-3. Se arma JSON con `plan`, `materias`, `agrupadores`.
-4. El contrato parser valida shape y consistencia minima.
-5. El JSON se guarda en `web/data`.
+1. Un admin sube un PDF desde `/admin` (parser local, Gemini, o ambos).
+2. El parser local extrae texto, limpia ruido y detecta materias/correlativas.
+3. Gemini recibe el PDF directo y genera el JSON via LLM.
+4. El admin compara los resultados lado a lado, valida y elige cuál publicar.
+5. El JSON elegido se guarda en `web/data` y queda registrado en el audit log.
 6. La web carga el JSON via `loadPlanData` y ejecuta validacion de consistencia.
 7. El usuario interactua con el plan (estados de materias).
 8. APIs de progreso aplican resolucion `last-write-wins` y guardan snapshots en DB.
@@ -123,7 +129,8 @@ Definidas en `web/.env.example`:
 - `DATABASE_URL_E2E` (opcional)
 - `AUTH_SECRET`, `AUTH_URL`
 - `NEXTAUTH_SECRET`, `NEXTAUTH_URL`
-- `ADMIN_SEED_EMAIL`
+- `ADMIN_SEED_EMAIL` (fallback: `admin@uns.local` si no se define)
+- `GEMINI_API_KEY` (requerida para el panel admin — parseo con Gemini)
 - `AUTH_ENABLE_DEV_LOGIN`
 - `NEXT_PUBLIC_ENABLE_DEV_LOGIN`
 - `AUTH_ALLOW_DEV_ROLE_OVERRIDE`
@@ -136,7 +143,6 @@ Definidas en `web/.env.example`:
 
 - `app.py` (entrypoint principal)
 - `core/parser/cli.py` (orquestacion CLI)
-- `scripts/generar_json.py` (wrapper compatible)
 
 ### 8.2 Generar JSON desde PDF
 
@@ -202,7 +208,7 @@ npm run prisma:studio
 4. Cambios de estado de materias llaman `PUT /api/progreso`.
 5. Se persiste snapshot por usuario/plan/version y se registra actividad.
 6. Perfil (`/perfil`) permite gestionar carreras inscriptas y carrera activa.
-7. Admin (`/admin`) gestiona roles y consulta auditoria.
+7. Admin (`/admin`) gestiona roles, consulta auditoria y publica nuevos planes.
 
 ## 11) Endpoints API principales
 
@@ -215,6 +221,9 @@ npm run prisma:studio
 - `GET /api/perfil/resumen`
 - `PATCH /api/admin/users/[userId]/role`
 - `GET /api/admin/auditoria`
+- `POST /api/admin/planes/parsear` (Gemini, SSE)
+- `POST /api/admin/planes/parsear-local` (parser Python, SSE)
+- `POST /api/admin/planes/guardar`
 - `GET|POST /api/auth/[...nextauth]`
 
 ## 12) Reglas de dominio importantes
@@ -280,8 +289,17 @@ npm run check:premerge
 
 ## 14) Guia de publicacion de una nueva carrera/version
 
+### Via panel admin (recomendado)
+
+1. Ir a `/admin` → tab "Cargar plan".
+2. Subir el PDF y elegir parser local, Gemini, o ambos.
+3. Comparar resultados, validar y elegir cuál publicar.
+4. Confirmar guardado — el JSON queda en `web/data/` y se registra en el historial.
+
+### Via CLI (alternativo)
+
 1. Agregar PDF fixture en `pdf/`.
-2. Generar JSON con parser CLI.
+2. Generar JSON con parser CLI: `python app.py pdf/carrera.pdf web/data/carrera.json`
 3. Validar contrato parser (automatico en CLI).
 4. Registrar archivo en configuracion de carreras/versiones web.
 5. Ejecutar `npm run validate:data` en `web/`.

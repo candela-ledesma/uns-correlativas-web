@@ -25,4 +25,4 @@
 
 ## Deuda técnica — README desactualizado
 
-- [ ] `README.md` menciona `scripts/generar_json.py` (eliminado) y `core/correlativas/` (eliminado); actualizar las referencias
+- [x] `README.md` menciona `scripts/generar_json.py` (eliminado) y `core/correlativas/` (eliminado); actualizar las referencias
