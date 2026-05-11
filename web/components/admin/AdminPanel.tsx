@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ACCENT, BG_GRADIENT, GLASS, TEXT, TEXT_SEC, SURFACE, BTN, BTN_VIOLET, INPUT } from "@/lib/ui/tokens";
+import { ACCENT, BG_GRADIENT, GLASS, TEXT, TEXT_SEC } from "@/lib/ui/tokens";
 import CargarPlanTab from "./tabs/CargarPlanTab";
 import HistorialTab from "./tabs/HistorialTab";
 import ConfigTab from "./tabs/ConfigTab";
@@ -13,8 +13,6 @@ const TABS: { id: Tab; label: string; icon: string }[] = [
   { id: "historial", label: "Historial",     icon: "◷" },
   { id: "config",    label: "Configuración", icon: "⚙" },
 ];
-
-export { BTN, BTN_VIOLET, INPUT };
 
 export default function AdminPanel() {
   const [tab, setTab] = useState<Tab>("cargar");

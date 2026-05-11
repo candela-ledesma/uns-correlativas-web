@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ACCENT, GLASS, TEXT, TEXT_SEC, SURFACE, BTN, BTN_VIOLET, INPUT, STATUS_COLORS, ERROR_PANEL } from "@/lib/ui/tokens";
+import { ACCENT, GLASS, TEXT, TEXT_SEC, BTN, INPUT, STATUS_COLORS, ERROR_PANEL } from "@/lib/ui/tokens";
 
 type ParseResult = {
   plan: { carrera: string; universidad: string; codigo_plan: string };

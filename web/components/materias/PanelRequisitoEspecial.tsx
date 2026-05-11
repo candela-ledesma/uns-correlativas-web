@@ -1,4 +1,4 @@
-import type { RequisitoEspecialType, ResultadoRequisito } from "@/lib/plan/requisitoEspecial";
+import type { RequisitoEspecialType } from "@/lib/plan/requisitoEspecial";
 import {
   evaluarRequisitoEspecial,
   generarTextoRequisito,

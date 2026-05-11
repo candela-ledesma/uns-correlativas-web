@@ -131,7 +131,6 @@ export default function CargarPlanTab() {
 
   const kb = file ? (file.size / 1024).toFixed(1) : null;
 
-  // Group materias by year for PDF simulation
   function byYear(materias: ParseResult["materias"]) {
     const map: Record<string, typeof materias> = {};
     for (const m of materias) {
@@ -358,7 +357,6 @@ export default function CargarPlanTab() {
         <ResultadoParseo
           data={status.data}
           ground={
-            // Si el resultado visible es Gemini, ground es el local (y viceversa)
             status.data === resultadoGemini ? resultadoLocal :
             status.data === resultadoLocal  ? resultadoGemini :
             null

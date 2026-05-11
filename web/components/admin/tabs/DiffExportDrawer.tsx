@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { ACCENT, GLASS, TEXT, TEXT_SEC, SURFACE, BTN, BTN_VIOLET, INPUT, STATUS_COLORS } from "@/lib/ui/tokens";
+import { ACCENT, GLASS, TEXT, TEXT_SEC, SURFACE, BTN, BTN_VIOLET, INPUT } from "@/lib/ui/tokens";
 
 export type CorValue = { para_cursar?: string | null; para_rendir?: string | null } | string | null | unknown;
 
@@ -187,7 +187,7 @@ export default function DiffExportDrawer({
     const k = diffKey(d);
     setSelected(prev => {
       const next = new Set(prev);
-      next.has(k) ? next.delete(k) : next.add(k);
+      if (next.has(k)) { next.delete(k); } else { next.add(k); }
       return next;
     });
   }
@@ -338,8 +338,8 @@ export default function DiffExportDrawer({
               >
                 ⬇ Descargar .txt
               </button>
-              <label style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 7, fontSize: 12, color: TEXT_SEC, cursor: "pointer" }}>
-                <input type="checkbox" style={{ accentColor: ACCENT, width: 13, height: 13 }} />
+              <label style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 7, fontSize: 12, color: TEXT_SEC, cursor: "not-allowed", opacity: 0.5 }}>
+                <input type="checkbox" disabled style={{ accentColor: ACCENT, width: 13, height: 13 }} />
                 Agregar automáticamente al prompt del sistema
               </label>
             </div>
