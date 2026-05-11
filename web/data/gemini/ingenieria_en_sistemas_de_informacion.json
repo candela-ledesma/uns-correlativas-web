@@ -1,7 +1,7 @@
 {
   "plan": {
-    "carrera": "Ingenieria En Sistemas De Informacion",
-    "universidad": "Universidad Nacional del Sur",
+    "carrera": "INGENIERIA EN SISTEMAS DE INFORMACION.",
+    "universidad": "UNIVERSIDAD NACIONAL DEL SUR",
     "codigo_plan": "Plan 2012 - Versión 1"
   },
   "materias": [
@@ -167,6 +167,17 @@
       }
     },
     {
+      "id": "I0022",
+      "nombre": "Examen de Suficiencia de Idioma Inglés, Dpto de Computación",
+      "año": "Segundo Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": null,
+      "tipo": "materia",
+      "categoria": null,
+      "subtipo": "idioma",
+      "correlativas": {}
+    },
+    {
       "id": "7821",
       "nombre": "MODELOS DE SOFTWARE",
       "año": "Segundo Año",
@@ -276,14 +287,6 @@
         "5744": {
           "para_cursar": "cursada",
           "para_rendir": "aprobada"
-        },
-        "7791": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "I0022": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
         }
       }
     },
@@ -298,6 +301,10 @@
       "grupo_opcion": null,
       "subtipo": null,
       "correlativas": {
+        "7791": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
         "7949": {
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
@@ -531,6 +538,17 @@
           "para_rendir": "aprobada"
         }
       }
+    },
+    {
+      "id": "I0023",
+      "nombre": "Examen Integral de Idioma Inglés ISS, Ing.en Sist. de Software",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": null,
+      "tipo": "materia",
+      "categoria": null,
+      "subtipo": "idioma",
+      "correlativas": {}
     },
     {
       "id": "3051",
@@ -829,8 +847,8 @@
     },
     {
       "id": "5596",
-      "nombre": "EXAMEN DE SUFICIENCIA DE IDIOMA:INGLES Volver",
-      "año": "Quinto Año",
+      "nombre": "EXAMEN DE SUFICIENCIA DE IDIOMA: INGLES",
+      "año": "Segundo Año",
       "cuatrimestre": "Segundo Cuatrimestre",
       "horas": "",
       "tipo": "materia",
@@ -841,8 +859,8 @@
     },
     {
       "id": "7659",
-      "nombre": "EXAMEN INTEGRAL DE IDIOMA INGLES ISS Volver",
-      "año": "Quinto Año",
+      "nombre": "EXAMEN INTEGRAL DE IDIOMA INGLES ISS",
+      "año": "Cuarto Año",
       "cuatrimestre": "Segundo Cuatrimestre",
       "horas": "",
       "tipo": "materia",
@@ -855,7 +873,7 @@
   "agrupadores": [
     {
       "id": "I0022",
-      "nombre": "Examen de Suficiencia de Idioma Inglés, Dpto de Computación Optativa Correlativas Para cursar Para rendir",
+      "nombre": "Examen de Suficiencia de Idioma Inglés, Dpto de Computación",
       "tipo": "idioma_grupo",
       "opciones": [
         "5596"
@@ -865,7 +883,7 @@
     },
     {
       "id": "I0023",
-      "nombre": "Examen Integral de Idioma Inglés ISS, Ing.en Sist. de Software Optativa Correlativas Para cursar Para rendir",
+      "nombre": "Examen Integral de Idioma Inglés ISS, Ing.en Sist. de Software",
       "tipo": "idioma_grupo",
       "opciones": [
         "7659"
@@ -874,12 +892,7 @@
       "cuatrimestre": "Segundo Cuatrimestre"
     }
   ],
-  "_colisiones_id": [
-    "I0022",
-    "I0023"
-  ],
-  "_saved_at": "2026-05-11T02:49:23.717Z",
-  "_saved_by": "cmo2fwlcf00005xdv4536cc0l",
-  "_saved_fuente": "parser",
-  "_publicado": true
+  "_llm_confidence": 1,
+  "_llm_prompt_version": "v20",
+  "_llm_mode": "llm"
 }

@@ -9,7 +9,7 @@ export const runtime = "nodejs";
 export const maxDuration = 120;
 
 const MAX_SIZE_MB = 20;
-const PROMPT_VERSION = "v17";
+const PROMPT_VERSION = "v20";
 
 const SYSTEM_PROMPT = `You are a deterministic data extraction engine for academic curricula.
 
@@ -135,12 +135,19 @@ These IDs start with the LETTER I (uppercase i), NOT the digit 1. They look like
 ### Elective subjects (MATERIAS OPTATIVAS section)
 
 - Each elective subject gets \`categoria: "optativa"\` and \`grupo_opcion: <agrupador_id>\`
-- They do not have an explicit year heading — assign them the \`año\`/\`cuatrimestre\` of their agrupador
+- They do NOT have an explicit year heading in the optativas section — assign them the SAME \`año\`/\`cuatrimestre\` as their agrupador (the one referenced by \`grupo_opcion\`)
+- This applies to language exams too: if exam 5596 belongs to agrupador I0022 which has \`año: "Segundo Año"\`, then 5596 must also have \`año: "Segundo Año"\`
 - List all their IDs in \`agrupadores[].opciones\`
 
 ### año/cuatrimestre for agrupadores
 
 The \`año\` and \`cuatrimestre\` of an agrupador in POSITION A MUST match the year/semester section heading that visually contains it in the PDF layout.
+
+### Subject names — preserve punctuation exactly
+
+Copy subject names exactly as printed, including punctuation and spacing.
+- "IDIOMA: INGLES" (with space after colon) must NOT become "IDIOMA:INGLES"
+- Do not add or remove spaces around colons, hyphens, or other punctuation in names.
 
 ---
 
@@ -156,7 +163,7 @@ The \`año\` and \`cuatrimestre\` of an agrupador in POSITION A MUST match the y
 6. G#### and I#### IDs appear in BOTH \`materias[]\` and \`agrupadores[]\` when in POSITION A.
 7. Do NOT duplicate any entry.
 8. List ALL member subject IDs in \`agrupadores[].opciones\`.
-9. When correlativa rows appear at the top of a page before any new subject, assign them to the last subject of the previous page.
+9. When a page starts with correlativa rows (ID + estado, no subject name) before any new subject line appears, those rows belong to the last subject of the previous page. Stop assigning them to the previous subject as soon as a new subject line (ID + name) appears — from that point on, correlativas belong to the new subject.
 
 ## VALIDATION
 
