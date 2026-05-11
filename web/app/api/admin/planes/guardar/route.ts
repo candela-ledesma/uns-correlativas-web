@@ -4,6 +4,7 @@ import { Role } from "@/lib/auth/roles";
 import path from "path";
 import fs from "fs/promises";
 import { CARRERAS } from "@/lib/data/carreras";
+import { createAuditEvent } from "@/lib/db/audit";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -129,6 +130,25 @@ export async function POST(request: Request) {
 
     // Registrar en carreras.ts si es una carrera nueva (best-effort, no bloquea)
     await registrarCarreraEnConfig(slug, `${slug}.json`, plan.plan.carrera).catch(() => {});
+
+    await createAuditEvent({
+      actorUserId: session.user.id,
+      actorEmail: session.user.email ?? null,
+      actorRole: session.user.role,
+      action: "PLAN_SAVED",
+      entityType: "plan",
+      entityId: slug,
+      reason: motivo ?? null,
+      after: {
+        carrera: plan.plan.carrera,
+        universidad: plan.plan.universidad,
+        codigo_plan: plan.plan.codigo_plan,
+        materias: plan.materias.length,
+        fuente,
+        publicar,
+        resolucion: resolucion ?? "nuevo",
+      },
+    }).catch(() => {});
 
     return NextResponse.json({ ok: true, slug });
   } catch (err) {

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { Role } from "@/lib/auth/roles";
 import { GoogleGenAI } from "@google/genai";
+import { DEFAULT_GEMINI_MODEL } from "@/lib/ai/models";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -212,7 +213,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: `El archivo supera los ${MAX_SIZE_MB} MB` }, { status: 400 });
   }
 
-  const model = (formData.get("model") as string) || "gemini-2.5-flash";
+  const model = (formData.get("model") as string) || DEFAULT_GEMINI_MODEL;
 
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {

@@ -40,8 +40,9 @@ export default function ConfigTab() {
           <label style={FIELD_LABEL}>API Key de Gemini</label>
           <input
             type="password"
-            defaultValue="AIzaSyDummyKeyForDemo1234567890"
-            style={{ ...INPUT, borderRadius: 8, padding: "8px 12px", fontSize: 13, fontFamily: "monospace" }}
+            placeholder="Configurada vía GEMINI_API_KEY en .env"
+            disabled
+            style={{ ...INPUT, borderRadius: 8, padding: "8px 12px", fontSize: 13, fontFamily: "monospace", opacity: 0.6, cursor: "not-allowed" }}
           />
         </div>
       </div>

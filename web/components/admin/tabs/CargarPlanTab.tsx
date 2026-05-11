@@ -5,6 +5,7 @@ import { ACCENT, GLASS, TEXT, TEXT_SEC, SURFACE, BTN, BTN_VIOLET, INPUT, STATUS_
 import DiffExportDrawer from "./DiffExportDrawer";
 import GuardarPlanDrawer from "./GuardarPlanDrawer";
 import type { ParseResult } from "./DiffExportDrawer";
+import { GEMINI_MODELS, DEFAULT_GEMINI_MODEL } from "@/lib/ai/models";
 
 type ProgressStep = "leyendo" | "enviando" | "generando" | "guardando" | "parseando";
 
@@ -40,7 +41,7 @@ const LABEL: React.CSSProperties = {
 export default function CargarPlanTab() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File | null>(null);
-  const [model, setModel] = useState("gemini-2.5-flash");
+  const [model, setModel] = useState(DEFAULT_GEMINI_MODEL);
   const [dryRun, setDryRun] = useState(false);
   const [uniType, setUniType] = useState<"uns" | "otra">("uns");
   const [uniNombre, setUniNombre] = useState("");
@@ -247,10 +248,9 @@ export default function CargarPlanTab() {
               onChange={e => setModel(e.target.value)}
               style={{ ...INPUT, borderRadius: 8, padding: "8px 10px", fontSize: 13, appearance: "none" }}
             >
-              <option value="gemini-2.5-flash">gemini-2.5-flash</option>
-              <option value="gemini-2.5-flash-lite">gemini-2.5-flash-lite</option>
-              <option value="gemini-2.5-pro">gemini-2.5-pro</option>
-              <option value="gemma-4-26b-a4b-it">gemma-4-26b-a4b-it</option>
+              {GEMINI_MODELS.map(m => (
+                <option key={m.value} value={m.value}>{m.label}</option>
+              ))}
             </select>
           </div>
           <div style={{ display: "flex", alignItems: "flex-end" }}>
