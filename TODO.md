@@ -35,10 +35,10 @@
 - `alta` [x] **Confirmar antes de regenerar** — si ya existe JSON para esa fuente, mostrar modal con metadatos del archivo existente antes de reemplazar
 - `alta` [x] **Comparar con versión anterior** — tras regenerar, botón para ver diff side-by-side entre el resultado nuevo y el JSON que había antes
 - `media` [ ] **Validación de schema completo** — validar el JSON contra el schema completo de PlanData, no solo IDs/años/correlativas
-- `media` [ ] **Selector de modelo con rate limits** — mostrar requests restantes / límite diario / cooldown por modelo antes de elegir; deshabilitar visualmente si no hay cuota
-- `baja` [ ] **Botones ConfigTab sin handler** — "Mejorar prompt" y "Guardar" no tienen lógica; definir si se implementan o se eliminan
-- `baja` [ ] **Temperatura en ConfigTab** — slider existe pero no se persiste ni se pasa a la API; decidir si se conecta o se saca
-- `baja` [ ] **Prompt en ConfigTab** — textarea muestra un texto fijo; decidir si debe leer/escribir el prompt real que usa la API
+- `media` [x] **Selector de modelo con rate limits** — barra de progreso de RPD por modelo en el dropdown; verde/amarillo/rojo según consumo diario
+- `baja` [x] **Botones ConfigTab sin handler** — "Guardar" persiste prompt en `data/admin-config.json`; "Restaurar" vuelve al prompt default; temperatura eliminada
+- `baja` [x] **Temperatura en ConfigTab** — eliminada; `temperature: 0` hardcodeado en el route de parsear
+- `baja` [x] **Prompt en ConfigTab** — lee y escribe el prompt real desde `lib/ai/prompt.ts`; el route lo carga en cada request con fallback al default
 
 ---
 
