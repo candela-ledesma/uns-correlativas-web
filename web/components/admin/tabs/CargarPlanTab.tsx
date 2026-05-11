@@ -5,7 +5,7 @@ import { ACCENT, GLASS, TEXT, TEXT_SEC, SURFACE, BTN, BTN_VIOLET, INPUT, STATUS_
 import DiffExportDrawer, { computeDiffs, type DiffItem } from "./DiffExportDrawer";
 import GuardarPlanDrawer from "./GuardarPlanDrawer";
 import type { ParseResult } from "./DiffExportDrawer";
-import { GEMINI_MODELS, DEFAULT_GEMINI_MODEL } from "@/lib/ai/models";
+import { GEMINI_MODELS, DEFAULT_GEMINI_MODEL, type GeminiModelValue } from "@/lib/ai/models";
 import JsonViewer from "../JsonViewer";
 
 type ProgressStep = "leyendo" | "enviando" | "generando" | "guardando" | "parseando";
@@ -26,6 +26,27 @@ type SourceStatus =
   | { type: "loading"; step: ProgressStep; message: string }
   | { type: "error"; message: string }
   | { type: "done"; data: ParseResult };
+
+type ExistingInfo = {
+  existe: true;
+  materias: number;
+  fechaCarga: string;
+  fuente: string;
+  promptVersion: string | null;
+  data: ParseResult;
+} | { existe: false };
+
+type ExisteResponse = {
+  slug: string;
+  parser: ExistingInfo;
+  gemini: ExistingInfo;
+};
+
+type ConfirmState = {
+  fuente: "gemini" | "parser" | "ambos";
+  infoParser: ExistingInfo;
+  infoGemini: ExistingInfo;
+};
 
 const CARD: React.CSSProperties = {
   ...SURFACE,
@@ -67,7 +88,7 @@ function useElapsedTime(status: SourceStatus): number | null {
 export default function CargarPlanTab() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File | null>(null);
-  const [model, setModel] = useState(DEFAULT_GEMINI_MODEL);
+  const [model, setModel] = useState<GeminiModelValue>(DEFAULT_GEMINI_MODEL);
   const [dryRun, setDryRun] = useState(false);
   const [uniType, setUniType] = useState<"uns" | "otra">("uns");
   const [uniNombre, setUniNombre] = useState("");
@@ -78,6 +99,11 @@ export default function CargarPlanTab() {
   const [validationOpenLocal, setValidationOpenLocal]   = useState(true);
   const [showFewShot, setShowFewShot] = useState(false);
   const [activeDiffIdx, setActiveDiffIdx] = useState(0);
+  const [confirmState, setConfirmState] = useState<ConfirmState | null>(null);
+  const [prevGemini, setPrevGemini] = useState<ParseResult | null>(null);
+  const [prevLocal, setPrevLocal] = useState<ParseResult | null>(null);
+  const [showPrevGemini, setShowPrevGemini] = useState(false);
+  const [showPrevLocal, setShowPrevLocal] = useState(false);
 
   const resultadoGemini = statusGemini.type === "done" ? statusGemini.data : null;
   const resultadoLocal  = statusLocal.type  === "done" ? statusLocal.data  : null;
@@ -184,31 +210,48 @@ export default function CargarPlanTab() {
     }
   }
 
-  function parsear() {
+  function ejecutarParseo(fuente: "gemini" | "parser" | "ambos") {
     if (!file) return;
-    const fd = new FormData();
-    fd.append("file", file);
-    fd.append("model", model);
-    parsearSSE("/api/admin/planes/parsear", fd, "leyendo", setStatusGemini);
+    if (fuente === "gemini" || fuente === "ambos") {
+      const fd = new FormData();
+      fd.append("file", file);
+      fd.append("model", model);
+      parsearSSE("/api/admin/planes/parsear", fd, "leyendo", setStatusGemini);
+    }
+    if (fuente === "parser" || fuente === "ambos") {
+      const fd = new FormData();
+      fd.append("file", file);
+      parsearSSE("/api/admin/planes/parsear-local", fd, "guardando", setStatusLocal);
+    }
   }
 
-  function parsearLocal() {
+  async function chequearYParsear(fuente: "gemini" | "parser" | "ambos") {
     if (!file) return;
-    const fd = new FormData();
-    fd.append("file", file);
-    parsearSSE("/api/admin/planes/parsear-local", fd, "guardando", setStatusLocal);
+    const res = await fetch(`/api/admin/planes/existe?filename=${encodeURIComponent(file.name)}`);
+    if (!res.ok) { ejecutarParseo(fuente); return; }
+    const info = await res.json() as ExisteResponse;
+
+    const hayGemini = fuente !== "parser" && info.gemini.existe;
+    const hayParser = fuente !== "gemini" && info.parser.existe;
+
+    if (hayGemini || hayParser) {
+      if (hayGemini && info.gemini.existe) setPrevGemini((info.gemini as Extract<ExistingInfo, { existe: true }>).data);
+      if (hayParser && info.parser.existe) setPrevLocal((info.parser as Extract<ExistingInfo, { existe: true }>).data);
+      setConfirmState({ fuente, infoGemini: info.gemini, infoParser: info.parser });
+    } else {
+      ejecutarParseo(fuente);
+    }
   }
 
-  function parsearAmbos() {
-    if (!file) return;
-    const fdGemini = new FormData();
-    fdGemini.append("file", file);
-    fdGemini.append("model", model);
-    const fdLocal = new FormData();
-    fdLocal.append("file", file);
-    parsearSSE("/api/admin/planes/parsear", fdGemini, "leyendo", setStatusGemini);
-    parsearSSE("/api/admin/planes/parsear-local", fdLocal, "guardando", setStatusLocal);
+  function confirmarParseo() {
+    if (!confirmState) return;
+    setConfirmState(null);
+    ejecutarParseo(confirmState.fuente);
   }
+
+  function parsear() { chequearYParsear("gemini"); }
+  function parsearLocal() { chequearYParsear("parser"); }
+  function parsearAmbos() { chequearYParsear("ambos"); }
 
   function limpiar() {
     setFile(null);
@@ -323,7 +366,7 @@ export default function CargarPlanTab() {
             <div style={{ fontSize: 11, color: TEXT_SEC, fontWeight: 500, marginBottom: 5 }}>Modelo</div>
             <select
               value={model}
-              onChange={e => setModel(e.target.value)}
+              onChange={e => setModel(e.target.value as GeminiModelValue)}
               style={{ ...INPUT, borderRadius: 8, padding: "8px 10px", fontSize: 13, appearance: "none" }}
             >
               {GEMINI_MODELS.map(m => (
@@ -557,9 +600,219 @@ export default function CargarPlanTab() {
                 onClose={() => setShowFewShot(false)}
               />
             )}
+
+            {/* Comparar con versión anterior */}
+            {(prevGemini || prevLocal) && (
+              <div style={{ marginTop: 12, display: "flex", gap: 8, flexWrap: "wrap" }}>
+                {prevLocal && resultadoLocal && (
+                  <button
+                    onClick={() => setShowPrevLocal(v => !v)}
+                    style={{ ...BTN, borderRadius: 8, padding: "8px 14px", fontSize: 12, fontWeight: 500 }}
+                  >
+                    🕓 {showPrevLocal ? "Ocultar" : "Comparar con versión anterior"} (parser local)
+                  </button>
+                )}
+                {prevGemini && resultadoGemini && (
+                  <button
+                    onClick={() => setShowPrevGemini(v => !v)}
+                    style={{ ...BTN, borderRadius: 8, padding: "8px 14px", fontSize: 12, fontWeight: 500 }}
+                  >
+                    🕓 {showPrevGemini ? "Ocultar" : "Comparar con versión anterior"} (Gemini)
+                  </button>
+                )}
+              </div>
+            )}
+
+            {showPrevLocal && prevLocal && resultadoLocal && (
+              <CompararConAnterior
+                label="⚙️ Parser local"
+                anterior={prevLocal}
+                nuevo={resultadoLocal}
+                onClose={() => setShowPrevLocal(false)}
+              />
+            )}
+            {showPrevGemini && prevGemini && resultadoGemini && (
+              <CompararConAnterior
+                label="🤖 Gemini"
+                anterior={prevGemini}
+                nuevo={resultadoGemini}
+                onClose={() => setShowPrevGemini(false)}
+              />
+            )}
           </div>
         );
       })()}
+
+      {/* Modal de confirmación */}
+      {confirmState && (
+        <ModalConfirmar
+          fuente={confirmState.fuente}
+          infoGemini={confirmState.infoGemini}
+          infoParser={confirmState.infoParser}
+          onConfirmar={confirmarParseo}
+          onCancelar={() => setConfirmState(null)}
+        />
+      )}
+    </div>
+  );
+}
+
+function ModalConfirmar({
+  fuente,
+  infoGemini,
+  infoParser,
+  onConfirmar,
+  onCancelar,
+}: {
+  fuente: "gemini" | "parser" | "ambos";
+  infoGemini: ExistingInfo;
+  infoParser: ExistingInfo;
+  onConfirmar: () => void;
+  onCancelar: () => void;
+}) {
+  const filas: { label: string; info: ExistingInfo }[] = [];
+  if (fuente !== "parser" && infoGemini.existe) filas.push({ label: "🤖 Gemini", info: infoGemini });
+  if (fuente !== "gemini" && infoParser.existe) filas.push({ label: "⚙️ Parser local", info: infoParser });
+
+  return (
+    <div style={{
+      position: "fixed", inset: 0, zIndex: 1000,
+      background: "rgba(0,0,0,0.55)", backdropFilter: "blur(4px)",
+      display: "flex", alignItems: "center", justifyContent: "center", padding: 24,
+    }}>
+      <div style={{
+        ...SURFACE, borderRadius: 14, padding: "28px 32px",
+        maxWidth: 460, width: "100%", boxShadow: "0 8px 40px rgba(0,0,0,0.4)",
+      }}>
+        <div style={{ fontSize: 22, marginBottom: 10 }}>⚠️</div>
+        <h2 style={{ fontSize: 16, fontWeight: 700, color: TEXT, marginBottom: 8 }}>
+          Ya existe un JSON generado
+        </h2>
+        <p style={{ fontSize: 13, color: TEXT_SEC, marginBottom: 16, lineHeight: 1.5 }}>
+          Regenerar reemplazará el archivo actual. ¿Querés continuar?
+        </p>
+
+        {filas.map(({ label, info }) => info.existe && (
+          <div key={label} style={{
+            background: GLASS.elevated, border: `1px solid ${GLASS.border}`,
+            borderRadius: 8, padding: "10px 14px", marginBottom: 10,
+            fontSize: 12, color: TEXT_SEC,
+          }}>
+            <div style={{ fontWeight: 600, color: TEXT, marginBottom: 4 }}>{label}</div>
+            <div>{info.materias} materias · guardado {info.fechaCarga}</div>
+            <div>fuente: {info.fuente}{info.promptVersion ? ` · ${info.promptVersion}` : ""}</div>
+          </div>
+        ))}
+
+        <div style={{ display: "flex", gap: 10, marginTop: 20 }}>
+          <button
+            onClick={onConfirmar}
+            style={{
+              flex: 1, ...BTN_VIOLET, borderRadius: 8,
+              padding: "9px 0", fontSize: 13, fontWeight: 600,
+            }}
+          >
+            Sí, regenerar
+          </button>
+          <button
+            onClick={onCancelar}
+            style={{
+              flex: 1, ...BTN, borderRadius: 8,
+              padding: "9px 0", fontSize: 13, fontWeight: 500,
+            }}
+          >
+            Cancelar
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CompararConAnterior({
+  label,
+  anterior,
+  nuevo,
+  onClose,
+}: {
+  label: string;
+  anterior: ParseResult;
+  nuevo: ParseResult;
+  onClose: () => void;
+}) {
+  const diffs = useMemo(() => computeDiffs(anterior, nuevo), [anterior, nuevo]);
+  const [idx, setIdx] = useState(0);
+  const diffIds = useMemo(() => [...new Set(diffs.map(d => d.id))], [diffs]);
+  const activeDiffId = diffIds[idx] ?? null;
+
+  const scrollRefAnterior = useRef<HTMLDivElement | null>(null);
+  const scrollRefNuevo = useRef<HTMLDivElement | null>(null);
+  const syncingRef = useRef(false);
+
+  function handleScroll(source: "anterior" | "nuevo") {
+    return (e: React.UIEvent<HTMLDivElement>) => {
+      if (syncingRef.current) return;
+      syncingRef.current = true;
+      const target = source === "anterior" ? scrollRefNuevo.current : scrollRefAnterior.current;
+      if (target) target.scrollTop = (e.target as HTMLDivElement).scrollTop;
+      syncingRef.current = false;
+    };
+  }
+
+  return (
+    <div style={{ marginTop: 16, ...SURFACE, borderRadius: 12, overflow: "hidden" }}>
+      <div style={{
+        display: "flex", alignItems: "center", gap: 10,
+        padding: "10px 16px", borderBottom: `1px solid ${GLASS.border}`,
+        background: GLASS.elevated,
+      }}>
+        <span style={{ fontSize: 13, fontWeight: 700, color: TEXT }}>
+          🕓 {label} — versión anterior vs nueva
+        </span>
+        {diffIds.length > 0 && (
+          <span style={{ fontSize: 11, color: TEXT_SEC }}>
+            {diffIds.length} diferencia{diffIds.length !== 1 ? "s" : ""}
+          </span>
+        )}
+        {diffIds.length === 0 && (
+          <span style={{ fontSize: 11, color: "#22c55e" }}>sin diferencias</span>
+        )}
+        <div style={{ marginLeft: "auto", display: "flex", gap: 6, alignItems: "center" }}>
+          {diffIds.length > 0 && (
+            <>
+              <button
+                onClick={() => setIdx(i => Math.max(0, i - 1))}
+                disabled={idx === 0}
+                style={{ ...BTN, borderRadius: 6, padding: "3px 8px", fontSize: 11, opacity: idx === 0 ? 0.4 : 1 }}
+              >← Anterior</button>
+              <span style={{ fontSize: 11, color: TEXT_SEC }}>{idx + 1}/{diffIds.length}</span>
+              <button
+                onClick={() => setIdx(i => Math.min(diffIds.length - 1, i + 1))}
+                disabled={idx >= diffIds.length - 1}
+                style={{ ...BTN, borderRadius: 6, padding: "3px 8px", fontSize: 11, opacity: idx >= diffIds.length - 1 ? 0.4 : 1 }}
+              >Siguiente →</button>
+            </>
+          )}
+          <button
+            onClick={onClose}
+            style={{ ...BTN, borderRadius: 6, padding: "3px 10px", fontSize: 12 }}
+          >✕</button>
+        </div>
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr" }}>
+        <div style={{ borderRight: `1px solid ${GLASS.border}` }}>
+          <div style={{ padding: "6px 14px", background: GLASS.elevated, fontSize: 10, fontWeight: 600, color: TEXT_SEC, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+            Anterior
+          </div>
+          <JsonViewer ref={scrollRefAnterior} json={anterior} diffs={diffs} fuente="parser" activeDiffId={activeDiffId} onScroll={handleScroll("anterior")} />
+        </div>
+        <div>
+          <div style={{ padding: "6px 14px", background: GLASS.elevated, fontSize: 10, fontWeight: 600, color: TEXT_SEC, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+            Nuevo
+          </div>
+          <JsonViewer ref={scrollRefNuevo} json={nuevo} diffs={diffs} fuente="gemini" activeDiffId={activeDiffId} onScroll={handleScroll("nuevo")} />
+        </div>
+      </div>
     </div>
   );
 }
