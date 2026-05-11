@@ -1,11 +1,12 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ACCENT, GLASS, TEXT, TEXT_SEC, SURFACE, BTN, BTN_VIOLET, INPUT, STATUS_COLORS, ERROR_PANEL } from "@/lib/ui/tokens";
-import DiffExportDrawer from "./DiffExportDrawer";
+import DiffExportDrawer, { computeDiffs, type DiffItem } from "./DiffExportDrawer";
 import GuardarPlanDrawer from "./GuardarPlanDrawer";
 import type { ParseResult } from "./DiffExportDrawer";
 import { GEMINI_MODELS, DEFAULT_GEMINI_MODEL } from "@/lib/ai/models";
+import JsonViewer from "../JsonViewer";
 
 type ProgressStep = "leyendo" | "enviando" | "generando" | "guardando" | "parseando";
 
@@ -20,7 +21,7 @@ const STEP_LABEL: Record<ProgressStep, string> = {
   parseando: "Ejecutando parser local…",
 };
 
-type Status =
+type SourceStatus =
   | { type: "idle" }
   | { type: "loading"; step: ProgressStep; message: string }
   | { type: "error"; message: string }
@@ -38,6 +39,31 @@ const LABEL: React.CSSProperties = {
   letterSpacing: "0.06em", color: TEXT_SEC, marginBottom: 12,
 };
 
+function useElapsedTime(status: SourceStatus): number | null {
+  const [elapsed, setElapsed] = useState<number | null>(null);
+  const startRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (status.type === "loading") {
+      startRef.current = Date.now();
+      const id = setInterval(() => {
+        setElapsed(Math.floor((Date.now() - startRef.current!) / 1000));
+      }, 500);
+      return () => clearInterval(id);
+    }
+    if ((status.type === "done" || status.type === "error") && startRef.current !== null) {
+      setElapsed(Math.floor((Date.now() - startRef.current) / 1000));
+      startRef.current = null;
+    }
+    if (status.type === "idle") {
+      setElapsed(null);
+      startRef.current = null;
+    }
+  }, [status.type]);
+
+  return elapsed;
+}
+
 export default function CargarPlanTab() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File | null>(null);
@@ -46,16 +72,68 @@ export default function CargarPlanTab() {
   const [uniType, setUniType] = useState<"uns" | "otra">("uns");
   const [uniNombre, setUniNombre] = useState("");
   const [dragging, setDragging] = useState(false);
-  const [status, setStatus] = useState<Status>({ type: "idle" });
-  const [resultadoLocal, setResultadoLocal] = useState<ParseResult | null>(null);
-  const [resultadoGemini, setResultadoGemini] = useState<ParseResult | null>(null);
-  const [highlightDiffs, setHighlightDiffs] = useState(true);
-  const [validationOpen, setValidationOpen] = useState(true);
+  const [statusGemini, setStatusGemini] = useState<SourceStatus>({ type: "idle" });
+  const [statusLocal, setStatusLocal] = useState<SourceStatus>({ type: "idle" });
+  const [validationOpenGemini, setValidationOpenGemini] = useState(true);
+  const [validationOpenLocal, setValidationOpenLocal]   = useState(true);
+  const [showFewShot, setShowFewShot] = useState(false);
+  const [activeDiffIdx, setActiveDiffIdx] = useState(0);
+
+  const resultadoGemini = statusGemini.type === "done" ? statusGemini.data : null;
+  const resultadoLocal  = statusLocal.type  === "done" ? statusLocal.data  : null;
+  const hayLoading = statusGemini.type === "loading" || statusLocal.type === "loading";
+
+  const elapsedGemini = useElapsedTime(statusGemini);
+  const elapsedLocal  = useElapsedTime(statusLocal);
+
+  const scrollRefLocal  = useRef<HTMLDivElement | null>(null);
+  const scrollRefGemini = useRef<HTMLDivElement | null>(null);
+  const syncingRef = useRef(false);
+
+  const computedDiffs = useMemo(
+    () => resultadoLocal && resultadoGemini
+      ? computeDiffs(resultadoLocal, resultadoGemini)
+      : [],
+    [resultadoLocal, resultadoGemini],
+  );
+  const diffIds = useMemo(
+    () => [...new Set(computedDiffs.map(d => d.id))],
+    [computedDiffs],
+  );
+  const activeDiffId = diffIds[activeDiffIdx] ?? null;
+
+  function handleScroll(source: "local" | "gemini") {
+    return (e: React.UIEvent<HTMLDivElement>) => {
+      if (syncingRef.current) return;
+      syncingRef.current = true;
+      const target = source === "local" ? scrollRefGemini.current : scrollRefLocal.current;
+      if (target) target.scrollTop = (e.target as HTMLDivElement).scrollTop;
+      syncingRef.current = false;
+    };
+  }
+
+  function scrollToActiveDiff(id: string) {
+    for (const ref of [scrollRefLocal, scrollRefGemini]) {
+      if (!ref.current) continue;
+      const el = ref.current.querySelector(`[data-diff-id="${id}"]`) as HTMLElement | null;
+      if (el) {
+        const container = ref.current;
+        container.scrollTop = el.offsetTop - container.clientHeight / 2;
+      }
+    }
+  }
+
+  function navegarDiff(delta: number) {
+    const next = Math.max(0, Math.min(diffIds.length - 1, activeDiffIdx + delta));
+    setActiveDiffIdx(next);
+    if (diffIds[next]) scrollToActiveDiff(diffIds[next]);
+  }
 
   const handleFile = (f: File) => {
     if (f.type !== "application/pdf") return;
     setFile(f);
-    setStatus({ type: "idle" });
+    setStatusGemini({ type: "idle" });
+    setStatusLocal({ type: "idle" });
   };
 
   const onDrop = useCallback((e: React.DragEvent) => {
@@ -65,7 +143,12 @@ export default function CargarPlanTab() {
     if (f) handleFile(f);
   }, []);
 
-  async function parsearSSE(endpoint: string, fd: FormData, initialStep: ProgressStep, onDone: (data: ParseResult) => void) {
+  async function parsearSSE(
+    endpoint: string,
+    fd: FormData,
+    initialStep: ProgressStep,
+    setStatus: React.Dispatch<React.SetStateAction<SourceStatus>>,
+  ) {
     setStatus({ type: "loading", step: initialStep, message: STEP_LABEL[initialStep] });
     try {
       const res = await fetch(endpoint, { method: "POST", body: fd });
@@ -89,9 +172,7 @@ export default function CargarPlanTab() {
             if (event.type === "progress") {
               setStatus({ type: "loading", step: event.step as ProgressStep, message: event.message });
             } else if (event.type === "done") {
-              const data = event.data as ParseResult;
-              onDone(data);
-              setStatus({ type: "done", data });
+              setStatus({ type: "done", data: event.data as ParseResult });
             } else if (event.type === "error") {
               setStatus({ type: "error", message: event.message });
             }
@@ -108,38 +189,35 @@ export default function CargarPlanTab() {
     const fd = new FormData();
     fd.append("file", file);
     fd.append("model", model);
-    parsearSSE("/api/admin/planes/parsear", fd, "leyendo", (data) => setResultadoGemini(data));
+    parsearSSE("/api/admin/planes/parsear", fd, "leyendo", setStatusGemini);
   }
 
   function parsearLocal() {
     if (!file) return;
     const fd = new FormData();
     fd.append("file", file);
-    parsearSSE("/api/admin/planes/parsear-local", fd, "guardando", (data) => setResultadoLocal(data));
+    parsearSSE("/api/admin/planes/parsear-local", fd, "guardando", setStatusLocal);
+  }
+
+  function parsearAmbos() {
+    if (!file) return;
+    const fdGemini = new FormData();
+    fdGemini.append("file", file);
+    fdGemini.append("model", model);
+    const fdLocal = new FormData();
+    fdLocal.append("file", file);
+    parsearSSE("/api/admin/planes/parsear", fdGemini, "leyendo", setStatusGemini);
+    parsearSSE("/api/admin/planes/parsear-local", fdLocal, "guardando", setStatusLocal);
   }
 
   function limpiar() {
     setFile(null);
-    setStatus({ type: "idle" });
-    setResultadoLocal(null);
-    setResultadoGemini(null);
+    setStatusGemini({ type: "idle" });
+    setStatusLocal({ type: "idle" });
     if (fileInputRef.current) fileInputRef.current.value = "";
   }
 
-  function copyJSON(data: ParseResult) {
-    navigator.clipboard.writeText(JSON.stringify(data, null, 2));
-  }
-
   const kb = file ? (file.size / 1024).toFixed(1) : null;
-
-  function byYear(materias: ParseResult["materias"]) {
-    const map: Record<string, typeof materias> = {};
-    for (const m of materias) {
-      const k = m.año ?? "Sin año";
-      (map[k] ??= []).push(m);
-    }
-    return map;
-  }
 
   return (
     <div>
@@ -273,31 +351,46 @@ export default function CargarPlanTab() {
         }}>
           <button
             onClick={parsear}
-            disabled={!file || status.type === "loading"}
+            disabled={!file || hayLoading}
             style={{
               ...BTN_VIOLET, borderRadius: 8, padding: "8px 18px",
               fontSize: 13, fontWeight: 600,
               display: "flex", alignItems: "center", gap: 6,
-              opacity: !file || status.type === "loading" ? 0.5 : 1,
-              cursor: !file || status.type === "loading" ? "not-allowed" : "pointer",
+              opacity: !file || hayLoading ? 0.5 : 1,
+              cursor: !file || hayLoading ? "not-allowed" : "pointer",
             }}
           >
             <span>🤖</span>
-            {status.type === "loading" && STEP_LABELS_GEMINI.includes(status.step) ? status.message : "Parsear con Gemini"}
+            {statusGemini.type === "loading" ? statusGemini.message : "Gemini"}
           </button>
           <button
             onClick={parsearLocal}
-            disabled={!file || status.type === "loading"}
+            disabled={!file || hayLoading}
             style={{
               ...BTN, borderRadius: 8, padding: "8px 16px",
               fontSize: 13, fontWeight: 600,
               display: "flex", alignItems: "center", gap: 6,
-              opacity: !file || status.type === "loading" ? 0.5 : 1,
-              cursor: !file || status.type === "loading" ? "not-allowed" : "pointer",
+              opacity: !file || hayLoading ? 0.5 : 1,
+              cursor: !file || hayLoading ? "not-allowed" : "pointer",
             }}
           >
             <span>⚙️</span>
-            {status.type === "loading" && STEP_LABELS_LOCAL.includes(status.step) ? status.message : "Parsear local"}
+            {statusLocal.type === "loading" ? statusLocal.message : "Parser local"}
+          </button>
+          <button
+            onClick={parsearAmbos}
+            disabled={!file || hayLoading}
+            style={{
+              ...BTN, borderRadius: 8, padding: "8px 16px",
+              fontSize: 13, fontWeight: 600,
+              display: "flex", alignItems: "center", gap: 6,
+              opacity: !file || hayLoading ? 0.5 : 1,
+              cursor: !file || hayLoading ? "not-allowed" : "pointer",
+              borderColor: ACCENT,
+            }}
+          >
+            <span>⚡</span>
+            Ambos
           </button>
           <button
             onClick={limpiar}
@@ -310,288 +403,340 @@ export default function CargarPlanTab() {
           </div>
         </div>
 
-        {status.type === "loading" && (() => {
-          const isLocal = STEP_LABELS_LOCAL.includes(status.step);
-          const steps = isLocal ? STEP_LABELS_LOCAL : STEP_LABELS_GEMINI;
-          const currentIdx = steps.indexOf(status.step);
-          return (
-            <div style={{ marginTop: 14, display: "flex", flexDirection: "column", gap: 6 }}>
-              {steps.map((step, i) => {
-                const isDone = i < currentIdx;
-                const isActive = i === currentIdx;
-                return (
-                  <div key={step} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12 }}>
-                    <span style={{
-                      width: 18, height: 18, borderRadius: "50%", display: "flex",
-                      alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 700,
-                      background: isDone ? "rgba(34,197,94,0.15)" : isActive ? "rgba(157,78,221,0.2)" : GLASS.elevated,
-                      border: `1px solid ${isDone ? "#22c55e" : isActive ? ACCENT : GLASS.border}`,
-                      color: isDone ? "#22c55e" : isActive ? ACCENT : TEXT_SEC,
-                      flexShrink: 0,
-                    }}>
-                      {isDone ? "✓" : i + 1}
-                    </span>
-                    <span style={{ color: isActive ? TEXT : TEXT_SEC, fontWeight: isActive ? 600 : 400 }}>
-                      {STEP_LABEL[step]}
-                    </span>
-                    {isActive && (
-                      <span style={{ marginLeft: 2, color: ACCENT, fontSize: 11 }}>●</span>
+        {hayLoading && (
+          <div style={{ marginTop: 14, display: "flex", flexDirection: "column", gap: 10 }}>
+            {([
+              { label: "🤖 Gemini", status: statusGemini, steps: STEP_LABELS_GEMINI, elapsed: elapsedGemini },
+              { label: "⚙️ Parser local", status: statusLocal, steps: STEP_LABELS_LOCAL, elapsed: elapsedLocal },
+            ] as const).map(({ label, status, steps, elapsed }) =>
+              status.type === "loading" ? (
+                <div key={label}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 10, fontWeight: 600, color: TEXT_SEC, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 5 }}>
+                    {label}
+                    {elapsed !== null && (
+                      <span style={{ fontWeight: 400, color: ACCENT, letterSpacing: 0 }}>{elapsed}s</span>
                     )}
                   </div>
-                );
-              })}
-            </div>
-          );
-        })()}
+                  <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                    {steps.map((step, i) => {
+                      const currentIdx = status.type === "loading" ? steps.indexOf(status.step) : -1;
+                      const isDone = i < currentIdx;
+                      const isActive = i === currentIdx;
+                      return (
+                        <div key={step} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12 }}>
+                          <span style={{
+                            width: 18, height: 18, borderRadius: "50%", display: "flex",
+                            alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 700,
+                            background: isDone ? "rgba(34,197,94,0.15)" : isActive ? "rgba(157,78,221,0.2)" : GLASS.elevated,
+                            border: `1px solid ${isDone ? "#22c55e" : isActive ? ACCENT : GLASS.border}`,
+                            color: isDone ? "#22c55e" : isActive ? ACCENT : TEXT_SEC,
+                            flexShrink: 0,
+                          }}>
+                            {isDone ? "✓" : i + 1}
+                          </span>
+                          <span style={{ color: isActive ? TEXT : TEXT_SEC, fontWeight: isActive ? 600 : 400 }}>
+                            {STEP_LABEL[step]}
+                          </span>
+                          {isActive && <span style={{ marginLeft: 2, color: ACCENT, fontSize: 11 }}>●</span>}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              ) : null
+            )}
+          </div>
+        )}
       </div>
 
-      {/* Error */}
-      {status.type === "error" && (
-        <div style={{ ...ERROR_PANEL, borderRadius: 10, padding: "12px 16px", marginBottom: 16, fontSize: 13 }}>
-          ⚠ {status.message}
+      {/* Errores */}
+      {statusGemini.type === "error" && (
+        <div style={{ ...ERROR_PANEL, borderRadius: 10, padding: "12px 16px", marginBottom: 8, fontSize: 13 }}>
+          ⚠ Gemini: {statusGemini.message}
+        </div>
+      )}
+      {statusLocal.type === "error" && (
+        <div style={{ ...ERROR_PANEL, borderRadius: 10, padding: "12px 16px", marginBottom: 8, fontSize: 13 }}>
+          ⚠ Parser local: {statusLocal.message}
         </div>
       )}
 
-      {/* Resultado */}
-      {status.type === "done" && (
-        <ResultadoParseo
-          data={status.data}
-          ground={
-            status.data === resultadoGemini ? resultadoLocal :
-            status.data === resultadoLocal  ? resultadoGemini :
-            null
-          }
-          highlightDiffs={highlightDiffs}
-          onToggleHighlight={setHighlightDiffs}
-          validationOpen={validationOpen}
-          onToggleValidation={() => setValidationOpen(v => !v)}
-          onCopy={() => copyJSON(status.data)}
-          byYear={byYear}
-        />
-      )}
+      {/* Resultados */}
+      {(resultadoGemini || resultadoLocal) && (() => {
+        const ambos = !!(resultadoGemini && resultadoLocal);
+        const diffCount = ambos ? computedDiffs.length : undefined;
+        return (
+          <div>
+            {/* Barra de navegación de diffs */}
+            {ambos && diffIds.length > 0 && (
+              <div style={{
+                display: "flex", alignItems: "center", gap: 10,
+                marginBottom: 10, padding: "8px 14px",
+                ...SURFACE, borderRadius: 8,
+              }}>
+                <span style={{ fontSize: 11, color: TEXT_SEC }}>
+                  Diferencia <strong style={{ color: TEXT }}>{activeDiffIdx + 1}</strong> de <strong style={{ color: TEXT }}>{diffIds.length}</strong>
+                  {activeDiffId && <span style={{ color: TEXT_SEC }}> — {computedDiffs.find(d => d.id === activeDiffId)?.nombre}</span>}
+                </span>
+                <div style={{ display: "flex", gap: 6, marginLeft: "auto" }}>
+                  <button
+                    onClick={() => navegarDiff(-1)}
+                    disabled={activeDiffIdx === 0}
+                    style={{ ...BTN, borderRadius: 6, padding: "4px 10px", fontSize: 11, opacity: activeDiffIdx === 0 ? 0.4 : 1 }}
+                  >
+                    ← Anterior
+                  </button>
+                  <button
+                    onClick={() => navegarDiff(1)}
+                    disabled={activeDiffIdx >= diffIds.length - 1}
+                    style={{ ...BTN, borderRadius: 6, padding: "4px 10px", fontSize: 11, opacity: activeDiffIdx >= diffIds.length - 1 ? 0.4 : 1 }}
+                  >
+                    Siguiente →
+                  </button>
+                </div>
+              </div>
+            )}
+
+            <div style={{
+              display: "grid",
+              gridTemplateColumns: ambos ? "1fr 1fr" : "1fr",
+              gap: 16,
+              alignItems: "start",
+            }}>
+              {resultadoLocal && (
+                <ColumnaResultado
+                  label="⚙️ Parser local"
+                  fuente="parser"
+                  data={resultadoLocal}
+                  ground={resultadoGemini}
+                  elapsed={elapsedLocal}
+                  loading={statusGemini.type === "loading"}
+                  validationOpen={validationOpenLocal}
+                  onToggleValidation={() => setValidationOpenLocal(v => !v)}
+                  diffCount={diffCount}
+                  diffs={computedDiffs}
+                  activeDiffId={activeDiffId}
+                  scrollRef={scrollRefLocal}
+                  onScroll={handleScroll("local")}
+                />
+              )}
+              {resultadoGemini && (
+                <ColumnaResultado
+                  label="🤖 Gemini"
+                  fuente="gemini"
+                  data={resultadoGemini}
+                  ground={resultadoLocal}
+                  elapsed={elapsedGemini}
+                  loading={statusLocal.type === "loading"}
+                  validationOpen={validationOpenGemini}
+                  onToggleValidation={() => setValidationOpenGemini(v => !v)}
+                  diffCount={diffCount}
+                  diffs={computedDiffs}
+                  activeDiffId={activeDiffId}
+                  scrollRef={scrollRefGemini}
+                  onScroll={handleScroll("gemini")}
+                />
+              )}
+            </div>
+
+            {ambos && (
+              <div style={{ marginTop: 12, display: "flex", justifyContent: "flex-end" }}>
+                <button
+                  onClick={() => setShowFewShot(v => !v)}
+                  style={{ ...BTN, borderRadius: 8, padding: "8px 14px", fontSize: 12, fontWeight: 500 }}
+                >
+                  🧪 {showFewShot ? "Cerrar few-shot" : "Exportar diff como few-shot"}
+                </button>
+              </div>
+            )}
+
+            {showFewShot && resultadoGemini && (
+              <DiffExportDrawer
+                gemini={resultadoGemini}
+                ground={resultadoLocal}
+                onClose={() => setShowFewShot(false)}
+              />
+            )}
+          </div>
+        );
+      })()}
     </div>
   );
 }
 
-function ResultadoParseo({
-  data, ground, highlightDiffs, onToggleHighlight,
-  validationOpen, onToggleValidation, onCopy, byYear,
-}: {
+type ColumnaProps = {
+  label: string;
+  fuente: "gemini" | "parser";
   data: ParseResult;
   ground: ParseResult | null;
-  highlightDiffs: boolean;
-  onToggleHighlight: (v: boolean) => void;
+  elapsed: number | null;
+  loading: boolean;
   validationOpen: boolean;
   onToggleValidation: () => void;
-  onCopy: () => void;
-  byYear: (m: ParseResult["materias"]) => Record<string, ParseResult["materias"]>;
-}) {
+  diffCount?: number;
+  diffs: DiffItem[];
+  activeDiffId: string | null;
+  scrollRef: React.RefObject<HTMLDivElement | null>;
+  onScroll: (e: React.UIEvent<HTMLDivElement>) => void;
+};
+
+function ColumnaResultado({
+  label, fuente, data, ground, elapsed, loading,
+  validationOpen, onToggleValidation, diffCount,
+  diffs, activeDiffId, scrollRef, onScroll,
+}: ColumnaProps) {
   const conf = data._llm_confidence != null ? Math.round(data._llm_confidence * 100) : null;
-  const grouped = byYear(data.materias);
-  const [showFewShot, setShowFewShot] = useState(false);
   const [guardarFuente, setGuardarFuente] = useState<"gemini" | "parser" | null>(null);
 
+  const ids = data.materias.map(m => m.id);
+  const uniqueIds = new Set(ids);
+  const duplicados = ids.length - uniqueIds.size;
+  const sinAño = data.materias.filter(m => !m.año).length;
+  const todasLasIds = new Set([...ids, ...data.agrupadores.map((a: unknown) => (a as { id?: string }).id).filter(Boolean)]);
+  const correlativasRotas = data.materias.reduce((acc, m) => {
+    const rotas = Object.keys(m.correlativas).filter(cid => !todasLasIds.has(cid));
+    return acc + rotas.length;
+  }, 0);
+  const tieneCarrera = !!data.plan.carrera && !!data.plan.universidad && !!data.plan.codigo_plan;
+
+  const checks = [
+    { ok: tieneCarrera,            critico: true,  label: "Campos del plan",      note: tieneCarrera ? `${data.plan.carrera}` : "Falta carrera, universidad o código" },
+    { ok: duplicados === 0,        critico: true,  label: "IDs únicos",           note: duplicados === 0 ? `${ids.length} materias` : `${duplicados} duplicado${duplicados > 1 ? "s" : ""}` },
+    { ok: sinAño === 0,            critico: false, label: "Año asignado",         note: sinAño === 0 ? "Todas tienen año" : `${sinAño} sin año` },
+    { ok: correlativasRotas === 0, critico: true,  label: "Correlativas válidas", note: correlativasRotas === 0 ? "Todas las IDs existen" : `${correlativasRotas} ID${correlativasRotas > 1 ? "s" : ""} no encontrada${correlativasRotas > 1 ? "s" : ""}` },
+    { ok: data.agrupadores.length > 0, critico: false, label: "Agrupadores",     note: `${data.agrupadores.length} grupo${data.agrupadores.length !== 1 ? "s" : ""}` },
+  ];
+
+  const hayErroresCriticos = checks.some(c => c.critico && !c.ok);
+
+  function copyJSON() {
+    navigator.clipboard.writeText(JSON.stringify(data, null, 2));
+  }
+
   return (
-    <div>
-      {/* Toggle bar */}
+    <div style={{ ...SURFACE, borderRadius: 12, overflow: "hidden", display: "flex", flexDirection: "column" }}>
+      {/* Header */}
       <div style={{
-        display: "flex", alignItems: "center", gap: 12,
-        marginBottom: 14, padding: "10px 14px",
-        ...SURFACE, borderRadius: 8,
+        display: "flex", alignItems: "center", gap: 8,
+        padding: "10px 14px", borderBottom: `1px solid ${GLASS.border}`,
+        background: GLASS.elevated, flexShrink: 0,
       }}>
-        <label style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer", fontSize: 13, color: TEXT_SEC }}>
-          <input
-            type="checkbox" checked={highlightDiffs}
-            onChange={e => onToggleHighlight(e.target.checked)}
-            style={{ accentColor: ACCENT, width: 14, height: 14 }}
-          />
-          Resaltar diferencias
-        </label>
-        <span style={{ fontSize: 12, color: TEXT_SEC }}>PDF original ↔ JSON generado</span>
+        <span style={{ fontWeight: 700, fontSize: 13, color: TEXT }}>{label}</span>
+        {elapsed !== null && (
+          <span style={{ fontSize: 11, color: TEXT_SEC }}>{elapsed}s</span>
+        )}
         {conf != null && (
           <span style={{
-            marginLeft: "auto",
             background: STATUS_COLORS.aprobada.badgeBg,
             border: `1px solid ${STATUS_COLORS.aprobada.badgeBorder}`,
             color: STATUS_COLORS.aprobada.accent,
-            borderRadius: 20, padding: "3px 12px",
-            fontSize: 12, fontWeight: 600,
+            borderRadius: 20, padding: "2px 10px", fontSize: 10, fontWeight: 600,
           }}>
-            Confianza: {conf}%
+            {conf}% confianza
+          </span>
+        )}
+        {loading && (
+          <span style={{ fontSize: 11, color: ACCENT }}>⏳ procesando…</span>
+        )}
+        {diffCount !== undefined && diffCount > 0 && (
+          <span style={{
+            marginLeft: "auto",
+            background: "rgba(249,199,79,0.15)", border: "1px solid rgba(249,199,79,0.4)",
+            color: "#f9c74f", borderRadius: 20, padding: "2px 10px", fontSize: 10, fontWeight: 600,
+          }}>
+            {diffCount} diferencia{diffCount !== 1 ? "s" : ""}
+          </span>
+        )}
+        {diffCount === 0 && ground && (
+          <span style={{
+            marginLeft: "auto",
+            background: STATUS_COLORS.aprobada.badgeBg, border: `1px solid ${STATUS_COLORS.aprobada.badgeBorder}`,
+            color: STATUS_COLORS.aprobada.accent, borderRadius: 20, padding: "2px 10px", fontSize: 10, fontWeight: 600,
+          }}>
+            sin diferencias
           </span>
         )}
       </div>
 
-      {/* Two-column grid */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 16 }}>
-        {/* PDF panel */}
-        <div style={{ ...SURFACE, borderRadius: 12, overflow: "hidden" }}>
-          <div style={{
-            display: "flex", alignItems: "center", justifyContent: "space-between",
-            padding: "10px 14px", borderBottom: `1px solid ${GLASS.border}`,
-            background: GLASS.elevated,
-          }}>
-            <span style={{ fontSize: 11, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em", color: TEXT_SEC }}>
-              📄 Plan extraído
-            </span>
-          </div>
-          <div style={{ padding: 14, overflow: "auto", maxHeight: 440, fontSize: 11 }}>
-            <div style={{ fontWeight: 700, fontSize: 13, color: TEXT, marginBottom: 2 }}>{data.plan.universidad}</div>
-            <div style={{ fontWeight: 600, color: TEXT_SEC, marginBottom: 12, fontSize: 12 }}>
-              {data.plan.carrera} — {data.plan.codigo_plan}
-            </div>
-            {Object.entries(grouped).map(([year, mats]) => (
-              <div key={year}>
-                <div style={{ fontWeight: 700, fontSize: 11, color: "#c084fc", textTransform: "uppercase", margin: "10px 0 4px" }}>
-                  {year}
-                </div>
-                <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 6 }}>
-                  <thead>
-                    <tr>
-                      {["Cód.", "Materia", "Hs.", "Correlativas"].map(h => (
-                        <th key={h} style={{ fontSize: 10, color: TEXT_SEC, textAlign: "left", padding: "3px 6px", borderBottom: `1px solid ${GLASS.border}` }}>{h}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {mats.map(m => {
-                      const cors = Object.keys(m.correlativas).join(", ") || "—";
-                      return (
-                        <tr key={m.id} style={{ borderBottom: `1px solid ${GLASS.faint}` }}>
-                          <td style={{ padding: "4px 6px", color: TEXT_SEC }}>{m.id}</td>
-                          <td style={{ padding: "4px 6px", color: TEXT }}>{m.nombre}</td>
-                          <td style={{ padding: "4px 6px", color: TEXT_SEC }}>{m.horas || "—"}</td>
-                          <td style={{ padding: "4px 6px", color: TEXT_SEC, fontSize: 10 }}>{cors}</td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            ))}
-          </div>
+      {/* JSON */}
+      <div style={{ borderRadius: 0, overflow: "hidden", flex: 1 }}>
+        <div style={{
+          display: "flex", alignItems: "center", justifyContent: "space-between",
+          padding: "8px 14px", borderBottom: `1px solid ${GLASS.border}`,
+          background: GLASS.elevated,
+        }}>
+          <span style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em", color: TEXT_SEC }}>
+            {"{ }"} JSON generado
+          </span>
+          <button
+            onClick={copyJSON}
+            style={{ ...BTN, borderRadius: 6, padding: "3px 8px", fontSize: 10, display: "flex", alignItems: "center", gap: 3 }}
+          >
+            📋 Copiar
+          </button>
         </div>
-
-        {/* JSON panel */}
-        <div style={{ ...SURFACE, borderRadius: 12, overflow: "hidden" }}>
-          <div style={{
-            display: "flex", alignItems: "center", justifyContent: "space-between",
-            padding: "10px 14px", borderBottom: `1px solid ${GLASS.border}`,
-            background: GLASS.elevated,
-          }}>
-            <span style={{ fontSize: 11, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em", color: TEXT_SEC }}>
-              {"{ }"} JSON generado
-            </span>
-            <button
-              onClick={onCopy}
-              style={{ ...BTN, borderRadius: 6, padding: "4px 10px", fontSize: 11, display: "flex", alignItems: "center", gap: 4 }}
-            >
-              📋 Copiar
-            </button>
-          </div>
-          <div style={{ padding: 14, overflow: "auto", maxHeight: 440 }}>
-            <pre style={{
-              fontFamily: "'SF Mono', 'Fira Code', monospace",
-              fontSize: 11, lineHeight: 1.7,
-              color: TEXT_SEC, whiteSpace: "pre-wrap", wordBreak: "break-all",
-            }}>
-              {JSON.stringify(data, null, 2)}
-            </pre>
-          </div>
-        </div>
+        <JsonViewer
+          ref={scrollRef}
+          json={data}
+          diffs={diffs}
+          fuente={fuente}
+          activeDiffId={activeDiffId}
+          onScroll={onScroll}
+        />
       </div>
 
-      {/* Validation bar */}
-      <div style={{ ...SURFACE, borderRadius: 12, marginBottom: 16, overflow: "hidden" }}>
+      {/* Validación */}
+      <div style={{ borderTop: `1px solid ${GLASS.border}`, flexShrink: 0 }}>
         <div
           onClick={onToggleValidation}
-          style={{
-            display: "flex", alignItems: "center", justifyContent: "space-between",
-            padding: "10px 14px", cursor: "pointer",
-          }}
+          style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 14px", cursor: "pointer" }}
         >
-          <span style={{ fontSize: 11, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em", color: TEXT_SEC }}>
-            ✅ Validación automática
+          <span style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em", color: hayErroresCriticos ? "#fca5a5" : TEXT_SEC }}>
+            {hayErroresCriticos ? "⛔ Errores" : "✅ Validación"}
           </span>
-          <span style={{ color: TEXT_SEC, fontSize: 11, transform: validationOpen ? "rotate(180deg)" : "none", transition: "transform 0.2s" }}>▼</span>
+          <span style={{ color: TEXT_SEC, fontSize: 10, transform: validationOpen ? "rotate(180deg)" : "none", transition: "transform 0.2s" }}>▼</span>
         </div>
         {validationOpen && (
-          <div style={{ borderTop: `1px solid ${GLASS.border}`, padding: "4px 14px 12px" }}>
-            {(() => {
-              const ids = data.materias.map(m => m.id);
-              const uniqueIds = new Set(ids);
-              const duplicados = ids.length - uniqueIds.size;
-              const sinAño = data.materias.filter(m => !m.año).length;
-              const todasLasIds = new Set([...ids, ...data.agrupadores.map((a: unknown) => (a as { id?: string }).id).filter(Boolean)]);
-              const correlativasRotas = data.materias.reduce((acc, m) => {
-                const rotas = Object.keys(m.correlativas).filter(cid => !todasLasIds.has(cid));
-                return acc + rotas.length;
-              }, 0);
-              const tieneCarrera = !!data.plan.carrera && !!data.plan.universidad && !!data.plan.codigo_plan;
-
-              const checks = [
-                { ok: tieneCarrera,          label: "Campos del plan",       note: tieneCarrera ? `${data.plan.carrera}` : "Falta carrera, universidad o código" },
-                { ok: duplicados === 0,      label: "IDs únicos",            note: duplicados === 0 ? `${ids.length} materias` : `${duplicados} duplicado${duplicados > 1 ? "s" : ""}` },
-                { ok: sinAño === 0,          label: "Año asignado",          note: sinAño === 0 ? "Todas tienen año" : `${sinAño} sin año` },
-                { ok: correlativasRotas === 0, label: "Correlativas válidas", note: correlativasRotas === 0 ? "Todas las IDs existen" : `${correlativasRotas} ID${correlativasRotas > 1 ? "s" : ""} no encontrada${correlativasRotas > 1 ? "s" : ""}` },
-                { ok: data.agrupadores.length > 0, label: "Agrupadores",    note: `${data.agrupadores.length} grupo${data.agrupadores.length !== 1 ? "s" : ""}` },
-              ];
-
-              return checks.map((c, i) => (
-                <div key={i} style={{
-                  display: "flex", alignItems: "center", gap: 8,
-                  padding: "6px 0", fontSize: 12, color: TEXT,
-                  borderBottom: i < checks.length - 1 ? `1px solid ${GLASS.faint}` : "none",
-                }}>
-                  <span style={{ width: 18, textAlign: "center" }}>{c.ok ? "✅" : "⚠️"}</span>
-                  <span style={{ flex: 1 }}>{c.label}</span>
-                  <span style={{ fontSize: 11, color: c.ok ? TEXT_SEC : "#fca5a5" }}>{c.note}</span>
-                </div>
-              ));
-            })()}
+          <div style={{ borderTop: `1px solid ${GLASS.border}`, padding: "2px 14px 10px" }}>
+            {checks.map((c, i) => (
+              <div key={i} style={{
+                display: "flex", alignItems: "center", gap: 7,
+                padding: "4px 0", fontSize: 11, color: TEXT,
+                borderBottom: i < checks.length - 1 ? `1px solid ${GLASS.faint}` : "none",
+              }}>
+                <span style={{ width: 16, textAlign: "center", fontSize: 10 }}>{c.ok ? "✅" : c.critico ? "⛔" : "⚠️"}</span>
+                <span style={{ flex: 1 }}>{c.label}</span>
+                <span style={{ fontSize: 10, color: c.ok ? TEXT_SEC : c.critico ? "#fca5a5" : "#fcd34d" }}>{c.note}</span>
+              </div>
+            ))}
+            {hayErroresCriticos && (
+              <div style={{ marginTop: 8, padding: "6px 10px", borderRadius: 6, background: "rgba(252,165,165,0.08)", border: "1px solid rgba(252,165,165,0.25)", fontSize: 10, color: "#fca5a5" }}>
+                ⛔ No se puede guardar hasta resolver los errores críticos.
+              </div>
+            )}
           </div>
         )}
       </div>
 
-      {/* Final actions */}
-      <div style={{
-        display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap",
-        padding: "14px 16px", ...SURFACE, borderRadius: 12,
-      }}>
+      {/* Acción */}
+      <div style={{ padding: "10px 14px", borderTop: `1px solid ${GLASS.border}`, flexShrink: 0 }}>
         <button
-          onClick={() => setShowFewShot(v => !v)}
-          style={{ ...BTN, borderRadius: 8, padding: "8px 14px", fontSize: 12, fontWeight: 500 }}
-        >
-          🧪 {showFewShot ? "Cerrar few-shot" : "Exportar diff como few-shot"}
-        </button>
-        <div style={{ flex: 1 }} />
-        <button
-          onClick={() => setGuardarFuente("parser")}
-          style={{ ...BTN, borderRadius: 8, padding: "8px 14px", fontSize: 12, fontWeight: 500 }}
-        >
-          💾 Usar parser
-        </button>
-        <button
-          onClick={() => setGuardarFuente("gemini")}
+          onClick={() => setGuardarFuente(fuente)}
+          disabled={hayErroresCriticos}
+          title={hayErroresCriticos ? "Corregí los errores críticos antes de guardar" : undefined}
           style={{
-            background: STATUS_COLORS.aprobada.badgeBg,
-            border: `1px solid ${STATUS_COLORS.aprobada.badgeBorder}`,
-            color: STATUS_COLORS.aprobada.accent,
-            borderRadius: 8, padding: "8px 16px",
-            fontSize: 13, fontWeight: 600, cursor: "pointer",
+            width: "100%",
+            background: hayErroresCriticos ? GLASS.elevated : STATUS_COLORS.aprobada.badgeBg,
+            border: `1px solid ${hayErroresCriticos ? GLASS.border : STATUS_COLORS.aprobada.badgeBorder}`,
+            color: hayErroresCriticos ? TEXT_SEC : STATUS_COLORS.aprobada.accent,
+            borderRadius: 8, padding: "8px 0",
+            fontSize: 13, fontWeight: 600, cursor: hayErroresCriticos ? "not-allowed" : "pointer",
+            opacity: hayErroresCriticos ? 0.5 : 1,
           }}
         >
-          ✓ Usar Gemini
+          ✓ Usar {fuente === "gemini" ? "Gemini" : "parser local"}
         </button>
       </div>
-
-      {showFewShot && (
-        <DiffExportDrawer
-          gemini={data}
-          ground={ground}
-          onClose={() => setShowFewShot(false)}
-        />
-      )}
 
       {guardarFuente && (
         <GuardarPlanDrawer
@@ -603,3 +748,4 @@ function ResultadoParseo({
     </div>
   );
 }
+

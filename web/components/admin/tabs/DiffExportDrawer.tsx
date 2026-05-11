@@ -34,7 +34,7 @@ export type ParseResult = {
 export type DiffItem = {
   id: string;
   nombre: string;
-  tipo: "correlativa_distinta" | "materia_faltante" | "materia_extra" | "agrupador_distinto";
+  tipo: "correlativa_distinta" | "materia_faltante" | "materia_extra" | "agrupador_distinto" | "agrupador_faltante";
   groundTruth: string;
   gemini: string;
 };
@@ -52,7 +52,7 @@ function serializeCorMap(cors: Record<string, CorValue>): string {
     .join(", ") || "ninguna";
 }
 
-function computeDiffs(ground: ParseResult | null, gemini: ParseResult): DiffItem[] {
+export function computeDiffs(ground: ParseResult | null, gemini: ParseResult): DiffItem[] {
   const diffs: DiffItem[] = [];
   if (!ground) return diffs;
 
@@ -97,7 +97,7 @@ function computeDiffs(ground: ParseResult | null, gemini: ParseResult): DiffItem
     if (!id) continue;
     const gemNombre = geminiAgr.get(id);
     if (gemNombre === undefined) {
-      diffs.push({ id, nombre, tipo: "materia_faltante", groundTruth: nombre, gemini: "(ausente en Gemini)" });
+      diffs.push({ id, nombre, tipo: "agrupador_faltante", groundTruth: nombre, gemini: "(ausente en Gemini)" });
     } else if (gemNombre !== nombre) {
       diffs.push({ id, nombre, tipo: "agrupador_distinto", groundTruth: nombre, gemini: gemNombre });
     }
@@ -111,6 +111,7 @@ const BADGE: Record<DiffItem["tipo"], { label: string; bg: string; border: strin
   materia_faltante:     { label: "materia faltante",     bg: "rgba(231,111,81,0.15)", border: "rgba(231,111,81,0.4)", color: "#e76f51" },
   materia_extra:        { label: "materia extra",        bg: "rgba(144,190,109,0.15)", border: "rgba(144,190,109,0.4)", color: "#90be6d" },
   agrupador_distinto:   { label: "agrupador distinto",   bg: "rgba(76,201,240,0.12)",  border: "rgba(76,201,240,0.4)",  color: "#4cc9f0" },
+  agrupador_faltante:   { label: "agrupador faltante",   bg: "rgba(231,111,81,0.15)",  border: "rgba(231,111,81,0.4)",  color: "#e76f51" },
 };
 
 function diffKey(d: DiffItem) { return `${d.tipo}:${d.id}`; }
@@ -250,11 +251,11 @@ export default function DiffExportDrawer({
             </label>
 
             {/* Diff cards */}
-            {diffs.map(diff => {
+            {diffs.map((diff, idx) => {
               const badge = BADGE[diff.tipo];
               const isSelected = selected.has(diffKey(diff));
               return (
-                <div key={`${diff.tipo}:${diff.id}`} style={{
+                <div key={`${diffKey(diff)}:${idx}`} style={{
                   border: `1px solid ${isSelected ? GLASS.raised : GLASS.border}`,
                   borderRadius: 10, padding: "12px 14px",
                   background: isSelected ? GLASS.soft : GLASS.faint,

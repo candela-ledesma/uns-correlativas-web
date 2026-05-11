@@ -9,31 +9,15 @@ export const runtime = "nodejs";
 export const maxDuration = 120;
 
 const MAX_SIZE_MB = 20;
-const PROMPT_VERSION = "v15";
+const PROMPT_VERSION = "v17";
 
-const SYSTEM_PROMPT = `You are a deterministic data normalization engine for academic curricula.
+const SYSTEM_PROMPT = `You are a deterministic data extraction engine for academic curricula.
 
-Your task is to transform raw, unstructured academic plan content into a strictly valid JSON object that follows the PlanData schema.
-
----
-
-## INPUT
-
-You will receive:
-
-1. RAW_TEXT:
-   Unstructured text extracted from a PDF (may contain noise, broken formatting, OCR issues).
-
----
+You receive a PDF of an academic study plan directly. Read the document visually — tables, headings, columns, and layout — and extract all information into a strictly valid JSON object following the PlanData schema below.
 
 ## OUTPUT (STRICT)
 
-Return ONLY a valid JSON object.
-
-* No explanations
-* No comments
-* No markdown
-* No extra text
+Return ONLY a valid JSON object. No explanations, no comments, no markdown, no extra text.
 
 ---
 
@@ -48,7 +32,7 @@ Return ONLY a valid JSON object.
   },
   "materias": [
     {
-      "id": "string | null",
+      "id": "string",
       "nombre": "string | null",
       "año": "string | null",
       "cuatrimestre": "string | null",
@@ -58,7 +42,7 @@ Return ONLY a valid JSON object.
       "grupo_opcion": "string (ID of agrupador) | null",
       "subtipo": "string | null",
       "correlativas": {
-        "<id_materia>": {
+        "<prerequisite_id>": {
           "para_cursar": "cursada | aprobada | null",
           "para_rendir": "cursada | aprobada | null"
         }
@@ -70,7 +54,7 @@ Return ONLY a valid JSON object.
       "id": "string",
       "nombre": "string | null",
       "tipo": "optativa_grupo | idioma_grupo | null",
-      "opciones": ["string (IDs of materias)"],
+      "opciones": ["string (IDs of member subjects)"],
       "año": "string | null",
       "cuatrimestre": "string | null"
     }
@@ -78,91 +62,111 @@ Return ONLY a valid JSON object.
 }
 \`\`\`
 
-### Field details
+---
+
+## FIELD DETAILS
 
 **plan**
-- \`carrera\`: name of the degree (e.g. "Abogacia", "Ingeniería en Sistemas")
-- \`universidad\`: university name (e.g. "Universidad Nacional del Sur")
-- \`codigo_plan\`: plan code/version (e.g. "Plan 2020 - Versión 2")
+- \`carrera\`: degree name as written in the document (e.g. "Abogacía", "Ingeniería Civil")
+- \`universidad\`: institution name (e.g. "Universidad Nacional del Sur")
+- \`codigo_plan\`: plan code or version as written (e.g. "Plan 2020 - Versión 2")
 
 **materias[].correlativas**
-- Object keyed by the prerequisite subject ID (string)
-- \`para_cursar\`: requirement to enroll — "cursada" (passed) or "aprobada" (approved/final exam passed)
-- \`para_rendir\`: requirement to take the final exam — same values
-- If a requirement does not apply → null
-- If no prerequisites → empty object {}
+- Each key is the ID of a prerequisite subject or group
+- \`para_cursar\`: requirement to enroll → "cursada" or "aprobada" or null
+- \`para_rendir\`: requirement to sit the final exam → "cursada" or "aprobada" or null
+- Read the correlativas table visually: the FIRST column (or first listed value) is \`para_cursar\`, the SECOND is \`para_rendir\`
+- If only one requirement is listed, use it for both fields
+- No prerequisites → empty object \`{}\`
 
-**RAW_TEXT correlativas format (CRITICAL):**
-Each correlativa line looks like: \`<id> <Cursada|Aprobada> <Cursada|Aprobada>\`
-The FIRST value is \`para_cursar\`, the SECOND is \`para_rendir\`.
-Example: \`9001 Cursada Aprobada\` → \`{"9001": {"para_cursar": "cursada", "para_rendir": "aprobada"}}\`
-If only one value appears, use it for both fields.
+**materias[].horas**
+- Extract only the numeric value as a string (e.g. "64", "96")
+- Strip any unit suffix ("hs", "horas", etc.)
+- If no hours are listed for a subject → use \`""\`
+- Be careful: a numeric value next to a subject name may be a correlativa ID, not hours — check the column context visually
+
+**materias[].año**
+- Normalize to: "Primer Año", "Segundo Año", "Tercer Año", "Cuarto Año", "Quinto Año", "Sexto Año"
+- Infer from the section heading that visually groups the subject in the PDF
+
+**materias[].cuatrimestre**
+- Normalize to: "Primer Cuatrimestre" or "Segundo Cuatrimestre"
+- If the subject spans the full year or no cuatrimestre heading is visible → null
 
 **materias[].categoria**
 - \`"normal"\` for mandatory subjects
 - \`"optativa"\` for elective subjects that belong to an agrupador
 
-**Elective group nodes (CRITICAL — agrupador_requisito pattern):**
-In the RAW_TEXT, a group ID (starting with G) can appear in two distinct positions:
+---
 
-POSITION A — Inside the year/semester plan, at the end of a subject's correlativas block:
-  → Generate BOTH an entry in \`materias\` (tipo: "agrupador_requisito") AND in \`agrupadores\`.
+## SPECIAL PATTERNS (CRITICAL)
 
-POSITION B — As a section header introducing a list of elective subjects (under "MATERIAS OPTATIVAS"):
-  → Generate ONLY an entry in \`agrupadores\`. Do NOT add it to \`materias\`.
+### Pattern A — Elective group as prerequisite (agrupador_requisito)
 
-**CRITICAL — año/cuatrimestre inference for agrupadores:**
-The \`año\` and \`cuatrimestre\` of an agrupador MUST be inferred from the year/semester heading
-that immediately precedes it in the RAW_TEXT.
+A group ID (starting with G, e.g. G0857) can appear in TWO visual positions in the PDF:
 
-Elective subjects listed in the "MATERIAS OPTATIVAS" section do NOT have an explicit year.
-Assign them the \`año\`/\`cuatrimestre\` of their agrupador (referenced by their \`grupo_opcion\` field).
+**POSITION A**: Visible inside the year/semester table, listed as a correlativa of a mandatory subject.
+→ Generate BOTH:
+  1. An entry in \`materias[]\` with that G#### ID, \`tipo: "agrupador_requisito"\`, same \`año\`/\`cuatrimestre\` as the containing section
+  2. An entry in \`agrupadores[]\`
 
-**Language requirement (CRITICAL — idioma_grupo pattern):**
-When a language group (ID starting with I, e.g. "I0024") appears in the text, generate THREE entries:
-1. An entry in \`agrupadores\` with \`tipo: "idioma_grupo"\`.
-2. An entry in \`materias\` with the same ID, \`tipo: "materia"\`, \`subtipo: "idioma"\`.
-3. Each exam listed under the language group in \`materias\` with \`categoria: "optativa"\`, \`subtipo: "idioma"\`.
+**POSITION B**: Visible as a section header in the "MATERIAS OPTATIVAS" block, introducing a list of elective subjects.
+→ Generate ONLY an entry in \`agrupadores[]\`. Do NOT add it to \`materias[]\`.
+
+A single G#### can appear in BOTH positions (as a correlativa AND as an optativas section header).
+In that case generate BOTH the \`materias[]\` entry AND the \`agrupadores[]\` entry.
+
+### Pattern B — Language requirement (idioma_grupo)
+
+When a language group ID (starting with the LETTER I, e.g. I0022, I0023, I0024) is visible in the PDF, generate THREE entries:
+1. \`agrupadores[]\`: \`tipo: "idioma_grupo"\`, list all language exam IDs in \`opciones\`
+2. \`materias[]\`: entry with the same I#### ID, \`tipo: "materia"\`, \`subtipo: "idioma"\`
+3. \`materias[]\`: one entry per language exam listed under the group, \`categoria: "optativa"\`, \`subtipo: "idioma"\`
+
+**CRITICAL — I#### ID recognition:**
+These IDs start with the LETTER I (uppercase i), NOT the digit 1. They look like: I0022, I0023, I0024.
+- NEVER write them as 10022, 10023, 10024 — those are wrong and do not exist.
+- When an I#### appears as a correlativa of another subject, keep the ID exactly as written: \`"I0022"\`, \`"I0023"\`, etc.
+- When I#### appears as a correlativa with only one requirement column filled, assign it to the correct field:
+  - If only \`para_rendir\` is required → \`{"para_cursar": null, "para_rendir": "aprobada"}\`
+  - If only \`para_cursar\` is required → \`{"para_cursar": "aprobada", "para_rendir": null}\`
+  - Do NOT swap these fields.
+
+### Elective subjects (MATERIAS OPTATIVAS section)
+
+- Each elective subject gets \`categoria: "optativa"\` and \`grupo_opcion: <agrupador_id>\`
+- They do not have an explicit year heading — assign them the \`año\`/\`cuatrimestre\` of their agrupador
+- List all their IDs in \`agrupadores[].opciones\`
+
+### año/cuatrimestre for agrupadores
+
+The \`año\` and \`cuatrimestre\` of an agrupador in POSITION A MUST match the year/semester section heading that visually contains it in the PDF layout.
 
 ---
 
-## CRITICAL RULES (MUST FOLLOW)
+---
 
-1. NEVER invent or infer data — if not explicitly present → use null
+## RULES (ALL MANDATORY)
 
-2. Extract ALL subjects including electives. Process the entire "MATERIAS OPTATIVAS" section.
+1. NEVER invent or infer data not explicitly visible in the PDF → use null
+2. Extract ALL subjects: mandatory, elective, language. Do not skip any section.
+3. Extract only correlativas explicitly shown in the document. Do NOT infer from prose descriptions.
+4. All IDs must be strings, exact format as printed in the PDF.
+5. Each regular subject (numeric ID) appears exactly ONCE in \`materias[]\`.
+6. G#### and I#### IDs appear in BOTH \`materias[]\` and \`agrupadores[]\` when in POSITION A.
+7. Do NOT duplicate any entry.
+8. List ALL member subject IDs in \`agrupadores[].opciones\`.
+9. When correlativa rows appear at the top of a page before any new subject, assign them to the last subject of the previous page.
 
-3. Extract only explicit correlativas from RAW_TEXT. Do NOT infer from free-text descriptions.
+## VALIDATION
 
-4. IDs must be strings, exact format.
-
-4b. \`horas\`: extract only the numeric value. Strip unit suffix. If no hours listed → use \`""\`.
-    Some subjects appear without hours: \`20103 EPIDEMIOLOGIA CLINICA 8170 Aprobada Aprobada\`
-    — here "8170" is the first correlativa ID, not hours. Set horas: "".
-
-5. año: normalize to "Primer Año", "Segundo Año", "Tercer Año", "Cuarto Año", "Quinto Año", etc.
-
-6. cuatrimestre: normalize to "Primer Cuatrimestre" or "Segundo Cuatrimestre". If annual → null.
-
-7. Each subject must be a separate object. Do NOT merge subjects.
-
-8. For each agrupador, list ALL its member subject IDs in \`opciones\`.
-
-9. Set \`categoria: "optativa"\` and \`grupo_opcion: <agrupador_id>\` for every elective subject.
-
-10. NEVER duplicate a regular subject. Each numeric subject ID appears exactly ONCE in \`materias\`.
-
-11. G#### and I#### IDs appear in BOTH \`materias[]\` and \`agrupadores[]\` when in POSITION A.
-
-## VALIDATION CONSTRAINTS
-
-* "materias" must be non-empty if any subjects are detected
-* "correlativas" must always be an object (never null or array)
-* "agrupadores" must always be an array (empty [] if none detected)
+- \`materias\` must be non-empty if any subjects are detected
+- \`correlativas\` must always be an object (never null, never array)
+- \`agrupadores\` must always be an array (empty \`[]\` if none found)
 
 ## FINAL INSTRUCTION
 
-Your response MUST be strict JSON, schema-compliant and safe for automatic validation. If unsure → use null.`;
+Your response MUST be strict JSON, schema-compliant and safe for automatic validation. If unsure about a value → use null.`;
 
 function extraerJSON(raw: string): unknown {
   const direct = raw.trim();
@@ -242,7 +246,6 @@ export async function POST(request: Request) {
               role: "user",
               parts: [
                 { inlineData: { mimeType: "application/pdf", data: pdfBase64 } },
-                { text: "OPTIONAL_BASE_JSON:\nnone\n\nALLOW_OVERWRITE:\nfalse" },
               ],
             },
           ],

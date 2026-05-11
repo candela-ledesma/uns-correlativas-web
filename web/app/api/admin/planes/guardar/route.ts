@@ -10,6 +10,7 @@ export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 const DATA_DIR = path.join(process.cwd(), "data");
+const DATA_DIR_GEMINI = path.join(process.cwd(), "data", "gemini");
 const CARRERAS_FILE = path.join(process.cwd(), "lib", "data", "carreras.ts");
 
 async function registrarCarreraEnConfig(
@@ -87,9 +88,15 @@ export async function POST(request: Request) {
   }
 
   const slug = slugFromPlan(plan.plan);
-  const filePath = path.join(DATA_DIR, `${slug}.json`);
+  const isGemini = fuente === "gemini";
+  const targetDir = isGemini ? DATA_DIR_GEMINI : DATA_DIR;
+  const filePath = path.join(targetDir, `${slug}.json`);
 
   try {
+    if (isGemini) {
+      await fs.mkdir(DATA_DIR_GEMINI, { recursive: true });
+    }
+
     const existing = await fs.readFile(filePath, "utf-8").then(JSON.parse).catch(() => null) as ParseResult | null;
 
     if (existing && !resolucion) {
@@ -122,14 +129,16 @@ export async function POST(request: Request) {
     };
 
     if (resolucion === "nueva_version" && existing) {
-      const backupPath = path.join(DATA_DIR, `${slug}_v1_backup.json`);
+      const backupPath = path.join(targetDir, `${slug}_v1_backup.json`);
       await fs.writeFile(backupPath, JSON.stringify(existing, null, 2), "utf-8");
     }
 
     await fs.writeFile(filePath, JSON.stringify(dataToSave, null, 2), "utf-8");
 
-    // Registrar en carreras.ts si es una carrera nueva (best-effort, no bloquea)
-    await registrarCarreraEnConfig(slug, `${slug}.json`, plan.plan.carrera).catch(() => {});
+    // Solo registrar en carreras.ts si es parser (fuente de verdad)
+    if (!isGemini) {
+      await registrarCarreraEnConfig(slug, `${slug}.json`, plan.plan.carrera).catch(() => {});
+    }
 
     await createAuditEvent({
       actorUserId: session.user.id,

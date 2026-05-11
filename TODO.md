@@ -29,8 +29,8 @@
 
 ## Panel admin — features pendientes (según CLAUDE.md)
 
-- `alta` [ ] **Bloquear guardado si falla validación** — hoy la validación es informativa; errores críticos deben impedir publicar
-- `alta` [ ] **Procesar en paralelo** — botón "Ambos" que dispara Gemini + parser local simultáneamente y va directo a la vista de comparación sin pasos manuales
+- `alta` [x] **Bloquear guardado si falla validación** — hoy la validación es informativa; errores críticos deben impedir publicar
+- `alta` [x] **Procesar en paralelo** — botón "Ambos" que dispara Gemini + parser local simultáneamente y va directo a la vista de comparación sin pasos manuales
 - `media` [ ] **Validación de schema completo** — validar el JSON contra el schema completo de PlanData, no solo IDs/años/correlativas
 - `media` [ ] **Diff antes de confirmar reemplazo** — al detectar conflicto mostrar exactamente qué cambió entre el JSON publicado y el nuevo antes de confirmar
 - `media` [ ] **Selector de modelo con rate limits** — mostrar requests restantes / límite diario / cooldown por modelo antes de elegir; deshabilitar visualmente si no hay cuota
