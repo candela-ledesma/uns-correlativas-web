@@ -296,7 +296,16 @@ export async function POST(request: Request) {
 
         await autoGuardarGemini(data, file.name);
 
-        send("done", { data });
+        const usage = response.usageMetadata ?? null;
+        send("done", {
+          data,
+          model,
+          usage: usage ? {
+            promptTokens: usage.promptTokenCount ?? null,
+            candidateTokens: usage.candidatesTokenCount ?? null,
+            totalTokens: usage.totalTokenCount ?? null,
+          } : null,
+        });
       } catch (err) {
         let msg = err instanceof Error ? err.message : String(err);
         try {

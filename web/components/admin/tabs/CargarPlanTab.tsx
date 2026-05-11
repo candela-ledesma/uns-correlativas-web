@@ -5,7 +5,7 @@ import { ACCENT, GLASS, TEXT, TEXT_SEC, SURFACE, BTN, BTN_VIOLET, INPUT, STATUS_
 import DiffExportDrawer, { computeDiffs, type DiffItem } from "./DiffExportDrawer";
 import GuardarPlanDrawer from "./GuardarPlanDrawer";
 import type { ParseResult } from "./DiffExportDrawer";
-import { GEMINI_MODELS, DEFAULT_GEMINI_MODEL, type GeminiModelValue } from "@/lib/ai/models";
+import { GEMINI_MODELS, DEFAULT_GEMINI_MODEL, type GeminiModelValue, type ModelLimits } from "@/lib/ai/models";
 import JsonViewer from "../JsonViewer";
 
 type ProgressStep = "leyendo" | "enviando" | "generando" | "guardando" | "parseando";
@@ -19,6 +19,12 @@ const STEP_LABEL: Record<ProgressStep, string> = {
   generando: "Generando JSON…",
   guardando: "Preparando el PDF…",
   parseando: "Ejecutando parser local…",
+};
+
+type UsageInfo = {
+  promptTokens: number | null;
+  candidateTokens: number | null;
+  totalTokens: number | null;
 };
 
 type SourceStatus =
@@ -104,6 +110,8 @@ export default function CargarPlanTab() {
   const [prevLocal, setPrevLocal] = useState<ParseResult | null>(null);
   const [showPrevGemini, setShowPrevGemini] = useState(false);
   const [showPrevLocal, setShowPrevLocal] = useState(false);
+  const [usageByModel, setUsageByModel] = useState<Record<string, UsageInfo>>({});
+  const { usage: dailyUsage, refresh: refreshDailyUsage } = useDailyUsage();
 
   const resultadoGemini = statusGemini.type === "done" ? statusGemini.data : null;
   const resultadoLocal  = statusLocal.type  === "done" ? statusLocal.data  : null;
@@ -199,6 +207,11 @@ export default function CargarPlanTab() {
               setStatus({ type: "loading", step: event.step as ProgressStep, message: event.message });
             } else if (event.type === "done") {
               setStatus({ type: "done", data: event.data as ParseResult });
+              if (event.model && event.usage) {
+                const u = event.usage as UsageInfo;
+                setUsageByModel(prev => ({ ...prev, [event.model as string]: u }));
+                if (u.totalTokens) { addTokens(event.model as string, u.totalTokens); refreshDailyUsage(); }
+              }
             } else if (event.type === "error") {
               setStatus({ type: "error", message: event.message });
             }
@@ -364,15 +377,7 @@ export default function CargarPlanTab() {
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
           <div>
             <div style={{ fontSize: 11, color: TEXT_SEC, fontWeight: 500, marginBottom: 5 }}>Modelo</div>
-            <select
-              value={model}
-              onChange={e => setModel(e.target.value as GeminiModelValue)}
-              style={{ ...INPUT, borderRadius: 8, padding: "8px 10px", fontSize: 13, appearance: "none" }}
-            >
-              {GEMINI_MODELS.map(m => (
-                <option key={m.value} value={m.value}>{m.label}</option>
-              ))}
-            </select>
+            <ModelSelector model={model} onSelect={setModel} usageByModel={usageByModel} dailyUsage={dailyUsage} />
           </div>
           <div style={{ display: "flex", alignItems: "flex-end" }}>
             <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer", fontSize: 13, color: TEXT_SEC }}>
@@ -652,6 +657,146 @@ export default function CargarPlanTab() {
           onConfirmar={confirmarParseo}
           onCancelar={() => setConfirmState(null)}
         />
+      )}
+    </div>
+  );
+}
+
+const LS_KEY = "gemini_token_usage";
+
+type DailyUsage = {
+  date: string; // YYYY-MM-DD
+  byModel: Record<string, { total: number; requests: number }>;
+};
+
+function todayStr(): string {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function loadDailyUsage(): DailyUsage {
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    if (!raw) return { date: todayStr(), byModel: {} };
+    const parsed: DailyUsage = JSON.parse(raw);
+    if (parsed.date !== todayStr()) return { date: todayStr(), byModel: {} };
+    return parsed;
+  } catch {
+    return { date: todayStr(), byModel: {} };
+  }
+}
+
+function addTokens(modelValue: string, tokens: number) {
+  const usage = loadDailyUsage();
+  const entry = usage.byModel[modelValue] ?? { total: 0, requests: 0 };
+  usage.byModel[modelValue] = { total: entry.total + tokens, requests: entry.requests + 1 };
+  try { localStorage.setItem(LS_KEY, JSON.stringify(usage)); } catch {}
+}
+
+function useDailyUsage() {
+  const [usage, setUsage] = useState<DailyUsage>({ date: todayStr(), byModel: {} });
+  useEffect(() => { setUsage(loadDailyUsage()); }, []);
+  const refresh = () => setUsage(loadDailyUsage());
+  return { usage, refresh };
+}
+
+function fmt(n: number): string {
+  return n >= 1_000_000 ? `${(n / 1_000_000).toFixed(1)}M` : n >= 1_000 ? `${(n / 1_000).toFixed(0)}k` : String(n);
+}
+
+function ModelSelector({
+  model,
+  onSelect,
+  usageByModel,
+  dailyUsage,
+}: {
+  model: GeminiModelValue;
+  onSelect: (v: GeminiModelValue) => void;
+  usageByModel: Record<string, UsageInfo>;
+  dailyUsage: DailyUsage;
+}) {
+  const [open, setOpen] = useState(false);
+  const selected = GEMINI_MODELS.find(m => m.value === model)!;
+
+  const totalHoy = Object.values(dailyUsage.byModel).reduce((s, e) => s + e.total, 0);
+  const totalReqs = Object.values(dailyUsage.byModel).reduce((s, e) => s + e.requests, 0);
+
+  return (
+    <div style={{ position: "relative" }}>
+      <button
+        onClick={() => setOpen(v => !v)}
+        style={{
+          ...INPUT, borderRadius: 8, padding: "8px 10px", fontSize: 13,
+          width: "100%", textAlign: "left", cursor: "pointer",
+          display: "flex", justifyContent: "space-between", alignItems: "center",
+        }}
+      >
+        <span>{selected.label}</span>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          {totalHoy > 0 && (
+            <span style={{ fontSize: 10, color: TEXT_SEC }}>
+              {fmt(totalHoy)} tokens hoy
+            </span>
+          )}
+          <span style={{ fontSize: 10, color: TEXT_SEC }}>▼</span>
+        </div>
+      </button>
+
+      {open && (
+        <div style={{
+          position: "absolute", top: "calc(100% + 4px)", left: 0, right: 0, zIndex: 50,
+          ...SURFACE, borderRadius: 10, overflow: "hidden",
+          boxShadow: "0 8px 30px rgba(0,0,0,0.4)",
+          border: `1px solid ${GLASS.border}`,
+        }}>
+          {totalHoy > 0 && (
+            <div style={{
+              padding: "8px 14px", borderBottom: `1px solid ${GLASS.border}`,
+              fontSize: 10, color: TEXT_SEC, display: "flex", gap: 12,
+            }}>
+              <span>Hoy ({dailyUsage.date})</span>
+              <span style={{ color: TEXT }}>{fmt(totalHoy)} tokens totales</span>
+              <span>{totalReqs} request{totalReqs !== 1 ? "s" : ""}</span>
+            </div>
+          )}
+          {GEMINI_MODELS.map(m => {
+            const isSelected = m.value === model;
+            const lastUsage = usageByModel[m.value] ?? null;
+            const dayEntry = dailyUsage.byModel[m.value] ?? null;
+            const { rpm, tpm, rpd } = m.limits as ModelLimits;
+            return (
+              <button
+                key={m.value}
+                onClick={() => { onSelect(m.value as GeminiModelValue); setOpen(false); }}
+                style={{
+                  display: "block", width: "100%", textAlign: "left",
+                  padding: "10px 14px", background: isSelected ? "rgba(157,78,221,0.1)" : "transparent",
+                  border: "none", borderBottom: `1px solid ${GLASS.faint}`,
+                  cursor: "pointer", color: TEXT,
+                }}
+              >
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <span style={{ fontSize: 13, fontWeight: isSelected ? 600 : 400 }}>{m.label}</span>
+                  {isSelected && <span style={{ fontSize: 10, color: ACCENT }}>✓</span>}
+                </div>
+                <div style={{ fontSize: 10, color: TEXT_SEC, marginTop: 4, display: "flex", gap: 10 }}>
+                  <span title="Requests por minuto">{rpm} RPM</span>
+                  <span title="Tokens por minuto">{fmt(tpm)} TPM</span>
+                  <span title="Requests por día">{fmt(rpd)} RPD</span>
+                </div>
+                {dayEntry && (
+                  <div style={{ marginTop: 4, fontSize: 10, color: ACCENT, display: "flex", gap: 8 }}>
+                    <span>{fmt(dayEntry.total)} tokens hoy</span>
+                    <span style={{ color: TEXT_SEC }}>·</span>
+                    <span>{dayEntry.requests} req{dayEntry.requests !== 1 ? "s" : ""}</span>
+                    {lastUsage?.totalTokens != null && (
+                      <span style={{ color: TEXT_SEC }}>· último: {fmt(lastUsage.totalTokens)}</span>
+                    )}
+                  </div>
+                )}
+              </button>
+            );
+          })}
+        </div>
       )}
     </div>
   );
