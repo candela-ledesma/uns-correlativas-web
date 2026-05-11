@@ -171,9 +171,10 @@
       "nombre": "Examen de Suficiencia de Idioma Inglés, Dpto de Computación",
       "año": "Segundo Año",
       "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": null,
+      "horas": "",
       "tipo": "materia",
       "categoria": null,
+      "grupo_opcion": null,
       "subtipo": "idioma",
       "correlativas": {}
     },
@@ -544,9 +545,10 @@
       "nombre": "Examen Integral de Idioma Inglés ISS, Ing.en Sist. de Software",
       "año": "Cuarto Año",
       "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": null,
+      "horas": "",
       "tipo": "materia",
       "categoria": null,
+      "grupo_opcion": null,
       "subtipo": "idioma",
       "correlativas": {}
     },
@@ -895,5 +897,5 @@
   "_llm_confidence": 1,
   "_llm_prompt_version": "v20",
   "_llm_mode": "llm",
-  "_auto_saved_at": "2026-05-11T21:29:41.064Z"
+  "_auto_saved_at": "2026-05-11T22:01:40.194Z"
 }
