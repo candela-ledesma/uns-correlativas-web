@@ -87,7 +87,7 @@ El planificador actual (`WeeklySchedule`, `useSchedule`, `/api/planificador`) ma
 
 - `media` [ ] `core/llm/` — marcado deprecated; bloqueado por `core/parser/cli.py` que lo importa para `--mode=llm` y `--mode=hybrid`; eliminar cuando se decida quitar esos modos del CLI
 - `media` [ ] `tests/test_llm_*.py` (5 archivos) — se eliminan junto con `core/llm/`
-- `baja` [ ] `web/data/llm/` (8 JSONs) — referencia de comparación; eliminar cuando el pipeline del admin panel quede estable
+- `baja` [x] `web/data/llm/` (8 JSONs) — eliminado
 
 ---
 
