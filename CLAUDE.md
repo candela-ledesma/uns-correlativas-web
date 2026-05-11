@@ -1,97 +1,66 @@
-# Contexto del proyecto
+# Tarea: Rediseño del flujo de administración de planes de estudio
 
-## Objetivo del sistema
+## Contexto
+Existe un sistema que convierte PDFs de planes de estudio a JSON.
+Actualmente hay dos pipelines separados: un parser local y Gemini.
+El panel admin vive en `localhost:3000/admin`.
 
-Construir un pipeline basado únicamente en IA que convierta planes de estudio en PDFs a JSON válidos para la web, sin depender de adapters, parsers intermedios ni postprocesamiento externo.
-La IA debe generar directamente el JSON final correcto.
+## Nuevo objetivo
+El admin debe poder:
+1. Subir un PDF y elegir cómo procesarlo (parser local, Gemini, o ambos en paralelo)
+2. Ver y comparar los resultados lado a lado
+3. Elegir cuál JSON publicar (o editarlo antes de publicar)
+4. Validar el JSON antes de publicar
+5. Si el plan ya existe en la web, decidir si reemplazarlo o fusionarlo
 
-El parser actual NO se reemplaza y los JSON existentes NO se descartan:
-- sirven como dataset de referencia
-- sirven para comparar resultados
-- sirven como ground truth para evaluar calidad
-- y eventualmente servirán para mejorar prompts/modelos
+## Cambios concretos a implementar
 
-## Objetivo final del producto
+### 1. Flujo de subida
+- Input: PDF + selector de método (Local / Gemini / Ambos)
+- Si elige "Ambos": procesa en paralelo y va directo a la vista de comparación
+- Si elige uno solo: muestra resultado y permite editarlo antes de publicar
 
-Permitir que un administrador:
-1. Suba un PDF desde la web
-2. La IA procese el documento
-3. La IA genere directamente un JSON válido
-4. El plan quede agregado automáticamente al sistema
+### 2. Selector de modelo Gemini
+- Mostrar lista de modelos disponibles con la free API
+  (gemini-2.5-flash, gemini-2.5-flash-lite, gemma-4-31b-it, gemma-4-26b-a4b-it)
+- Para cada modelo mostrar:
+  - requests restantes / límite diario
+  - si está disponible ahora o en cooldown
+- Si un modelo no tiene requests disponibles, deshabilitarlo visualmente
 
-Idealmente sin intervención manual, sin adapters, sin correcciones posteriores, y compatible con planes de cualquier universidad, no solo UNS.
+### 3. Vista de comparación
+- Panel lado a lado: JSON parser local vs JSON Gemini
+- Diferencias resaltadas visualmente (usar el comparador existente
+  `python -m scripts.comparar_json`)
+- Score de similitud visible
+- Botón "Usar este" en cada panel
+- Botón "Editar antes de publicar" en cada panel
 
-## Restricciones importantes
+### 4. Validación antes de publicar
+- Correr las mismas validaciones que ya existen en el panel:
+  campos del plan, IDs únicos, año asignado, correlativas válidas, agrupadores
+- Agregar: validación de schema completo
+- El JSON no se puede publicar si falla validación (mostrar errores específicos)
+- Advertencia (no bloqueo) si el score vs ground truth baja de 90
 
-- NO usar adapters para corregir JSON
-- NO usar código externo para "arreglar" outputs de IA
-- El JSON debe salir correcto desde el modelo
-- El parser actual se mantiene intacto
-- Los JSON actuales generados manualmente/parser siguen existiendo como referencia
+### 5. Detección de plan existente
+- Antes de publicar, verificar si ya existe un plan con mismo
+  codigo_plan + universidad en `web/data/`
+- Si existe: mostrar modal con tres opciones:
+  - Reemplazar (sobreescribe el JSON actual)
+  - Cancelar
+- Mostrar diff entre el JSON actual publicado y el nuevo antes de confirmar
 
-## Estrategia actual
+## Restricciones que NO cambian
+- No usar adapters para corregir JSON
+- El parser local se mantiene intacto
+- Los JSON en `web/data/` siguen siendo ground truth
+- Los JSON de LLM van a `web/data/llm/`
+- NO hay postprocesamiento automático: el admin elige y confirma todo
 
-Se generan dos outputs separados:
-1. JSON generado por el parser actual → `web/data/` (ground truth)
-2. JSON generado por el modelo LLM → `web/data/llm/`
-
-Ambos se almacenan en carpetas distintas para comparar estructura, detectar diferencias, evaluar precisión, ajustar prompts y probar distintos modelos.
-
-## Objetivo de investigación
-
-Optimizar prompts, estructura de instrucciones, ejemplos few-shot, formato del contexto, chunking del PDF, modelos LLM, temperatura y estrategias de extracción, hasta encontrar una configuración suficientemente robusta para generalizar a PDFs arbitrarios.
-
-## Qué debe hacer el agente
-
-El agente debe actuar como un sistema de investigación y evaluación automática:
-- probar distintos prompts y modelos
-- generar JSONs y comparar outputs
-- detectar errores frecuentes e identificar campos problemáticos
-- sugerir mejoras de prompt
-- medir similitud contra ground truth
-- registrar métricas de calidad
-
-## Métricas importantes
-
-Evaluar: validez JSON, cumplimiento del schema, materias faltantes, correlativas incorrectas, pérdida de información, errores de estructura, normalización de nombres y consistencia general.
-
-## Arquitectura conceptual
-
-```
-PDF → extracción de texto → LLM → JSON final → validación → persistencia
-```
-
-NO: `PDF → LLM → adapter → parser → fixups`
-
-## Estado actual (mayo 2026)
-
-- **Modelo principal**: `gemini-2.5-flash` (prompt v13, temperatura 0)
-- **Modelos alternativos probados**: `gemma-4-31b-it`, `gemini-2.5-flash-lite`, `gemma-4-26b-a4b-it`
-- **JSONs LLM generados**: 8/8 carreras en `web/data/llm/`
-- **Score promedio vs ground truth**: 95.5/100
-- **Script de evaluación**: `python -m scripts.comparar_json <ref.json> <candidato.json>`
-- **Flag CLI**: `--model <nombre>` para cambiar modelo sin tocar código
-
-### Scores por carrera (v13)
-| Carrera | Score |
-|---|---|
-| agrimensura | 100.0 |
-| contador_publico | 100.0 |
-| arquitectura | 98.4 |
-| lic_computacion | 98.1 |
-| farmacia | 93.6 |
-| ing_civil | 92.7 |
-| bioquimica | 91.1 |
-| abogacia | 89.9 |
-
-### Problema pendiente conocido
-`agrupador_requisito` (G####) e `idioma` (I####) que el modelo pone en `agrupadores[]` pero omite en `materias[]`, a pesar de ser requeridos ahí. Afecta ing_civil (6 agrupadores de orientación) y bioquimica (G0654, I0654). El modelo aplica la regla "no duplicar" incorrectamente en estos casos. Las correlativas y nombres están correctos en todas las carreras.
-
-## Prioridad actual
-
-Prioridad máxima: mejorar la calidad del prompting y elegir el mejor modelo.
-NO optimizar parsers ni adapters.
-
-## Idea futura
-
-Dataset incremental: cada nuevo plan correcto se convierte en otro ejemplo de entrenamiento/few-shot. Mientras más PDFs procese el sistema, mejor deberían funcionar los prompts.
+## Criterio de done
+- Un admin puede subir un PDF, comparar parser vs Gemini, ver diferencias,
+  validar el resultado elegido, y publicarlo (o reemplazar uno existente)
+  sin tocar código ni terminal
+- Los rate limits de Gemini son visibles antes de elegir el modelo
+- Ningún JSON inválido puede llegar a producción sin confirmación explícita
