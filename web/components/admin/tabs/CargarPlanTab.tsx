@@ -744,13 +744,14 @@ function ModelSelector({
       {open && (
         <div style={{
           position: "absolute", top: "calc(100% + 4px)", left: 0, right: 0, zIndex: 50,
-          ...SURFACE, borderRadius: 10, overflow: "hidden",
-          boxShadow: "0 8px 30px rgba(0,0,0,0.4)",
+          background: "#1c2444",
+          borderRadius: 10, overflow: "hidden",
+          boxShadow: "0 8px 30px rgba(0,0,0,0.6)",
           border: `1px solid ${GLASS.border}`,
         }}>
           {totalHoy > 0 && (
             <div style={{
-              padding: "8px 14px", borderBottom: `1px solid ${GLASS.border}`,
+              padding: "8px 14px", borderBottom: `1px solid rgba(255,255,255,0.1)`,
               fontSize: 10, color: TEXT_SEC, display: "flex", gap: 12,
             }}>
               <span>Hoy ({dailyUsage.date})</span>
@@ -769,8 +770,8 @@ function ModelSelector({
                 onClick={() => { onSelect(m.value as GeminiModelValue); setOpen(false); }}
                 style={{
                   display: "block", width: "100%", textAlign: "left",
-                  padding: "10px 14px", background: isSelected ? "rgba(157,78,221,0.1)" : "transparent",
-                  border: "none", borderBottom: `1px solid ${GLASS.faint}`,
+                  padding: "10px 14px", background: isSelected ? "rgba(157,78,221,0.2)" : "transparent",
+                  border: "none", borderBottom: `1px solid rgba(255,255,255,0.06)`,
                   cursor: "pointer", color: TEXT,
                 }}
               >
