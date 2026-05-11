@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import { ACCENT, TEXT_SEC, SURFACE, BTN, BTN_VIOLET, INPUT } from "@/lib/ui/tokens";
+import { useEffect, useState } from "react";
+import { TEXT_SEC, SURFACE, BTN, BTN_VIOLET, INPUT } from "@/lib/ui/tokens";
+import { DEFAULT_SYSTEM_PROMPT } from "@/lib/ai/prompt";
 
 const CARD: React.CSSProperties = {
   ...SURFACE,
@@ -20,20 +21,56 @@ const FIELD_LABEL: React.CSSProperties = {
   fontWeight: 500, marginBottom: 6,
 };
 
-const PROMPT_BASE = `You are a deterministic data normalization engine for academic curricula.
+const DEFAULT_PROMPT = DEFAULT_SYSTEM_PROMPT;
 
-Your task is to transform raw, unstructured academic plan content into a strictly valid JSON object that follows the PlanData schema.
-
-Extract ALL subjects including electives. Never invent or infer data — if not explicitly present, use null.
-
-Return ONLY valid JSON. No explanations, no comments, no markdown.`;
+type SaveState = "idle" | "saving" | "saved" | "error";
 
 export default function ConfigTab() {
-  const [temp, setTemp] = useState(0);
-  const [prompt, setPrompt] = useState(PROMPT_BASE);
+  const [prompt, setPrompt] = useState(DEFAULT_PROMPT);
+  const [saveState, setSaveState] = useState<SaveState>("idle");
+  const [loadError, setLoadError] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetch("/api/admin/config")
+      .then(r => r.json())
+      .then(({ config }) => {
+        if (!config) return;
+        if (typeof config.systemPrompt === "string") setPrompt(config.systemPrompt);
+      })
+      .catch(() => setLoadError("No se pudo cargar la configuración guardada."));
+  }, []);
+
+  async function guardar() {
+    setSaveState("saving");
+    try {
+      const res = await fetch("/api/admin/config", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ systemPrompt: prompt }),
+      });
+      setSaveState(res.ok ? "saved" : "error");
+    } catch {
+      setSaveState("error");
+    }
+    setTimeout(() => setSaveState("idle"), 2500);
+  }
+
+  function restaurar() {
+    setPrompt(DEFAULT_PROMPT);
+  }
 
   return (
     <div>
+      {loadError && (
+        <div style={{
+          marginBottom: 12, padding: "8px 14px", borderRadius: 8,
+          background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.3)",
+          fontSize: 12, color: "#fca5a5",
+        }}>
+          {loadError}
+        </div>
+      )}
+
       <div style={CARD}>
         <div style={LABEL}>API</div>
         <div>
@@ -44,24 +81,6 @@ export default function ConfigTab() {
             disabled
             style={{ ...INPUT, borderRadius: 8, padding: "8px 12px", fontSize: 13, fontFamily: "monospace", opacity: 0.6, cursor: "not-allowed" }}
           />
-        </div>
-      </div>
-
-      <div style={CARD}>
-        <div style={LABEL}>Modelo</div>
-        <div>
-          <label style={FIELD_LABEL}>
-            Temperatura{" "}
-            <span style={{ color: "#c084fc", fontWeight: 600 }}>{temp}</span>
-          </label>
-          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <input
-              type="range" min={0} max={10} step={1} value={temp}
-              onChange={e => setTemp(Number(e.target.value))}
-              style={{ flex: 1, accentColor: ACCENT, cursor: "pointer" }}
-            />
-            <span style={{ minWidth: 24, textAlign: "right", fontSize: 13, fontWeight: 600, color: "#c084fc" }}>{temp}</span>
-          </div>
         </div>
       </div>
 
@@ -80,13 +99,31 @@ export default function ConfigTab() {
             }}
           />
         </div>
-        <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
-          <button style={{ ...BTN_VIOLET, borderRadius: 8, padding: "8px 16px", fontSize: 13, fontWeight: 600 }}>
-            ✨ Mejorar prompt
+        <div style={{ display: "flex", gap: 8, marginTop: 12, alignItems: "center" }}>
+          <button
+            onClick={guardar}
+            disabled={saveState === "saving"}
+            style={{
+              ...BTN_VIOLET, borderRadius: 8, padding: "8px 16px",
+              fontSize: 13, fontWeight: 600,
+              opacity: saveState === "saving" ? 0.6 : 1,
+              cursor: saveState === "saving" ? "not-allowed" : "pointer",
+            }}
+          >
+            {saveState === "saving" ? "Guardando…" : saveState === "saved" ? "✓ Guardado" : saveState === "error" ? "⚠ Error" : "💾 Guardar"}
           </button>
-          <button style={{ ...BTN, borderRadius: 8, padding: "8px 16px", fontSize: 13 }}>
-            💾 Guardar
+          <button
+            onClick={restaurar}
+            style={{ ...BTN, borderRadius: 8, padding: "8px 16px", fontSize: 13 }}
+          >
+            ↩ Restaurar prompt
           </button>
+          {saveState === "saved" && (
+            <span style={{ fontSize: 11, color: "#22c55e" }}>Cambios aplicados al próximo parseo</span>
+          )}
+          {saveState === "error" && (
+            <span style={{ fontSize: 11, color: "#fca5a5" }}>No se pudo guardar</span>
+          )}
         </div>
       </div>
     </div>

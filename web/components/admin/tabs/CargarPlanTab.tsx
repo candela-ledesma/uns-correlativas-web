@@ -784,16 +784,29 @@ function ModelSelector({
                   <span title="Tokens por minuto">{fmt(tpm)} TPM</span>
                   <span title="Requests por día">{fmt(rpd)} RPD</span>
                 </div>
-                {dayEntry && (
-                  <div style={{ marginTop: 4, fontSize: 10, color: ACCENT, display: "flex", gap: 8 }}>
-                    <span>{fmt(dayEntry.total)} tokens hoy</span>
-                    <span style={{ color: TEXT_SEC }}>·</span>
-                    <span>{dayEntry.requests} req{dayEntry.requests !== 1 ? "s" : ""}</span>
-                    {lastUsage?.totalTokens != null && (
-                      <span style={{ color: TEXT_SEC }}>· último: {fmt(lastUsage.totalTokens)}</span>
-                    )}
-                  </div>
-                )}
+                {(() => {
+                  const used = dayEntry?.requests ?? 0;
+                  const pct = Math.min(used / rpd, 1);
+                  const barColor = pct >= 1 ? "#ef4444" : pct >= 0.8 ? "#f59e0b" : "#22c55e";
+                  return (
+                    <div style={{ marginTop: 6 }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: TEXT_SEC, marginBottom: 3 }}>
+                        <span>{used} / {fmt(rpd)} req hoy</span>
+                        {lastUsage?.totalTokens != null && (
+                          <span>último: {fmt(lastUsage.totalTokens)} tokens</span>
+                        )}
+                      </div>
+                      <div style={{ height: 3, borderRadius: 2, background: "rgba(255,255,255,0.08)", overflow: "hidden" }}>
+                        <div style={{
+                          height: "100%", borderRadius: 2,
+                          width: `${pct * 100}%`,
+                          background: barColor,
+                          transition: "width 0.3s",
+                        }} />
+                      </div>
+                    </div>
+                  );
+                })()}
               </button>
             );
           })}
