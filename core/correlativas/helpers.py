@@ -1,3 +1,4 @@
+# DEPRECATED: pendiente de borrar (ver core/correlativas/)
 def cumple_estado(estado_actual, estado_requerido):
     actual = (estado_actual or "").lower()
     requerido = (estado_requerido or "").lower()

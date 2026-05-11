@@ -1,3 +1,4 @@
+# DEPRECATED: pendiente de borrar — el parseo ahora corre dentro de la API (/api/admin/planes/parsear-local/)
 import sys
 from pathlib import Path
 

@@ -1,3 +1,4 @@
+# DEPRECATED: pendiente de borrar (ver core/correlativas/)
 # Valida si una materia está disponible según correlativas, incluyendo grupos optativos.
 from .helpers import cumple_estado
 

@@ -1,3 +1,4 @@
+// DEPRECATED: pendiente de borrar — reemplazado por /parsear/ y /parsear-local/
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { Role } from "@/lib/auth/roles";
