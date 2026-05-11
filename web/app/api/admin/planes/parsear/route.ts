@@ -195,6 +195,8 @@ async function autoGuardarGemini(data: Record<string, unknown>, originalFilename
     const slug = carrera ? slugFromCarrera(carrera) : originalFilename.replace(/\.pdf$/i, "");
     await fs.mkdir(GEMINI_DIR, { recursive: true });
     const filePath = path.join(GEMINI_DIR, `${slug}.json`);
+    const existe = await fs.access(filePath).then(() => true).catch(() => false);
+    if (existe) return;
     const toSave = { ...data, _auto_saved_at: new Date().toISOString() };
     await fs.writeFile(filePath, JSON.stringify(toSave, null, 2), "utf-8");
   } catch {
