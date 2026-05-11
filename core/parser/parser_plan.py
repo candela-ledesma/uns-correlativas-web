@@ -162,7 +162,7 @@ def parsear_linea_materia(
         return None
 
     codigo = match.group(1).strip()
-    nombre = match.group(2).strip()
+    nombre = re.sub(r':(?! )', ': ', match.group(2).strip())
     horas = (match.group(3) or "").strip()
 
     if codigo.upper().startswith("G"):
@@ -390,8 +390,11 @@ def detectar_materias_generico(texto):
             if codigo in materias_index:
                 colisiones_id.append(codigo)
                 ubicacion_previa = materias_index[codigo]
-                materias[:] = [m for m in materias if str(m["id"]) != codigo]
-                del materias_index[codigo]
+                # idioma_grupo en POSITION A ya tiene su entrada correcta en materias[] —
+                # no eliminarla, solo transferir la ubicación al agrupador.
+                if tipo_agrupador != "idioma_grupo":
+                    materias[:] = [m for m in materias if str(m["id"]) != codigo]
+                    del materias_index[codigo]
 
             if codigo not in agrupadores_index:
                 agrupador = crear_agrupador(codigo, nombre, tipo_agrupador)
@@ -705,6 +708,18 @@ def detectar_materias_generico(texto):
             elif ubicaciones_lista[0].get("año"):
                 materia["año"] = ubicaciones_lista[0]["año"]
                 materia["cuatrimestre"] = ubicaciones_lista[0]["cuatrimestre"]
+
+    # Optativas de idioma heredan año/cuatrimestre del agrupador (POSITION A)
+    for materia in materias:
+        if materia.get("subtipo") != "idioma" or materia.get("categoria") != "optativa":
+            continue
+        grupo_id = materia.get("grupo_opcion")
+        if not grupo_id:
+            continue
+        agr = agrupadores_index.get(grupo_id)
+        if agr and agr.get("año"):
+            materia["año"] = agr["año"]
+            materia["cuatrimestre"] = agr.get("cuatrimestre")
 
     resultado = {
         "plan": info_plan,

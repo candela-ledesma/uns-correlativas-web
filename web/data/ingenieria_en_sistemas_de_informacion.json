@@ -167,6 +167,18 @@
       }
     },
     {
+      "id": "I0022",
+      "nombre": "Examen de Suficiencia de Idioma Inglés, Dpto de Computación",
+      "año": "Segundo Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": "idioma",
+      "correlativas": {}
+    },
+    {
       "id": "7821",
       "nombre": "MODELOS DE SOFTWARE",
       "año": "Segundo Año",
@@ -533,6 +545,18 @@
       }
     },
     {
+      "id": "I0023",
+      "nombre": "Examen Integral de Idioma Inglés ISS, Ing.en Sist. de Software",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": "idioma",
+      "correlativas": {}
+    },
+    {
       "id": "3051",
       "nombre": "FISICA I",
       "año": "Cuarto Año",
@@ -829,8 +853,8 @@
     },
     {
       "id": "5596",
-      "nombre": "EXAMEN DE SUFICIENCIA DE IDIOMA:INGLES",
-      "año": "Quinto Año",
+      "nombre": "EXAMEN DE SUFICIENCIA DE IDIOMA: INGLES",
+      "año": "Segundo Año",
       "cuatrimestre": "Segundo Cuatrimestre",
       "horas": "",
       "tipo": "materia",
@@ -842,7 +866,7 @@
     {
       "id": "7659",
       "nombre": "EXAMEN INTEGRAL DE IDIOMA INGLES ISS",
-      "año": "Quinto Año",
+      "año": "Cuarto Año",
       "cuatrimestre": "Segundo Cuatrimestre",
       "horas": "",
       "tipo": "materia",
