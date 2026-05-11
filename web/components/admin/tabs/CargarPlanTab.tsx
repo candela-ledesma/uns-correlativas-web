@@ -2,6 +2,8 @@
 
 import { useCallback, useRef, useState } from "react";
 import { ACCENT, GLASS, TEXT, TEXT_SEC, SURFACE, BTN, BTN_VIOLET, INPUT, STATUS_COLORS, ERROR_PANEL } from "@/lib/ui/tokens";
+import DiffExportDrawer from "./DiffExportDrawer";
+import GuardarPlanDrawer from "./GuardarPlanDrawer";
 
 type ParseResult = {
   plan: { carrera: string; universidad: string; codigo_plan: string };
@@ -16,9 +18,22 @@ type ParseResult = {
   _llm_prompt_version?: string;
 };
 
+type ProgressStep = "leyendo" | "enviando" | "generando" | "guardando" | "parseando";
+
+const STEP_LABELS_GEMINI: ProgressStep[] = ["leyendo", "enviando", "generando"];
+const STEP_LABELS_LOCAL: ProgressStep[] = ["guardando", "parseando", "leyendo"];
+
+const STEP_LABEL: Record<ProgressStep, string> = {
+  leyendo:   "Leyendo el PDF…",
+  enviando:  "Enviando a Gemini…",
+  generando: "Generando JSON…",
+  guardando: "Preparando el PDF…",
+  parseando: "Ejecutando parser local…",
+};
+
 type Status =
   | { type: "idle" }
-  | { type: "loading" }
+  | { type: "loading"; step: ProgressStep; message: string }
   | { type: "error"; message: string }
   | { type: "done"; data: ParseResult };
 
@@ -59,20 +74,55 @@ export default function CargarPlanTab() {
     if (f) handleFile(f);
   }, []);
 
-  async function parsear() {
-    if (!file) return;
-    setStatus({ type: "loading" });
-    const fd = new FormData();
-    fd.append("file", file);
-    fd.append("model", model);
+  async function parsearSSE(endpoint: string, fd: FormData, initialStep: ProgressStep) {
+    setStatus({ type: "loading", step: initialStep, message: STEP_LABEL[initialStep] });
     try {
-      const res = await fetch("/api/admin/planes/parsear", { method: "POST", body: fd });
-      const json = await res.json();
-      if (!res.ok || json.error) throw new Error(json.error || "Error desconocido");
-      setStatus({ type: "done", data: json.data });
+      const res = await fetch(endpoint, { method: "POST", body: fd });
+      if (!res.body) throw new Error("No se recibió respuesta del servidor");
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split("\n\n");
+        buffer = lines.pop() ?? "";
+        for (const line of lines) {
+          const dataLine = line.startsWith("data: ") ? line.slice(6) : null;
+          if (!dataLine) continue;
+          try {
+            const event = JSON.parse(dataLine);
+            if (event.type === "progress") {
+              setStatus({ type: "loading", step: event.step as ProgressStep, message: event.message });
+            } else if (event.type === "done") {
+              setStatus({ type: "done", data: event.data as ParseResult });
+            } else if (event.type === "error") {
+              setStatus({ type: "error", message: event.message });
+            }
+          } catch {}
+        }
+      }
     } catch (err) {
       setStatus({ type: "error", message: err instanceof Error ? err.message : String(err) });
     }
+  }
+
+  function parsear() {
+    if (!file) return;
+    const fd = new FormData();
+    fd.append("file", file);
+    fd.append("model", model);
+    parsearSSE("/api/admin/planes/parsear", fd, "leyendo");
+  }
+
+  function parsearLocal() {
+    if (!file) return;
+    const fd = new FormData();
+    fd.append("file", file);
+    parsearSSE("/api/admin/planes/parsear-local", fd, "guardando");
   }
 
   function limpiar() {
@@ -240,7 +290,21 @@ export default function CargarPlanTab() {
             }}
           >
             <span>🤖</span>
-            {status.type === "loading" ? "Procesando…" : "Parsear con Gemini"}
+            {status.type === "loading" && STEP_LABELS_GEMINI.includes(status.step) ? status.message : "Parsear con Gemini"}
+          </button>
+          <button
+            onClick={parsearLocal}
+            disabled={!file || status.type === "loading"}
+            style={{
+              ...BTN, borderRadius: 8, padding: "8px 16px",
+              fontSize: 13, fontWeight: 600,
+              display: "flex", alignItems: "center", gap: 6,
+              opacity: !file || status.type === "loading" ? 0.5 : 1,
+              cursor: !file || status.type === "loading" ? "not-allowed" : "pointer",
+            }}
+          >
+            <span>⚙️</span>
+            {status.type === "loading" && STEP_LABELS_LOCAL.includes(status.step) ? status.message : "Parsear local"}
           </button>
           <button
             onClick={limpiar}
@@ -252,6 +316,40 @@ export default function CargarPlanTab() {
             El plan se convierte<br />a JSON de correlativas
           </div>
         </div>
+
+        {status.type === "loading" && (() => {
+          const isLocal = STEP_LABELS_LOCAL.includes(status.step);
+          const steps = isLocal ? STEP_LABELS_LOCAL : STEP_LABELS_GEMINI;
+          const currentIdx = steps.indexOf(status.step);
+          return (
+            <div style={{ marginTop: 14, display: "flex", flexDirection: "column", gap: 6 }}>
+              {steps.map((step, i) => {
+                const isDone = i < currentIdx;
+                const isActive = i === currentIdx;
+                return (
+                  <div key={step} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12 }}>
+                    <span style={{
+                      width: 18, height: 18, borderRadius: "50%", display: "flex",
+                      alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 700,
+                      background: isDone ? "rgba(34,197,94,0.15)" : isActive ? "rgba(157,78,221,0.2)" : GLASS.elevated,
+                      border: `1px solid ${isDone ? "#22c55e" : isActive ? ACCENT : GLASS.border}`,
+                      color: isDone ? "#22c55e" : isActive ? ACCENT : TEXT_SEC,
+                      flexShrink: 0,
+                    }}>
+                      {isDone ? "✓" : i + 1}
+                    </span>
+                    <span style={{ color: isActive ? TEXT : TEXT_SEC, fontWeight: isActive ? 600 : 400 }}>
+                      {STEP_LABEL[step]}
+                    </span>
+                    {isActive && (
+                      <span style={{ marginLeft: 2, color: ACCENT, fontSize: 11 }}>●</span>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          );
+        })()}
       </div>
 
       {/* Error */}
@@ -265,6 +363,7 @@ export default function CargarPlanTab() {
       {status.type === "done" && (
         <ResultadoParseo
           data={status.data}
+          ground={null}
           highlightDiffs={highlightDiffs}
           onToggleHighlight={setHighlightDiffs}
           validationOpen={validationOpen}
@@ -278,10 +377,11 @@ export default function CargarPlanTab() {
 }
 
 function ResultadoParseo({
-  data, highlightDiffs, onToggleHighlight,
+  data, ground, highlightDiffs, onToggleHighlight,
   validationOpen, onToggleValidation, onCopy, byYear,
 }: {
   data: ParseResult;
+  ground: ParseResult | null;
   highlightDiffs: boolean;
   onToggleHighlight: (v: boolean) => void;
   validationOpen: boolean;
@@ -291,6 +391,8 @@ function ResultadoParseo({
 }) {
   const conf = data._llm_confidence != null ? Math.round(data._llm_confidence * 100) : null;
   const grouped = byYear(data.materias);
+  const [showFewShot, setShowFewShot] = useState(false);
+  const [guardarFuente, setGuardarFuente] = useState<"gemini" | "parser" | null>(null);
 
   return (
     <div>
@@ -418,58 +520,89 @@ function ResultadoParseo({
         </div>
         {validationOpen && (
           <div style={{ borderTop: `1px solid ${GLASS.border}`, padding: "4px 14px 12px" }}>
-            {[
-              { ok: true,  label: "JSON válido",            note: "Estructura correcta" },
-              { ok: true,  label: "IDs únicos",             note: `${data.materias.length} materias detectadas` },
-              { ok: data.materias.filter(m => !m.año).length === 0, label: "Año asignado", note: `${data.materias.filter(m => !m.año).length} sin año` },
-              { ok: data.agrupadores.length > 0 || true,    label: "Agrupadores",         note: `${data.agrupadores.length} grupos` },
-              { ok: conf != null && conf >= 80,             label: "Confianza del modelo", note: conf != null ? `${conf}%` : "—" },
-            ].map((c, i) => (
-              <div key={i} style={{
-                display: "flex", alignItems: "center", gap: 8,
-                padding: "6px 0", fontSize: 12, color: TEXT,
-                borderBottom: i < 4 ? `1px solid ${GLASS.faint}` : "none",
-              }}>
-                <span style={{ width: 18, textAlign: "center" }}>{c.ok ? "✅" : "⚠️"}</span>
-                <span style={{ flex: 1 }}>{c.label}</span>
-                <span style={{ fontSize: 11, color: TEXT_SEC }}>{c.note}</span>
-              </div>
-            ))}
+            {(() => {
+              const ids = data.materias.map(m => m.id);
+              const uniqueIds = new Set(ids);
+              const duplicados = ids.length - uniqueIds.size;
+              const sinAño = data.materias.filter(m => !m.año).length;
+              const todasLasIds = new Set([...ids, ...data.agrupadores.map((a: unknown) => (a as { id?: string }).id).filter(Boolean)]);
+              const correlativasRotas = data.materias.reduce((acc, m) => {
+                const rotas = Object.keys(m.correlativas).filter(cid => !todasLasIds.has(cid));
+                return acc + rotas.length;
+              }, 0);
+              const tieneCarrera = !!data.plan.carrera && !!data.plan.universidad && !!data.plan.codigo_plan;
+
+              const checks = [
+                { ok: tieneCarrera,          label: "Campos del plan",       note: tieneCarrera ? `${data.plan.carrera}` : "Falta carrera, universidad o código" },
+                { ok: duplicados === 0,      label: "IDs únicos",            note: duplicados === 0 ? `${ids.length} materias` : `${duplicados} duplicado${duplicados > 1 ? "s" : ""}` },
+                { ok: sinAño === 0,          label: "Año asignado",          note: sinAño === 0 ? "Todas tienen año" : `${sinAño} sin año` },
+                { ok: correlativasRotas === 0, label: "Correlativas válidas", note: correlativasRotas === 0 ? "Todas las IDs existen" : `${correlativasRotas} ID${correlativasRotas > 1 ? "s" : ""} no encontrada${correlativasRotas > 1 ? "s" : ""}` },
+                { ok: data.agrupadores.length > 0, label: "Agrupadores",    note: `${data.agrupadores.length} grupo${data.agrupadores.length !== 1 ? "s" : ""}` },
+              ];
+
+              return checks.map((c, i) => (
+                <div key={i} style={{
+                  display: "flex", alignItems: "center", gap: 8,
+                  padding: "6px 0", fontSize: 12, color: TEXT,
+                  borderBottom: i < checks.length - 1 ? `1px solid ${GLASS.faint}` : "none",
+                }}>
+                  <span style={{ width: 18, textAlign: "center" }}>{c.ok ? "✅" : "⚠️"}</span>
+                  <span style={{ flex: 1 }}>{c.label}</span>
+                  <span style={{ fontSize: 11, color: c.ok ? TEXT_SEC : "#fca5a5" }}>{c.note}</span>
+                </div>
+              ));
+            })()}
           </div>
         )}
       </div>
 
       {/* Final actions */}
       <div style={{
-        display: "flex", alignItems: "center", gap: 10,
+        display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap",
         padding: "14px 16px", ...SURFACE, borderRadius: 12,
       }}>
-        <button style={{ ...BTN_VIOLET, borderRadius: 8, padding: "8px 16px", fontSize: 13, fontWeight: 600 }}>
-          🤖 Corregir con IA
-        </button>
-        <button style={{ ...BTN, borderRadius: 8, padding: "8px 16px", fontSize: 13 }}>
-          ✏ Editar JSON
+        <button
+          onClick={() => setShowFewShot(v => !v)}
+          style={{ ...BTN, borderRadius: 8, padding: "8px 14px", fontSize: 12, fontWeight: 500 }}
+        >
+          🧪 {showFewShot ? "Cerrar few-shot" : "Exportar diff como few-shot"}
         </button>
         <div style={{ flex: 1 }} />
-        <button style={{
-          background: STATUS_COLORS.aprobada.badgeBg,
-          border: `1px solid ${STATUS_COLORS.aprobada.badgeBorder}`,
-          color: STATUS_COLORS.aprobada.accent,
-          borderRadius: 8, padding: "8px 16px",
-          fontSize: 13, fontWeight: 600, cursor: "pointer",
-        }}>
-          ✓ Confirmar y guardar
+        <button
+          onClick={() => setGuardarFuente("parser")}
+          style={{ ...BTN, borderRadius: 8, padding: "8px 14px", fontSize: 12, fontWeight: 500 }}
+        >
+          💾 Usar parser
         </button>
-        <button style={{
-          background: "none",
-          border: `1px solid ${STATUS_COLORS.danger.cardBorder}`,
-          color: STATUS_COLORS.danger.accent,
-          borderRadius: 8, padding: "8px 16px",
-          fontSize: 13, fontWeight: 500, cursor: "pointer",
-        }}>
-          ✕ Descartar
+        <button
+          onClick={() => setGuardarFuente("gemini")}
+          style={{
+            background: STATUS_COLORS.aprobada.badgeBg,
+            border: `1px solid ${STATUS_COLORS.aprobada.badgeBorder}`,
+            color: STATUS_COLORS.aprobada.accent,
+            borderRadius: 8, padding: "8px 16px",
+            fontSize: 13, fontWeight: 600, cursor: "pointer",
+          }}
+        >
+          ✓ Usar Gemini
         </button>
       </div>
+
+      {showFewShot && (
+        <DiffExportDrawer
+          gemini={data}
+          ground={ground}
+          onClose={() => setShowFewShot(false)}
+        />
+      )}
+
+      {guardarFuente && (
+        <GuardarPlanDrawer
+          data={data}
+          fuente={guardarFuente}
+          onClose={() => setGuardarFuente(null)}
+        />
+      )}
     </div>
   );
 }

@@ -165,18 +165,29 @@ Your response MUST be strict JSON, schema-compliant and safe for automatic valid
 
 function extraerJSON(raw: string): unknown {
   const direct = raw.trim();
-  try { return JSON.parse(direct); } catch {}
+  const errors: string[] = [];
+
+  try { return JSON.parse(direct); } catch (e) { errors.push(`directo: ${(e as Error).message}`); }
 
   const mdMatch = direct.match(/```(?:json)?\s*([\s\S]*?)```/);
-  if (mdMatch) try { return JSON.parse(mdMatch[1]); } catch {}
+  if (mdMatch) {
+    try { return JSON.parse(mdMatch[1]); } catch (e) { errors.push(`markdown block: ${(e as Error).message}`); }
+  }
 
   const braceStart = direct.indexOf("{");
   const braceEnd = direct.lastIndexOf("}");
   if (braceStart !== -1 && braceEnd !== -1) {
-    try { return JSON.parse(direct.slice(braceStart, braceEnd + 1)); } catch {}
+    try { return JSON.parse(direct.slice(braceStart, braceEnd + 1)); } catch (e) { errors.push(`brace extract: ${(e as Error).message}`); }
   }
 
-  throw new Error("No se pudo extraer JSON de la respuesta del modelo");
+  const preview = raw.length > 500 ? raw.slice(0, 500) + "…" : raw;
+  throw new Error(
+    `No se pudo extraer JSON de la respuesta del modelo.\n\nErrores de parseo:\n${errors.join("\n")}\n\nRespuesta recibida:\n${preview || "(vacía)"}`
+  );
+}
+
+function sseEvent(type: string, payload: Record<string, unknown>): string {
+  return `data: ${JSON.stringify({ type, ...payload })}\n\n`;
 }
 
 export async function POST(request: Request) {
@@ -208,53 +219,60 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "GEMINI_API_KEY no configurada" }, { status: 500 });
   }
 
-  try {
-    // 1. Enviar el PDF directamente a Gemini como documento nativo
-    const bytes = await file.arrayBuffer();
-    const pdfBase64 = Buffer.from(bytes).toString("base64");
+  const stream = new ReadableStream({
+    async start(controller) {
+      const send = (type: string, payload: Record<string, unknown> = {}) => {
+        controller.enqueue(new TextEncoder().encode(sseEvent(type, payload)));
+      };
 
-    const ai = new GoogleGenAI({ apiKey });
+      try {
+        send("progress", { step: "leyendo", message: "Leyendo el PDF…" });
+        const bytes = await file.arrayBuffer();
+        const pdfBase64 = Buffer.from(bytes).toString("base64");
 
-    const response = await ai.models.generateContent({
-      model,
-      contents: [
-        {
-          role: "user",
-          parts: [
+        send("progress", { step: "enviando", message: "Enviando a Gemini…" });
+        const ai = new GoogleGenAI({ apiKey });
+
+        send("progress", { step: "generando", message: "Generando JSON…" });
+        const response = await ai.models.generateContent({
+          model,
+          contents: [
             {
-              inlineData: {
-                mimeType: "application/pdf",
-                data: pdfBase64,
-              },
-            },
-            {
-              text: "OPTIONAL_BASE_JSON:\nnone\n\nALLOW_OVERWRITE:\nfalse",
+              role: "user",
+              parts: [
+                { inlineData: { mimeType: "application/pdf", data: pdfBase64 } },
+                { text: "OPTIONAL_BASE_JSON:\nnone\n\nALLOW_OVERWRITE:\nfalse" },
+              ],
             },
           ],
-        },
-      ],
-      config: {
-        systemInstruction: SYSTEM_PROMPT,
-        temperature: 0,
-      },
-    });
+          config: { systemInstruction: SYSTEM_PROMPT, temperature: 0 },
+        });
 
-    const rawText = response.text ?? "";
-    const data = extraerJSON(rawText) as Record<string, unknown>;
+        const rawText = response.text ?? "";
+        const data = extraerJSON(rawText) as Record<string, unknown>;
+        data._llm_confidence = 1.0;
+        data._llm_prompt_version = PROMPT_VERSION;
+        data._llm_mode = "llm";
 
-    // 3. Agregar metadata — nada se guarda en disco
-    data._llm_confidence = 1.0;
-    data._llm_prompt_version = PROMPT_VERSION;
-    data._llm_mode = "llm";
+        send("done", { data });
+      } catch (err) {
+        let msg = err instanceof Error ? err.message : String(err);
+        try {
+          const parsed = JSON.parse(msg);
+          if (parsed?.error?.message) msg = parsed.error.message;
+        } catch {}
+        send("error", { message: msg });
+      } finally {
+        controller.close();
+      }
+    },
+  });
 
-    return NextResponse.json({ ok: true, data });
-  } catch (err) {
-    let msg = err instanceof Error ? err.message : String(err);
-    try {
-      const parsed = JSON.parse(msg);
-      if (parsed?.error?.message) msg = parsed.error.message;
-    } catch {}
-    const status = msg.includes("429") || msg.includes("quota") || msg.includes("RESOURCE_EXHAUSTED") ? 429 : 500;
-    return NextResponse.json({ error: msg }, { status });
-  }
+  return new Response(stream, {
+    headers: {
+      "Content-Type": "text/event-stream",
+      "Cache-Control": "no-cache",
+      Connection: "keep-alive",
+    },
+  });
 }
