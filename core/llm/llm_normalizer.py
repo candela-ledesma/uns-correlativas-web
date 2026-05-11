@@ -1,3 +1,4 @@
+# DEPRECATED: pendiente de borrar (ver core/llm/)
 import json
 import logging
 import re

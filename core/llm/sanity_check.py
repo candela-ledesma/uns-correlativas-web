@@ -1,3 +1,4 @@
+# DEPRECATED: pendiente de borrar (ver core/llm/)
 import re
 from dataclasses import dataclass, field
 from typing import Any

@@ -1,3 +1,4 @@
+# DEPRECATED: pendiente de borrar (junto con core/llm/)
 import unittest
 
 from core.llm.sanity_check import (

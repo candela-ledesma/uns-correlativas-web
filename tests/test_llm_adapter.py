@@ -1,3 +1,4 @@
+# DEPRECATED: pendiente de borrar (junto con core/llm/)
 import unittest
 
 from core.llm.adapter import adaptar, _adaptar_correlativas, _normalizar_anio_llm
