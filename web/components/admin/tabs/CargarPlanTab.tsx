@@ -4,19 +4,7 @@ import { useCallback, useRef, useState } from "react";
 import { ACCENT, GLASS, TEXT, TEXT_SEC, SURFACE, BTN, BTN_VIOLET, INPUT, STATUS_COLORS, ERROR_PANEL } from "@/lib/ui/tokens";
 import DiffExportDrawer from "./DiffExportDrawer";
 import GuardarPlanDrawer from "./GuardarPlanDrawer";
-
-type ParseResult = {
-  plan: { carrera: string; universidad: string; codigo_plan: string };
-  materias: Array<{
-    id: string; nombre: string; año: string | null;
-    cuatrimestre: string | null; horas: string;
-    correlativas: Record<string, unknown>;
-    categoria: string;
-  }>;
-  agrupadores: unknown[];
-  _llm_confidence?: number;
-  _llm_prompt_version?: string;
-};
+import type { ParseResult } from "./DiffExportDrawer";
 
 type ProgressStep = "leyendo" | "enviando" | "generando" | "guardando" | "parseando";
 
@@ -58,6 +46,8 @@ export default function CargarPlanTab() {
   const [uniNombre, setUniNombre] = useState("");
   const [dragging, setDragging] = useState(false);
   const [status, setStatus] = useState<Status>({ type: "idle" });
+  const [resultadoLocal, setResultadoLocal] = useState<ParseResult | null>(null);
+  const [resultadoGemini, setResultadoGemini] = useState<ParseResult | null>(null);
   const [highlightDiffs, setHighlightDiffs] = useState(true);
   const [validationOpen, setValidationOpen] = useState(true);
 
@@ -74,7 +64,7 @@ export default function CargarPlanTab() {
     if (f) handleFile(f);
   }, []);
 
-  async function parsearSSE(endpoint: string, fd: FormData, initialStep: ProgressStep) {
+  async function parsearSSE(endpoint: string, fd: FormData, initialStep: ProgressStep, onDone: (data: ParseResult) => void) {
     setStatus({ type: "loading", step: initialStep, message: STEP_LABEL[initialStep] });
     try {
       const res = await fetch(endpoint, { method: "POST", body: fd });
@@ -98,7 +88,9 @@ export default function CargarPlanTab() {
             if (event.type === "progress") {
               setStatus({ type: "loading", step: event.step as ProgressStep, message: event.message });
             } else if (event.type === "done") {
-              setStatus({ type: "done", data: event.data as ParseResult });
+              const data = event.data as ParseResult;
+              onDone(data);
+              setStatus({ type: "done", data });
             } else if (event.type === "error") {
               setStatus({ type: "error", message: event.message });
             }
@@ -115,19 +107,21 @@ export default function CargarPlanTab() {
     const fd = new FormData();
     fd.append("file", file);
     fd.append("model", model);
-    parsearSSE("/api/admin/planes/parsear", fd, "leyendo");
+    parsearSSE("/api/admin/planes/parsear", fd, "leyendo", (data) => setResultadoGemini(data));
   }
 
   function parsearLocal() {
     if (!file) return;
     const fd = new FormData();
     fd.append("file", file);
-    parsearSSE("/api/admin/planes/parsear-local", fd, "guardando");
+    parsearSSE("/api/admin/planes/parsear-local", fd, "guardando", (data) => setResultadoLocal(data));
   }
 
   function limpiar() {
     setFile(null);
     setStatus({ type: "idle" });
+    setResultadoLocal(null);
+    setResultadoGemini(null);
     if (fileInputRef.current) fileInputRef.current.value = "";
   }
 
@@ -363,7 +357,12 @@ export default function CargarPlanTab() {
       {status.type === "done" && (
         <ResultadoParseo
           data={status.data}
-          ground={null}
+          ground={
+            // Si el resultado visible es Gemini, ground es el local (y viceversa)
+            status.data === resultadoGemini ? resultadoLocal :
+            status.data === resultadoLocal  ? resultadoGemini :
+            null
+          }
           highlightDiffs={highlightDiffs}
           onToggleHighlight={setHighlightDiffs}
           validationOpen={validationOpen}

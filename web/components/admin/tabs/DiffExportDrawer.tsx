@@ -3,28 +3,54 @@
 import { useState, useMemo } from "react";
 import { ACCENT, GLASS, TEXT, TEXT_SEC, SURFACE, BTN, BTN_VIOLET, INPUT, STATUS_COLORS } from "@/lib/ui/tokens";
 
-type Materia = {
+export type CorValue = { para_cursar?: string | null; para_rendir?: string | null } | string | null | unknown;
+
+export type Materia = {
   id: string;
   nombre: string;
   año: string | null;
-  correlativas: Record<string, unknown>;
+  correlativas: Record<string, CorValue>;
   horas: string;
   categoria: string;
+  cuatrimestre?: string | null;
+  [key: string]: unknown;
 };
 
-type ParseResult = {
+export type Agrupador = {
+  id?: string;
+  nombre?: string;
+  [key: string]: unknown;
+};
+
+export type ParseResult = {
   plan: { carrera: string; universidad: string; codigo_plan: string };
   materias: Materia[];
-  agrupadores: unknown[];
+  agrupadores: Agrupador[];
+  _llm_confidence?: number;
+  _llm_prompt_version?: string;
+  [key: string]: unknown;
 };
 
 export type DiffItem = {
   id: string;
   nombre: string;
-  tipo: "correlativa_distinta" | "materia_faltante" | "materia_extra";
+  tipo: "correlativa_distinta" | "materia_faltante" | "materia_extra" | "agrupador_distinto";
   groundTruth: string;
   gemini: string;
 };
+
+function serializeCor(val: CorValue): string {
+  if (!val || typeof val !== "object") return String(val ?? "");
+  const v = val as { para_cursar?: string | null; para_rendir?: string | null };
+  return `cursar:${v.para_cursar ?? "—"}/rendir:${v.para_rendir ?? "—"}`;
+}
+
+function serializeCorMap(cors: Record<string, CorValue>): string {
+  return Object.entries(cors)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([k, v]) => `${k}(${serializeCor(v)})`)
+    .join(", ") || "ninguna";
+}
 
 function computeDiffs(ground: ParseResult | null, gemini: ParseResult): DiffItem[] {
   const diffs: DiffItem[] = [];
@@ -42,8 +68,8 @@ function computeDiffs(ground: ParseResult | null, gemini: ParseResult): DiffItem
         gemini: "(no incluida)",
       });
     } else {
-      const gtCors = Object.keys(gm.correlativas).sort().join(", ") || "ninguna";
-      const gemCors = Object.keys(gem.correlativas).sort().join(", ") || "ninguna";
+      const gtCors = serializeCorMap(gm.correlativas);
+      const gemCors = serializeCorMap(gem.correlativas);
       if (gtCors !== gemCors) {
         diffs.push({
           id, nombre: gm.nombre, tipo: "correlativa_distinta",
@@ -64,6 +90,19 @@ function computeDiffs(ground: ParseResult | null, gemini: ParseResult): DiffItem
     }
   }
 
+  // Comparar nombres de agrupadores
+  const groundAgr = new Map(ground.agrupadores.map(a => [a.id ?? "", a.nombre ?? ""]));
+  const geminiAgr = new Map(gemini.agrupadores.map(a => [a.id ?? "", a.nombre ?? ""]));
+  for (const [id, nombre] of groundAgr) {
+    if (!id) continue;
+    const gemNombre = geminiAgr.get(id);
+    if (gemNombre === undefined) {
+      diffs.push({ id, nombre, tipo: "materia_faltante", groundTruth: nombre, gemini: "(ausente en Gemini)" });
+    } else if (gemNombre !== nombre) {
+      diffs.push({ id, nombre, tipo: "agrupador_distinto", groundTruth: nombre, gemini: gemNombre });
+    }
+  }
+
   return diffs;
 }
 
@@ -71,7 +110,10 @@ const BADGE: Record<DiffItem["tipo"], { label: string; bg: string; border: strin
   correlativa_distinta: { label: "correlativa distinta", bg: "rgba(249,199,79,0.15)", border: "rgba(249,199,79,0.4)", color: "#f9c74f" },
   materia_faltante:     { label: "materia faltante",     bg: "rgba(231,111,81,0.15)", border: "rgba(231,111,81,0.4)", color: "#e76f51" },
   materia_extra:        { label: "materia extra",        bg: "rgba(144,190,109,0.15)", border: "rgba(144,190,109,0.4)", color: "#90be6d" },
+  agrupador_distinto:   { label: "agrupador distinto",   bg: "rgba(76,201,240,0.12)",  border: "rgba(76,201,240,0.4)",  color: "#4cc9f0" },
 };
+
+function diffKey(d: DiffItem) { return `${d.tipo}:${d.id}`; }
 
 function buildFewShotBlock(
   gemini: ParseResult,
@@ -80,7 +122,7 @@ function buildFewShotBlock(
   diffs: DiffItem[],
   notes: Record<string, string>,
 ): string {
-  const selectedDiffs = diffs.filter(d => selected.has(d.id));
+  const selectedDiffs = diffs.filter(d => selected.has(diffKey(d)));
   if (selectedDiffs.length === 0) return "// Seleccioná al menos una diferencia";
 
   const lines: string[] = [
@@ -103,7 +145,8 @@ function buildFewShotBlock(
     } else {
       lines.push(`  This materia was added by Gemini but not in the ground truth.`);
     }
-    if (notes[diff.id]) lines.push(`  Instruction: ${notes[diff.id]}`);
+    const dk = diffKey(diff);
+    if (notes[dk]) lines.push(`  Instruction: ${notes[dk]}`);
     lines.push("");
   }
 
@@ -130,20 +173,21 @@ export default function DiffExportDrawer({
   onClose: () => void;
 }) {
   const diffs = useMemo(() => computeDiffs(ground, gemini), [ground, gemini]);
-  const [selected, setSelected] = useState<Set<string>>(() => new Set(diffs.map(d => d.id)));
+  const [selected, setSelected] = useState<Set<string>>(() => new Set(diffs.map(diffKey)));
   const [notes, setNotes] = useState<Record<string, string>>({});
   const [copied, setCopied] = useState(false);
 
   const fewShot = useMemo(() => buildFewShotBlock(gemini, ground, selected, diffs, notes), [gemini, ground, selected, diffs, notes]);
 
   function toggleAll(checked: boolean) {
-    setSelected(checked ? new Set(diffs.map(d => d.id)) : new Set());
+    setSelected(checked ? new Set(diffs.map(diffKey)) : new Set());
   }
 
-  function toggle(id: string) {
+  function toggle(d: DiffItem) {
+    const k = diffKey(d);
     setSelected(prev => {
       const next = new Set(prev);
-      next.has(id) ? next.delete(id) : next.add(id);
+      next.has(k) ? next.delete(k) : next.add(k);
       return next;
     });
   }
@@ -208,9 +252,9 @@ export default function DiffExportDrawer({
             {/* Diff cards */}
             {diffs.map(diff => {
               const badge = BADGE[diff.tipo];
-              const isSelected = selected.has(diff.id);
+              const isSelected = selected.has(diffKey(diff));
               return (
-                <div key={diff.id} style={{
+                <div key={`${diff.tipo}:${diff.id}`} style={{
                   border: `1px solid ${isSelected ? GLASS.raised : GLASS.border}`,
                   borderRadius: 10, padding: "12px 14px",
                   background: isSelected ? GLASS.soft : GLASS.faint,
@@ -220,7 +264,7 @@ export default function DiffExportDrawer({
                     <input
                       type="checkbox"
                       checked={isSelected}
-                      onChange={() => toggle(diff.id)}
+                      onChange={() => toggle(diff)}
                       style={{ accentColor: ACCENT, width: 14, height: 14, flexShrink: 0 }}
                     />
                     <span style={{ fontWeight: 600, fontSize: 12, color: TEXT, flex: 1 }}>
@@ -258,8 +302,8 @@ export default function DiffExportDrawer({
                   <input
                     type="text"
                     placeholder="Corrección para el prompt (opcional)…"
-                    value={notes[diff.id] ?? ""}
-                    onChange={e => setNotes(prev => ({ ...prev, [diff.id]: e.target.value }))}
+                    value={notes[diffKey(diff)] ?? ""}
+                    onChange={e => setNotes(prev => ({ ...prev, [diffKey(diff)]: e.target.value }))}
                     style={{ ...INPUT, borderRadius: 7, padding: "6px 10px", fontSize: 11 }}
                   />
                 </div>
