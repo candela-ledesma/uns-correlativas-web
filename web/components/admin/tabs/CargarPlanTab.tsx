@@ -1003,6 +1003,9 @@ function ColumnaResultado({
 }: ColumnaProps) {
   const conf = data._llm_confidence != null ? Math.round(data._llm_confidence * 100) : null;
   const [guardarFuente, setGuardarFuente] = useState<"gemini" | "parser" | null>(null);
+  const [revisionAbierta, setRevisionAbierta] = useState(false);
+  const [revisionNota, setRevisionNota] = useState("");
+  const [revisionState, setRevisionState] = useState<"idle" | "sending" | "sent" | "error">("idle");
 
   const ids = data.materias.map(m => m.id);
   const uniqueIds = new Set(ids);
@@ -1144,34 +1147,115 @@ function ColumnaResultado({
 
       {/* Acción */}
       <div style={{ padding: "10px 14px", borderTop: `1px solid ${GLASS.border}`, flexShrink: 0 }}>
-        <button
-          onClick={() => setGuardarFuente(fuente)}
-          disabled={hayErroresCriticos || !canPublish}
-          title={
-            !canPublish
-              ? "Solo un administrador puede publicar planes"
-              : hayErroresCriticos
-                ? "Corregí los errores críticos antes de guardar"
-                : undefined
-          }
-          style={{
-            width: "100%",
-            background: (hayErroresCriticos || !canPublish) ? GLASS.elevated : STATUS_COLORS.aprobada.badgeBg,
-            border: `1px solid ${(hayErroresCriticos || !canPublish) ? GLASS.border : STATUS_COLORS.aprobada.badgeBorder}`,
-            color: (hayErroresCriticos || !canPublish) ? TEXT_SEC : STATUS_COLORS.aprobada.accent,
-            borderRadius: 8, padding: "8px 0",
-            fontSize: 13, fontWeight: 600, cursor: (hayErroresCriticos || !canPublish) ? "not-allowed" : "pointer",
-            opacity: (hayErroresCriticos || !canPublish) ? 0.5 : 1,
-          }}
-        >
-          ✓ Usar {fuente === "gemini" ? "Gemini" : "parser local"}
-        </button>
-        {!canPublish && (
-          <p style={{ marginTop: 6, fontSize: 10, color: TEXT_SEC, textAlign: "center" }}>
-            Solo un administrador puede publicar planes
-          </p>
+        {canPublish ? (
+          <button
+            onClick={() => setGuardarFuente(fuente)}
+            disabled={hayErroresCriticos}
+            title={hayErroresCriticos ? "Corregí los errores críticos antes de guardar" : undefined}
+            style={{
+              width: "100%",
+              background: hayErroresCriticos ? GLASS.elevated : STATUS_COLORS.aprobada.badgeBg,
+              border: `1px solid ${hayErroresCriticos ? GLASS.border : STATUS_COLORS.aprobada.badgeBorder}`,
+              color: hayErroresCriticos ? TEXT_SEC : STATUS_COLORS.aprobada.accent,
+              borderRadius: 8, padding: "8px 0",
+              fontSize: 13, fontWeight: 600, cursor: hayErroresCriticos ? "not-allowed" : "pointer",
+              opacity: hayErroresCriticos ? 0.5 : 1,
+            }}
+          >
+            ✓ Usar {fuente === "gemini" ? "Gemini" : "parser local"}
+          </button>
+        ) : (
+          <button
+            onClick={() => { setRevisionAbierta(v => !v); setRevisionState("idle"); }}
+            disabled={hayErroresCriticos}
+            title={hayErroresCriticos ? "Corregí los errores críticos antes de enviar" : undefined}
+            style={{
+              width: "100%",
+              background: hayErroresCriticos ? GLASS.elevated : "rgba(245,158,11,0.12)",
+              border: `1px solid ${hayErroresCriticos ? GLASS.border : "rgba(245,158,11,0.35)"}`,
+              color: hayErroresCriticos ? TEXT_SEC : "#f59e0b",
+              borderRadius: 8, padding: "8px 0",
+              fontSize: 13, fontWeight: 600, cursor: hayErroresCriticos ? "not-allowed" : "pointer",
+              opacity: hayErroresCriticos ? 0.5 : 1,
+            }}
+          >
+            ⏳ Enviar a revisión
+          </button>
         )}
       </div>
+
+      {!canPublish && revisionAbierta && (
+        <div style={{
+          margin: "0 14px 14px",
+          background: GLASS.elevated, border: `1px solid ${GLASS.border}`,
+          borderRadius: 10, padding: "14px 16px",
+        }}>
+          {revisionState === "sent" ? (
+            <div style={{ textAlign: "center", padding: "12px 0" }}>
+              <div style={{ fontSize: 24, marginBottom: 6 }}>✅</div>
+              <div style={{ fontSize: 13, color: TEXT, fontWeight: 600 }}>Plan enviado a revisión</div>
+              <div style={{ fontSize: 11, color: TEXT_SEC, marginTop: 4 }}>Un administrador lo revisará en el Historial.</div>
+            </div>
+          ) : (
+            <>
+              <div style={{ fontSize: 11, color: TEXT_SEC, fontWeight: 500, marginBottom: 8 }}>
+                Nota para el administrador (opcional)
+              </div>
+              <textarea
+                rows={3}
+                placeholder="Describí brevemente el plan o alguna observación…"
+                value={revisionNota}
+                onChange={e => setRevisionNota(e.target.value)}
+                style={{
+                  width: "100%", boxSizing: "border-box",
+                  background: "rgba(255,255,255,0.04)", border: `1px solid ${GLASS.border}`,
+                  borderRadius: 8, padding: "8px 10px", color: TEXT,
+                  fontSize: 12, resize: "vertical", fontFamily: "inherit",
+                }}
+              />
+              {revisionState === "error" && (
+                <div style={{ fontSize: 11, color: "#fca5a5", marginTop: 6 }}>No se pudo enviar. Intentá de nuevo.</div>
+              )}
+              <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
+                <button
+                  disabled={revisionState === "sending"}
+                  onClick={async () => {
+                    setRevisionState("sending");
+                    try {
+                      const res = await fetch("/api/admin/planes/enviar-revision", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ plan: data, fuente, nota: revisionNota }),
+                      });
+                      setRevisionState(res.ok ? "sent" : "error");
+                    } catch {
+                      setRevisionState("error");
+                    }
+                  }}
+                  style={{
+                    background: "rgba(245,158,11,0.15)", border: "1px solid rgba(245,158,11,0.35)",
+                    color: "#f59e0b", borderRadius: 8, padding: "7px 16px",
+                    fontSize: 12, fontWeight: 600, cursor: revisionState === "sending" ? "not-allowed" : "pointer",
+                    opacity: revisionState === "sending" ? 0.6 : 1,
+                  }}
+                >
+                  {revisionState === "sending" ? "Enviando…" : "Confirmar envío"}
+                </button>
+                <button
+                  onClick={() => setRevisionAbierta(false)}
+                  style={{
+                    background: "none", border: `1px solid ${GLASS.border}`,
+                    color: TEXT_SEC, borderRadius: 8, padding: "7px 14px",
+                    fontSize: 12, cursor: "pointer",
+                  }}
+                >
+                  Cancelar
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+      )}
 
       {guardarFuente && (
         <GuardarPlanDrawer

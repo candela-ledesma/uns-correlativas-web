@@ -86,7 +86,7 @@ export default function AdminPanel({ canPublish = true }: { canPublish?: boolean
 
         {tab === "cargar"    && <CargarPlanTab canPublish={canPublish} />}
         {tab === "historial" && <HistorialTab />}
-        {tab === "config"    && <ConfigTab />}
+        {tab === "config"    && <ConfigTab canEdit={canPublish} />}
       </main>
     </div>
   );

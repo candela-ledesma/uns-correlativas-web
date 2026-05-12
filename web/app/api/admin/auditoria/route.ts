@@ -9,6 +9,8 @@ const MODERATOR_ACTIONS = new Set([
   "PROGRESS_UPDATED",
   "PROGRESS_RESET",
   "PROGRESS_MIGRATED",
+  "PLAN_PENDING_REVIEW",
+  "PLAN_SAVED",
 ]);
 
 export async function GET(request: Request) {
