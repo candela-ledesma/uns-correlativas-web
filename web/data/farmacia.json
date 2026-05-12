@@ -349,6 +349,18 @@
       }
     },
     {
+      "id": "I0902",
+      "nombre": "Idioma de Farmacia, plan 2025",
+      "año": "Tercer Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": "idioma",
+      "correlativas": {}
+    },
+    {
       "id": "1126",
       "nombre": "FARMACOGNOSIA Y FITOTERAPIA",
       "año": "Cuarto Año",
@@ -815,10 +827,10 @@
     },
     {
       "id": "8129",
-      "nombre": "ANALISIS DE REGRESION 50hs.  Volver",
+      "nombre": "ANALISIS DE REGRESION",
       "año": "Quinto Año",
       "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "",
+      "horas": "50",
       "tipo": "materia",
       "categoria": "optativa",
       "grupo_opcion": "G0903",
@@ -832,8 +844,8 @@
     },
     {
       "id": "4578",
-      "nombre": "EXAMEN DE SUFICIENCIA DE IDIOMA INGLES Volver",
-      "año": "Quinto Año",
+      "nombre": "EXAMEN DE SUFICIENCIA DE IDIOMA INGLES",
+      "año": "Tercer Año",
       "cuatrimestre": "Segundo Cuatrimestre",
       "horas": "",
       "tipo": "materia",
@@ -846,7 +858,7 @@
   "agrupadores": [
     {
       "id": "G0903",
-      "nombre": "Optativa de Farmacia Plan 2025 Optativa Correlativas Para cursar Para rendir",
+      "nombre": "Optativa de Farmacia Plan 2025",
       "tipo": "optativa_grupo",
       "opciones": [
         "1049",
@@ -857,19 +869,28 @@
         "4525",
         "6023",
         "8129"
-      ]
+      ],
+      "año": "Cuarto Año",
+      "cuatrimestre": "Primer Cuatrimestre"
     },
     {
       "id": "I0902",
-      "nombre": "Idioma de Farmacia, plan 2025 Optativa Correlativas Para cursar Para rendir",
+      "nombre": "Idioma de Farmacia, plan 2025",
       "tipo": "idioma_grupo",
       "opciones": [
         "4578"
-      ]
+      ],
+      "año": "Tercer Año",
+      "cuatrimestre": "Segundo Cuatrimestre"
     }
   ],
   "_colisiones_id": [
     "G0903",
     "I0902"
-  ]
+  ],
+  "_saved_at": "2026-05-12T00:39:03.849Z",
+  "_saved_by": "cmo2fwlcf00005xdv4536cc0l",
+  "_saved_fuente": "parser",
+  "_publicado": true,
+  "_motivo_cambio": "parser local\n"
 }
