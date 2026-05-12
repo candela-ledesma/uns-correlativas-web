@@ -1020,9 +1020,12 @@ function ColumnaResultado({
   ];
 
   const hayErroresCriticos = checks.some(c => c.critico && !c.ok);
+  const [copied, setCopied] = useState(false);
 
   function copyJSON() {
     navigator.clipboard.writeText(JSON.stringify(data, null, 2));
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
   }
 
   return (
@@ -1082,9 +1085,14 @@ function ColumnaResultado({
           </span>
           <button
             onClick={copyJSON}
-            style={{ ...BTN, borderRadius: 6, padding: "3px 8px", fontSize: 10, display: "flex", alignItems: "center", gap: 3 }}
+            style={{
+              ...BTN, borderRadius: 6, padding: "3px 8px", fontSize: 10,
+              display: "flex", alignItems: "center", gap: 3,
+              background: copied ? "rgba(34,197,94,0.15)" : undefined,
+              transition: "background 0.2s",
+            }}
           >
-            📋 Copiar
+            {copied ? "✓ Copiado" : "📋 Copiar"}
           </button>
         </div>
         <JsonViewer

@@ -29,6 +29,7 @@ export default function ConfigTab() {
   const [prompt, setPrompt] = useState(DEFAULT_PROMPT);
   const [saveState, setSaveState] = useState<SaveState>("idle");
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [promptCopied, setPromptCopied] = useState(false);
 
   useEffect(() => {
     fetch("/api/admin/config")
@@ -57,6 +58,12 @@ export default function ConfigTab() {
 
   function restaurar() {
     setPrompt(DEFAULT_PROMPT);
+  }
+
+  function copiarPrompt() {
+    navigator.clipboard.writeText(prompt);
+    setPromptCopied(true);
+    setTimeout(() => setPromptCopied(false), 1500);
   }
 
   return (
@@ -111,6 +118,16 @@ export default function ConfigTab() {
             }}
           >
             {saveState === "saving" ? "Guardando…" : saveState === "saved" ? "✓ Guardado" : saveState === "error" ? "⚠ Error" : "💾 Guardar"}
+          </button>
+          <button
+            onClick={copiarPrompt}
+            style={{
+              ...BTN, borderRadius: 8, padding: "8px 16px", fontSize: 13,
+              background: promptCopied ? "rgba(34,197,94,0.15)" : undefined,
+              transition: "background 0.2s",
+            }}
+          >
+            {promptCopied ? "✓ Copiado" : "📋 Copiar"}
           </button>
           <button
             onClick={restaurar}
