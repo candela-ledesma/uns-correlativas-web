@@ -20,7 +20,7 @@ function sseEvent(type: string, payload: Record<string, unknown>): string {
 
 function runParser(pdfPath: string, outPath: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    const proc = spawn(PYTHON, ["-m", "core.parser", pdfPath, outPath, "--mode", "regex"], {
+    const proc = spawn(PYTHON, ["-m", "core.parser", pdfPath, outPath], {
       cwd: PROJECT_ROOT,
       env: { ...process.env, PYTHONUNBUFFERED: "1" },
     });
