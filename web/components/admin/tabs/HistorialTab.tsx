@@ -116,7 +116,7 @@ export default function HistorialTab() {
                   </div>
                   {item.reason && (
                     <div style={{ fontSize: 11, color: TEXT_SEC, marginTop: 2, fontStyle: "italic" }}>
-                      "{item.reason}"
+                      &quot;{item.reason}&quot;
                     </div>
                   )}
                 </div>

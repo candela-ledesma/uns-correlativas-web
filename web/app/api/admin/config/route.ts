@@ -22,7 +22,8 @@ async function readConfig(): Promise<AdminConfig | null> {
   }
 }
 
-export async function GET(request: Request) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export async function GET(_request: Request) {
   const session = await auth();
   if (!session?.user?.id || session.user.role !== Role.ADMIN) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
@@ -54,7 +55,8 @@ export async function POST(request: Request) {
   return NextResponse.json({ ok: true });
 }
 
-export async function DELETE(request: Request) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export async function DELETE(_request: Request) {
   const session = await auth();
   if (!session?.user?.id || session.user.role !== Role.ADMIN) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });

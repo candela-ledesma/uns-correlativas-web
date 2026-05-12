@@ -10,7 +10,7 @@ import type { Agrupador, Materia } from "@/app/types/plan";
 import type { EstadoMateria } from "@/lib/plan/evaluarCorrelativas";
 import { GLASS, TEXT, TEXT_SEC, ACCENT } from "@/lib/ui/tokens";
 import {
-  STATE_STYLE, AMBER, getStateLabel, buildAdjacency, getAncestors, getDescendants,
+  STATE_STYLE, getStateLabel, buildAdjacency, getAncestors, getDescendants,
   tieneAviso, NODE_W, NODE_H, GAP_X, GAP_Y,
   type VisualEstado, type NodeData,
 } from "@/lib/mapa/graphUtils";
@@ -49,7 +49,7 @@ type Props = {
 };
 
 export function EditorPanel({
-  materias, agrupadores, idsAgrupadores, estados, reglamentoUrl, onVerEnPlan,
+  materias, idsAgrupadores, reglamentoUrl, onVerEnPlan,
   allBaseEdges, vmById, storageKey, initialData, onGuardar, onCerrar,
 }: Props) {
   const [busqueda, setBusqueda] = useState("");
@@ -75,27 +75,6 @@ export function EditorPanel({
       .filter((m) => !addedIds.has(String(m.id)))
       .slice(0, 8);
   }, [busqueda, materias, idsAgrupadores, addedIds]);
-
-  const agregarMateria = useCallback((m: Materia) => {
-    const id = String(m.id);
-    const idx = addedIds.size;
-    const col = idx % 4;
-    const row = Math.floor(idx / 4);
-    const newPos = { x: col * (NODE_W + GAP_X + 20), y: row * (NODE_H + GAP_Y + 20) };
-    const ve = vmById.get(id) ?? "bloqueada";
-    const hasAviso = tieneAviso(m);
-    const newNode: Node = {
-      id, type: "materia",
-      position: newPos,
-      data: { label: m.nombre, horas: m.horas ?? "?", visualEstado: ve, highlighted: false, dimmed: false, hasAviso } satisfies NodeData,
-      selected: false,
-    };
-    setPositions((prev) => ({ ...prev, [id]: newPos }));
-    setEdNodes((current) => [...current, newNode]);
-    setAddedIds((prev) => new Set([...prev, id]));
-    setBusqueda("");
-    if (idx === 0) setTimeout(() => edFitView({ padding: 0.3, duration: 300 }), 50);
-  }, [addedIds, vmById, edFitView]);
 
   const quitarMateria = useCallback((id: string) => {
     setAddedIds((prev) => { const s = new Set(prev); s.delete(id); return s; });
@@ -144,6 +123,27 @@ export function EditorPanel({
 
   const [edNodes, setEdNodes, onEdNodesChange] = useNodesState(editorNodes);
   const [edEdges, setEdEdges, onEdEdgesChange] = useEdgesState(editorEdges);
+
+  const agregarMateria = useCallback((m: Materia) => {
+    const id = String(m.id);
+    const idx = addedIds.size;
+    const col = idx % 4;
+    const row = Math.floor(idx / 4);
+    const newPos = { x: col * (NODE_W + GAP_X + 20), y: row * (NODE_H + GAP_Y + 20) };
+    const ve = vmById.get(id) ?? "bloqueada";
+    const hasAviso = tieneAviso(m);
+    const newNode: Node = {
+      id, type: "materia",
+      position: newPos,
+      data: { label: m.nombre, horas: m.horas ?? "?", visualEstado: ve, highlighted: false, dimmed: false, hasAviso } satisfies NodeData,
+      selected: false,
+    };
+    setPositions((prev) => ({ ...prev, [id]: newPos }));
+    setEdNodes((current) => [...current, newNode]);
+    setAddedIds((prev) => new Set([...prev, id]));
+    setBusqueda("");
+    if (idx === 0) setTimeout(() => edFitView({ padding: 0.3, duration: 300 }), 50);
+  }, [addedIds, vmById, edFitView, setEdNodes]);
 
   const prevAddedIdsRef = useRef<Set<string>>(new Set());
   useEffect(() => {

@@ -694,6 +694,7 @@ function addTokens(modelValue: string, tokens: number) {
 
 function useDailyUsage() {
   const [usage, setUsage] = useState<DailyUsage>({ date: todayStr(), byModel: {} });
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { setUsage(loadDailyUsage()); }, []);
   const refresh = () => setUsage(loadDailyUsage());
   return { usage, refresh };

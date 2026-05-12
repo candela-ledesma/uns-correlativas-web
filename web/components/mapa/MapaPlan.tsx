@@ -34,7 +34,7 @@ import { Toolbar, type FiltroEstado } from "./Toolbar";
 import { DetailPanel } from "./panels/DetailPanel";
 import { BestPathPanel } from "./panels/BestPathPanel";
 import {
-  EditorPanel, loadMiVista, saveMiVista, type MiVistaData,
+  EditorPanel, loadMiVista, type MiVistaData,
 } from "./panels/EditorPanel";
 
 // ── Props ────────────────────────────────────────────────────────────────────
@@ -264,7 +264,7 @@ function MapaInner({ materias, agrupadores, idsAgrupadores, estados, carreraId, 
   const [edges, setEdges] = useEdgesState(visibleEdges);
 
   useEffect(() => { setNodes(activeNodes); }, [activeNodes, setNodes]);
-  useEffect(() => { setEdges(visibleEdges); }, [visibleEdges, setEdges]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { setEdges(visibleEdges); }, [visibleEdges, setEdges]);
 
   const toggleMinimap = useCallback(() => {
     setMinimapVisible((v) => {

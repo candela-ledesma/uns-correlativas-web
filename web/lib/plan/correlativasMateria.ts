@@ -3,7 +3,6 @@ import {
   cumpleNivel,
   estadoAgrupador,
   getEstadoMaximoPorMateria,
-  getEstadoMateriaPorId,
 } from "@/lib/plan/evaluarCorrelativas";
 import type { EstadoMateria } from "@/lib/plan/evaluarCorrelativas";
 
