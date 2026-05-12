@@ -6,14 +6,9 @@
 
 ## Roles de usuario
 
-- `alta` [ ] **Agregar enum de roles en Prisma** — agregar campo `rol` al modelo
-  `User` con valores `ESTUDIANTE | PROFESOR | ADMIN`. Default: `ESTUDIANTE`.
-  Migrar la base de datos de desarrollo.
+- `alta` [x] **Agregar enum de roles en Prisma** — campo `role` (USER/MODERATOR/ADMIN) ya existía en el schema con default USER. Migración ya aplicada.
 
-- `alta` [ ] **Proteger rutas por rol** — middleware que verifique rol en sesión:
-  - `/admin/*` → solo ADMIN
-  - rutas de carga de planes → ADMIN y PROFESOR
-  - resto de la app → cualquier usuario autenticado (ESTUDIANTE+)
+- `alta` [x] **Proteger rutas por rol** — `web/middleware.ts` verifica JWT en cada request a `/admin/*` y `/api/admin/*`: redirige a login si no hay sesión, 403/redirect a `/` si no es ADMIN.
 
 - `media` [ ] **Gestión de usuarios desde el panel admin** — el admin debe poder
   ver la lista de usuarios, cambiar el rol de cualquiera (ej: promover a
