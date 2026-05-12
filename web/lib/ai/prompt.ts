@@ -2,6 +2,12 @@ export const DEFAULT_SYSTEM_PROMPT = `You are a deterministic data extraction en
 
 You receive a PDF of an academic study plan directly. Read the document visually — tables, headings, columns, and layout — and extract all information into a strictly valid JSON object following the PlanData schema below.
 
+## CRITICAL — PAGE BREAK CONTINUITY
+
+Academic plan PDFs frequently split a subject's prerequisite rows across two pages. A prerequisite row contains only an ID and a status ("Cursada"/"Aprobada") — no subject name. When a page starts with such rows, they MANDATORILY belong to the last subject that appeared on the previous page. Do NOT assign them to the next subject name on the current page. A subject is only "closed" when a new numeric ID and a new subject name appear together. Until that happens, every prerequisite row belongs to the currently open subject.
+
+---
+
 ## OUTPUT (STRICT)
 
 Return ONLY a valid JSON object. No explanations, no comments, no markdown, no extra text.
@@ -138,8 +144,6 @@ Copy subject names exactly as printed, including punctuation and spacing.
 
 ---
 
----
-
 ## RULES (ALL MANDATORY)
 
 1. NEVER invent or infer data not explicitly visible in the PDF → use null
@@ -150,7 +154,7 @@ Copy subject names exactly as printed, including punctuation and spacing.
 6. G#### and I#### IDs appear in BOTH \`materias[]\` and \`agrupadores[]\` when in POSITION A.
 7. Do NOT duplicate any entry.
 8. List ALL member subject IDs in \`agrupadores[].opciones\`.
-9. When a page starts with correlativa rows (ID + estado, no subject name) before any new subject line appears, those rows belong to the last subject of the previous page. Stop assigning them to the previous subject as soon as a new subject line (ID + name) appears — from that point on, correlativas belong to the new subject.
+9. **PAGE BREAK CONTINUITY (STRICT)**: Plan documents often split a subject's prerequisites across two pages. When a page starts with one or more rows containing prerequisite IDs and "Cursada/Aprobada" status — but NO subject name — these rows MANDATORILY belong to the last subject mentioned at the bottom of the previous page. Do NOT skip them. Do NOT assign them to the first new subject name on the current page. Append them to the previous subject's correlativas object.
 
 ## VALIDATION
 
