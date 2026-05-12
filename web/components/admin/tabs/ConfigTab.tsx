@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { TEXT_SEC, SURFACE, BTN, BTN_VIOLET, INPUT } from "@/lib/ui/tokens";
-import { DEFAULT_SYSTEM_PROMPT } from "@/lib/ai/prompt";
+import { DEFAULT_SYSTEM_PROMPT, PROMPT_VERSION } from "@/lib/ai/prompt";
 
 const CARD: React.CSSProperties = {
   ...SURFACE,
@@ -25,11 +25,21 @@ const DEFAULT_PROMPT = DEFAULT_SYSTEM_PROMPT;
 
 type SaveState = "idle" | "saving" | "saved" | "error";
 
+function formatDate(iso: string): string {
+  const d = new Date(iso);
+  return d.toLocaleString("es-AR", {
+    day: "2-digit", month: "2-digit", year: "numeric",
+    hour: "2-digit", minute: "2-digit",
+  });
+}
+
 export default function ConfigTab() {
   const [prompt, setPrompt] = useState(DEFAULT_PROMPT);
   const [saveState, setSaveState] = useState<SaveState>("idle");
   const [loadError, setLoadError] = useState<string | null>(null);
   const [promptCopied, setPromptCopied] = useState(false);
+  const [savedVersion, setSavedVersion] = useState<string | null>(null);
+  const [savedAt, setSavedAt] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/admin/config")
@@ -37,6 +47,8 @@ export default function ConfigTab() {
       .then(({ config }) => {
         if (!config) return;
         if (typeof config.systemPrompt === "string") setPrompt(config.systemPrompt);
+        if (typeof config.version === "string") setSavedVersion(config.version);
+        if (typeof config.updatedAt === "string") setSavedAt(config.updatedAt);
       })
       .catch(() => setLoadError("No se pudo cargar la configuración guardada."));
   }, []);
@@ -49,7 +61,14 @@ export default function ConfigTab() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ systemPrompt: prompt }),
       });
-      setSaveState(res.ok ? "saved" : "error");
+      if (res.ok) {
+        const body = await res.json();
+        if (body.version) setSavedVersion(body.version);
+        if (body.updatedAt) setSavedAt(body.updatedAt);
+        setSaveState("saved");
+      } else {
+        setSaveState("error");
+      }
     } catch {
       setSaveState("error");
     }
@@ -105,6 +124,22 @@ export default function ConfigTab() {
               fontFamily: "monospace",
             }}
           />
+        </div>
+        <div style={{ display: "flex", gap: 12, marginTop: 10, alignItems: "center" }}>
+          <span style={{
+            fontSize: 11, color: TEXT_SEC,
+            background: "rgba(255,255,255,0.05)",
+            border: "1px solid rgba(255,255,255,0.08)",
+            borderRadius: 6, padding: "3px 8px",
+            fontFamily: "monospace",
+          }}>
+            {savedVersion ?? PROMPT_VERSION}
+          </span>
+          {savedAt && (
+            <span style={{ fontSize: 11, color: TEXT_SEC }}>
+              Última modificación: {formatDate(savedAt)}
+            </span>
+          )}
         </div>
         <div style={{ display: "flex", gap: 8, marginTop: 12, alignItems: "center" }}>
           <button

@@ -3,7 +3,7 @@ import { auth } from "@/auth";
 import { Role } from "@/lib/auth/roles";
 import { GoogleGenAI } from "@google/genai";
 import { DEFAULT_GEMINI_MODEL } from "@/lib/ai/models";
-import { DEFAULT_SYSTEM_PROMPT } from "@/lib/ai/prompt";
+import { DEFAULT_SYSTEM_PROMPT, PROMPT_VERSION } from "@/lib/ai/prompt";
 import path from "path";
 import fs from "fs/promises";
 
@@ -12,7 +12,6 @@ export const runtime = "nodejs";
 export const maxDuration = 120;
 
 const MAX_SIZE_MB = 20;
-const PROMPT_VERSION = "v20";
 const CONFIG_PATH = path.join(process.cwd(), "data", "admin-config.json");
 
 async function readAdminConfig(): Promise<{ systemPrompt?: string }> {

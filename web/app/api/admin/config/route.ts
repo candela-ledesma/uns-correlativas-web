@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { Role } from "@/lib/auth/roles";
+import { PROMPT_VERSION } from "@/lib/ai/prompt";
 import path from "path";
 import fs from "fs/promises";
 
@@ -11,6 +12,8 @@ const CONFIG_PATH = path.join(process.cwd(), "data", "admin-config.json");
 
 type AdminConfig = {
   systemPrompt: string;
+  version?: string;
+  updatedAt?: string;
 };
 
 async function readConfig(): Promise<AdminConfig | null> {
@@ -50,9 +53,13 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Campo requerido: systemPrompt (string)" }, { status: 400 });
   }
 
-  const config: AdminConfig = { systemPrompt: systemPrompt.trim() };
+  const config: AdminConfig = {
+    systemPrompt: systemPrompt.trim(),
+    version: PROMPT_VERSION,
+    updatedAt: new Date().toISOString(),
+  };
   await fs.writeFile(CONFIG_PATH, JSON.stringify(config, null, 2), "utf-8");
-  return NextResponse.json({ ok: true });
+  return NextResponse.json({ ok: true, version: config.version, updatedAt: config.updatedAt });
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
