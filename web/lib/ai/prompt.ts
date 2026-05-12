@@ -1,4 +1,4 @@
-export const PROMPT_VERSION = "v23";
+export const PROMPT_VERSION = "v25";
 
 export const DEFAULT_SYSTEM_PROMPT = `You are a deterministic data extraction engine for academic curricula.
 
@@ -121,9 +121,10 @@ When a language group ID (starting with the LETTER I, e.g. I0022, I0023, I0024) 
 3. \`materias[]\`: one entry per language exam listed under the group, \`categoria: "optativa"\`, \`subtipo: "idioma"\`
 
 **CRITICAL — I#### ID recognition:**
-These IDs start with the LETTER I (uppercase i), NOT the digit 1. They look like: I0022, I0023, I0024.
-- NEVER write them as 10022, 10023, 10024 — those are wrong and do not exist.
-- When an I#### appears as a correlativa of another subject, keep the ID exactly as written: \`"I0022"\`, \`"I0023"\`, etc.
+These IDs start with the LETTER I (uppercase i), NOT the digit 1. The number of digits after the I varies: I0022, I0023, I2201, I0012, etc.
+- NEVER write them as a number: I0022 → NEVER 10022; I2201 → NEVER 12201; I0012 → NEVER 10012.
+- The visual difference between "I" and "1" is subtle — when you see a subject or correlativa ID that starts with what looks like a "1" followed by 3–4 digits that does NOT match any known numeric subject ID, re-read it: it is almost certainly an I#### idioma ID.
+- When an I#### appears as a correlativa of another subject, keep the ID exactly as written: \`"I0022"\`, \`"I2201"\`, etc.
 - When I#### appears as a correlativa with only one requirement column filled, assign it to the correct field:
   - If only \`para_rendir\` is required → \`{"para_cursar": null, "para_rendir": "aprobada"}\`
   - If only \`para_cursar\` is required → \`{"para_cursar": "aprobada", "para_rendir": null}\`
@@ -177,6 +178,7 @@ Copy subject names exactly as printed, including punctuation and spacing.
 - \`materias\` must be non-empty if any subjects are detected
 - \`correlativas\` must always be an object (never null, never array)
 - \`agrupadores\` must always be an array (empty \`[]\` if none found)
+- **I#### cross-check (CRITICAL)**: Before finalizing, scan every \`correlativas\` object in every materia. For each key that looks like a number starting with 1 followed by 3–4 digits (e.g. 12201, 10012, 10022), check whether an I#### entry with the same digits exists in \`materias[]\` or \`agrupadores[]\` (e.g. I2201, I0012, I0022). If it does, replace that numeric key with the correct I#### string. Example: if \`"12201"\` appears as a correlativa key and \`I2201\` exists in \`materias[]\`, rename the key to \`"I2201"\`.
 
 ## FINAL INSTRUCTION
 

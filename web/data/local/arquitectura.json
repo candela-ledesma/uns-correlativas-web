@@ -972,18 +972,6 @@
       }
     },
     {
-      "id": "G2324",
-      "nombre": "Optativa de Arquitectura, Plan 2016",
-      "año": "Quinto Año",
-      "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "",
-      "tipo": "agrupador_requisito",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {}
-    },
-    {
       "id": "3937",
       "nombre": "TALLER DE ARQUITECTURA CONTEMPORANEA",
       "año": "Quinto Año",
@@ -1288,6 +1276,11 @@
           "para_cursar": null,
           "para_rendir": "aprobada"
         }
+      },
+      "requisito_especial": {
+        "tipo": "minimo_materias_aprobadas",
+        "cantidad": 35,
+        "descripcion": "Para aprobar Debe tener 35 materias del plan aprobadas"
       }
     },
     {
@@ -1829,7 +1822,7 @@
     {
       "id": "4804",
       "nombre": "SUFICIENCIA DE IDIOMA INGLES ARQ",
-      "año": "Quinto Año",
+      "año": "Tercer Año",
       "cuatrimestre": "Segundo Cuatrimestre",
       "horas": "",
       "tipo": "materia",
@@ -1857,7 +1850,9 @@
         "3892",
         "3903",
         "3959"
-      ]
+      ],
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre"
     },
     {
       "id": "I2201",
@@ -1865,7 +1860,18 @@
       "tipo": "idioma_grupo",
       "opciones": [
         "4804"
-      ]
+      ],
+      "año": "Tercer Año",
+      "cuatrimestre": "Segundo Cuatrimestre"
     }
-  ]
+  ],
+  "_colisiones_id": [
+    "G2324",
+    "I2201"
+  ],
+  "_saved_at": "2026-05-12T07:12:45.542Z",
+  "_saved_by": "cmo2fwlcf00005xdv4536cc0l",
+  "_saved_fuente": "parser",
+  "_publicado": true,
+  "_motivo_cambio": "local"
 }
