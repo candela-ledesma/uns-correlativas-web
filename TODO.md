@@ -87,8 +87,8 @@ El planificador actual (`WeeklySchedule`, `useSchedule`, `/api/planificador`) ma
 
 ## Deuda técnica — módulos a borrar cuando estén desacoplados
 
-- `media` [ ] `core/llm/` — marcado deprecated; bloqueado por `core/parser/cli.py` que lo importa para `--mode=llm` y `--mode=hybrid`; eliminar cuando se decida quitar esos modos del CLI
-- `media` [ ] `tests/test_llm_*.py` (5 archivos) — se eliminan junto con `core/llm/`
+- `media` [x] `core/llm/` — eliminado
+- `media` [x] `tests/test_llm_*.py` (5 archivos) — eliminados junto con `core/llm/`
 - `baja` [x] `web/data/llm/` (8 JSONs) — eliminado
 
 ---

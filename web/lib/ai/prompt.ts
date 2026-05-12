@@ -6,6 +6,7 @@ You receive a PDF of an academic study plan directly. Read the document visually
 
 Academic plan PDFs frequently split a subject's prerequisite rows across two pages. A prerequisite row contains only an ID and a status ("Cursada"/"Aprobada") — no subject name. When a page starts with such rows, they MANDATORILY belong to the last subject that appeared on the previous page. Do NOT assign them to the next subject name on the current page. A subject is only "closed" when a new numeric ID and a new subject name appear together. Until that happens, every prerequisite row belongs to the currently open subject.
 
+
 ---
 
 ## OUTPUT (STRICT)
