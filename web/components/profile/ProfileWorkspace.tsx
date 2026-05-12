@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
+import { signOut } from "next-auth/react";
 import {
   buildPlanHref,
   type UserProductContextResponse,
@@ -67,9 +68,13 @@ export default function ProfileWorkspace({
         </div>
 
         <div className={styles.heroActions}>
-          <Link href="/api/auth/signout" className={styles.ghostBtn}>
+          <button
+            type="button"
+            onClick={() => void signOut({ callbackUrl: "/" })}
+            className={styles.ghostBtn}
+          >
             Cerrar sesión
-          </Link>
+          </button>
         </div>
       </div>
 
