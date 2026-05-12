@@ -1,4 +1,4 @@
-export const PROMPT_VERSION = "v22";
+export const PROMPT_VERSION = "v23";
 
 export const DEFAULT_SYSTEM_PROMPT = `You are a deterministic data extraction engine for academic curricula.
 
@@ -80,6 +80,7 @@ Return ONLY a valid JSON object. No explanations, no comments, no markdown, no e
 - Strip any unit suffix ("hs", "horas", etc.)
 - If no hours are listed for a subject → use \`""\`
 - Be careful: a numeric value next to a subject name may be a correlativa ID, not hours — check the column context visually
+- Hours may appear on the next visual line after the subject name (e.g. subject name on one line, then "200hs. 5008 Cursada Aprobada" on the next). In that case still extract "200" as the hours value and treat the rest of that line as correlativas.
 
 **materias[].año**
 - Normalize to: "Primer Año", "Segundo Año", "Tercer Año", "Cuarto Año", "Quinto Año", "Sexto Año"
@@ -138,6 +139,17 @@ These IDs start with the LETTER I (uppercase i), NOT the digit 1. They look like
 ### año/cuatrimestre for agrupadores
 
 The \`año\` and \`cuatrimestre\` of an agrupador in POSITION A MUST match the year/semester section heading that visually contains it in the PDF layout.
+
+### Plans with multiple orientations (CRITICAL)
+
+Some PDFs split the plan into orientation sections (e.g. "ORIENTACIÓN CONSTRUCCIONES", "ORIENTACIÓN HIDRÁULICA", "ORIENTACIÓN VÍAS DE COMUNICACIÓN"). Each orientation repeats the same year/semester blocks with the same subject IDs.
+
+**Rules:**
+- Each numeric subject ID must appear **exactly ONCE** in \`materias[]\`, no matter how many orientations list it.
+- When the same ID appears in multiple orientation sections, merge its data: union all its correlativas across all appearances.
+- The \`año\`/\`cuatrimestre\` of a subject is the one from the **common (non-orientation) section** if it appears there; otherwise from its first orientation section.
+- Elective subjects listed under a G#### group in the MATERIAS OPTATIVAS section also appear only once in \`materias[]\`, even if the same G#### group is listed multiple times (once per orientation).
+- Do NOT create duplicate entries. If you see 5241 HORMIGON I under both ORIENTACIÓN CONSTRUCCIONES and ORIENTACIÓN HIDRÁULICA, produce one single \`materias[]\` entry for 5241.
 
 ### Subject names — preserve punctuation exactly
 
