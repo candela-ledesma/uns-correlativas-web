@@ -85,6 +85,84 @@ El planificador actual (`WeeklySchedule`, `useSchedule`, `/api/planificador`) ma
 
 ---
 
+## Planes de estudio — carreras pendientes de generar
+
+Carreras ya procesadas: abogacia, agrimensura, arquitectura, bioquimica, contador_publico, farmacia, ing_civil, ingenieria_en_sistemas_de_informacion, lic_computacion.
+
+| Carrera | Departamento | Duración |
+|---|---|---|
+| [ ] INGENIERIA AGRONOMICA | Agronomía | 10 Cuat. |
+| [ ] INGENIERIA ELECTRICISTA | Ingeniería Eléctrica y de Computadoras | 10 Cuat. |
+| [ ] INGENIERIA ELECTRONICA | Ingeniería Eléctrica y de Computadoras | 10 Cuat. |
+| [ ] INGENIERIA EN ALIMENTOS | Ingeniería Química | 10 Cuat. |
+| [ ] INGENIERIA EN COMPUTACION | Ciencias e Ingeniería de la Computación | 10 Cuat. |
+| [ ] INGENIERÍA EN TELECOMUNICACIONES | Ingeniería Eléctrica y de Computadoras | 10 Cuat. |
+| [ ] INGENIERIA INDUSTRIAL | Ingeniería | 10 Cuat. |
+| [ ] INGENIERIA MECANICA | Ingeniería | 10 Cuat. |
+| [ ] INGENIERIA QUIMICA | Ingeniería Química | 10 Cuat. |
+| [ ] LICENCIATURA EN ADMINISTRACION | Ciencias de la Administración | 10 Cuat. |
+| [ ] LICENCIATURA EN CIENCIAS AMBIENTALES | Química | 10 Cuat. |
+| [ ] LICENCIATURA EN CIENCIAS BIOLOGICAS | Biología, Bioquímica y Farmacia | 10 Cuat. |
+| [ ] LICENCIATURA EN CIENCIAS DE LA EDUCACION | Ciencias de la Educación | 10 Cuat. |
+| [ ] LICENCIATURA EN CIENCIAS GEOLOGICAS | Geología | 10 Cuat. |
+| [ ] LICENCIATURA EN ECONOMIA | Economía | 9 Cuat. |
+| [ ] LICENCIATURA EN ENFERMERIA | Ciencias de la Salud | 10 Cuat. |
+| [ ] LICENCIATURA EN FILOSOFIA | Humanidades | 10 Cuat. |
+| [ ] LICENCIATURA EN FISICA | Física | 10 Cuat. |
+| [ ] LICENCIATURA EN GEOFISICA | Física | 10 Cuat. |
+| [ ] LICENCIATURA EN GEOGRAFIA | Geografía y Turismo | 10 Cuat. |
+| [ ] LICENCIATURA EN GESTIÓN UNIVERSITARIA | Ciencias de la Administración | 10 Cuat. |
+| [ ] LICENCIATURA EN HISTORIA | Humanidades | 10 Cuat. |
+| [ ] LICENCIATURA EN LETRAS | Humanidades | 10 Cuat. |
+| [ ] LICENCIATURA EN MATEMATICA | Matemática | 10 Cuat. |
+| [ ] LICENCIATURA EN MATEMATICA APLICADA | Matemática | 10 Cuat. |
+| [ ] LICENCIATURA EN OBSTETRICIA | Ciencias de la Salud | - |
+| [ ] LICENCIATURA EN OCEANOGRAFIA | Geografía y Turismo | 10 Cuat. |
+| [ ] LICENCIATURA EN OPTICA Y CONTACTOLOGÍA | Física | 8 Cuat. |
+| [ ] LICENCIATURA EN QUIMICA | Química | 10 Cuat. |
+| [ ] LICENCIATURA EN SEGURIDAD PÚBLICA | Derecho | 4 Cuat. |
+| [ ] LICENCIATURA EN TURISMO | Geografía y Turismo | 9 Cuat. |
+| [ ] MEDICINA | Ciencias de la Salud | 12 Cuat. |
+| [ ] PROFESORADO DE EDUCACION INICIAL | Ciencias de la Educación | 8 Cuat. |
+| [ ] PROFESORADO DE EDUCACION PRIMARIA | Ciencias de la Educación | 8 Cuat. |
+| [ ] PROFESORADO EN CIENCIAS BIOLÓGICAS | Biología, Bioquímica y Farmacia | 8 Cuat. |
+| [ ] PROFESORADO EN ECONOMIA | Economía | 10 Cuat. |
+| [ ] PROFESORADO EN ECONOMIA PARA LA ENSEÑANZA SECUNDARIA | Economía | 8 Cuat. |
+| [ ] PROFESORADO EN EDUCACION SECUNDARIA EN CIENCIAS DE LA ADMINISTRACION | Ciencias de la Administración | 8 Cuat. |
+| [ ] PROFESORADO EN EDUCACION SECUNDARIA Y SUPERIOR EN CIENCIAS DE LA ADMINISTRACION | Ciencias de la Administración | 10 Cuat. |
+| [ ] PROFESORADO EN FILOSOFIA | Humanidades | 10 Cuat. |
+| [ ] PROFESORADO EN FISICA | Física | 8 Cuat. |
+| [ ] PROFESORADO EN GEOCIENCIAS | Geología | 8 Cuat. |
+| [ ] PROFESORADO EN GEOGRAFIA | Geografía y Turismo | 9 Cuat. |
+| [ ] PROFESORADO EN HISTORIA | Humanidades | 10 Cuat. |
+| [ ] PROFESORADO EN LETRAS | Humanidades | 10 Cuat. |
+| [ ] PROFESORADO EN MATEMATICA | Matemática | 8 Cuat. |
+| [ ] PROFESORADO EN QUIMICA | Química | 10 Cuat. |
+| [ ] PROFESORADO EN QUIMICA DE LA ENSEÑANZA MEDIA | Química | 8 Cuat. |
+| [ ] PROFESORADO UNIVERSITARIO EN GEOGRAFIA | Geografía y Turismo | 10 Cuat. |
+| [ ] TECNICATURA SUPERIOR AGRARIA EN SUELOS Y AGUAS | Agronomía | 5 Cuat. |
+| [ ] TECNICATURA SUPERIOR EN ADMINISTRACION Y GESTION DE RECURSOS | Ciencias de la Administración | 6 Cuat. |
+| [ ] TECNICATURA UNIVERSITARIA APICOLA | Agronomía | 6 Cuat. |
+| [ ] TECNICATURA UNIVERSITARIA EN ACOMPAÑAMIENTO TERAPÉUTICO | Ciencias de la Salud | 6 Cuat. |
+| [ ] TECNICATURA UNIVERSITARIA EN CARTOGRAFIA, TELEDETECCION Y SIG | Geografía y Turismo | 6 Cuat. |
+| [ ] TECNICATURA UNIVERSITARIA EN DEPORTE | Economía | 6 Cuat. |
+| [ ] TECNICATURA UNIVERSITARIA EN ECONOMÍA Y GESTIÓN DE EMPRESAS ALIMENTARIAS | Economía | 6 Cuat. |
+| [ ] TECNICATURA UNIVERSITARIA EN EMPRENDIMIENTOS AGROALIMENTARIOS | Ingeniería Química | 6 Cuat. |
+| [ ] TECNICATURA UNIVERSITARIA EN EMPRENDIMIENTOS AGROPECUARIOS | Economía | 6 Cuat. |
+| [ ] TECNICATURA UNIVERSITARIA EN EMPRENDIMIENTOS AUDIOVISUALES | Ingeniería Eléctrica y de Computadoras | 6 Cuat. |
+| [ ] TECNICATURA UNIVERSITARIA EN GESTION CULTURAL Y EMPRENDIMIENTOS CULTURALES | Geografía y Turismo | 6 Cuat. |
+| [ ] TECNICATURA UNIVERSITARIA EN MANEJO Y COMERCIALIZACION DE GRANOS | Agronomía | 6 Cuat. |
+| [ ] TECNICATURA UNIVERSITARIA EN MEDIO AMBIENTE | Geología | 6 Cuat. |
+| [ ] TECNICATURA UNIVERSITARIA EN OCEANOGRAFÍA | Geografía y Turismo | 6 Cuat. |
+| [ ] TECNICATURA UNIVERSITARIA EN OPERACIONES INDUSTRIALES | Ingeniería Química | 6 Cuat. |
+| [ ] TECNICATURA UNIVERSITARIA EN OPTICA | Física | 6 Cuat. |
+| [ ] TECNICATURA UNIVERSITARIA EN PARQUES Y JARDINES | Agronomía | 6 Cuat. |
+| [ ] TECNICATURA UNIVERSITARIA EN PETRÓLEO Y GAS | Ingeniería Química | 6 Cuat. |
+| [ ] TECNICATURA UNIVERSITARIA EN PROGRAMACIÓN WEB Y MÓVIL | Ciencias e Ingeniería de la Computación | 5 Cuat. |
+| [ ] TECNICATURA UNIVERSITARIA EN SISTEMAS ELECTRÓNICOS INDUSTRIALES INTELIGENTES | Ingeniería Eléctrica y de Computadoras | 6 Cuat. |
+
+---
+
 ## Deuda técnica — módulos a borrar cuando estén desacoplados
 
 - `media` [x] `core/llm/` — eliminado

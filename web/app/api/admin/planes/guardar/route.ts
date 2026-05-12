@@ -9,7 +9,7 @@ import { createAuditEvent } from "@/lib/db/audit";
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
-const DATA_DIR = path.join(process.cwd(), "data");
+const DATA_DIR = path.join(process.cwd(), "data", "local");
 const DATA_DIR_GEMINI = path.join(process.cwd(), "data", "gemini");
 const CARRERAS_FILE = path.join(process.cwd(), "lib", "data", "carreras.ts");
 

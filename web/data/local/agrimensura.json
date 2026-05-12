@@ -1,0 +1,823 @@
+{
+  "plan": {
+    "carrera": "Agrimensura",
+    "universidad": "Universidad Nacional del Sur",
+    "codigo_plan": "Plan 2011 - Versión 1"
+  },
+  "materias": [
+    {
+      "id": "5293",
+      "nombre": "INTRODUCCION A LAS INGENIERIAS",
+      "año": "Primer Año",
+      "cuatrimestre": "Anual",
+      "horas": "64",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {}
+    },
+    {
+      "id": "5539",
+      "nombre": "ALGEBRA Y GEOMETRIA",
+      "año": "Primer Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {}
+    },
+    {
+      "id": "5551",
+      "nombre": "ANALISIS MATEMATICO I",
+      "año": "Primer Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {}
+    },
+    {
+      "id": "5415",
+      "nombre": "SISTEMAS DE REPRESENTACION",
+      "año": "Primer Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "96",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {}
+    },
+    {
+      "id": "5552",
+      "nombre": "ANALISIS MATEMATICO II",
+      "año": "Primer Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5539": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "5551": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "3051",
+      "nombre": "FISICA I",
+      "año": "Primer Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5539": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "5551": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "6323",
+      "nombre": "QUIMICA GENERAL PARA INGENIERIA",
+      "año": "Primer Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "96",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {}
+    },
+    {
+      "id": "5030",
+      "nombre": "CALCULO DE COMPENSACION",
+      "año": "Segundo Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5551": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "5552": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "3057",
+      "nombre": "FISICA II - IC",
+      "año": "Segundo Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "3051": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "5539": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "5551": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "5552": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "7662",
+      "nombre": "FUNDAMENTOS DE INFORMATICA",
+      "año": "Segundo Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "64",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5539": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "8101",
+      "nombre": "TOPICOS DE CALCULO AVANZADO",
+      "año": "Segundo Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "32",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5551": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "5552": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "5106",
+      "nombre": "DIBUJO TOPOGRAFICO Y CARTOGRAFICO",
+      "año": "Segundo Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5415": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "7662": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "5175",
+      "nombre": "EXAMEN DE SUFICIENCIA DE IDIOMA: INGLES",
+      "año": "Segundo Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": "idioma",
+      "correlativas": {}
+    },
+    {
+      "id": "3616",
+      "nombre": "GEOGRAFIA FISICA",
+      "año": "Segundo Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "6323": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "5471",
+      "nombre": "TOPOGRAFIA I",
+      "año": "Segundo Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "3051": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "5415": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "5539": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "5002",
+      "nombre": "AGRIMENSURA LEGAL I",
+      "año": "Tercer Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5175": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "5293": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "5004",
+      "nombre": "AGROLOGIA E INFORMACION RURAL",
+      "año": "Tercer Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "3616": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "5175": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "5471": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "6323": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "5472",
+      "nombre": "TOPOGRAFIA II",
+      "año": "Tercer Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5030": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "5175": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "5415": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "5471": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "5003",
+      "nombre": "AGRIMENSURA LEGAL II",
+      "año": "Tercer Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5002": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "5175": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "5472": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "5159",
+      "nombre": "ELEMENTOS DE OBRAS",
+      "año": "Tercer Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "64",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "3057": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "5004": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "5106": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "5175": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "5183",
+      "nombre": "FOTOGRAMETRIA",
+      "año": "Tercer Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "3057": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "5106": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "5175": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "5472": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "5463",
+      "nombre": "SEGURIDAD DEL TRABAJO Y GESTION AMBIENTAL",
+      "año": "Tercer Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "64",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5002": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "5004": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "5175": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "5472": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "5185",
+      "nombre": "FOTOINTERPRETACION Y TELEDETECCION",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5004": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "5030": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "5175": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "5183": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "5191",
+      "nombre": "GEODESIA I",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "3057": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "5030": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "5175": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "5472": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "5482",
+      "nombre": "VALUACIONES Y TASACIONES",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5003": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "5004": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "5159": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "5175": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "5046",
+      "nombre": "CARTOGRAFIA",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5175": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "5185": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "5191": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "5472": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "5050",
+      "nombre": "CATASTRO",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5003": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "5175": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "5183": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "5482": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "5192",
+      "nombre": "GEODESIA II",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "3057": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "5175": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "5191": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "5472": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "5399",
+      "nombre": "PLANEAMIENTO Y URBANISMO",
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5003": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "5050": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "5175": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "5185": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "5466",
+      "nombre": "SISTEMAS DE INFORMACION TERRITORIAL",
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5046": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "5050": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "5175": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "5183": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "5469",
+      "nombre": "TOPOGRAFIA APLICADA",
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5175": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "5183": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "5192": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "2108",
+      "nombre": "ECONOMIA Y GESTION EMPRESARIAL",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "64",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5050": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "5175": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "5482": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "5404",
+      "nombre": "PRACTICA PROFESIONAL",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5003": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "5050": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "5175": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "5482": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "5464",
+      "nombre": "PRACTICA PROFESIONAL SUPERVISADA (IA)",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {},
+      "requisito_especial": {
+        "tipo": "minimo_materias_aprobadas",
+        "cantidad": 26,
+        "descripcion": "mínimo 26 materias del plan aprobadas"
+      }
+    },
+    {
+      "id": "5485",
+      "nombre": "VIAS DE COMUNICACION E HIDRAULICA",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5159": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "5175": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "5183": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "5185": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        }
+      }
+    }
+  ],
+  "agrupadores": []
+}

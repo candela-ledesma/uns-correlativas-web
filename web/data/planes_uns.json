@@ -1,0 +1,488 @@
+[
+  {
+    "carrera": "ABOGACIA",
+    "duracion": "10 Cuat.",
+    "departamento": "Derecho",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan.asp?dependen=15&carrera=118"
+  },
+  {
+    "carrera": "AGRIMENSURA",
+    "duracion": "10 Cuat.",
+    "departamento": "Ingeniería",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan.asp?dependen=6&carrera=169"
+  },
+  {
+    "carrera": "ARQUITECTURA",
+    "duracion": "10 Cuat.",
+    "departamento": "Geografía y Turismo",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan.asp?dependen=12&carrera=197"
+  },
+  {
+    "carrera": "BIOQUIMICA",
+    "duracion": "11 Cuat.",
+    "departamento": "Biología, Bioquímica y Farmacia",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan.asp?dependen=13&carrera=89"
+  },
+  {
+    "carrera": "CONTADOR PUBLICO",
+    "duracion": "10 Cuat.",
+    "departamento": "Ciencias de la Administración",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan.asp?dependen=9&carrera=2"
+  },
+  {
+    "carrera": "FARMACIA",
+    "duracion": "10 Cuat.",
+    "departamento": "Biología, Bioquímica y Farmacia",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan.asp?dependen=13&carrera=116"
+  },
+  {
+    "carrera": "INGENIERIA AGRONOMICA",
+    "duracion": "10 Cuat.",
+    "departamento": "Agronomía",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan.asp?dependen=1&carrera=3"
+  },
+  {
+    "carrera": "INGENIERIA CIVIL",
+    "duracion": "10 Cuat.",
+    "departamento": "Ingeniería",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan.asp?dependen=6&carrera=4"
+  },
+  {
+    "carrera": "INGENIERIA ELECTRICISTA",
+    "duracion": "10 Cuat.",
+    "departamento": "Ingeniería Eléctrica y de Computadoras",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan.asp?dependen=14&carrera=102"
+  },
+  {
+    "carrera": "INGENIERIA ELECTRONICA",
+    "duracion": "10 Cuat.",
+    "departamento": "Ingeniería Eléctrica y de Computadoras",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan.asp?dependen=14&carrera=101"
+  },
+  {
+    "carrera": "INGENIERIA EN ALIMENTOS",
+    "duracion": "10 Cuat.",
+    "departamento": "Ingeniería Química",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan.asp?dependen=19&carrera=144"
+  },
+  {
+    "carrera": "INGENIERIA EN COMPUTACION",
+    "duracion": "10 Cuat.",
+    "departamento": "Ciencias e Ingeniería de la Computación",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan.asp?dependen=16&carrera=186"
+  },
+  {
+    "carrera": "INGENIERIA EN SISTEMAS DE INFORMACION",
+    "duracion": "10 Cuat.",
+    "departamento": "Ciencias e Ingeniería de la Computación",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan.asp?dependen=16&carrera=181"
+  },
+  {
+    "carrera": "INGENIERÍA EN TELECOMUNICACIONES",
+    "duracion": "10 Cuat.",
+    "departamento": "Ingeniería Eléctrica y de Computadoras",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan.asp?dependen=14&carrera=214"
+  },
+  {
+    "carrera": "INGENIERIA INDUSTRIAL",
+    "duracion": "10 Cuat.",
+    "departamento": "Ingeniería",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan.asp?dependen=6&carrera=6"
+  },
+  {
+    "carrera": "INGENIERIA MECANICA",
+    "duracion": "10 Cuat.",
+    "departamento": "Ingeniería",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan.asp?dependen=6&carrera=33"
+  },
+  {
+    "carrera": "INGENIERIA QUIMICA",
+    "duracion": "10 Cuat.",
+    "departamento": "Ingeniería Química",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan.asp?dependen=19&carrera=7"
+  },
+  {
+    "carrera": "LICENCIATURA EN ADMINISTRACION",
+    "duracion": "10 Cuat.",
+    "departamento": "Ciencias de la Administración",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan.asp?dependen=9&carrera=108"
+  },
+  {
+    "carrera": "LICENCIATURA EN CIENCIAS AMBIENTALES",
+    "duracion": "10 Cuat.",
+    "departamento": "Química",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan.asp?dependen=3&carrera=200"
+  },
+  {
+    "carrera": "LICENCIATURA EN CIENCIAS BIOLOGICAS",
+    "duracion": "10 Cuat.",
+    "departamento": "Biología, Bioquímica y Farmacia",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan.asp?dependen=13&carrera=20"
+  },
+  {
+    "carrera": "LICENCIATURA EN CIENCIAS DE LA COMPUTACION",
+    "duracion": "10 Cuat.",
+    "departamento": "Ciencias e Ingeniería de la Computación",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan.asp?dependen=16&carrera=50"
+  },
+  {
+    "carrera": "LICENCIATURA EN CIENCIAS DE LA EDUCACION",
+    "duracion": "10 Cuat.",
+    "departamento": "Ciencias de la Educación",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan.asp?dependen=17&carrera=192"
+  },
+  {
+    "carrera": "LICENCIATURA EN CIENCIAS GEOLOGICAS",
+    "duracion": "10 Cuat.",
+    "departamento": "Geología",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan.asp?dependen=5&carrera=9"
+  },
+  {
+    "carrera": "LICENCIATURA EN ECONOMIA",
+    "duracion": "9 Cuat.",
+    "departamento": "Economía",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan.asp?dependen=2&carrera=10"
+  },
+  {
+    "carrera": "LICENCIATURA EN ENFERMERIA",
+    "duracion": "10 Cuat.",
+    "departamento": "Ciencias de la Salud",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan.asp?dependen=18&carrera=166"
+  },
+  {
+    "carrera": "LICENCIATURA EN FILOSOFIA",
+    "duracion": "10 Cuat.",
+    "departamento": "Humanidades",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan.asp?dependen=4&carrera=24"
+  },
+  {
+    "carrera": "LICENCIATURA EN FISICA",
+    "duracion": "10 Cuat.",
+    "departamento": "Física",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan.asp?dependen=10&carrera=21"
+  },
+  {
+    "carrera": "LICENCIATURA EN GEOFISICA",
+    "duracion": "10 Cuat.",
+    "departamento": "Física",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan.asp?dependen=10&carrera=168"
+  },
+  {
+    "carrera": "LICENCIATURA EN GEOGRAFIA",
+    "duracion": "10 Cuat.",
+    "departamento": "Geografía y Turismo",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan.asp?dependen=12&carrera=11"
+  },
+  {
+    "carrera": "LICENCIATURA EN GESTIÓN UNIVERSITARIA",
+    "duracion": "10 Cuat.",
+    "departamento": "Ciencias de la Administración",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan.asp?dependen=9&carrera=207"
+  },
+  {
+    "carrera": "LICENCIATURA EN HISTORIA",
+    "duracion": "10 Cuat.",
+    "departamento": "Humanidades",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan.asp?dependen=4&carrera=22"
+  },
+  {
+    "carrera": "LICENCIATURA EN LETRAS",
+    "duracion": "10 Cuat.",
+    "departamento": "Humanidades",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan.asp?dependen=4&carrera=23"
+  },
+  {
+    "carrera": "LICENCIATURA EN MATEMATICA",
+    "duracion": "10 Cuat.",
+    "departamento": "Matemática",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan.asp?dependen=11&carrera=14"
+  },
+  {
+    "carrera": "LICENCIATURA EN MATEMATICA APLICADA",
+    "duracion": "10 Cuat.",
+    "departamento": "Matemática",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan.asp?dependen=11&carrera=216"
+  },
+  {
+    "carrera": "LICENCIATURA EN OBSTETRICIA",
+    "duracion": "-",
+    "departamento": "Ciencias de la Salud",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan.asp?dependen=18&carrera=213"
+  },
+  {
+    "carrera": "LICENCIATURA EN OCEANOGRAFIA",
+    "duracion": "10 Cuat.",
+    "departamento": "Geografía y Turismo",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan.asp?dependen=12&carrera=53"
+  },
+  {
+    "carrera": "LICENCIATURA EN OPTICA Y CONTACTOLOGÍA",
+    "duracion": "8 Cuat.",
+    "departamento": "Física",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan.asp?dependen=10&carrera=211"
+  },
+  {
+    "carrera": "LICENCIATURA EN QUIMICA",
+    "duracion": "10 Cuat.",
+    "departamento": "Química",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan.asp?dependen=3&carrera=15"
+  },
+  {
+    "carrera": "LICENCIATURA EN SEGURIDAD PÚBLICA",
+    "duracion": "4 Cuat.",
+    "departamento": "Derecho",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan.asp?dependen=15&carrera=209"
+  },
+  {
+    "carrera": "LICENCIATURA EN SEGURIDAD PÚBLICA - A DISTANCIA",
+    "duracion": "4 Cuat.",
+    "departamento": "Derecho",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan.asp?dependen=15&carrera=299"
+  },
+  {
+    "carrera": "LICENCIATURA EN TURISMO",
+    "duracion": "9 Cuat.",
+    "departamento": "Geografía y Turismo",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan.asp?dependen=12&carrera=145"
+  },
+  {
+    "carrera": "MEDICINA",
+    "duracion": "12 Cuat.",
+    "departamento": "Ciencias de la Salud",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan_med.asp?dependen=18&carrera=155"
+  },
+  {
+    "carrera": "PROFESORADO DE EDUCACION INICIAL",
+    "duracion": "8 Cuat.",
+    "departamento": "Ciencias de la Educación",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan.asp?dependen=17&carrera=190"
+  },
+  {
+    "carrera": "PROFESORADO DE EDUCACION PRIMARIA",
+    "duracion": "8 Cuat.",
+    "departamento": "Ciencias de la Educación",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan.asp?dependen=17&carrera=191"
+  },
+  {
+    "carrera": "PROFESORADO EN CIENCIAS BIOLÓGICAS",
+    "duracion": "8 Cuat.",
+    "departamento": "Biología, Bioquímica y Farmacia",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan.asp?dependen=13&carrera=78"
+  },
+  {
+    "carrera": "PROFESORADO EN ECONOMIA",
+    "duracion": "10 Cuat.",
+    "departamento": "Economía",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan.asp?dependen=2&carrera=149"
+  },
+  {
+    "carrera": "PROFESORADO EN ECONOMIA PARA LA ENSEÑANZA SECUNDARIA",
+    "duracion": "8 Cuat.",
+    "departamento": "Economía",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan.asp?dependen=2&carrera=185"
+  },
+  {
+    "carrera": "PROFESORADO EN EDUCACION SECUNDARIA EN CIENCIAS DE LA ADMINISTRACION",
+    "duracion": "8 Cuat.",
+    "departamento": "Ciencias de la Administración",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan.asp?dependen=9&carrera=187"
+  },
+  {
+    "carrera": "PROFESORADO EN EDUCACION SECUNDARIA Y SUPERIOR EN CIENCIAS DE LA ADMINISTRACION",
+    "duracion": "10 Cuat.",
+    "departamento": "Ciencias de la Administración",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan.asp?dependen=9&carrera=188"
+  },
+  {
+    "carrera": "PROFESORADO EN FILOSOFIA",
+    "duracion": "10 Cuat.",
+    "departamento": "Humanidades",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan.asp?dependen=4&carrera=70"
+  },
+  {
+    "carrera": "PROFESORADO EN FISICA",
+    "duracion": "8 Cuat.",
+    "departamento": "Física",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan.asp?dependen=10&carrera=150"
+  },
+  {
+    "carrera": "PROFESORADO EN GEOCIENCIAS",
+    "duracion": "8 Cuat.",
+    "departamento": "Geología",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan.asp?dependen=5&carrera=133"
+  },
+  {
+    "carrera": "PROFESORADO EN GEOGRAFIA",
+    "duracion": "9 Cuat.",
+    "departamento": "Geografía y Turismo",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan.asp?dependen=12&carrera=72"
+  },
+  {
+    "carrera": "PROFESORADO EN HISTORIA",
+    "duracion": "10 Cuat.",
+    "departamento": "Humanidades",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan.asp?dependen=4&carrera=42"
+  },
+  {
+    "carrera": "PROFESORADO EN LETRAS",
+    "duracion": "10 Cuat.",
+    "departamento": "Humanidades",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan.asp?dependen=4&carrera=43"
+  },
+  {
+    "carrera": "PROFESORADO EN MATEMATICA",
+    "duracion": "8 Cuat.",
+    "departamento": "Matemática",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan.asp?dependen=11&carrera=110"
+  },
+  {
+    "carrera": "PROFESORADO EN QUIMICA",
+    "duracion": "10 Cuat.",
+    "departamento": "Química",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan.asp?dependen=3&carrera=109"
+  },
+  {
+    "carrera": "PROFESORADO EN QUIMICA DE LA ENSEÑANZA MEDIA",
+    "duracion": "8 Cuat.",
+    "departamento": "Química",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan.asp?dependen=3&carrera=173"
+  },
+  {
+    "carrera": "PROFESORADO UNIVERSITARIO EN GEOGRAFIA",
+    "duracion": "10 Cuat.",
+    "departamento": "Geografía y Turismo",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan.asp?dependen=12&carrera=225"
+  },
+  {
+    "carrera": "TECNICATURA SUPERIOR AGRARIA EN SUELOS Y AGUAS",
+    "duracion": "5 Cuat.",
+    "departamento": "Agronomía",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan.asp?dependen=1&carrera=129"
+  },
+  {
+    "carrera": "TECNICATURA SUPERIOR EN ADMINISTRACION Y GESTION DE RECURSOS PARA INSTITUCIONES UNIVERSITARIAS",
+    "duracion": "6 Cuat.",
+    "departamento": "Ciencias de la Administración",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan.asp?dependen=9&carrera=180"
+  },
+  {
+    "carrera": "TECNICATURA UNIVERSITARIA APICOLA",
+    "duracion": "6 Cuat.",
+    "departamento": "Agronomía",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan.asp?dependen=1&carrera=151"
+  },
+  {
+    "carrera": "TECNICATURA UNIVERSITARIA EN ACOMPAÑAMIENTO TERAPÉUTICO",
+    "duracion": "6 Cuat.",
+    "departamento": "Ciencias de la Salud",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan.asp?dependen=18&carrera=210"
+  },
+  {
+    "carrera": "TECNICATURA UNIVERSITARIA EN CARTOGRAFIA, TELEDETECCION Y SISTEMAS DE INFORMACION GEOGRAFICA",
+    "duracion": "6 Cuat.",
+    "departamento": "Geografía y Turismo",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan.asp?dependen=12&carrera=179"
+  },
+  {
+    "carrera": "TECNICATURA UNIVERSITARIA EN DEPORTE",
+    "duracion": "6 Cuat.",
+    "departamento": "Economía",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan.asp?dependen=2&carrera=218"
+  },
+  {
+    "carrera": "TECNICATURA UNIVERSITARIA EN ECONOMÍA Y GESTIÓN DE EMPRESAS ALIMENTARIAS",
+    "duracion": "6 Cuat.",
+    "departamento": "Economía",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan.asp?dependen=2&carrera=205"
+  },
+  {
+    "carrera": "TECNICATURA UNIVERSITARIA EN MEDIO AMBIENTE",
+    "duracion": "6 Cuat.",
+    "departamento": "Geología",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan.asp?dependen=5&carrera=167"
+  },
+  {
+    "carrera": "TECNICATURA UNIVERSITARIA EN OCEANOGRAFÍA",
+    "duracion": "6 Cuat.",
+    "departamento": "Geografía y Turismo",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan.asp?dependen=12&carrera=219"
+  },
+  {
+    "carrera": "TECNICATURA UNIVERSITARIA EN OPERACIONES INDUSTRIALES",
+    "duracion": "6 Cuat.",
+    "departamento": "Ingeniería Química",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan.asp?dependen=19&carrera=202"
+  },
+  {
+    "carrera": "TECNICATURA UNIVERSITARIA EN OPTICA",
+    "duracion": "6 Cuat.",
+    "departamento": "Física",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan.asp?dependen=10&carrera=184"
+  },
+  {
+    "carrera": "TECNICATURA UNIVERSITARIA EN PARQUES Y JARDINES",
+    "duracion": "6 Cuat.",
+    "departamento": "Agronomía",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan.asp?dependen=1&carrera=208"
+  },
+  {
+    "carrera": "TECNICATURA UNIVERSITARIA EN PETRÓLEO Y GAS",
+    "duracion": "6 Cuat.",
+    "departamento": "Ingeniería Química",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan.asp?dependen=19&carrera=224"
+  },
+  {
+    "carrera": "TECNICATURA UNIVERSITARIA EN PROGRAMACIÓN WEB Y MÓVIL",
+    "duracion": "5 Cuat.",
+    "departamento": "Ciencias e Ingeniería de la Computación",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan.asp?dependen=16&carrera=215"
+  },
+  {
+    "carrera": "TECNICATURA UNIVERSITARIA EN SISTEMAS ELECTRÓNICOS INDUSTRIALES INTELIGENTES",
+    "duracion": "6 Cuat.",
+    "departamento": "Ingeniería Eléctrica y de Computadoras",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan.asp?dependen=14&carrera=206"
+  },
+  {
+    "carrera": "LICENCIATURA EN ENFERMERIA",
+    "duracion": "10 Cuat.",
+    "departamento": "Ciencias de la Salud",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan.asp?dependen=18&carrera=166"
+  },
+  {
+    "carrera": "MEDICINA",
+    "duracion": "12 Cuat.",
+    "departamento": "Ciencias de la Salud",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan_med.asp?dependen=18&carrera=155"
+  },
+  {
+    "carrera": "TECNICATURA UNIVERSITARIA EN EMPRENDIMIENTOS AGROALIMENTARIOS",
+    "duracion": "6 Cuat.",
+    "departamento": "Ingeniería Química",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan.asp?dependen=19&carrera=136"
+  },
+  {
+    "carrera": "TECNICATURA UNIVERSITARIA EN EMPRENDIMIENTOS AGROPECUARIOS",
+    "duracion": "6 Cuat.",
+    "departamento": "Economía",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan.asp?dependen=2&carrera=154"
+  },
+  {
+    "carrera": "TECNICATURA UNIVERSITARIA EN EMPRENDIMIENTOS AUDIOVISUALES",
+    "duracion": "6 Cuat.",
+    "departamento": "Ingeniería Eléctrica y de Computadoras",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan.asp?dependen=14&carrera=146"
+  },
+  {
+    "carrera": "TECNICATURA UNIVERSITARIA EN GESTION CULTURAL Y EMPRENDIMIENTOS CULTURALES",
+    "duracion": "6 Cuat.",
+    "departamento": "Geografía y Turismo",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan.asp?dependen=12&carrera=157"
+  },
+  {
+    "carrera": "TECNICATURA UNIVERSITARIA EN MANEJO Y COMERCIALIZACION DE GRANOS",
+    "duracion": "6 Cuat.",
+    "departamento": "Agronomía",
+    "plan_url": "http://servicios.uns.edu.ar/grado/plan.asp?dependen=1&carrera=138"
+  }
+]

@@ -394,7 +394,7 @@ export async function validateConfiguredPlanData(
   const includeHidden = options.includeHidden ?? false;
   const includeUnavailable = options.includeUnavailable ?? false;
   const strictWarnings = options.strictWarnings ?? false;
-  const dataDir = options.dataDir ?? path.join(process.cwd(), "data");
+  const dataDir = options.dataDir ?? path.join(process.cwd(), "data", "local");
   const carreras = options.carreras ?? CARRERAS;
 
   const summary = initialSummary();

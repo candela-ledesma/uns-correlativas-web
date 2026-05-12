@@ -78,7 +78,7 @@ async function loadPlanDataFromFile(
   carreraInfo: CarreraInfo,
   version: VersionInfo
 ): Promise<PlanLoadResult> {
-  const filePath = path.join(process.cwd(), "data", jsonFile);
+  const filePath = path.join(process.cwd(), "data", "local", jsonFile);
   const fileContents = await fs.readFile(filePath, "utf8");
 
   let raw: unknown;
@@ -121,7 +121,7 @@ export async function loadPlanData(
   // Fallback: si la carrera no está registrada, buscar <carreraId>.json en data/
   if (!carrera) {
     const jsonFile = `${carreraId}.json`;
-    const filePath = path.join(process.cwd(), "data", jsonFile);
+    const filePath = path.join(process.cwd(), "data", "local", jsonFile);
     const exists = await fs.access(filePath).then(() => true).catch(() => false);
     if (!exists) return { status: "not-found", carreraId };
 
