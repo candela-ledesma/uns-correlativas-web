@@ -813,6 +813,18 @@
       }
     },
     {
+      "id": "I0002",
+      "nombre": "Idioma de Abogacia, plan 1996, v3",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": "idioma",
+      "correlativas": {}
+    },
+    {
       "id": "9140",
       "nombre": "PRACTICA PROFESIONAL SUPERVISADA D",
       "año": "Quinto Año",
@@ -1904,10 +1916,10 @@
     },
     {
       "id": "4577",
-      "nombre": "EXAMEN DE IDIOMA ITALIANO 0hs. Volver",
+      "nombre": "EXAMEN DE IDIOMA ITALIANO",
       "año": "Quinto Año",
       "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "",
+      "horas": "0",
       "tipo": "materia",
       "categoria": "optativa",
       "grupo_opcion": "I0002",
@@ -1918,7 +1930,7 @@
   "agrupadores": [
     {
       "id": "G2347",
-      "nombre": "Optativa de Abogacía, plan 2020 Optativa Correlativas Para cursar Para rendir",
+      "nombre": "Optativa de Abogacía, plan 2020",
       "tipo": "optativa_grupo",
       "opciones": [
         "9014",
@@ -1977,7 +1989,7 @@
     },
     {
       "id": "G2348",
-      "nombre": "Optativa de Abogacía, plan 2020 Optativa Correlativas Para cursar Para rendir",
+      "nombre": "Optativa de Abogacía, plan 2020",
       "tipo": "optativa_grupo",
       "opciones": [
         "9014",
@@ -2036,7 +2048,7 @@
     },
     {
       "id": "G2349",
-      "nombre": "Optativa de Abogacía, plan 2020 Optativa Correlativas Para cursar Para rendir",
+      "nombre": "Optativa de Abogacía, plan 2020",
       "tipo": "optativa_grupo",
       "opciones": [
         "9014",
@@ -2095,7 +2107,7 @@
     },
     {
       "id": "G2350",
-      "nombre": "Optativa de Abogacía, plan 2020 Optativa Correlativas Para cursar Para rendir",
+      "nombre": "Optativa de Abogacía, plan 2020",
       "tipo": "optativa_grupo",
       "opciones": [
         "9014",
@@ -2154,7 +2166,7 @@
     },
     {
       "id": "I0002",
-      "nombre": "Idioma de Abogacia, plan 1996, v3 Optativa Correlativas Para cursar Para rendir",
+      "nombre": "Idioma de Abogacia, plan 1996, v3",
       "tipo": "idioma_grupo",
       "opciones": [
         "3578",
@@ -2173,5 +2185,10 @@
     "G2349",
     "G2350",
     "I0002"
-  ]
+  ],
+  "_saved_at": "2026-05-11T22:39:23.281Z",
+  "_saved_by": "cmo2fwlcf00005xdv4536cc0l",
+  "_saved_fuente": "parser",
+  "_publicado": true,
+  "_motivo_cambio": "prompt local"
 }

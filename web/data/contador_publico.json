@@ -810,7 +810,7 @@
     },
     {
       "id": "4928",
-      "nombre": "PRUEBA DE SUFICIENCIA EN IDIOMA EXTRANJERO:INGLES",
+      "nombre": "PRUEBA DE SUFICIENCIA EN IDIOMA EXTRANJERO: INGLES",
       "año": "Quinto Año",
       "cuatrimestre": "Segundo Cuatrimestre",
       "horas": "",
@@ -1274,7 +1274,7 @@
   "agrupadores": [
     {
       "id": "G0045",
-      "nombre": "Optativa Contador Publico, Plan 2016 Optativa Correlativas Para cursar Para rendir",
+      "nombre": "Optativa Contador Publico, Plan 2016",
       "tipo": "optativa_grupo",
       "opciones": [
         "1516",
@@ -1302,5 +1302,10 @@
   ],
   "_colisiones_id": [
     "G0045"
-  ]
+  ],
+  "_saved_at": "2026-05-11T23:53:10.959Z",
+  "_saved_by": "cmo2fwlcf00005xdv4536cc0l",
+  "_saved_fuente": "parser",
+  "_publicado": true,
+  "_motivo_cambio": "parser local"
 }

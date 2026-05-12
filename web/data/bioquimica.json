@@ -519,18 +519,6 @@
       }
     },
     {
-      "id": "G0654",
-      "nombre": "Optativa de Bioquimica Plan 2025",
-      "año": "Cuarto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "",
-      "tipo": "agrupador_requisito",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {}
-    },
-    {
       "id": "1002",
       "nombre": "ANALISIS CLINICOS I",
       "año": "Quinto Año",
@@ -695,6 +683,10 @@
       "grupo_opcion": null,
       "subtipo": null,
       "correlativas": {
+        "1002": {
+          "para_cursar": null,
+          "para_rendir": "aprobada"
+        },
         "1003": {
           "para_cursar": null,
           "para_rendir": "cursada"
@@ -877,10 +869,10 @@
     },
     {
       "id": "1261",
-      "nombre": "INTRODUCCION A LA INVESTIGACION BIOMEDICA CON UN ENFOQUE",
+      "nombre": "INTRODUCCION A LA INVESTIGACION BIOMEDICA CON UN ENFOQUE TRASLACIONAL",
       "año": "Sexto Año",
       "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "",
+      "horas": "50",
       "tipo": "materia",
       "categoria": "optativa",
       "grupo_opcion": "G0654",
@@ -1050,8 +1042,8 @@
     {
       "id": "4578",
       "nombre": "EXAMEN DE SUFICIENCIA DE IDIOMA INGLES",
-      "año": "Sexto Año",
-      "cuatrimestre": "Primer Cuatrimestre",
+      "año": "Tercer Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
       "horas": "",
       "tipo": "materia",
       "categoria": "optativa",
@@ -1080,7 +1072,9 @@
         "6293",
         "6411",
         "8129"
-      ]
+      ],
+      "año": "Cuarto Año",
+      "cuatrimestre": "Segundo Cuatrimestre"
     },
     {
       "id": "I0654",
@@ -1088,7 +1082,21 @@
       "tipo": "idioma_grupo",
       "opciones": [
         "4578"
-      ]
+      ],
+      "año": "Tercer Año",
+      "cuatrimestre": "Segundo Cuatrimestre"
     }
-  ]
+  ],
+  "_colisiones_id": [
+    "G0654",
+    "I0654"
+  ],
+  "_warnings": [
+    "Correlativa inferida en prosa (ID 1002): 'Para aprobar Para rendir el examen final el alumno deberá tener aprobada todas las 600hs. 1002 Aprobada'"
+  ],
+  "_saved_at": "2026-05-11T22:52:03.925Z",
+  "_saved_by": "cmo2fwlcf00005xdv4536cc0l",
+  "_saved_fuente": "parser",
+  "_publicado": true,
+  "_motivo_cambio": "agrega año a G0654\nagrega correlativas a 1355"
 }
