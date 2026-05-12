@@ -86,21 +86,24 @@ class Materia5464Tests(unittest.TestCase):
 
     # ── Correlativa inferida ──────────────────────────────────────────────────
 
-    def test_correlativa_5175_no_en_correlativas_cuando_hay_requisito_especial(self):
-        """5175 NO debe estar en correlativas[] cuando hay requisito_especial.
+    def test_correlativa_5175_en_correlativas(self):
+        """5175 debe estar en correlativas[] aunque también haya requisito_especial.
 
-        El requisito_especial reemplaza la correlativa inferida en prosa —
-        la condición real ('26 materias') no es expresable como correlativa ID+estado.
+        La línea del PDF contiene tanto una correlativa estructurada (5175 Aprobada)
+        como el texto del requisito cuantitativo (mínimo 26 materias). Ambos se
+        registran: la correlativa en correlativas[] y el requisito en requisito_especial.
         """
-        self.assertNotIn(
+        self.assertIn(
             "5175",
             self.m5464["correlativas"],
-            "5175 no debería estar en correlativas cuando hay requisito_especial",
+            "5175 debe estar en correlativas (aparece inline junto al texto del requisito)",
         )
 
-    def test_correlativas_vacias_cuando_hay_requisito_especial(self):
-        """correlativas[] debe estar vacío — toda la info está en requisito_especial."""
-        self.assertEqual(self.m5464["correlativas"], {})
+    def test_correlativa_5175_para_rendir_aprobada(self):
+        """5175 debe tener para_rendir=aprobada (solo un estado en el PDF)."""
+        cor = self.m5464["correlativas"].get("5175", {})
+        self.assertIsNone(cor.get("para_cursar"))
+        self.assertEqual(cor.get("para_rendir"), "aprobada")
 
 
     # ── Warnings ─────────────────────────────────────────────────────────────

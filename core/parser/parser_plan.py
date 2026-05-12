@@ -561,7 +561,7 @@ def detectar_materias_generico(texto):
                 if requisito.get("tipo") == "prueba_idioma":
                     requisito["materiaId"] = str(materia_actual.get("id", ""))
                 materia_actual["requisito_especial"] = requisito
-                
+
                 # Solo reemplazar correlativas si es un requisito cuantitativo.
                 # Los requisitos de "prueba_idioma" se agregan sin afectar
                 # las correlativas que ya fueron detectadas.
@@ -576,17 +576,31 @@ def detectar_materias_generico(texto):
                         except ValueError:
                             pass
                     warnings_prosa_materia_actual.clear()
-                
+
+                # Aun cuando la línea tiene un requisito_especial, puede contener
+                # correlativas estructuradas inline (ej. "5175 Aprobada" en la misma
+                # línea que el texto del requisito). Extraerlas y registrarlas.
+                correlativas_inline = extraer_correlativas_de_linea(linea)
+                if correlativas_inline:
+                    materia_actual["correlativas"].update(correlativas_inline)
+
                 continue
 
-            ids_conocidos = set(materias_index.keys()) | set(agrupadores_index.keys())
-            correlativas_inferidas, ws = inferir_correlativa_en_prosa(linea, ids_conocidos)
-            if ws:
-                warnings_prosa.extend(ws)
-                for cor_id in correlativas_inferidas:
-                    warnings_prosa_materia_actual[cor_id] = ws[0]
-            if correlativas_inferidas:
-                materia_actual["correlativas"].update(correlativas_inferidas)
+            # Extraer correlativas estructuradas (ID Estado Estado) embebidas en
+            # líneas de texto libre — ocurre cuando el PDF mezcla prosa con datos
+            # tabulares en la misma línea (ej. "Para aprobar... 5175 Aprobada").
+            correlativas_estructuradas = extraer_correlativas_de_linea(linea)
+            if correlativas_estructuradas:
+                materia_actual["correlativas"].update(correlativas_estructuradas)
+            else:
+                ids_conocidos = set(materias_index.keys()) | set(agrupadores_index.keys())
+                correlativas_inferidas, ws = inferir_correlativa_en_prosa(linea, ids_conocidos)
+                if ws:
+                    warnings_prosa.extend(ws)
+                    for cor_id in correlativas_inferidas:
+                        warnings_prosa_materia_actual[cor_id] = ws[0]
+                if correlativas_inferidas:
+                    materia_actual["correlativas"].update(correlativas_inferidas)
             continue
 
     orientaciones_totales = set(orientaciones_ordenadas)
