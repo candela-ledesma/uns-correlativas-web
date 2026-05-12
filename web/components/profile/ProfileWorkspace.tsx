@@ -140,16 +140,16 @@ export default function ProfileWorkspace({
           </Link>
 
           {(role === "MODERATOR" || role === "ADMIN") && (
-            <Link href="/moderacion" className={styles.quickCard}>
+            <Link href="/admin" className={styles.quickCard}>
               <div className={styles.quickText}>
-                <p className={styles.quickTitle}>Moderación</p>
-                <p className={styles.quickSub}>Revisar cambios pendientes</p>
+                <p className={styles.quickTitle}>Crear plan</p>
+                <p className={styles.quickSub}>Subir y procesar un PDF</p>
               </div>
               <span className={styles.quickArrow}>→</span>
             </Link>
           )}
 
-          {role === "ADMIN" && (
+{role === "ADMIN" && (
             <Link href="/admin" className={styles.quickCard}>
               <div className={styles.quickText}>
                 <p className={styles.quickTitle}>Administración</p>

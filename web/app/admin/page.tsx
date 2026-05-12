@@ -14,7 +14,7 @@ export default async function AdminPage() {
     redirect("/login?next=/admin");
   }
 
-  if (session.user.role !== Role.ADMIN) {
+  if (session.user.role !== Role.ADMIN && session.user.role !== Role.MODERATOR) {
     return (
       <main style={{
         minHeight: "100vh",
@@ -33,7 +33,7 @@ export default async function AdminPage() {
             Acceso denegado
           </h1>
           <p style={{ fontSize: 13, color: "#a89bc9", marginBottom: 20 }}>
-            Necesitás rol <strong style={{ color: "#e2d9f3" }}>admin</strong> para acceder a este panel.
+            Necesitás rol <strong style={{ color: "#e2d9f3" }}>moderador</strong> o <strong style={{ color: "#e2d9f3" }}>admin</strong> para acceder a este panel.
           </p>
           <Link
             href="/"
@@ -56,5 +56,5 @@ export default async function AdminPage() {
     );
   }
 
-  return <AdminPanel />;
+  return <AdminPanel canPublish={session.user.role === Role.ADMIN} />;
 }

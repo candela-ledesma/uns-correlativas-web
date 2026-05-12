@@ -14,7 +14,7 @@ const TABS: { id: Tab; label: string; icon: string }[] = [
   { id: "config",    label: "Configuración", icon: "⚙" },
 ];
 
-export default function AdminPanel() {
+export default function AdminPanel({ canPublish = true }: { canPublish?: boolean }) {
   const [tab, setTab] = useState<Tab>("cargar");
 
   return (
@@ -74,7 +74,7 @@ export default function AdminPanel() {
           ))}
         </nav>
 
-        {tab === "cargar"    && <CargarPlanTab />}
+        {tab === "cargar"    && <CargarPlanTab canPublish={canPublish} />}
         {tab === "historial" && <HistorialTab />}
         {tab === "config"    && <ConfigTab />}
       </main>

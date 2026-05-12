@@ -91,7 +91,7 @@ function useElapsedTime(status: SourceStatus): number | null {
   return elapsed;
 }
 
-export default function CargarPlanTab() {
+export default function CargarPlanTab({ canPublish = true }: { canPublish?: boolean }) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File | null>(null);
   const [model, setModel] = useState<GeminiModelValue>(DEFAULT_GEMINI_MODEL);
@@ -566,6 +566,7 @@ export default function CargarPlanTab() {
                   activeDiffId={activeDiffId}
                   scrollRef={scrollRefLocal}
                   onScroll={handleScroll("local")}
+                  canPublish={canPublish}
                 />
               )}
               {resultadoGemini && (
@@ -583,6 +584,7 @@ export default function CargarPlanTab() {
                   activeDiffId={activeDiffId}
                   scrollRef={scrollRefGemini}
                   onScroll={handleScroll("gemini")}
+                  canPublish={canPublish}
                 />
               )}
             </div>
@@ -991,12 +993,13 @@ type ColumnaProps = {
   activeDiffId: string | null;
   scrollRef: React.RefObject<HTMLDivElement | null>;
   onScroll: (e: React.UIEvent<HTMLDivElement>) => void;
+  canPublish: boolean;
 };
 
 function ColumnaResultado({
   label, fuente, data, ground, elapsed, loading,
   validationOpen, onToggleValidation, diffCount,
-  diffs, activeDiffId, scrollRef, onScroll,
+  diffs, activeDiffId, scrollRef, onScroll, canPublish,
 }: ColumnaProps) {
   const conf = data._llm_confidence != null ? Math.round(data._llm_confidence * 100) : null;
   const [guardarFuente, setGuardarFuente] = useState<"gemini" | "parser" | null>(null);
@@ -1143,20 +1146,31 @@ function ColumnaResultado({
       <div style={{ padding: "10px 14px", borderTop: `1px solid ${GLASS.border}`, flexShrink: 0 }}>
         <button
           onClick={() => setGuardarFuente(fuente)}
-          disabled={hayErroresCriticos}
-          title={hayErroresCriticos ? "Corregí los errores críticos antes de guardar" : undefined}
+          disabled={hayErroresCriticos || !canPublish}
+          title={
+            !canPublish
+              ? "Solo un administrador puede publicar planes"
+              : hayErroresCriticos
+                ? "Corregí los errores críticos antes de guardar"
+                : undefined
+          }
           style={{
             width: "100%",
-            background: hayErroresCriticos ? GLASS.elevated : STATUS_COLORS.aprobada.badgeBg,
-            border: `1px solid ${hayErroresCriticos ? GLASS.border : STATUS_COLORS.aprobada.badgeBorder}`,
-            color: hayErroresCriticos ? TEXT_SEC : STATUS_COLORS.aprobada.accent,
+            background: (hayErroresCriticos || !canPublish) ? GLASS.elevated : STATUS_COLORS.aprobada.badgeBg,
+            border: `1px solid ${(hayErroresCriticos || !canPublish) ? GLASS.border : STATUS_COLORS.aprobada.badgeBorder}`,
+            color: (hayErroresCriticos || !canPublish) ? TEXT_SEC : STATUS_COLORS.aprobada.accent,
             borderRadius: 8, padding: "8px 0",
-            fontSize: 13, fontWeight: 600, cursor: hayErroresCriticos ? "not-allowed" : "pointer",
-            opacity: hayErroresCriticos ? 0.5 : 1,
+            fontSize: 13, fontWeight: 600, cursor: (hayErroresCriticos || !canPublish) ? "not-allowed" : "pointer",
+            opacity: (hayErroresCriticos || !canPublish) ? 0.5 : 1,
           }}
         >
           ✓ Usar {fuente === "gemini" ? "Gemini" : "parser local"}
         </button>
+        {!canPublish && (
+          <p style={{ marginTop: 6, fontSize: 10, color: TEXT_SEC, textAlign: "center" }}>
+            Solo un administrador puede publicar planes
+          </p>
+        )}
       </div>
 
       {guardarFuente && (

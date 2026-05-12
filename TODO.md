@@ -14,11 +14,7 @@
   ver la lista de usuarios, cambiar el rol de cualquiera (ej: promover a
   PROFESOR).
 
-- `baja` [ ] **Flujo de carga de planes para PROFESOR** — una vez que el panel
-  admin de carga de PDFs esté terminado, exponer una versión simplificada
-  para profesores: pueden subir y procesar un PDF, pero el JSON queda en
-  estado "pendiente de aprobación" hasta que un ADMIN lo revise y publique.
-  (Implementar después de cerrar el flujo core del admin)
+- `baja` [x] **Flujo de carga de planes para MODERADOR** — MODERATOR accede al mismo panel admin, puede subir y procesar PDFs con Gemini o parser local, pero el botón de publicar está deshabilitado. Solo ADMIN puede publicar.
 
 ---
 

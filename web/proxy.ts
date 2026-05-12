@@ -2,10 +2,18 @@ import { getToken } from "next-auth/jwt";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-const ADMIN_PATHS = ["/admin", "/api/admin"];
+// Rutas accesibles solo por ADMIN
+const ADMIN_ONLY_PATHS = [
+  "/api/admin/planes/guardar",
+  "/api/admin/config",
+  "/api/admin/users",
+];
 
-function isAdminPath(pathname: string) {
-  return ADMIN_PATHS.some((p) => pathname === p || pathname.startsWith(p + "/"));
+// Rutas accesibles por ADMIN o MODERATOR
+const ADMIN_OR_MODERATOR_PATHS = ["/admin", "/api/admin"];
+
+function pathMatches(pathname: string, paths: string[]) {
+  return paths.some((p) => pathname === p || pathname.startsWith(p + "/"));
 }
 
 export async function proxy(request: NextRequest) {
@@ -25,7 +33,16 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
-  if (isAdminPath(pathname) && token.role !== "ADMIN") {
+  const role = token.role as string | undefined;
+
+  if (pathMatches(pathname, ADMIN_ONLY_PATHS) && role !== "ADMIN") {
+    if (pathname.startsWith("/api/")) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+    return NextResponse.redirect(new URL("/", request.url));
+  }
+
+  if (pathMatches(pathname, ADMIN_OR_MODERATOR_PATHS) && role !== "ADMIN" && role !== "MODERATOR") {
     if (pathname.startsWith("/api/")) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
