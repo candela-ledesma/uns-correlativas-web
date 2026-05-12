@@ -1,4 +1,4 @@
-export type CarreraId = "arquitectura" | "lic_computacion" | "bioquimica" | "ing_civil" | "abogacia" | "agrimensura" | "farmacia" | "contador_publico";
+export type CarreraId = "arquitectura" | "bioquimica" | "abogacia" | "agrimensura" | "farmacia" | "contador_publico" | "ingenieria_en_sistemas_de_informacion" | "licenciatura_en_ciencias_de_la_computacion" | "ingenieria_civil";
 
 export type CarreraVersionConfig = {
     versionId: string;
@@ -56,23 +56,6 @@ export const CARRERAS: CarreraConfig[] = [
     disponible: true,
     },
     {
-    id: "lic_computacion",
-    nombre: "Licenciatura en Ciencias de la Computación",
-    descripcion: "Plan de estudios y correlativas.",
-    departamento: "Ciencias e Ingeniería de la Computación",
-    defaultVersionId: "v1",
-    versions: [
-        {
-        versionId: "v1",
-        label: "Plan actual",
-        jsonFile: "lic_computacion.json",
-        disponible: true,
-        },
-    ],
-    disponible: true,
-
-    },
-    {
     id: "bioquimica",
     nombre: "Bioquímica",
     descripcion: "Plan de estudios y correlativas.",
@@ -83,23 +66,6 @@ export const CARRERAS: CarreraConfig[] = [
         versionId: "v1",
         label: "Plan actual",
         jsonFile: "bioquimica.json",
-        disponible: true,
-        },
-    ],
-    disponible: true,
-
-    },
-    {
-    id: "ing_civil",
-    nombre: "Ingeniería Civil",
-    descripcion: "Plan de estudios y correlativas.",
-    departamento: "Ingeniería",
-    defaultVersionId: "v1",
-    versions: [
-        {
-        versionId: "v1",
-        label: "Plan actual",
-        jsonFile: "ing_civil.json",
         disponible: true,
         },
     ],
@@ -172,7 +138,7 @@ export const CARRERAS: CarreraConfig[] = [
     },
 
     {
-    id: "ingenieria_en_sistemas_de_informacion" as unknown as CarreraId,
+    id: "ingenieria_en_sistemas_de_informacion",
     nombre: "Ingeniería en Sistemas de Información",
     descripcion: "Plan de estudios y correlativas.",
     departamento: "Ciencias e Ingeniería de la Computación",
@@ -182,6 +148,38 @@ export const CARRERAS: CarreraConfig[] = [
         versionId: "v1",
         label: "Plan actual",
         jsonFile: "ingenieria_en_sistemas_de_informacion.json",
+        disponible: true,
+        },
+    ],
+    disponible: true,
+    },
+
+    {
+    id: "licenciatura_en_ciencias_de_la_computacion",
+    nombre: "Licenciatura En Ciencias De La Computacion",
+    descripcion: "Plan de estudios y correlativas.",
+    defaultVersionId: "v1",
+    versions: [
+        {
+        versionId: "v1",
+        label: "Plan actual",
+        jsonFile: "licenciatura_en_ciencias_de_la_computacion.json",
+        disponible: true,
+        },
+    ],
+    disponible: true,
+    },
+
+    {
+    id: "ingenieria_civil",
+    nombre: "Ingenieria Civil",
+    descripcion: "Plan de estudios y correlativas.",
+    defaultVersionId: "v1",
+    versions: [
+        {
+        versionId: "v1",
+        label: "Plan actual",
+        jsonFile: "ingenieria_civil.json",
         disponible: true,
         },
     ],
