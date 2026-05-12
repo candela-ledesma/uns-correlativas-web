@@ -149,11 +149,11 @@ export default function ProfileWorkspace({
             </Link>
           )}
 
-{role === "ADMIN" && (
-            <Link href="/admin" className={styles.quickCard}>
+          {role === "ADMIN" && (
+            <Link href="/admin/dashboard" className={styles.quickCard}>
               <div className={styles.quickText}>
                 <p className={styles.quickTitle}>Administración</p>
-                <p className={styles.quickSub}>Gestionar permisos y auditoría</p>
+                <p className={styles.quickSub}>Usuarios, roles y estadísticas</p>
               </div>
               <span className={styles.quickArrow}>→</span>
             </Link>
