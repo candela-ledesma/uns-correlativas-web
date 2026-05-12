@@ -12,6 +12,7 @@ export type CarreraConfig = {
     id: CarreraId;
     nombre: string;
     descripcion: string;
+    departamento?: string;
     defaultVersionId: string;
     versions: CarreraVersionConfig[];
     disponible?: boolean;
@@ -24,6 +25,7 @@ export const CARRERAS: CarreraConfig[] = [
     id: "arquitectura",
     nombre: "Arquitectura",
     descripcion: "Plan de estudios y correlativas.",
+    departamento: "Geografía y Turismo",
     defaultVersionId: "v2",
     versions: [
         {
@@ -57,6 +59,7 @@ export const CARRERAS: CarreraConfig[] = [
     id: "lic_computacion",
     nombre: "Licenciatura en Ciencias de la Computación",
     descripcion: "Plan de estudios y correlativas.",
+    departamento: "Ciencias e Ingeniería de la Computación",
     defaultVersionId: "v1",
     versions: [
         {
@@ -73,6 +76,7 @@ export const CARRERAS: CarreraConfig[] = [
     id: "bioquimica",
     nombre: "Bioquímica",
     descripcion: "Plan de estudios y correlativas.",
+    departamento: "Biología, Bioquímica y Farmacia",
     defaultVersionId: "v1",
     versions: [
         {
@@ -89,6 +93,7 @@ export const CARRERAS: CarreraConfig[] = [
     id: "ing_civil",
     nombre: "Ingeniería Civil",
     descripcion: "Plan de estudios y correlativas.",
+    departamento: "Ingeniería",
     defaultVersionId: "v1",
     versions: [
         {
@@ -105,6 +110,7 @@ export const CARRERAS: CarreraConfig[] = [
     id: "abogacia",
     nombre: "Abogacía",
     descripcion: "Plan de estudios y correlativas.",
+    departamento: "Derecho",
     defaultVersionId: "v1",
     versions: [
         {
@@ -120,6 +126,7 @@ export const CARRERAS: CarreraConfig[] = [
     id: "agrimensura",
     nombre: "Agrimensura",
     descripcion: "Plan de estudios y correlativas.",
+    departamento: "Ingeniería",
     defaultVersionId: "v1",
     versions: [
         {
@@ -135,6 +142,7 @@ export const CARRERAS: CarreraConfig[] = [
     id: "farmacia",
     nombre: "Farmacia",
     descripcion: "Plan de estudios y correlativas.",
+    departamento: "Biología, Bioquímica y Farmacia",
     defaultVersionId: "v1",
     versions: [
         {
@@ -150,6 +158,7 @@ export const CARRERAS: CarreraConfig[] = [
     id: "contador_publico",
     nombre: "Contador Público",
     descripcion: "Plan de estudios y correlativas.",
+    departamento: "Ciencias de la Administración",
     defaultVersionId: "v1",
     versions: [
         {
@@ -164,8 +173,9 @@ export const CARRERAS: CarreraConfig[] = [
 
     {
     id: "ingenieria_en_sistemas_de_informacion" as unknown as CarreraId,
-    nombre: "Ingenieria En Sistemas De Informacion",
+    nombre: "Ingeniería en Sistemas de Información",
     descripcion: "Plan de estudios y correlativas.",
+    departamento: "Ciencias e Ingeniería de la Computación",
     defaultVersionId: "v1",
     versions: [
         {

@@ -21,19 +21,25 @@ function normalizarTexto(valor: string) {
 
 export default function HomePage() {
   const [busqueda, setBusqueda] = useState("");
+  const [deptoFiltro, setDeptoFiltro] = useState("");
   const totalCarreras = CARRERAS.length;
   const carrerasDisponibles = CARRERAS.filter(
     (carrera) => carrera.disponible !== false,
   ).length;
 
+  const departamentos = useMemo(() => {
+    const set = new Set(CARRERAS.map((c) => c.departamento).filter(Boolean) as string[]);
+    return Array.from(set).sort();
+  }, []);
+
   const carrerasFiltradas = useMemo(() => {
     const termino = normalizarTexto(busqueda);
-    if (!termino) return CARRERAS;
-
-    return CARRERAS.filter((carrera) =>
-      normalizarTexto(carrera.nombre).includes(termino),
-    );
-  }, [busqueda]);
+    return CARRERAS.filter((carrera) => {
+      const matchNombre = !termino || normalizarTexto(carrera.nombre).includes(termino);
+      const matchDepto = !deptoFiltro || carrera.departamento === deptoFiltro;
+      return matchNombre && matchDepto;
+    });
+  }, [busqueda, deptoFiltro]);
 
   return (
     <main className={styles.page}>
@@ -83,6 +89,18 @@ export default function HomePage() {
             aria-label="Buscar carrera por nombre"
             className={styles.searchInput}
           />
+        </div>
+
+        <div className={styles.filterWrap}>
+          {departamentos.map((dep) => (
+            <button
+              key={dep}
+              onClick={() => setDeptoFiltro(deptoFiltro === dep ? "" : dep)}
+              className={`${styles.filterChip} ${deptoFiltro === dep ? styles.filterChipActive : ""}`}
+            >
+              {dep}
+            </button>
+          ))}
         </div>
 
         {carrerasFiltradas.length === 0 && (

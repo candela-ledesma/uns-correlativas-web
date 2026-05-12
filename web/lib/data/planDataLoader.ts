@@ -157,7 +157,7 @@ export async function loadPlanData(
   }
 
   try {
-    const filePath = path.join(process.cwd(), "data", version.jsonFile);
+    const filePath = path.join(process.cwd(), "data", "local", version.jsonFile);
     const fileContents = await fs.readFile(filePath, "utf8");
 
     let raw: unknown;
