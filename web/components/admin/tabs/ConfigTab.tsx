@@ -21,8 +21,6 @@ const FIELD_LABEL: React.CSSProperties = {
   fontWeight: 500, marginBottom: 6,
 };
 
-const DEFAULT_PROMPT = DEFAULT_SYSTEM_PROMPT;
-
 type SaveState = "idle" | "saving" | "saved" | "error";
 
 function formatDate(iso: string): string {
@@ -34,7 +32,7 @@ function formatDate(iso: string): string {
 }
 
 export default function ConfigTab() {
-  const [prompt, setPrompt] = useState(DEFAULT_PROMPT);
+  const [prompt, setPrompt] = useState(DEFAULT_SYSTEM_PROMPT);
   const [saveState, setSaveState] = useState<SaveState>("idle");
   const [loadError, setLoadError] = useState<string | null>(null);
   const [promptCopied, setPromptCopied] = useState(false);
@@ -76,7 +74,7 @@ export default function ConfigTab() {
   }
 
   function restaurar() {
-    setPrompt(DEFAULT_PROMPT);
+    setPrompt(DEFAULT_SYSTEM_PROMPT);
   }
 
   function copiarPrompt() {

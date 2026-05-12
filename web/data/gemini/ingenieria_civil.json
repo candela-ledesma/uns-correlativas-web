@@ -1,0 +1,1666 @@
+{
+  "plan": {
+    "carrera": "Ingeniería Civil",
+    "universidad": "Universidad Nacional del Sur",
+    "codigo_plan": "Plan 2025 - Versión 1"
+  },
+  "materias": [
+    {
+      "id": "5551",
+      "nombre": "ALGEBRA Y GEOMETRIA",
+      "año": "Primer Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {}
+    },
+    {
+      "id": "5539",
+      "nombre": "SISTEMAS DE RE",
+      "año": "Primer Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {}
+    },
+    {
+      "id": "5415",
+      "nombre": "ANALISIS MATEMATICOL",
+      "año": "Primer Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5539": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "5551": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "6304",
+      "nombre": "QUMICAGENERAL PARA INGENIERIA IG",
+      "año": "Primer Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5539": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "5551": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "5131",
+      "nombre": "SUFICIENCIA EN COMPUTACION",
+      "año": "Segundo Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "128hs",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {}
+    },
+    {
+      "id": "5415",
+      "nombre": "ESTABILIDADI",
+      "año": "Segundo Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5539": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "5551": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "3051",
+      "nombre": "BISICAL-IC",
+      "año": "Segundo Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5539": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "5551": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "5552",
+      "nombre": "EN EL AMBITO DE LAS ORGANIZACIONES",
+      "año": "Segundo Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5539": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "5551": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "5131",
+      "nombre": "MATEMATICA APLICADA",
+      "año": "Segundo Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5415": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "5552": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "3057",
+      "nombre": "TOPOGRAFIA Y GEODESIA",
+      "año": "Segundo Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "128h",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5415": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "5552": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "3051",
+      "nombre": "DISEÑO E INNOVACION",
+      "año": "Tercer Año",
+      "cuatrimestre": "Anual",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5176": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "5415": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "5415",
+      "nombre": "MECANICA TECNICA",
+      "año": "Tercer Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "3051": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "5176": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "6324",
+      "nombre": "TECNOLDO",
+      "año": "Tercer Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5176": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "5415": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "5132",
+      "nombre": "ESTABILIDAD IE",
+      "año": "Tercer Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5176": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "5415": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "5176",
+      "nombre": "HIDRAULICA GENERAL",
+      "año": "Tercer Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5132": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "5552": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "5712",
+      "nombre": "SEGURIDAD E HIGIENE IC",
+      "año": "Tercer Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5132": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "5176": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "5070",
+      "nombre": "ORIENTACIÓN CONSTRUCCIONES",
+      "año": "Tercer Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5132": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "5176": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "5134",
+      "nombre": "CONSTRUCCIONES METALICAS Y DE MADERA",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5134": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "5176": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "5462",
+      "nombre": "FERROCARRILES A",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5176": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "5552": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "5376",
+      "nombre": "ENIERIA SANITARIA",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5176": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "5552": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "513",
+      "nombre": "UNDACIONES",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5176": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "5552": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "5230",
+      "nombre": "ORGANIZACION",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5006": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "5475": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "5006",
+      "nombre": "PRACTICA PROFESIONAL SUPERVISADAIC",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5008": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "5230": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "5176",
+      "nombre": "CARRETERAS",
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5014": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "5375": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "5014",
+      "nombre": "HORMIGONI",
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5006": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "5176": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "5170",
+      "nombre": "MEDIO AM",
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5176": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "5241": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "5241",
+      "nombre": "Const",
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5176": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "5375": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "5375",
+      "nombre": "PUERTOS Y VIAS NAVEGABLES",
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5176": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "5462": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "5176",
+      "nombre": "ARQUITEC",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5006": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "5170": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "5006",
+      "nombre": "CAMENTO URBANO",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5176": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "5241": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "5170",
+      "nombre": "ESTRUCTURAS LIVIANAS",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5006": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "5176": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "5241",
+      "nombre": "PUENTES",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5176": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "5375": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "5176",
+      "nombre": "ORIENTACIÓN HIDRÁULICA",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5132": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "5552": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "5132",
+      "nombre": "HIDRAULICA AGRICOLAE HIDROLOGIA",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5176": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "5552": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "5552",
+      "nombre": "ECONOMIA EQUIPAMIENTO Y ORGANIZACION DE OBRA",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5176": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "5230": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "5712",
+      "nombre": "HORMIGONI",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5132": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "5176": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "5230",
+      "nombre": "INGENIERIA SANITARIA",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5176": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "5552": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "5014",
+      "nombre": "CARRETERAS",
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5006": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "5176": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "5133",
+      "nombre": "HORMIGONI",
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5006": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "5176": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "5176",
+      "nombre": "MEDIO AMBIENTEIG",
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5176": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "5241": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "5410",
+      "nombre": "PUERTOS Y VIAS NAVEGABLES",
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5176": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "5375": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "5176",
+      "nombre": "ARQUITECTURA Y PLANE",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5006": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "5170": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "5230",
+      "nombre": "CARRETERAS",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5176": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "5375": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "5375",
+      "nombre": "PUENTES A",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5176": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "5462": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "5176",
+      "nombre": "COMUNICACION GRAFICA DE PROYECTOS EDILICIOS",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "100/12",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5134": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "5376": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "5230",
+      "nombre": "DESAGÜES PLUVIALES",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "100/12",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5176": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "5552": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "5241",
+      "nombre": "DURABILIDAD DE LAS ESTRUCTURAS DE HORMIGON",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "100/12",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5134": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "5176": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "5134",
+      "nombre": "AAMBIENTAL Y APLI",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5176": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "5375": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "5176",
+      "nombre": "TECNOLOGIA DE LOS POLIMEROS",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5133": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "5176": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "5462",
+      "nombre": "LALICI",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5176": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "5375": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "5176",
+      "nombre": "PRINCIPIOS Y HERRAMIENTAS DE PROGRAMACI",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5133": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "5176": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "5290",
+      "nombre": "Aprobada",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5006": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "5462": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "5006",
+      "nombre": "DURABILIDAD",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "100/12",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5133": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "5176": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "5462",
+      "nombre": "RAS DE HORMIGON",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "100/12",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5006": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "5241": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "5133",
+      "nombre": "HIDRAULICA FLU",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5006": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "5176": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "5006",
+      "nombre": "ONES EN",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5176": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "5375": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "5375",
+      "nombre": "NIERIA",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5176": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "5462": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "5176",
+      "nombre": "PLANIFI",
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5014": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "5375": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "5006",
+      "nombre": "AL PO",
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5176": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "5241": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "5375",
+      "nombre": "CARRETERAS",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5014": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "5176": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "5241",
+      "nombre": "PUENTES",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5176": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "5375": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "5044",
+      "nombre": "UTADORA",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "100/12",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5117": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "5410": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "5117",
+      "nombre": "FUENTES ALTERNATIVAS DE ENERG",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "100/12",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5230": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "5475": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "5242",
+      "nombre": "COMUNICACION GRAFICA DE PROYECTOS EDILICIOS",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "100/12",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5176": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "5424": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "5230",
+      "nombre": "DESAGÜES PLUVIALES",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "100/12",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5176": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "5230": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "5134",
+      "nombre": "DURABILIDAD DE LAS ESTRUCTURAS DE HORMIGON",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "100/12",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5006": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "5176": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "5176",
+      "nombre": "AMBIENTAL Y APLI",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5176": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "5375": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "5375",
+      "nombre": "TECNOLOGIA DE LOS POLIMEROS",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5006": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "5176": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "5176",
+      "nombre": "PRINCIPIOS Y HERRAMIENTAS DE PROGRAMACION",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "100/12",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5176": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "10012": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "5175",
+      "nombre": "EXAMEN DE SUFICIENCIA DE IDIOMA: INGLES",
+      "año": null,
+      "cuatrimestre": null,
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "10012",
+      "subtipo": "idioma",
+      "correlativas": {}
+    }
+  ],
+  "agrupadores": [
+    {
+      "id": "G0858",
+      "nombre": "Optativa de Ing.",
+      "tipo": "optativa_grupo",
+      "opciones": [
+        "2710",
+        "5065",
+        "5085",
+        "5114",
+        "5122",
+        "5189",
+        "5229",
+        "5320",
+        "5340",
+        "5360",
+        "5362",
+        "5467",
+        "7887"
+      ],
+      "año": "Cuarto Año",
+      "cuatrimestre": "Primer Cuatrimestre"
+    },
+    {
+      "id": "G0859",
+      "nombre": "Optativa de In",
+      "tipo": "optativa_grupo",
+      "opciones": [
+        "2710",
+        "5065",
+        "5085",
+        "5114",
+        "5122",
+        "5189",
+        "5229",
+        "5320",
+        "5340",
+        "5341",
+        "5360",
+        "5362",
+        "5467",
+        "7887"
+      ],
+      "año": "Cuarto Año",
+      "cuatrimestre": "Segundo Cuatrimestre"
+    },
+    {
+      "id": "G0860",
+      "nombre": "Optativa de Ing. Civil, orientación Hidráulica, plan 2025",
+      "tipo": "optativa_grupo",
+      "opciones": [
+        "2710",
+        "5270",
+        "5290",
+        "5065",
+        "5424",
+        "5085",
+        "5176",
+        "5230",
+        "5114",
+        "5006",
+        "5241",
+        "5462",
+        "5122",
+        "5133",
+        "5134",
+        "5189",
+        "5006",
+        "5375",
+        "5462",
+        "5229",
+        "5176",
+        "5230",
+        "5375",
+        "5320",
+        "5134",
+        "5176",
+        "5241",
+        "5340",
+        "5044",
+        "5176",
+        "5360",
+        "5410",
+        "5362",
+        "5117",
+        "5176",
+        "5375",
+        "5467",
+        "5006",
+        "5176",
+        "5462",
+        "7887",
+        "5176",
+        "10012"
+      ],
+      "año": "Cuarto Año",
+      "cuatrimestre": "Segundo Cuatrimestre"
+    },
+    {
+      "id": "G0861",
+      "nombre": "Optativa de Ing. Civil, orientación Vías de Comunicación, plan 2025",
+      "tipo": "optativa_grupo",
+      "opciones": [
+        "2710",
+        "5270",
+        "5290",
+        "5065",
+        "5424",
+        "5085",
+        "5176",
+        "5230",
+        "5114",
+        "5006",
+        "5241",
+        "5462",
+        "5122",
+        "5133",
+        "5134",
+        "5189",
+        "5006",
+        "5375",
+        "5462",
+        "5229",
+        "5176",
+        "5230",
+        "5375",
+        "5320",
+        "5134",
+        "5176",
+        "5241",
+        "5340",
+        "5044",
+        "5176",
+        "5341",
+        "5041",
+        "5176",
+        "5360",
+        "5410",
+        "5362",
+        "5117",
+        "5176",
+        "5375",
+        "5467",
+        "5006",
+        "5176",
+        "5462",
+        "7887",
+        "5176",
+        "10012"
+      ],
+      "año": "Cuarto Año",
+      "cuatrimestre": "Segundo Cuatrimestre"
+    },
+    {
+      "id": "G0862",
+      "nombre": "Optativa de Ing. Civil, orientación Vías de Comunicación, plan 2025",
+      "tipo": "optativa_grupo",
+      "opciones": [
+        "2710",
+        "5270",
+        "5290",
+        "5065",
+        "5424",
+        "5085",
+        "5176",
+        "5230",
+        "5114",
+        "5006",
+        "5241",
+        "5462",
+        "5122",
+        "5133",
+        "5134",
+        "5189",
+        "5006",
+        "5375",
+        "5462",
+        "5229",
+        "5176",
+        "5230",
+        "5375",
+        "5320",
+        "5134",
+        "5176",
+        "5241",
+        "5340",
+        "5044",
+        "5176",
+        "5341",
+        "5041",
+        "5176",
+        "5360",
+        "5410",
+        "5362",
+        "5117",
+        "5176",
+        "5375",
+        "5467",
+        "5006",
+        "5176",
+        "5462",
+        "7887",
+        "5176",
+        "10012"
+      ],
+      "año": "Cuarto Año",
+      "cuatrimestre": "Segundo Cuatrimestre"
+    },
+    {
+      "id": "10012",
+      "nombre": "Idioma de Ingeniería Civil, plan 2025",
+      "tipo": "idioma_grupo",
+      "opciones": [
+        "5175"
+      ],
+      "año": null,
+      "cuatrimestre": null
+    }
+  ],
+  "_llm_confidence": 1,
+  "_llm_prompt_version": "v22",
+  "_llm_mode": "llm",
+  "_auto_saved_at": "2026-05-12T06:44:24.372Z"
+}

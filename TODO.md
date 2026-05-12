@@ -34,6 +34,7 @@
 - `alta` [x] **Auto-guardar JSON de Gemini en data/gemini/** — best-effort al terminar de parsear; no sobreescribe si ya existe (requiere acción explícita del usuario)
 - `alta` [x] **Confirmar antes de regenerar** — si ya existe JSON para esa fuente, mostrar modal con metadatos del archivo existente antes de reemplazar
 - `alta` [x] **Comparar con versión anterior** — tras regenerar, botón para ver diff side-by-side entre el resultado nuevo y el JSON que había antes
+- `alta` [x] **ConfigTab — versión y fecha del prompt** — muestra versión (ej. v25) y timestamp de última modificación debajo del textarea
 - `media` [ ] **Validación de schema completo** — validar el JSON contra el schema completo de PlanData, no solo IDs/años/correlativas
 - `media` [x] **Selector de modelo con rate limits** — barra de progreso de RPD por modelo en el dropdown; verde/amarillo/rojo según consumo diario
 - `baja` [x] **Botones ConfigTab sin handler** — "Guardar" persiste prompt en `data/admin-config.json`; "Restaurar" vuelve al prompt default; temperatura eliminada
@@ -88,6 +89,25 @@ El planificador actual (`WeeklySchedule`, `useSchedule`, `/api/planificador`) ma
 - `media` [ ] `web/app/perfil/page.tsx:15` — fallback `"sin-email@uns.local"` puede aparecer en producción; reemplazar por `""` o `"sin email"`
 - `baja` [ ] `web/prisma/seed.ts:11` — fallback `"admin@uns.local"` si no hay `ADMIN_SEED_EMAIL` en `.env`; documentar en `.env.example`
 - `baja` [ ] `web/components/auth/LoginActions.tsx:115` — placeholder `"usuario@uns.local"`; cosmético, reemplazar por algo genérico
+
+---
+
+## Prompt Gemini — issues conocidos por carrera
+
+| Carrera | Score Gemini | Issues principales |
+|---|---|---|
+| arquitectura | 85.4/100 | `I2201 → 12201` en correlativas (29 materias); `G2324` generado en `materias[]`; materia `858` extra |
+| agrimensura | — | Casing mayúsculas resuelto (v22); `5175` correlativa en `5464` resuelto en parser; issues menores pendientes en issue file |
+| ingenieria_civil | 21/100 | Fallo estructural: 3 orientaciones con IDs repetidos; Gemini no puede deduplicar; límite del modelo |
+| abogacia | — | Ver `issues/abogacia.md` |
+| bioquimica | — | Ver `issues/bioquimica.md` |
+| farmacia | — | Ver `issues/farmacia.md` |
+| contador_publico | — | Ver `issues/contador_publico.md` |
+| ingenieria_en_sistemas_de_informacion | — | Ver `issues/ingenieria_en_sistemas_de_informacion.md` |
+
+**Prompt actual**: v25 — `web/lib/ai/prompt.ts` / `web/data/admin-config.json`
+
+**Problema abierto más relevante**: `I#### → 1####` en claves de `correlativas`. El modelo corrige en `materias[]` y `agrupadores[]` pero no en correlativas de otras materias. La instrucción de cross-check (v25) no fue suficiente — posible candidato para few-shot o postprocesamiento ligero.
 
 ---
 
@@ -166,6 +186,15 @@ Carreras ya procesadas: abogacia, agrimensura, arquitectura, bioquimica, contado
 | [ ] TECNICATURA UNIVERSITARIA EN PETRÓLEO Y GAS | Ingeniería Química | 6 Cuat. |
 | [ ] TECNICATURA UNIVERSITARIA EN PROGRAMACIÓN WEB Y MÓVIL | Ciencias e Ingeniería de la Computación | 5 Cuat. |
 | [ ] TECNICATURA UNIVERSITARIA EN SISTEMAS ELECTRÓNICOS INDUSTRIALES INTELIGENTES | Ingeniería Eléctrica y de Computadoras | 6 Cuat. |
+
+---
+
+## Deuda técnica — parser local
+
+- `media` [x] **`--mode regex` en parsear-local** — argumento inexistente removido del route `parsear-local/route.ts`
+- `media` [x] **Correlativas inline con `requisito_especial`** — parser ahora extrae correlativas estructuradas embebidas en líneas de prosa (ej. `5175 Aprobada` en misma línea que texto de requisito cuantitativo)
+- `baja` [ ] **`5293` cuatrimestre `null` en agrimensura** — parser devuelve `null`, debería ser `"Anual"`; ver `issues/agrimensura.md`
+- `baja` [ ] **`3616` correlativas incorrectas en agrimensura** — parser asigna `3051, 5415, 5539` en lugar de solo `6323`; ver `issues/agrimensura.md`
 
 ---
 
