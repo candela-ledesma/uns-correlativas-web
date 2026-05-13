@@ -1,4 +1,4 @@
-export const PROMPT_VERSION = "v26";
+export const PROMPT_VERSION = "v27";
 
 export const DEFAULT_SYSTEM_PROMPT = `You are a deterministic data extraction engine for academic curricula.
 
@@ -96,8 +96,14 @@ Three recognized types:
 Examples:
 - PDF says: *"Para cursar Debe tener tercer año aprobado. Para aprobar Debe tener tercer año aprobado."*
   → \`"requisito_especial": { "tipo": "anio_aprobado", "anio": 3, "descripcion": "Para cursar Debe tener tercer año aprobado. Para aprobar Debe tener tercer año aprobado" }\`
+- PDF says: *"Para aprobar Debe tener aprobado el CGCB antes de comenzar a cursar el tercer año de la carrera. Para cursar Debe tener aprobado el CGCB antes de comenzar a cursar el tercer año de la carrera."*
+  → \`"requisito_especial": { "tipo": "anio_aprobado", "anio": 3, "descripcion": "Para aprobar Debe tener aprobado el CGCB antes de comenzar a cursar el tercer año de la carrera. Para cursar Debe tener aprobado el CGCB antes de comenzar a cursar el tercer año de la carrera" }\`
+  (CGCB = Ciclo General de Conocimientos Básicos = completing the first two years → use \`"anio_aprobado"\`, NOT \`"minimo_materias_aprobadas"\`)
 - PDF says: *"Para cursar debe tener como mínimo 26 materias aprobadas"*
   → \`"requisito_especial": { "tipo": "minimo_materias_aprobadas", "cantidad": 26, "descripcion": "Para cursar debe tener como mínimo 26 materias aprobadas" }\`
+- PDF says: *"Para aprobar Debe tener al menos 12 materias aprobadas y aprobado el CGCB antes de comenzar a cursar el tercer año de la carrera."*
+  → \`"requisito_especial": { "tipo": "minimo_materias_aprobadas", "cantidad": 12, "descripcion": "Para aprobar Debe tener al menos 12 materias aprobadas y aprobado el CGCB antes de comenzar a cursar el tercer año de la carrera" }\`
+  (When BOTH a minimum count AND the CGCB requirement appear in the same prose line, use \`"minimo_materias_aprobadas"\` and set \`cantidad\` to the number mentioned.)
 - PDF says: *"Debe rendir la Prueba de Suficiencia de Idioma"*
   → \`"requisito_especial": { "tipo": "prueba_idioma", "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma" }\`
 
@@ -206,7 +212,7 @@ Copy subject names exactly as printed, including punctuation and spacing.
 - \`materias\` must be non-empty if any subjects are detected
 - \`correlativas\` must always be an object (never null, never array)
 - \`agrupadores\` must always be an array (empty \`[]\` if none found)
-- **I#### cross-check (CRITICAL)**: Before finalizing, scan every \`correlativas\` object in every materia. For each key that looks like a number starting with 1 followed by 3–4 digits (e.g. 12201, 10012, 10022), check whether an I#### entry with the same digits exists in \`materias[]\` or \`agrupadores[]\` (e.g. I2201, I0012, I0022). If it does, replace that numeric key with the correct I#### string. Example: if \`"12201"\` appears as a correlativa key and \`I2201\` exists in \`materias[]\`, rename the key to \`"I2201"\`.
+- **I#### cross-check (CRITICAL)**: Before finalizing, scan every \`correlativas\` object in every materia. For each key that looks like a number starting with 1 followed by 3–4 digits (e.g. 12201, 10012, 10022, 10703), check whether an I#### entry with the same digits exists in \`materias[]\` or \`agrupadores[]\` (e.g. I2201, I0012, I0022, I0703). If it does, replace that numeric key with the correct I#### string. Examples: \`"12201"\` → \`"I2201"\`; \`"10703"\` → \`"I0703"\`; \`"10022"\` → \`"I0022"\`. This error is extremely common — always run this check.
 
 ## FINAL INSTRUCTION
 
