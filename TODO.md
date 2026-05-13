@@ -10,11 +10,21 @@
 
 - `alta` [x] **Proteger rutas por rol** — `web/middleware.ts` verifica JWT en cada request a `/admin/*` y `/api/admin/*`: redirige a login si no hay sesión, 403/redirect a `/` si no es ADMIN.
 
-- `media` [ ] **Gestión de usuarios desde el panel admin** — el admin debe poder
-  ver la lista de usuarios, cambiar el rol de cualquiera (ej: promover a
-  PROFESOR).
+- `media` [x] **Gestión de usuarios desde el panel admin** — disponible en `/admin/dashboard`: tabla de usuarios reales con selector de rol y motivo obligatorio.
 
 - `baja` [x] **Flujo de carga de planes para MODERADOR** — MODERATOR accede al mismo panel admin, puede subir y procesar PDFs con Gemini o parser local, pero el botón de publicar está deshabilitado. Solo ADMIN puede publicar.
+
+---
+
+## Panel admin — gestión de planes
+
+- `alta` [ ] **Notificar al admin cuando un MODERATOR envía un plan a revisión** — email o notificación in-app cuando se registra un `PLAN_PENDING_REVIEW` en el AuditLog.
+
+- `alta` [ ] **Vista de revisión de planes pendientes** — sección en `/admin/dashboard` (o `/admin/revisiones`) que lista los planes con estado `pendiente_revision` leídos de `data/gemini/*_pendiente.json`, con opción de publicar o rechazar cada uno.
+
+- `alta` [ ] **Auto-guardado de Gemini sin confirmación** — actualmente el JSON generado por Gemini se guarda en `data/gemini/` de forma silenciosa al terminar de parsear. Agregar confirmación explícita del usuario antes de escribir el archivo (o al menos un modal con resumen antes de persistir).
+
+- `media` [ ] **Gestión de planes publicados desde el panel admin** — además de crear planes (ya existe), el admin debe poder modificar y eliminar planes publicados: editar el JSON directamente o eliminarlo de `data/local/` y desregistrarlo de `carreras.ts`.
 
 ---
 
