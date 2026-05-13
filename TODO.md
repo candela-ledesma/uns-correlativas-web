@@ -46,7 +46,7 @@
 
 ## Búsqueda y navegación de carreras
 
-- `media` [ ] **Filtrar carreras por departamento** — en la página de inicio, permitir filtrar/agrupar carreras por departamento. La info de departamento está disponible en `web/data/planes_uns.json`; no requiere nueva fuente de datos, solo cruzar con las carreras ya cargadas en `carreras.ts`.
+- `media` [x] **Filtrar carreras por departamento** — chips de filtro en la página de inicio incluyendo "Todas"; campo `departamento` agregado a todas las carreras en `carreras.ts`; selector de departamento al guardar un plan nuevo desde el panel admin.
 
 ---
 
