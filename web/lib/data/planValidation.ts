@@ -237,21 +237,24 @@ function parseRequisitoEspecial(
       cantidad,
     };
   } else if (tipo === "prueba_idioma") {
-    const materiaId = asRequiredString(raw.materiaId, `${path}.materiaId`, issues);
-    if (materiaId === null) {
+    const result: { tipo: "prueba_idioma"; materiaId?: string } = { tipo };
+    if (typeof raw.materiaId === "string" && raw.materiaId) {
+      result.materiaId = raw.materiaId;
+    }
+    return result;
+  } else if (tipo === "anio_aprobado") {
+    const anioRaw = raw.anio;
+    if (typeof anioRaw !== "number" || !Number.isInteger(anioRaw) || anioRaw < 1 || anioRaw > 6) {
+      addIssue(issues, "shape", `${path}.anio`, "Debe ser un entero entre 1 y 6");
       return undefined;
     }
-
-    return {
-      tipo,
-      materiaId,
-    };
+    return { tipo, anio: anioRaw };
   } else {
     addIssue(
       issues,
       "shape",
       `${path}.tipo`,
-      "Debe ser 'minimo_materias_aprobadas' o 'prueba_idioma'"
+      "Debe ser 'minimo_materias_aprobadas', 'prueba_idioma' o 'anio_aprobado'"
     );
     return undefined;
   }

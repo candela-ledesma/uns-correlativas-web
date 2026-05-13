@@ -12,18 +12,18 @@ PATRON_CUATRIMESTRE = re.compile(
 
 # Materia real: 3942 NOMBRE ... 96hs.
 PATRON_MATERIA = re.compile(
-    r'^([A-Z]?\d{4,})\s+(.+?)(?:\s+(\d+)\s*hs\.?)?$',
+    r'^([A-Z]?\d{3,})\s+(.+?)(?:\s+(\d+)\s*hs\.?)?$',
     re.IGNORECASE
 )
 
 # Correlativa: 2405 Aprobada Aprobada
 PATRON_CORRELATIVA = re.compile(
-    r'([A-Z]?\d{4,})\s+(Aprobada|Regular|Cursada)\s+(Aprobada|Regular|Cursada)',
+    r'([A-Z]?\d{3,})\s+(Aprobada|Regular|Cursada)\s+(Aprobada|Regular|Cursada)',
     re.IGNORECASE
 )
 
 PATRON_CORRELATIVA_SOLO = re.compile(
-    r'^[A-Z]?\d{4,}\s+(Aprobada|Regular|Cursada)\s+(Aprobada|Regular|Cursada)$',
+    r'^[A-Z]?\d{3,}\s+(Aprobada|Regular|Cursada)\s+(Aprobada|Regular|Cursada)$',
     re.IGNORECASE
 )
 

@@ -11,19 +11,21 @@ type Props = {
   activeDiffId: string | null;
   scrollRef?: React.RefObject<HTMLDivElement | null>;
   onScroll?: (e: React.UIEvent<HTMLDivElement>) => void;
+  brokenIds?: Set<string>;
 };
 
 type LineInfo = {
   text: string;
   diffId: string | null;
   tooltip: string | null;
-  highlight: "bad" | "good" | "neutral" | null;
+  highlight: "bad" | "good" | "neutral" | "broken" | null;
 };
 
 function buildLineMap(
   jsonStr: string,
   diffs: DiffItem[],
   fuente: "gemini" | "parser",
+  brokenIds?: Set<string>,
 ): LineInfo[] {
   const lines = jsonStr.split("\n");
   const diffById = new Map(diffs.map(d => [d.id, d]));
@@ -74,6 +76,19 @@ function buildLineMap(
       };
     }
 
+    // Detectar IDs rotas en líneas de correlativas (clave de objeto dentro de "correlativas")
+    if (brokenIds && brokenIds.size > 0) {
+      const keyMatch = line.match(/^\s+"([^"]+)"\s*:/);
+      if (keyMatch && brokenIds.has(keyMatch[1])) {
+        return {
+          text: line,
+          diffId: null,
+          tooltip: `ID "${keyMatch[1]}" no existe en materias ni agrupadores`,
+          highlight: "broken",
+        };
+      }
+    }
+
     return { text: line, diffId: null, tooltip: null, highlight: null };
   });
 }
@@ -113,22 +128,24 @@ const BG: Record<NonNullable<LineInfo["highlight"]>, string> = {
   bad:     "rgba(231,111,81,0.12)",
   good:    "rgba(34,197,94,0.08)",
   neutral: "rgba(249,199,79,0.08)",
+  broken:  "rgba(245,158,11,0.15)",
 };
 
 const BORDER: Record<NonNullable<LineInfo["highlight"]>, string> = {
   bad:     "rgba(231,111,81,0.5)",
   good:    "rgba(34,197,94,0.4)",
   neutral: "rgba(249,199,79,0.4)",
+  broken:  "rgba(245,158,11,0.7)",
 };
 
 const JsonViewer = forwardRef<HTMLDivElement, Props>(function JsonViewer(
-  { json, diffs, fuente, activeDiffId, onScroll },
+  { json, diffs, fuente, activeDiffId, onScroll, brokenIds },
   ref,
 ) {
   const jsonStr = useMemo(() => JSON.stringify(json, null, 2), [json]);
   const lines = useMemo(
-    () => buildLineMap(jsonStr, diffs, fuente),
-    [jsonStr, diffs, fuente],
+    () => buildLineMap(jsonStr, diffs, fuente, brokenIds),
+    [jsonStr, diffs, fuente, brokenIds],
   );
 
   return (

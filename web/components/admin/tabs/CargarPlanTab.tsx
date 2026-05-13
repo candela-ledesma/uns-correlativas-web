@@ -1012,10 +1012,10 @@ function ColumnaResultado({
   const duplicados = ids.length - uniqueIds.size;
   const sinAño = data.materias.filter(m => !m.año).length;
   const todasLasIds = new Set([...ids, ...data.agrupadores.map((a: unknown) => (a as { id?: string }).id).filter(Boolean)]);
-  const correlativasRotas = data.materias.reduce((acc, m) => {
-    const rotas = Object.keys(m.correlativas).filter(cid => !todasLasIds.has(cid));
-    return acc + rotas.length;
-  }, 0);
+  const brokenIds = new Set(
+    data.materias.flatMap(m => Object.keys(m.correlativas).filter(cid => !todasLasIds.has(cid)))
+  );
+  const correlativasRotas = brokenIds.size;
   const tieneCarrera = !!data.plan.carrera && !!data.plan.universidad && !!data.plan.codigo_plan;
 
   const checks = [
@@ -1109,6 +1109,7 @@ function ColumnaResultado({
           fuente={fuente}
           activeDiffId={activeDiffId}
           onScroll={onScroll}
+          brokenIds={brokenIds}
         />
       </div>
 

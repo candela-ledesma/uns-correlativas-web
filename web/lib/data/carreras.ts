@@ -185,6 +185,22 @@ export const CARRERAS: CarreraConfig[] = [
     ],
     disponible: true,
     },
+
+    {
+    id: "ingenieria_agronomica" as unknown as CarreraId,
+    nombre: "Ingenieria Agronomica",
+    descripcion: "Plan de estudios y correlativas.",
+    defaultVersionId: "v1",
+    versions: [
+        {
+        versionId: "v1",
+        label: "Plan actual",
+        jsonFile: "ingenieria_agronomica.json",
+        disponible: true,
+        },
+    ],
+    disponible: true,
+    },
 ];
 
 export function getCarreraById(id: string) {
