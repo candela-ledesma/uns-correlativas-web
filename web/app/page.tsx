@@ -92,10 +92,16 @@ export default function HomePage() {
         </div>
 
         <div className={styles.filterWrap}>
+          <button
+            onClick={() => setDeptoFiltro("")}
+            className={`${styles.filterChip} ${deptoFiltro === "" ? styles.filterChipActive : ""}`}
+          >
+            Todas
+          </button>
           {departamentos.map((dep) => (
             <button
               key={dep}
-              onClick={() => setDeptoFiltro(deptoFiltro === dep ? "" : dep)}
+              onClick={() => setDeptoFiltro(dep)}
               className={`${styles.filterChip} ${deptoFiltro === dep ? styles.filterChipActive : ""}`}
             >
               {dep}

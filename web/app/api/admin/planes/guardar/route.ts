@@ -17,17 +17,20 @@ async function registrarCarreraEnConfig(
   slug: string,
   jsonFile: string,
   nombre: string,
+  departamento?: string | null,
 ): Promise<void> {
   const yaRegistrada = CARRERAS.some((c) => c.id === slug);
   if (yaRegistrada) return;
 
   const source = await fs.readFile(CARRERAS_FILE, "utf-8");
 
+  const deptoLine = departamento ? `\n    departamento: "${departamento}",` : "";
+
   const newEntry = `
     {
     id: "${slug}" as unknown as CarreraId,
     nombre: "${nombre}",
-    descripcion: "Plan de estudios y correlativas.",
+    descripcion: "Plan de estudios y correlativas.",${deptoLine}
     defaultVersionId: "v1",
     versions: [
         {
@@ -74,6 +77,7 @@ export async function POST(request: Request) {
     publicar: boolean;
     resolucion: "reemplazar" | "conservar" | "nueva_version" | null;
     motivo?: string;
+    departamento?: string | null;
   };
 
   try {
@@ -82,7 +86,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Body inválido" }, { status: 400 });
   }
 
-  const { plan, fuente, publicar, resolucion, motivo } = body;
+  const { plan, fuente, publicar, resolucion, motivo, departamento } = body;
   if (!plan?.plan?.carrera) {
     return NextResponse.json({ error: "Datos del plan inválidos" }, { status: 400 });
   }
@@ -137,7 +141,7 @@ export async function POST(request: Request) {
 
     // Solo registrar en carreras.ts si es parser (fuente de verdad)
     if (!isGemini) {
-      await registrarCarreraEnConfig(slug, `${slug}.json`, plan.plan.carrera).catch(() => {});
+      await registrarCarreraEnConfig(slug, `${slug}.json`, plan.plan.carrera, departamento).catch(() => {});
     }
 
     await createAuditEvent({

@@ -25,6 +25,26 @@ type SaveState =
 
 type ResolucionConflicto = "reemplazar" | "conservar" | "nueva_version";
 
+const DEPARTAMENTOS_UNS = [
+  "Agronomía",
+  "Biología, Bioquímica y Farmacia",
+  "Ciencias de la Administración",
+  "Ciencias de la Educación",
+  "Ciencias de la Salud",
+  "Ciencias e Ingeniería de la Computación",
+  "Derecho",
+  "Economía",
+  "Física",
+  "Geografía y Turismo",
+  "Geología",
+  "Humanidades",
+  "Ingeniería",
+  "Ingeniería Eléctrica y de Computadoras",
+  "Ingeniería Química",
+  "Matemática",
+  "Química",
+] as const;
+
 const RESOLUCION_OPTIONS: { value: ResolucionConflicto; label: string; desc: string; recommended?: boolean }[] = [
   { value: "reemplazar",     label: "Reemplazar completamente", desc: "La versión nueva reemplaza todo el plan actual." },
   { value: "conservar",      label: "Conservar la actual",       desc: "Descartá la nueva versión. No se guarda nada." },
@@ -44,6 +64,7 @@ export default function GuardarPlanDrawer({
   const [publicar, setPublicar] = useState(true);
   const [resolucion, setResolucion] = useState<ResolucionConflicto | null>(null);
   const [motivo, setMotivo] = useState("");
+  const [departamento, setDepartamento] = useState("");
 
   async function iniciarGuardado() {
     setSaveState({ type: "saving" });
@@ -51,7 +72,7 @@ export default function GuardarPlanDrawer({
       const res = await fetch("/api/admin/planes/guardar", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ plan: data, fuente, publicar, resolucion: null }),
+        body: JSON.stringify({ plan: data, fuente, publicar, resolucion: null, departamento: departamento.trim() || null }),
       });
       const json = await res.json();
       if (json.conflict) {
@@ -167,6 +188,30 @@ export default function GuardarPlanDrawer({
                   <div style={{ fontSize: 12, color: TEXT, fontWeight: 500 }}>{item.value}</div>
                 </div>
               ))}
+            </div>
+            <div>
+              <div style={{ fontSize: 11, color: TEXT_SEC, fontWeight: 500, marginBottom: 6 }}>
+                Departamento <span style={{ opacity: 0.5 }}>(solo si la carrera es nueva)</span>
+              </div>
+              <select
+                value={departamento}
+                onChange={e => setDepartamento(e.target.value)}
+                style={{ ...INPUT, borderRadius: 8, padding: "7px 10px", fontSize: 12, width: "100%" }}
+              >
+                <option value="">— Sin especificar —</option>
+                {DEPARTAMENTOS_UNS.map(d => (
+                  <option key={d} value={d}>{d}</option>
+                ))}
+                <option value="__otro__">Otro (escribir abajo)</option>
+              </select>
+              {departamento === "__otro__" && (
+                <input
+                  type="text"
+                  placeholder="Nombre del departamento…"
+                  onChange={e => setDepartamento(e.target.value)}
+                  style={{ ...INPUT, borderRadius: 8, padding: "7px 10px", fontSize: 12, width: "100%", marginTop: 6, boxSizing: "border-box" }}
+                />
+              )}
             </div>
             <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer", fontSize: 13, color: TEXT_SEC }}>
               <input

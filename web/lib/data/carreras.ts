@@ -156,8 +156,9 @@ export const CARRERAS: CarreraConfig[] = [
 
     {
     id: "licenciatura_en_ciencias_de_la_computacion",
-    nombre: "Licenciatura En Ciencias De La Computacion",
+    nombre: "Licenciatura en Ciencias de la Computación",
     descripcion: "Plan de estudios y correlativas.",
+    departamento: "Ciencias e Ingeniería de la Computación",
     defaultVersionId: "v1",
     versions: [
         {
@@ -172,8 +173,9 @@ export const CARRERAS: CarreraConfig[] = [
 
     {
     id: "ingenieria_civil",
-    nombre: "Ingenieria Civil",
+    nombre: "Ingeniería Civil",
     descripcion: "Plan de estudios y correlativas.",
+    departamento: "Ingeniería",
     defaultVersionId: "v1",
     versions: [
         {
@@ -188,8 +190,9 @@ export const CARRERAS: CarreraConfig[] = [
 
     {
     id: "ingenieria_agronomica" as unknown as CarreraId,
-    nombre: "Ingenieria Agronomica",
+    nombre: "Ingeniería Agronómica",
     descripcion: "Plan de estudios y correlativas.",
+    departamento: "Agronomía",
     defaultVersionId: "v1",
     versions: [
         {
