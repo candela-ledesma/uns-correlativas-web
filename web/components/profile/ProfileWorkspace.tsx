@@ -51,6 +51,17 @@ export default function ProfileWorkspace({
     [context.careers, context.enrolledCareerIds]
   );
 
+  const materiasPorCarrera = useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const item of context.recentActivity) {
+      if (item.type === "MATERIA_STATUS_CHANGED" && item.careerId && item.materiaKey) {
+        if (!counts[item.careerId]) counts[item.careerId] = 0;
+        counts[item.careerId]++;
+      }
+    }
+    return counts;
+  }, [context.recentActivity]);
+
   return (
     <article className={styles.profileCard}>
 
@@ -96,7 +107,11 @@ export default function ProfileWorkspace({
                 data-active={isActive ? "true" : undefined}
               >
                 <p className={styles.careerName}>{career.nombre}</p>
-                <p className={styles.careerSub}>Sin materias registradas aún</p>
+                <p className={styles.careerSub}>
+                  {materiasPorCarrera[career.id]
+                    ? `${materiasPorCarrera[career.id]} materia${materiasPorCarrera[career.id] === 1 ? "" : "s"} registrada${materiasPorCarrera[career.id] === 1 ? "" : "s"}`
+                    : "Sin actividad registrada aún"}
+                </p>
                 <div className={styles.careerFooter}>
                   {isActive && <span className={styles.pillVioletSm}>activa</span>}
                   <Link href={planHref} className={styles.openPlanBtn}>

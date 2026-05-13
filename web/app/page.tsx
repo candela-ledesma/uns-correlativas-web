@@ -1,45 +1,57 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
-import { CARRERAS } from "@/lib/data/carreras";
 import styles from "./page.module.css";
 
 const HomeSessionPanel = dynamic(() => import("@/components/auth/HomeSessionPanel"), {
   ssr: false,
-  loading: () => <div className={styles.sessionSkeleton} aria-hidden="true" />, 
+  loading: () => <div className={styles.sessionSkeleton} aria-hidden="true" />,
 });
+
+type CarreraResumen = {
+  id: string;
+  nombre: string;
+  descripcion: string;
+  departamento: string | null;
+  disponible: boolean;
+};
 
 function normalizarTexto(valor: string) {
   return valor
     .toLowerCase()
     .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[̀-ͯ]/g, "")
     .trim();
 }
 
 export default function HomePage() {
+  const [carreras, setCarreras] = useState<CarreraResumen[]>([]);
   const [busqueda, setBusqueda] = useState("");
   const [deptoFiltro, setDeptoFiltro] = useState("");
-  const totalCarreras = CARRERAS.length;
-  const carrerasDisponibles = CARRERAS.filter(
-    (carrera) => carrera.disponible !== false,
-  ).length;
+
+  useEffect(() => {
+    fetch("/api/planes")
+      .then(r => r.json())
+      .then(d => setCarreras(d.planes ?? []));
+  }, []);
+
+  const visibles = carreras.filter(c => c.disponible);
 
   const departamentos = useMemo(() => {
-    const set = new Set(CARRERAS.map((c) => c.departamento).filter(Boolean) as string[]);
+    const set = new Set(visibles.map(c => c.departamento).filter(Boolean) as string[]);
     return Array.from(set).sort();
-  }, []);
+  }, [visibles]);
 
   const carrerasFiltradas = useMemo(() => {
     const termino = normalizarTexto(busqueda);
-    return CARRERAS.filter((carrera) => {
+    return visibles.filter((carrera) => {
       const matchNombre = !termino || normalizarTexto(carrera.nombre).includes(termino);
       const matchDepto = !deptoFiltro || carrera.departamento === deptoFiltro;
       return matchNombre && matchDepto;
     });
-  }, [busqueda, deptoFiltro]);
+  }, [busqueda, deptoFiltro, visibles]);
 
   return (
     <main className={styles.page}>
@@ -73,7 +85,7 @@ export default function HomePage() {
 
           <div className={styles.quickMeta}>
             <p>
-              {carrerasDisponibles} de {totalCarreras} carreras disponibles
+              {visibles.length} {visibles.length === 1 ? "carrera disponible" : "carreras disponibles"}
             </p>
             <span aria-hidden="true">•</span>
             <p>Progreso sincronizado por cuenta</p>
@@ -109,53 +121,38 @@ export default function HomePage() {
           ))}
         </div>
 
-        {carrerasFiltradas.length === 0 && (
+        {carrerasFiltradas.length === 0 && carreras.length > 0 && (
           <p className={styles.noResults}>
             No se encontraron carreras con ese nombre.
           </p>
         )}
 
         <div className={styles.grid}>
-          {carrerasFiltradas.map((carrera, index) => {
-            const disponible = carrera.disponible !== false;
+          {carrerasFiltradas.map((carrera, index) => (
+            <Link
+              key={carrera.id}
+              href={`/planes/${carrera.id}`}
+              className={styles.card}
+              style={{ animationDelay: `${index * 70}ms` }}
+            >
+              <div className={styles.cardTopBar} />
 
-            return (
-              <Link
-                key={carrera.id}
-                href={`/planes/${carrera.id}`}
-                className={styles.card}
-                style={{
-                  animationDelay: `${index * 70}ms`,
-                }}
-              >
-                <div className={styles.cardTopBar} />
+              <div className={styles.cardHeader}>
+                <div className={styles.iconBox}>🎓</div>
+                <span className={`${styles.status} ${styles.statusAvailable}`}>
+                  Disponible
+                </span>
+              </div>
 
-                <div className={styles.cardHeader}>
-                  <div className={styles.iconBox}>🎓</div>
+              <h2 className={styles.cardTitle}>{carrera.nombre}</h2>
+              <p className={styles.cardDescription}>{carrera.descripcion}</p>
 
-                  <span
-                    className={`${styles.status} ${
-                      disponible ? styles.statusAvailable : styles.statusSoon
-                    }`}
-                  >
-                    {disponible ? "Disponible" : "Próximamente"}
-                  </span>
-                </div>
-
-                <h2 className={styles.cardTitle}>{carrera.nombre}</h2>
-
-                <p className={styles.cardDescription}>{carrera.descripcion}</p>
-
-                <div className={styles.cardFooter}>
-                  <span className={styles.cardFooterText}>
-                    {disponible ? "Ver plan" : "Más adelante"}
-                  </span>
-
-                  <span className={styles.arrow}>→</span>
-                </div>
-              </Link>
-            );
-          })}
+              <div className={styles.cardFooter}>
+                <span className={styles.cardFooterText}>Ver plan</span>
+                <span className={styles.arrow}>→</span>
+              </div>
+            </Link>
+          ))}
         </div>
       </section>
     </main>

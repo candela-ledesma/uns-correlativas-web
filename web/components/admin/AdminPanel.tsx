@@ -6,11 +6,13 @@ import { ACCENT, BG_GRADIENT, GLASS, TEXT, TEXT_SEC } from "@/lib/ui/tokens";
 import CargarPlanTab from "./tabs/CargarPlanTab";
 import HistorialTab from "./tabs/HistorialTab";
 import ConfigTab from "./tabs/ConfigTab";
+import PlanesTab from "./tabs/PlanesTab";
 
-type Tab = "cargar" | "historial" | "config";
+type Tab = "cargar" | "planes" | "historial" | "config";
 
 const TABS: { id: Tab; label: string; icon: string }[] = [
   { id: "cargar",    label: "Cargar plan",   icon: "↑" },
+  { id: "planes",    label: "Planes",        icon: "☰" },
   { id: "historial", label: "Historial",     icon: "◷" },
   { id: "config",    label: "Configuración", icon: "⚙" },
 ];
@@ -29,30 +31,41 @@ export default function AdminPanel({ canPublish = true }: { canPublish?: boolean
         backdropFilter: "blur(12px)",
         position: "sticky", top: 0, zIndex: 100,
       }}>
-        <div style={{
-          width: 28, height: 28,
-          background: `linear-gradient(135deg, ${ACCENT}, #c084fc)`,
-          borderRadius: 7,
-          display: "flex", alignItems: "center", justifyContent: "center",
-          fontSize: 14,
-        }}>⚙</div>
-        <span style={{ fontWeight: 700, fontSize: 14, color: TEXT }}>Panel de administración</span>
-        <span style={{
-          background: "rgba(157,78,221,0.2)",
-          border: `1px solid rgba(157,78,221,0.4)`,
-          color: "#c084fc",
-          borderRadius: 4, padding: "1px 8px",
-          fontSize: 10, fontWeight: 600, letterSpacing: "0.05em",
-        }}>Admin</span>
-        <Link href="/" style={{
-          marginLeft: "auto",
-          fontSize: 12, color: TEXT_SEC, textDecoration: "none",
-          background: "rgba(255,255,255,0.05)",
-          border: `1px solid ${GLASS.border}`,
-          borderRadius: 8, padding: "4px 12px",
-        }}>
-          ← Inicio
-        </Link>
+        <div style={{ display: "flex", gap: 8 }}>
+          <Link href="/" style={{
+            fontSize: 12, color: TEXT_SEC, textDecoration: "none",
+            background: "rgba(255,255,255,0.05)",
+            border: `1px solid ${GLASS.border}`,
+            borderRadius: 8, padding: "4px 12px",
+          }}>
+            ← Inicio
+          </Link>
+          <Link href="/perfil" style={{
+            fontSize: 12, color: TEXT_SEC, textDecoration: "none",
+            background: "rgba(255,255,255,0.05)",
+            border: `1px solid ${GLASS.border}`,
+            borderRadius: 8, padding: "4px 12px",
+          }}>
+            Perfil
+          </Link>
+        </div>
+        <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 10 }}>
+          <span style={{ fontWeight: 700, fontSize: 14, color: TEXT }}>Panel de administración</span>
+          <span style={{
+            background: "rgba(157,78,221,0.2)",
+            border: `1px solid rgba(157,78,221,0.4)`,
+            color: "#c084fc",
+            borderRadius: 4, padding: "1px 8px",
+            fontSize: 10, fontWeight: 600, letterSpacing: "0.05em",
+          }}>Admin</span>
+          <div style={{
+            width: 28, height: 28,
+            background: `linear-gradient(135deg, ${ACCENT}, #c084fc)`,
+            borderRadius: 7,
+            display: "flex", alignItems: "center", justifyContent: "center",
+            fontSize: 14,
+          }}>⚙</div>
+        </div>
       </header>
 
       <main style={{ maxWidth: 1100, margin: "0 auto", padding: "28px 24px 56px" }}>
@@ -85,6 +98,7 @@ export default function AdminPanel({ canPublish = true }: { canPublish?: boolean
         </nav>
 
         {tab === "cargar"    && <CargarPlanTab canPublish={canPublish} />}
+        {tab === "planes"    && <PlanesTab />}
         {tab === "historial" && <HistorialTab />}
         {tab === "config"    && <ConfigTab canEdit={canPublish} />}
       </main>

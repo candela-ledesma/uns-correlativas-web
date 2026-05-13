@@ -24,7 +24,9 @@
 
 - `alta` [ ] **Auto-guardado de Gemini sin confirmación** — actualmente el JSON generado por Gemini se guarda en `data/gemini/` de forma silenciosa al terminar de parsear. Agregar confirmación explícita del usuario antes de escribir el archivo (o al menos un modal con resumen antes de persistir).
 
-- `media` [ ] **Gestión de planes publicados desde el panel admin** — además de crear planes (ya existe), el admin debe poder modificar y eliminar planes publicados: editar el JSON directamente o eliminarlo de `data/local/` y desregistrarlo de `carreras.ts`.
+- `media` [x] **Gestión de planes publicados desde el panel admin** — además de crear planes (ya existe), el admin debe poder modificar y eliminar planes publicados: editar el JSON directamente o eliminarlo de `data/local/` y desregistrarlo de `carreras.ts`.
+
+- `baja` [x] **UX panel admin** — botones ← Inicio y Perfil a la izquierda del header; título + badge + ícono a la derecha. Texto hardcodeado "Sin materias registradas aún" en perfil reemplazado por conteo real de actividad.
 
 ---
 
