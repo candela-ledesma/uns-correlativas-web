@@ -302,13 +302,15 @@ export default function HistorialTab() {
               const universidad = after?.universidad ?? "—";
               const materias = after?.materias;
               const fuente = after?.fuente ?? "—";
-              const isPending = item.action === "PLAN_PENDING_REVIEW";
+              const slugsEnDisco = new Set(pendientes.map(p => p.slug));
+              const isPending  = item.action === "PLAN_PENDING_REVIEW" && slugsEnDisco.has(item.entityId);
+              const isDescartado = item.action === "PLAN_PENDING_REVIEW" && !slugsEnDisco.has(item.entityId);
               const resolucion = after?.resolucion ?? "nuevo";
 
-              const badgeColor  = isPending ? "#f59e0b" : resolucion === "reemplazar" ? STATUS_COLORS.danger.accent : resolucion === "nueva_version" ? STATUS_COLORS.disponible.accent : STATUS_COLORS.aprobada.accent;
-              const badgeBg     = isPending ? "rgba(245,158,11,0.12)" : resolucion === "reemplazar" ? STATUS_COLORS.danger.badgeBg : resolucion === "nueva_version" ? STATUS_COLORS.disponible.badgeBg : STATUS_COLORS.aprobada.badgeBg;
-              const badgeBorder = isPending ? "rgba(245,158,11,0.35)" : resolucion === "reemplazar" ? STATUS_COLORS.danger.badgeBorder : resolucion === "nueva_version" ? STATUS_COLORS.disponible.badgeBorder : STATUS_COLORS.aprobada.badgeBorder;
-              const badgeLabel  = isPending ? "Pendiente" : resolucion === "reemplazar" ? "Reemplazado" : resolucion === "nueva_version" ? "v2" : "Nuevo";
+              const badgeColor  = isPending ? "#f59e0b" : isDescartado ? STATUS_COLORS.danger.accent : resolucion === "reemplazar" ? "#f59e0b" : resolucion === "nueva_version" ? STATUS_COLORS.disponible.accent : STATUS_COLORS.aprobada.accent;
+              const badgeBg     = isPending ? "rgba(245,158,11,0.12)" : isDescartado ? STATUS_COLORS.danger.badgeBg : resolucion === "reemplazar" ? "rgba(245,158,11,0.12)" : resolucion === "nueva_version" ? STATUS_COLORS.disponible.badgeBg : STATUS_COLORS.aprobada.badgeBg;
+              const badgeBorder = isPending ? "rgba(245,158,11,0.35)" : isDescartado ? STATUS_COLORS.danger.badgeBorder : resolucion === "reemplazar" ? "rgba(245,158,11,0.35)" : resolucion === "nueva_version" ? STATUS_COLORS.disponible.badgeBorder : STATUS_COLORS.aprobada.badgeBorder;
+              const badgeLabel  = isPending ? "Pendiente" : isDescartado ? "Descartado" : resolucion === "reemplazar" ? "Reemplazado" : resolucion === "nueva_version" ? "v2" : "Nuevo";
 
               return (
                 <div
@@ -319,7 +321,7 @@ export default function HistorialTab() {
                     borderBottom: i < items.length - 1 ? `1px solid ${GLASS.border}` : "none",
                   }}
                 >
-                  <span style={{ fontSize: 20, opacity: 0.6 }}>{isPending ? "⏳" : "📄"}</span>
+                  <span style={{ fontSize: 20, opacity: 0.6 }}>{isPending ? "⏳" : isDescartado ? "🗑" : "📄"}</span>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontWeight: 500, fontSize: 13, color: TEXT, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                       {carrera}
