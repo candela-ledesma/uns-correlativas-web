@@ -95,7 +95,6 @@ export default function CargarPlanTab({ canPublish = true }: { canPublish?: bool
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File | null>(null);
   const [model, setModel] = useState<GeminiModelValue>(DEFAULT_GEMINI_MODEL);
-  const [dryRun, setDryRun] = useState(false);
   const [uniType, setUniType] = useState<"uns" | "otra">("uns");
   const [uniNombre, setUniNombre] = useState("");
   const [dragging, setDragging] = useState(false);
@@ -378,17 +377,6 @@ export default function CargarPlanTab({ canPublish = true }: { canPublish?: bool
           <div>
             <div style={{ fontSize: 11, color: TEXT_SEC, fontWeight: 500, marginBottom: 5 }}>Modelo</div>
             <ModelSelector model={model} onSelect={setModel} usageByModel={usageByModel} dailyUsage={dailyUsage} />
-          </div>
-          <div style={{ display: "flex", alignItems: "flex-end" }}>
-            <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer", fontSize: 13, color: TEXT_SEC }}>
-              <input
-                type="checkbox"
-                checked={dryRun}
-                onChange={e => setDryRun(e.target.checked)}
-                style={{ accentColor: ACCENT, width: 14, height: 14, cursor: "pointer" }}
-              />
-              <span><strong style={{ color: TEXT }}>Dry run</strong> — no guardar</span>
-            </label>
           </div>
         </div>
 
@@ -1006,6 +994,7 @@ function ColumnaResultado({
   const [revisionAbierta, setRevisionAbierta] = useState(false);
   const [revisionNota, setRevisionNota] = useState("");
   const [revisionState, setRevisionState] = useState<"idle" | "sending" | "sent" | "error">("idle");
+  const [borradorState, setBorradorState] = useState<"idle" | "saving" | "saved" | "error">("idle");
 
   const ids = data.materias.map(m => m.id);
   const uniqueIds = new Set(ids);
@@ -1147,7 +1136,39 @@ function ColumnaResultado({
       </div>
 
       {/* Acción */}
-      <div style={{ padding: "10px 14px", borderTop: `1px solid ${GLASS.border}`, flexShrink: 0 }}>
+      <div style={{ padding: "10px 14px", borderTop: `1px solid ${GLASS.border}`, flexShrink: 0, display: "flex", flexDirection: "column", gap: 8 }}>
+        <button
+          onClick={async () => {
+            setBorradorState("saving");
+            try {
+              const res = await fetch("/api/admin/planes/guardar", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ plan: data, fuente, publicar: false, resolucion: null }),
+              });
+              const d = await res.json();
+              setBorradorState(d.ok ? "saved" : "error");
+            } catch {
+              setBorradorState("error");
+            }
+          }}
+          disabled={borradorState === "saving" || borradorState === "saved"}
+          style={{
+            width: "100%",
+            background: borradorState === "saved" ? STATUS_COLORS.aprobada.badgeBg : GLASS.elevated,
+            border: `1px solid ${borradorState === "saved" ? STATUS_COLORS.aprobada.badgeBorder : borradorState === "error" ? "rgba(248,113,113,0.4)" : GLASS.border}`,
+            color: borradorState === "saved" ? STATUS_COLORS.aprobada.accent : borradorState === "error" ? "#f87171" : TEXT_SEC,
+            borderRadius: 8, padding: "6px 0",
+            fontSize: 12, fontWeight: 500,
+            cursor: borradorState === "saving" || borradorState === "saved" ? "not-allowed" : "pointer",
+            opacity: borradorState === "saving" ? 0.6 : 1,
+          }}
+        >
+          {borradorState === "saving" ? "Guardando…"
+            : borradorState === "saved" ? `✓ Borrador guardado en data/${fuente === "gemini" ? "gemini" : "local"}/`
+            : borradorState === "error" ? "Error al guardar (¿ya existe?)"
+            : `💾 Guardar borrador en ${fuente === "gemini" ? "Gemini" : "local"}`}
+        </button>
         {canPublish ? (
           <button
             onClick={() => setGuardarFuente(fuente)}

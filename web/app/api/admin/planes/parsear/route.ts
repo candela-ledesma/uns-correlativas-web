@@ -24,32 +24,6 @@ async function readAdminConfig(): Promise<{ systemPrompt?: string }> {
 }
 
 
-const GEMINI_DIR = path.join(process.cwd(), "data", "gemini");
-
-function slugFromCarrera(carrera: string): string {
-  return carrera
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "")
-    .replace(/[^a-z0-9]+/g, "_")
-    .replace(/^_+|_+$/g, "");
-}
-
-async function autoGuardarGemini(data: Record<string, unknown>, originalFilename: string): Promise<void> {
-  try {
-    const plan = data.plan as { carrera?: string } | undefined;
-    const carrera = plan?.carrera?.trim();
-    const slug = carrera ? slugFromCarrera(carrera) : originalFilename.replace(/\.pdf$/i, "");
-    await fs.mkdir(GEMINI_DIR, { recursive: true });
-    const filePath = path.join(GEMINI_DIR, `${slug}.json`);
-    const existe = await fs.access(filePath).then(() => true).catch(() => false);
-    if (existe) return;
-    const toSave = { ...data, _auto_saved_at: new Date().toISOString() };
-    await fs.writeFile(filePath, JSON.stringify(toSave, null, 2), "utf-8");
-  } catch {
-    // auto-save es best-effort, no interrumpimos el flujo
-  }
-}
 
 function extraerJSON(raw: string): unknown {
   const direct = raw.trim();
@@ -142,8 +116,6 @@ export async function POST(request: Request) {
         data._llm_confidence = 1.0;
         data._llm_prompt_version = PROMPT_VERSION;
         data._llm_mode = "llm";
-
-        await autoGuardarGemini(data, file.name);
 
         const usage = response.usageMetadata ?? null;
         send("done", {
