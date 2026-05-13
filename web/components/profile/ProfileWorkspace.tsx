@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
+import { signOut } from "next-auth/react";
 import {
   buildPlanHref,
   type UserProductContextResponse,
@@ -67,9 +68,13 @@ export default function ProfileWorkspace({
         </div>
 
         <div className={styles.heroActions}>
-          <Link href="/api/auth/signout" className={styles.ghostBtn}>
+          <button
+            type="button"
+            onClick={() => void signOut({ callbackUrl: "/" })}
+            className={styles.ghostBtn}
+          >
             Cerrar sesión
-          </Link>
+          </button>
         </div>
       </div>
 
@@ -140,20 +145,20 @@ export default function ProfileWorkspace({
           </Link>
 
           {(role === "MODERATOR" || role === "ADMIN") && (
-            <Link href="/moderacion" className={styles.quickCard}>
+            <Link href="/admin" className={styles.quickCard}>
               <div className={styles.quickText}>
-                <p className={styles.quickTitle}>Moderación</p>
-                <p className={styles.quickSub}>Revisar cambios pendientes</p>
+                <p className={styles.quickTitle}>Crear plan</p>
+                <p className={styles.quickSub}>Subir y procesar un PDF</p>
               </div>
               <span className={styles.quickArrow}>→</span>
             </Link>
           )}
 
           {role === "ADMIN" && (
-            <Link href="/admin" className={styles.quickCard}>
+            <Link href="/admin/dashboard" className={styles.quickCard}>
               <div className={styles.quickText}>
                 <p className={styles.quickTitle}>Administración</p>
-                <p className={styles.quickSub}>Gestionar permisos y auditoría</p>
+                <p className={styles.quickSub}>Usuarios, roles y estadísticas</p>
               </div>
               <span className={styles.quickArrow}>→</span>
             </Link>

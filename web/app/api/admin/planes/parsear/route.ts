@@ -80,7 +80,7 @@ function sseEvent(type: string, payload: Record<string, unknown>): string {
 
 export async function POST(request: Request) {
   const session = await auth();
-  if (!session?.user?.id || session.user.role !== Role.ADMIN) {
+  if (!session?.user?.id || (session.user.role !== Role.ADMIN && session.user.role !== Role.MODERATOR)) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 

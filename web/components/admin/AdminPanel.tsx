@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { ACCENT, BG_GRADIENT, GLASS, TEXT, TEXT_SEC } from "@/lib/ui/tokens";
 import CargarPlanTab from "./tabs/CargarPlanTab";
 import HistorialTab from "./tabs/HistorialTab";
@@ -14,7 +15,7 @@ const TABS: { id: Tab; label: string; icon: string }[] = [
   { id: "config",    label: "Configuración", icon: "⚙" },
 ];
 
-export default function AdminPanel() {
+export default function AdminPanel({ canPublish = true }: { canPublish?: boolean }) {
   const [tab, setTab] = useState<Tab>("cargar");
 
   return (
@@ -43,6 +44,15 @@ export default function AdminPanel() {
           borderRadius: 4, padding: "1px 8px",
           fontSize: 10, fontWeight: 600, letterSpacing: "0.05em",
         }}>Admin</span>
+        <Link href="/" style={{
+          marginLeft: "auto",
+          fontSize: 12, color: TEXT_SEC, textDecoration: "none",
+          background: "rgba(255,255,255,0.05)",
+          border: `1px solid ${GLASS.border}`,
+          borderRadius: 8, padding: "4px 12px",
+        }}>
+          ← Inicio
+        </Link>
       </header>
 
       <main style={{ maxWidth: 1100, margin: "0 auto", padding: "28px 24px 56px" }}>
@@ -74,9 +84,9 @@ export default function AdminPanel() {
           ))}
         </nav>
 
-        {tab === "cargar"    && <CargarPlanTab />}
+        {tab === "cargar"    && <CargarPlanTab canPublish={canPublish} />}
         {tab === "historial" && <HistorialTab />}
-        {tab === "config"    && <ConfigTab />}
+        {tab === "config"    && <ConfigTab canEdit={canPublish} />}
       </main>
     </div>
   );

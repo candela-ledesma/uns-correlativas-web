@@ -31,7 +31,7 @@ function formatDate(iso: string): string {
   });
 }
 
-export default function ConfigTab() {
+export default function ConfigTab({ canEdit = true }: { canEdit?: boolean }) {
   const [prompt, setPrompt] = useState(DEFAULT_SYSTEM_PROMPT);
   const [saveState, setSaveState] = useState<SaveState>("idle");
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -114,12 +114,15 @@ export default function ConfigTab() {
           <label style={FIELD_LABEL}>System prompt</label>
           <textarea
             value={prompt}
-            onChange={e => setPrompt(e.target.value)}
+            onChange={canEdit ? e => setPrompt(e.target.value) : undefined}
+            readOnly={!canEdit}
             rows={8}
             style={{
               ...INPUT, borderRadius: 8, padding: "10px 12px",
               fontSize: 12, lineHeight: 1.6, resize: "vertical",
               fontFamily: "monospace",
+              opacity: canEdit ? 1 : 0.6,
+              cursor: canEdit ? undefined : "default",
             }}
           />
         </div>
@@ -140,18 +143,20 @@ export default function ConfigTab() {
           )}
         </div>
         <div style={{ display: "flex", gap: 8, marginTop: 12, alignItems: "center" }}>
-          <button
-            onClick={guardar}
-            disabled={saveState === "saving"}
-            style={{
-              ...BTN_VIOLET, borderRadius: 8, padding: "8px 16px",
-              fontSize: 13, fontWeight: 600,
-              opacity: saveState === "saving" ? 0.6 : 1,
-              cursor: saveState === "saving" ? "not-allowed" : "pointer",
-            }}
-          >
-            {saveState === "saving" ? "Guardando…" : saveState === "saved" ? "✓ Guardado" : saveState === "error" ? "⚠ Error" : "💾 Guardar"}
-          </button>
+          {canEdit && (
+            <button
+              onClick={guardar}
+              disabled={saveState === "saving"}
+              style={{
+                ...BTN_VIOLET, borderRadius: 8, padding: "8px 16px",
+                fontSize: 13, fontWeight: 600,
+                opacity: saveState === "saving" ? 0.6 : 1,
+                cursor: saveState === "saving" ? "not-allowed" : "pointer",
+              }}
+            >
+              {saveState === "saving" ? "Guardando…" : saveState === "saved" ? "✓ Guardado" : saveState === "error" ? "⚠ Error" : "💾 Guardar"}
+            </button>
+          )}
           <button
             onClick={copiarPrompt}
             style={{
@@ -162,12 +167,14 @@ export default function ConfigTab() {
           >
             {promptCopied ? "✓ Copiado" : "📋 Copiar"}
           </button>
-          <button
-            onClick={restaurar}
-            style={{ ...BTN, borderRadius: 8, padding: "8px 16px", fontSize: 13 }}
-          >
-            ↩ Restaurar prompt
-          </button>
+          {canEdit && (
+            <button
+              onClick={restaurar}
+              style={{ ...BTN, borderRadius: 8, padding: "8px 16px", fontSize: 13 }}
+            >
+              ↩ Restaurar prompt
+            </button>
+          )}
           {saveState === "saved" && (
             <span style={{ fontSize: 11, color: "#22c55e" }}>Cambios aplicados al próximo parseo</span>
           )}

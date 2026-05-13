@@ -110,8 +110,6 @@ export default function HomeSessionPanel() {
           <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
             {[
               { href: "/perfil", label: "Ir a perfil", show: true },
-              { href: "/moderacion", label: "Moderación", show: session.user.role === "MODERATOR" || session.user.role === "ADMIN" },
-              { href: "/admin", label: "Admin", show: session.user.role === "ADMIN" },
             ].filter((l) => l.show).map((l) => (
               <Link key={l.href} href={l.href} onClick={() => setOpen(false)}
                 style={{ ...BTN_BASE, borderRadius: 10, padding: "7px 14px", fontSize: 13, textDecoration: "none" }}>

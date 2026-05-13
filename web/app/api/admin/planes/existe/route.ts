@@ -53,7 +53,7 @@ async function leerInfo(filePath: string): Promise<ExistingInfo> {
 
 export async function GET(request: Request) {
   const session = await auth();
-  if (!session?.user?.id || session.user.role !== Role.ADMIN) {
+  if (!session?.user?.id || (session.user.role !== Role.ADMIN && session.user.role !== Role.MODERATOR)) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 

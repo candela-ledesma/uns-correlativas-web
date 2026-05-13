@@ -9,13 +9,19 @@ export type RequisitoEspecialType =
       /** Requisito de aprobar una prueba de idioma antes de aprobar la materia */
       tipo: "prueba_idioma";
       /** ID de la materia a la que se aplica (informativo) */
-      materiaId: string;
+      materiaId?: string;
     }
   | {
       /** Requisito de tener mínimo N materias aprobadas */
       tipo: "minimo_materias_aprobadas";
       /** Cantidad mínima de materias que deben estar aprobadas */
       cantidad: number;
+    }
+  | {
+      /** Requisito de tener N° año completo/aprobado */
+      tipo: "anio_aprobado";
+      /** Número de año requerido (1=Primer Año, 3=Tercer Año, etc.) */
+      anio: number;
     };
 
 /**
@@ -30,6 +36,8 @@ export type ResultadoRequisito = {
     actual?: number;
     /** Para minimo_materias_aprobadas: cantidad requerida */
     requerido?: number;
+    /** Para anio_aprobado: año requerido */
+    anio?: number;
   };
 };
 
@@ -71,6 +79,17 @@ export function evaluarRequisitoEspecial(
     };
   }
 
+  if (requisito.tipo === "anio_aprobado") {
+    return {
+      cumple: false,
+      detalles: {
+        tipo: "anio_aprobado",
+        mensaje: `Se requiere tener el año ${requisito.anio} completo/aprobado`,
+        anio: requisito.anio,
+      },
+    };
+  }
+
   // TypeScript exhaustiveness check
   const _exhaustive: never = requisito;
   return _exhaustive;
@@ -94,6 +113,12 @@ export function generarTextoRequisito(
       return `Se requiere tener al menos ${requerido} materias aprobadas (actualmente: ${actual})`;
     }
     return `Se requiere tener al menos ${requisito.cantidad} materias aprobadas`;
+  }
+
+  if (requisito.tipo === "anio_aprobado") {
+    const nombres = ["", "Primer", "Segundo", "Tercer", "Cuarto", "Quinto", "Sexto"];
+    const label = nombres[requisito.anio] ?? `${requisito.anio}°`;
+    return `Se requiere tener el ${label} Año aprobado`;
   }
 
   return "Requisito especial desconocido";

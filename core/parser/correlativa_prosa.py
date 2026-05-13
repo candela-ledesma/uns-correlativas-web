@@ -26,6 +26,23 @@ _PRUEBA_SUFICIENCIA = re.compile(
     re.IGNORECASE,
 )
 
+# Detecta "Debe tener N° año aprobado" / "tener tercer año aprobado" etc.
+_ANIO_APROBADO = re.compile(
+    r'(?:debe\s+tener\s+)?'
+    r'(primer|segundo|tercer|cuarto|quinto|sexto|1[°º]?|2[°º]?|3[°º]?|4[°º]?|5[°º]?|6[°º]?)\s+a[ñn]o'
+    r'(?:\s+(?:aprobado|completo|cursado))+',
+    re.IGNORECASE,
+)
+
+_ANIO_NUMERO = {
+    "primer": 1, "1": 1,
+    "segundo": 2, "2": 2,
+    "tercer": 3, "3": 3,
+    "cuarto": 4, "4": 4,
+    "quinto": 5, "5": 5,
+    "sexto": 6, "6": 6,
+}
+
 _ESTADOS_VALIDOS = {"aprobada", "regular", "cursada"}
 
 
@@ -45,6 +62,7 @@ def inferir_requisito_especial(linea: str) -> dict | None:
     Soporta:
     - Requisitos cuantitativos: "mínimo N materias aprobadas"
     - Prueba de Suficiencia de Idioma (no reemplaza correlativas)
+    - Año aprobado: "Debe tener tercer año aprobado"
 
     Devuelve un dict con la estructura de requisito_especial, o None si no aplica.
     """
@@ -56,19 +74,32 @@ def inferir_requisito_especial(linea: str) -> dict | None:
             "descripcion": descripcion,
         }
 
-    # Luego verificar requisitos cuantitativos
+    # Verificar requisitos cuantitativos
     m = _MINIMO_MATERIAS.search(linea)
-    if not m:
-        return None
+    if m:
+        cantidad = int(m.group(1))
+        descripcion = _limpiar_descripcion(linea)
+        return {
+            "tipo": "minimo_materias_aprobadas",
+            "cantidad": cantidad,
+            "descripcion": descripcion,
+        }
 
-    cantidad = int(m.group(1))
-    descripcion = _limpiar_descripcion(linea)
+    # Verificar requisito de año aprobado: "Debe tener tercer año aprobado"
+    m = _ANIO_APROBADO.search(linea)
+    if m:
+        raw = m.group(1).lower().rstrip("°º")
+        numero = _ANIO_NUMERO.get(raw)
+        descripcion = _limpiar_descripcion(linea)
+        resultado: dict = {
+            "tipo": "anio_aprobado",
+            "descripcion": descripcion,
+        }
+        if numero is not None:
+            resultado["anio"] = numero
+        return resultado
 
-    return {
-        "tipo": "minimo_materias_aprobadas",
-        "cantidad": cantidad,
-        "descripcion": descripcion,
-    }
+    return None
 
 
 def inferir_correlativa_en_prosa(linea: str, ids_conocidos: set) -> tuple[dict, list]:
