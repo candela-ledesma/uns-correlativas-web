@@ -112,7 +112,7 @@ export default function LoginActions({ callbackUrl, compact = false, showGoogleL
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             style={INPUT}
-            placeholder="usuario@uns.local"
+            placeholder="usuario@ejemplo.com"
             required
           />
           {allowDevRoleOverride ? (

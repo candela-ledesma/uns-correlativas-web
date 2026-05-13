@@ -12,7 +12,7 @@ export default async function PerfilPage() {
     redirect("/login?next=/perfil");
   }
 
-  const email = session.user.email ?? "sin-email@uns.local";
+  const email = session.user.email ?? "";
   const nombreVisible = session.user.name ?? email.split("@")[0];
   const rol = session.user.role ?? "USER";
   const iniciales = nombreVisible.slice(0, 2).toUpperCase();

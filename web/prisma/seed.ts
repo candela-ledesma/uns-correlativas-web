@@ -7,8 +7,10 @@ if (!process.env.DATABASE_URL) {
 const prisma = new PrismaClient();
 
 async function main() {
-  const seedEmail =
-    process.env.ADMIN_SEED_EMAIL?.trim().toLowerCase() || "admin@uns.local";
+  const seedEmail = process.env.ADMIN_SEED_EMAIL?.trim().toLowerCase();
+  if (!seedEmail) {
+    throw new Error("Falta ADMIN_SEED_EMAIL para ejecutar seed");
+  }
 
   const admin = await prisma.user.upsert({
     where: { email: seedEmail },
