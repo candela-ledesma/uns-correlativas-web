@@ -52,6 +52,9 @@ export default function PlanesTab() {
   const [msg, setMsg] = useState<{ slug: string; ok: boolean; text: string } | null>(null);
   const [editor, setEditor] = useState<EditorState>({ type: "idle" });
   const [jsonError, setJsonError] = useState<string | null>(null);
+  const [editingDepto, setEditingDepto] = useState<string | null>(null);
+  const [deptoValue, setDeptoValue] = useState("");
+  const [savingDepto, setSavingDepto] = useState<string | null>(null);
 
   function cargar() {
     setLoading(true);
@@ -95,6 +98,24 @@ export default function PlanesTab() {
     }
     setDeleting(null);
     setConfirmDelete(null);
+  }
+
+  async function guardarDepto(slug: string) {
+    setSavingDepto(slug);
+    const res = await fetch("/api/admin/departamentos", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ slug, departamento: deptoValue }),
+    });
+    const data = await res.json();
+    if (data.ok) {
+      setPlanes(prev => prev.map(x => x.id === slug ? { ...x, departamento: data.departamento } : x));
+      setMsg({ slug, ok: true, text: "Departamento actualizado." });
+    } else {
+      setMsg({ slug, ok: false, text: data.error ?? "Error al guardar departamento." });
+    }
+    setSavingDepto(null);
+    setEditingDepto(null);
   }
 
   async function abrirEditor(p: PlanPublicado) {
@@ -246,13 +267,51 @@ export default function PlanesTab() {
                     </span>
                   )}
                 </div>
-                <div style={{ fontSize: 11, color: TEXT_SEC, marginTop: 3 }}>
-                  {p.departamento ?? "—"}
-                  {p.materias != null ? ` · ${p.materias} materias` : ""}
-                  {p.fuente ? ` · ${p.fuente}` : ""}
-                  {p.savedAt ? ` · ${tiempoRelativo(p.savedAt)}` : ""}
-                  {" · "}<span style={{ opacity: 0.7 }}>{p.jsonFile}</span>
-                </div>
+                {editingDepto === p.id ? (
+                  <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 4 }}>
+                    <input
+                      autoFocus
+                      value={deptoValue}
+                      onChange={e => setDeptoValue(e.target.value)}
+                      onKeyDown={e => {
+                        if (e.key === "Enter") guardarDepto(p.id);
+                        if (e.key === "Escape") setEditingDepto(null);
+                      }}
+                      placeholder="Departamento"
+                      style={{
+                        ...INPUT, borderRadius: 6, padding: "3px 8px",
+                        fontSize: 11, width: 240,
+                      }}
+                    />
+                    <button
+                      onClick={() => guardarDepto(p.id)}
+                      disabled={savingDepto === p.id}
+                      style={{ ...BTN_VIOLET, borderRadius: 5, padding: "3px 10px", fontSize: 11, fontWeight: 600, cursor: "pointer" }}
+                    >
+                      {savingDepto === p.id ? "…" : "Guardar"}
+                    </button>
+                    <button
+                      onClick={() => setEditingDepto(null)}
+                      style={{ ...BTN, borderRadius: 5, padding: "3px 8px", fontSize: 11, cursor: "pointer" }}
+                    >
+                      Cancelar
+                    </button>
+                  </div>
+                ) : (
+                  <div style={{ fontSize: 11, color: TEXT_SEC, marginTop: 3, display: "flex", alignItems: "center", gap: 6 }}>
+                    <span
+                      onClick={() => { setEditingDepto(p.id); setDeptoValue(p.departamento ?? ""); setMsg(null); }}
+                      title="Editar departamento"
+                      style={{ cursor: "pointer", borderBottom: "1px dashed", borderColor: "rgba(168,155,201,0.4)" }}
+                    >
+                      {p.departamento ?? "Sin departamento"}
+                    </span>
+                    {p.materias != null ? ` · ${p.materias} materias` : ""}
+                    {p.fuente ? ` · ${p.fuente}` : ""}
+                    {p.savedAt ? ` · ${tiempoRelativo(p.savedAt)}` : ""}
+                    {" · "}<span style={{ opacity: 0.7 }}>{p.jsonFile}</span>
+                  </div>
+                )}
                 {msg?.slug === p.id && (
                   <div style={{ fontSize: 11, marginTop: 4, fontWeight: 500, color: msg.ok ? "#90be6d" : "#f87171" }}>
                     {msg.text}

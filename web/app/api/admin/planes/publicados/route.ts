@@ -10,12 +10,20 @@ export const runtime = "nodejs";
 
 const DATA_DIR_LOCAL  = path.join(process.cwd(), "data", "local");
 const DATA_DIR_GEMINI = path.join(process.cwd(), "data", "gemini");
+const DEPTOS_FILE     = path.join(process.cwd(), "data", "departamentos.json");
+
+async function leerDeptos(): Promise<Record<string, string>> {
+  const raw = await fs.readFile(DEPTOS_FILE, "utf-8").catch(() => "{}");
+  return JSON.parse(raw);
+}
 
 export async function GET() {
   const session = await auth();
   if (!session?.user?.id || session.user.role !== Role.ADMIN) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
+
+  const deptos = await leerDeptos();
 
   const planes = await Promise.all(
     CARRERAS.map(async (carrera) => {
@@ -48,7 +56,7 @@ export async function GET() {
       return {
         id: carrera.id,
         nombre: carrera.nombre,
-        departamento: carrera.departamento ?? null,
+        departamento: deptos[carrera.id] ?? null,
         disponible: carrera.disponible ?? true,
         jsonFile: version.jsonFile,
         tieneLocal:  !!localStat,
