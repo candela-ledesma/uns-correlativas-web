@@ -92,6 +92,9 @@ El planificador actual (`WeeklySchedule`, `useSchedule`, `/api/planificador`) ma
 - `media` [x] `web/app/perfil/page.tsx:15` — fallback `"sin-email@uns.local"` puede aparecer en producción; reemplazar por `""` o `"sin email"`
 - `baja` [x] `web/prisma/seed.ts:11` — fallback `"admin@uns.local"` si no hay `ADMIN_SEED_EMAIL` en `.env`; documentar en `.env.example`
 - `baja` [x] `web/components/auth/LoginActions.tsx:115` — placeholder `"usuario@uns.local"`; cosmético, reemplazar por algo genérico
+- `baja` [x] `web/app/api/admin/planes/parsear/route.ts` — `_llm_confidence = 1.0` hardcodeado eliminado; badge de confianza ya maneja null
+- `baja` [x] `web/components/materias/AnioSection.tsx` — `PunteroGrupo` redefinido localmente; ahora importado de `planAgrupacion.ts`
+- `baja` [x] `web/app/api/debug/auth-config/route.ts` — endpoint de debug sin guard de producción; agregado `NODE_ENV === "production"` check
 
 ---
 
@@ -108,9 +111,13 @@ El planificador actual (`WeeklySchedule`, `useSchedule`, `/api/planificador`) ma
 | contador_publico | — | Ver `issues/contador_publico.md` |
 | ingenieria_en_sistemas_de_informacion | — | Ver `issues/ingenieria_en_sistemas_de_informacion.md` |
 
-**Prompt actual**: v25 — `web/lib/ai/prompt.ts` / `web/data/admin-config.json`
+**Prompt actual**: v27 — `web/lib/ai/prompt.ts` / `web/data/admin-config.json`
 
-**Problema abierto más relevante**: `I#### → 1####` en claves de `correlativas`. El modelo corrige en `materias[]` y `agrupadores[]` pero no en correlativas de otras materias. La instrucción de cross-check (v25) no fue suficiente — posible candidato para few-shot o postprocesamiento ligero.
+**Problema abierto más relevante**: `3033`/`3034` en Electricista — Gemini confunde a cuál materia pertenece la correlativa `5909` (posible page break ambiguo en el PDF).
+
+**Resuelto en v27**: `I#### → 1####` en correlativas corregido con cross-check reforzado + ejemplo `I0703`; CGCB clasificado correctamente como `anio_aprobado`.
+
+**Carreras procesadas**: abogacia, agrimensura, arquitectura, bioquimica, contador_publico, farmacia, ingenieria_civil, ingenieria_en_sistemas_de_informacion, lic_computacion, ingenieria_agronomica, ingenieria_electricista.
 
 ---
 
@@ -120,8 +127,8 @@ Carreras ya procesadas: abogacia, agrimensura, arquitectura, bioquimica, contado
 
 | Carrera | Departamento | Duración |
 |---|---|---|
-| [ ] INGENIERIA AGRONOMICA | Agronomía | 10 Cuat. |
-| [ ] INGENIERIA ELECTRICISTA | Ingeniería Eléctrica y de Computadoras | 10 Cuat. |
+| [x] INGENIERIA AGRONOMICA | Agronomía | 10 Cuat. |
+| [x] INGENIERIA ELECTRICISTA | Ingeniería Eléctrica y de Computadoras | 10 Cuat. |
 | [ ] INGENIERIA ELECTRONICA | Ingeniería Eléctrica y de Computadoras | 10 Cuat. |
 | [ ] INGENIERIA EN ALIMENTOS | Ingeniería Química | 10 Cuat. |
 | [ ] INGENIERIA EN COMPUTACION | Ciencias e Ingeniería de la Computación | 10 Cuat. |

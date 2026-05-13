@@ -9,9 +9,9 @@ import { getMateriaViewModel } from "@/lib/plan/materiaViewModel";
 import { obtenerCorrelativasMateria } from "@/lib/plan/correlativasMateria";
 
 import { TEXT, TEXT_SEC, TITLE_SHADOW } from "@/lib/ui/tokens";
+import { PunteroGrupo } from "@/lib/plan/planAgrupacion";
 
 type CuatrimestresMap = Record<string, Materia[]>;
-type PunteroGrupo = { grupoId: string; nombre: string };
 
 type Props = {
     anio: string;

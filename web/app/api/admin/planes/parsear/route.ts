@@ -113,7 +113,6 @@ export async function POST(request: Request) {
 
         const rawText = response.text ?? "";
         const data = extraerJSON(rawText) as Record<string, unknown>;
-        data._llm_confidence = 1.0;
         data._llm_prompt_version = PROMPT_VERSION;
         data._llm_mode = "llm";
 

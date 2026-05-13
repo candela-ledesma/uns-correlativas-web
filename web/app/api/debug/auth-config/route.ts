@@ -6,7 +6,7 @@ import { NextResponse } from "next/server";
 export const dynamic = "force-dynamic";
 
 export async function GET() {
-  if (process.env.AUTH_DEBUG_ENABLED !== "true") {
+  if (process.env.NODE_ENV === "production" || process.env.AUTH_DEBUG_ENABLED !== "true") {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
