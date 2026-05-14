@@ -62,6 +62,7 @@ export default function HistorialTab() {
   const [loadingPendientes, setLoadingPendientes] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [publishing, setPublishing] = useState<string | null>(null);
+  const [confirmOverwrite, setConfirmOverwrite] = useState<string | null>(null);
   const [discarding, setDiscarding] = useState<string | null>(null);
   const [confirmDiscard, setConfirmDiscard] = useState<string | null>(null);
   const [publishMsg, setPublishMsg] = useState<{ slug: string; ok: boolean; msg: string } | null>(null);
@@ -95,9 +96,10 @@ export default function HistorialTab() {
     cargarPendientes();
   }, []);
 
-  async function publicarPendiente(p: PlanPendiente) {
+  async function publicarPendiente(p: PlanPendiente, resolucion: "reemplazar" | null = null) {
     setPublishing(p.slug);
     setPublishMsg(null);
+    setConfirmOverwrite(null);
     try {
       const res = await fetch("/api/admin/planes/guardar", {
         method: "POST",
@@ -106,12 +108,13 @@ export default function HistorialTab() {
           plan: p.plan,
           fuente: p.plan._fuente ?? "gemini",
           publicar: true,
-          resolucion: null,
+          resolucion,
         }),
       });
       const data = await res.json();
       if (data.conflict) {
-        setPublishMsg({ slug: p.slug, ok: false, msg: `Ya existe un JSON para esta carrera (${data.existing?.materias} materias, cargado ${data.existing?.fechaCarga}). Publicá desde el panel de carga para resolver el conflicto.` });
+        setConfirmOverwrite(p.slug);
+        setPublishMsg({ slug: p.slug, ok: false, msg: `Ya existe un JSON (${data.existing?.materias} materias, cargado ${data.existing?.fechaCarga}). ¿Sobreescribir?` });
       } else if (data.ok) {
         setPublishMsg({ slug: p.slug, ok: true, msg: "Plan publicado correctamente." });
         cargarPendientes();
@@ -193,11 +196,31 @@ export default function HistorialTab() {
                       </div>
                     )}
                     {publishMsg?.slug === p.slug && (
-                      <div style={{
-                        fontSize: 11, marginTop: 6, fontWeight: 500,
-                        color: publishMsg.ok ? "#90be6d" : "#f87171",
-                      }}>
-                        {publishMsg.msg}
+                      <div style={{ marginTop: 6 }}>
+                        <div style={{ fontSize: 11, fontWeight: 500, color: publishMsg.ok ? "#90be6d" : "#f87171" }}>
+                          {publishMsg.msg}
+                        </div>
+                        {confirmOverwrite === p.slug && (
+                          <div style={{ display: "flex", gap: 6, marginTop: 4 }}>
+                            <button
+                              onClick={() => { setConfirmOverwrite(null); setPublishMsg(null); }}
+                              style={{ ...BTN, borderRadius: 5, padding: "3px 8px", fontSize: 11, cursor: "pointer" }}
+                            >
+                              Cancelar
+                            </button>
+                            <button
+                              onClick={() => publicarPendiente(p, "reemplazar")}
+                              disabled={publishing === p.slug}
+                              style={{
+                                background: "rgba(245,158,11,0.15)", border: "1px solid rgba(245,158,11,0.4)",
+                                color: "#f59e0b", borderRadius: 5, padding: "3px 10px",
+                                fontSize: 11, fontWeight: 600, cursor: "pointer",
+                              }}
+                            >
+                              Sobreescribir
+                            </button>
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>

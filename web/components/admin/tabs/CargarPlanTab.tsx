@@ -430,7 +430,12 @@ export default function CargarPlanTab({ canPublish = true }: { canPublish?: bool
           </button>
           <button
             onClick={limpiar}
-            style={{ ...BTN, borderRadius: 8, padding: "8px 16px", fontSize: 13, fontWeight: 500 }}
+            disabled={!file && statusGemini.type === "idle" && statusLocal.type === "idle"}
+            style={{
+              ...BTN, borderRadius: 8, padding: "8px 16px", fontSize: 13, fontWeight: 500,
+              opacity: !file && statusGemini.type === "idle" && statusLocal.type === "idle" ? 0.4 : 1,
+              cursor: !file && statusGemini.type === "idle" && statusLocal.type === "idle" ? "not-allowed" : "pointer",
+            }}
           >
             Limpiar
           </button>
@@ -879,6 +884,33 @@ function ModalConfirmar({
   );
 }
 
+function ColHeader({ label, json, copied, onCopy }: { label: string; json: unknown; copied: boolean; onCopy: () => void }) {
+  return (
+    <div style={{
+      display: "flex", alignItems: "center", justifyContent: "space-between",
+      padding: "6px 14px", background: GLASS.elevated,
+      borderBottom: `1px solid ${GLASS.border}`,
+    }}>
+      <span style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em", color: TEXT_SEC }}>
+        {label}
+      </span>
+      <button
+        onClick={onCopy}
+        disabled={!json}
+        style={{
+          ...BTN, borderRadius: 6, padding: "3px 8px", fontSize: 10,
+          display: "flex", alignItems: "center", gap: 3,
+          background: copied ? "rgba(34,197,94,0.15)" : undefined,
+          color: copied ? "#22c55e" : TEXT_SEC,
+          transition: "background 0.2s",
+        }}
+      >
+        {copied ? "✓ Copiado" : "📋 Copiar"}
+      </button>
+    </div>
+  );
+}
+
 function CompararConAnterior({
   label,
   anterior,
@@ -898,6 +930,15 @@ function CompararConAnterior({
   const scrollRefAnterior = useRef<HTMLDivElement | null>(null);
   const scrollRefNuevo = useRef<HTMLDivElement | null>(null);
   const syncingRef = useRef(false);
+  const [copiedAnterior, setCopiedAnterior] = useState(false);
+  const [copiedNuevo, setCopiedNuevo] = useState(false);
+
+  function copiar(json: ParseResult, setCopied: (v: boolean) => void) {
+    navigator.clipboard.writeText(JSON.stringify(json, null, 2)).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    });
+  }
 
   function handleScroll(source: "anterior" | "nuevo") {
     return (e: React.UIEvent<HTMLDivElement>) => {
@@ -949,17 +990,13 @@ function CompararConAnterior({
           >✕</button>
         </div>
       </div>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr" }}>
-        <div style={{ borderRight: `1px solid ${GLASS.border}` }}>
-          <div style={{ padding: "6px 14px", background: GLASS.elevated, fontSize: 10, fontWeight: 600, color: TEXT_SEC, textTransform: "uppercase", letterSpacing: "0.05em" }}>
-            Anterior
-          </div>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", minWidth: 0 }}>
+        <div style={{ borderRight: `1px solid ${GLASS.border}`, minWidth: 0, overflow: "hidden" }}>
+          <ColHeader label="Anterior" json={anterior} copied={copiedAnterior} onCopy={() => copiar(anterior, setCopiedAnterior)} />
           <JsonViewer ref={scrollRefAnterior} json={anterior} diffs={diffs} fuente="parser" activeDiffId={activeDiffId} onScroll={handleScroll("anterior")} />
         </div>
-        <div>
-          <div style={{ padding: "6px 14px", background: GLASS.elevated, fontSize: 10, fontWeight: 600, color: TEXT_SEC, textTransform: "uppercase", letterSpacing: "0.05em" }}>
-            Nuevo
-          </div>
+        <div style={{ minWidth: 0, overflow: "hidden" }}>
+          <ColHeader label="Nuevo" json={nuevo} copied={copiedNuevo} onCopy={() => copiar(nuevo, setCopiedNuevo)} />
           <JsonViewer ref={scrollRefNuevo} json={nuevo} diffs={diffs} fuente="gemini" activeDiffId={activeDiffId} onScroll={handleScroll("nuevo")} />
         </div>
       </div>
@@ -994,7 +1031,7 @@ function ColumnaResultado({
   const [revisionAbierta, setRevisionAbierta] = useState(false);
   const [revisionNota, setRevisionNota] = useState("");
   const [revisionState, setRevisionState] = useState<"idle" | "sending" | "sent" | "error">("idle");
-  const [borradorState, setBorradorState] = useState<"idle" | "saving" | "saved" | "error">("idle");
+  const [borradorState, setBorradorState] = useState<"idle" | "saving" | "saved" | "error" | "conflict">("idle");
 
   const ids = data.materias.map(m => m.id);
   const uniqueIds = new Set(ids);
@@ -1071,26 +1108,7 @@ function ColumnaResultado({
 
       {/* JSON */}
       <div style={{ borderRadius: 0, overflow: "hidden", flex: 1 }}>
-        <div style={{
-          display: "flex", alignItems: "center", justifyContent: "space-between",
-          padding: "8px 14px", borderBottom: `1px solid ${GLASS.border}`,
-          background: GLASS.elevated,
-        }}>
-          <span style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em", color: TEXT_SEC }}>
-            {"{ }"} JSON generado
-          </span>
-          <button
-            onClick={copyJSON}
-            style={{
-              ...BTN, borderRadius: 6, padding: "3px 8px", fontSize: 10,
-              display: "flex", alignItems: "center", gap: 3,
-              background: copied ? "rgba(34,197,94,0.15)" : undefined,
-              transition: "background 0.2s",
-            }}
-          >
-            {copied ? "✓ Copiado" : "📋 Copiar"}
-          </button>
-        </div>
+        <ColHeader label="{ } JSON generado" json={data} copied={copied} onCopy={copyJSON} />
         <JsonViewer
           ref={scrollRef}
           json={data}
@@ -1137,38 +1155,76 @@ function ColumnaResultado({
 
       {/* Acción */}
       <div style={{ padding: "10px 14px", borderTop: `1px solid ${GLASS.border}`, flexShrink: 0, display: "flex", flexDirection: "column", gap: 8 }}>
-        <button
-          onClick={async () => {
-            setBorradorState("saving");
-            try {
-              const res = await fetch("/api/admin/planes/guardar", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ plan: data, fuente, publicar: false, resolucion: null }),
-              });
-              const d = await res.json();
-              setBorradorState(d.ok ? "saved" : "error");
-            } catch {
-              setBorradorState("error");
-            }
-          }}
-          disabled={borradorState === "saving" || borradorState === "saved"}
-          style={{
-            width: "100%",
-            background: borradorState === "saved" ? STATUS_COLORS.aprobada.badgeBg : GLASS.elevated,
-            border: `1px solid ${borradorState === "saved" ? STATUS_COLORS.aprobada.badgeBorder : borradorState === "error" ? "rgba(248,113,113,0.4)" : GLASS.border}`,
-            color: borradorState === "saved" ? STATUS_COLORS.aprobada.accent : borradorState === "error" ? "#f87171" : TEXT_SEC,
-            borderRadius: 8, padding: "6px 0",
-            fontSize: 12, fontWeight: 500,
-            cursor: borradorState === "saving" || borradorState === "saved" ? "not-allowed" : "pointer",
-            opacity: borradorState === "saving" ? 0.6 : 1,
-          }}
-        >
-          {borradorState === "saving" ? "Guardando…"
-            : borradorState === "saved" ? `✓ Borrador guardado en data/${fuente === "gemini" ? "gemini" : "local"}/`
-            : borradorState === "error" ? "Error al guardar (¿ya existe?)"
-            : `💾 Guardar borrador en ${fuente === "gemini" ? "Gemini" : "local"}`}
-        </button>
+        {canPublish && (borradorState === "conflict" ? (
+          <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+            <span style={{ fontSize: 11, color: "#f59e0b" }}>Ya existe un borrador. ¿Sobreescribir?</span>
+            <div style={{ display: "flex", gap: 6 }}>
+              <button
+                onClick={() => setBorradorState("idle")}
+                style={{ ...BTN, flex: 1, borderRadius: 6, padding: "5px 0", fontSize: 11, cursor: "pointer" }}
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={async () => {
+                  setBorradorState("saving");
+                  try {
+                    const res = await fetch("/api/admin/planes/guardar", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ plan: data, fuente, publicar: false, resolucion: "reemplazar" }),
+                    });
+                    const d = await res.json();
+                    setBorradorState(d.ok ? "saved" : "error");
+                  } catch {
+                    setBorradorState("error");
+                  }
+                }}
+                style={{
+                  flex: 1, background: "rgba(245,158,11,0.15)", border: "1px solid rgba(245,158,11,0.4)",
+                  color: "#f59e0b", borderRadius: 6, padding: "5px 0",
+                  fontSize: 11, fontWeight: 600, cursor: "pointer",
+                }}
+              >
+                Sobreescribir
+              </button>
+            </div>
+          </div>
+        ) : (
+          <button
+            onClick={async () => {
+              setBorradorState("saving");
+              try {
+                const res = await fetch("/api/admin/planes/guardar", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ plan: data, fuente, publicar: false, resolucion: null }),
+                });
+                const d = await res.json();
+                if (d.conflict) setBorradorState("conflict");
+                else setBorradorState(d.ok ? "saved" : "error");
+              } catch {
+                setBorradorState("error");
+              }
+            }}
+            disabled={borradorState === "saving" || borradorState === "saved"}
+            style={{
+              width: "100%",
+              background: borradorState === "saved" ? STATUS_COLORS.aprobada.badgeBg : GLASS.elevated,
+              border: `1px solid ${borradorState === "saved" ? STATUS_COLORS.aprobada.badgeBorder : borradorState === "error" ? "rgba(248,113,113,0.4)" : GLASS.border}`,
+              color: borradorState === "saved" ? STATUS_COLORS.aprobada.accent : borradorState === "error" ? "#f87171" : TEXT_SEC,
+              borderRadius: 8, padding: "6px 0",
+              fontSize: 12, fontWeight: 500,
+              cursor: borradorState === "saving" || borradorState === "saved" ? "not-allowed" : "pointer",
+              opacity: borradorState === "saving" ? 0.6 : 1,
+            }}
+          >
+            {borradorState === "saving" ? "Guardando…"
+              : borradorState === "saved" ? `✓ Borrador guardado en data/${fuente === "gemini" ? "gemini" : "local"}/`
+              : borradorState === "error" ? "Error al guardar"
+              : `💾 Guardar borrador en ${fuente === "gemini" ? "Gemini" : "local"}`}
+          </button>
+        ))}
         {canPublish ? (
           <button
             onClick={() => setGuardarFuente(fuente)}
