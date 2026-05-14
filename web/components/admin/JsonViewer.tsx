@@ -28,11 +28,25 @@ function buildLineMap(
   brokenIds?: Set<string>,
 ): LineInfo[] {
   const lines = jsonStr.split("\n");
-  const diffById = new Map(diffs.map(d => [d.id, d]));
 
-  // "parser" es el ground truth — lo que tiene el parser está "bien"
-  // "gemini" es el candidato — puede estar "mal" si difiere del parser
+  // Agrupar todos los diffs por ID — una materia puede tener correlativa_distinta + requisito_distinto
+  const diffsByIdMap = new Map<string, DiffItem[]>();
+  for (const d of diffs) {
+    const arr = diffsByIdMap.get(d.id) ?? [];
+    arr.push(d);
+    diffsByIdMap.set(d.id, arr);
+  }
+
   const esGroundTruth = fuente === "parser";
+
+  function infoForDiffs(id: string): { tooltip: string; highlight: "bad" | "good" | "neutral" } {
+    const items = diffsByIdMap.get(id) ?? [];
+    const tooltip = items.map(buildTooltip).join("\n\n");
+    // El highlight más severo gana: bad > good > neutral
+    const highlights = items.map(d => highlightFor(d, esGroundTruth));
+    const highlight = highlights.includes("bad") ? "bad" : highlights.includes("good") ? "good" : "neutral";
+    return { tooltip, highlight };
+  }
 
   let currentDiffId: string | null = null;
   let depth = 0;
@@ -45,7 +59,7 @@ function buildLineMap(
 
     // Detectar si esta línea introduce un id de materia con diff
     const idMatch = line.match(/"id"\s*:\s*"([^"]+)"/);
-    if (idMatch && diffById.has(idMatch[1])) {
+    if (idMatch && diffsByIdMap.has(idMatch[1])) {
       currentDiffId = idMatch[1];
       objStartDepth = depth;
     }
@@ -57,23 +71,13 @@ function buildLineMap(
       const id = currentDiffId;
       currentDiffId = null;
       objStartDepth = -1;
-      const diff = diffById.get(id)!;
-      return {
-        text: line,
-        diffId: id,
-        tooltip: buildTooltip(diff),
-        highlight: highlightFor(diff, esGroundTruth),
-      };
+      const { tooltip, highlight } = infoForDiffs(id);
+      return { text: line, diffId: id, tooltip, highlight };
     }
 
     if (currentDiffId !== null) {
-      const diff = diffById.get(currentDiffId)!;
-      return {
-        text: line,
-        diffId: currentDiffId,
-        tooltip: buildTooltip(diff),
-        highlight: highlightFor(diff, esGroundTruth),
-      };
+      const { tooltip, highlight } = infoForDiffs(currentDiffId);
+      return { text: line, diffId: currentDiffId, tooltip, highlight };
     }
 
     // Detectar IDs rotas en líneas de correlativas (clave de objeto dentro de "correlativas")
@@ -121,6 +125,8 @@ function buildTooltip(diff: DiffItem): string {
       return `Extra en Gemini (no estaba en parser): ${diff.nombre}`;
     case "agrupador_distinto":
       return `Parser: ${diff.groundTruth}\nGemini: ${diff.gemini}`;
+    case "requisito_distinto":
+      return `Requisito — Parser: ${diff.groundTruth}\nGemini: ${diff.gemini}`;
   }
 }
 

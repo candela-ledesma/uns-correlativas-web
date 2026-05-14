@@ -4,6 +4,7 @@ import { Role } from "@/lib/auth/roles";
 import path from "path";
 import fs from "fs/promises";
 import { createAuditEvent } from "@/lib/db/audit";
+import { notificarRevisionPendiente } from "@/lib/email/notificar";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -82,6 +83,17 @@ export async function POST(request: Request) {
       fuente,
     },
   });
+
+  // Notificar al admin — best-effort, no interrumpe el flujo si falla
+  notificarRevisionPendiente({
+    carrera: plan.plan.carrera,
+    universidad: plan.plan.universidad,
+    materias: plan.materias.length,
+    fuente,
+    enviadoPor: session.user.email ?? session.user.id,
+    nota,
+    slug,
+  }).catch(() => {});
 
   return NextResponse.json({ ok: true, slug });
 }

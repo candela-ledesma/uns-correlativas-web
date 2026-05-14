@@ -219,6 +219,8 @@ function parseRequisitoEspecial(
 
   const tipo = asRequiredString(raw.tipo, `${path}.tipo`, issues);
 
+  const descripcion = typeof raw.descripcion === "string" && raw.descripcion ? raw.descripcion : undefined;
+
   if (tipo === "minimo_materias_aprobadas") {
     const cantidadRaw = raw.cantidad;
     let cantidad: number | null = null;
@@ -232,15 +234,11 @@ function parseRequisitoEspecial(
       return undefined;
     }
 
-    return {
-      tipo,
-      cantidad,
-    };
+    return { tipo, cantidad, ...(descripcion ? { descripcion } : {}) };
   } else if (tipo === "prueba_idioma") {
-    const result: { tipo: "prueba_idioma"; materiaId?: string } = { tipo };
-    if (typeof raw.materiaId === "string" && raw.materiaId) {
-      result.materiaId = raw.materiaId;
-    }
+    const result: { tipo: "prueba_idioma"; materiaId?: string; descripcion?: string } = { tipo };
+    if (typeof raw.materiaId === "string" && raw.materiaId) result.materiaId = raw.materiaId;
+    if (descripcion) result.descripcion = descripcion;
     return result;
   } else if (tipo === "anio_aprobado") {
     const anioRaw = raw.anio;
@@ -248,13 +246,15 @@ function parseRequisitoEspecial(
       addIssue(issues, "shape", `${path}.anio`, "Debe ser un entero entre 1 y 6");
       return undefined;
     }
-    return { tipo, anio: anioRaw };
+    return { tipo, anio: anioRaw, ...(descripcion ? { descripcion } : {}) };
+  } else if (tipo === "todas_materias_aprobadas") {
+    return { tipo, ...(descripcion ? { descripcion } : {}) };
   } else {
     addIssue(
       issues,
       "shape",
       `${path}.tipo`,
-      "Debe ser 'minimo_materias_aprobadas', 'prueba_idioma' o 'anio_aprobado'"
+      "Debe ser 'minimo_materias_aprobadas', 'prueba_idioma', 'anio_aprobado' o 'todas_materias_aprobadas'"
     );
     return undefined;
   }

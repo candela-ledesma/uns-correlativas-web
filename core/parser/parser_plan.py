@@ -125,6 +125,22 @@ def asignar_orientaciones_materia(materia, orientaciones_ordenadas, orientacione
     if len(orientaciones_ordenadas_materia) > 1:
         materia["orientaciones"] = orientaciones_ordenadas_materia
 
+def _requisito_tiene_prioridad(existente: dict | None, nuevo: dict) -> bool:
+    """Devuelve True si el requisito existente debe conservarse en lugar del nuevo."""
+    if existente is None:
+        return False
+    tipo_e = existente.get("tipo")
+    tipo_n = nuevo.get("tipo")
+    # minimo_materias_aprobadas nunca se sobreescribe con anio_aprobado
+    if tipo_e == "minimo_materias_aprobadas" and tipo_n == "anio_aprobado":
+        return True
+    # minimo_materias_aprobadas con misma cantidad: conservar el que tenga descripción más larga
+    if tipo_e == "minimo_materias_aprobadas" and tipo_n == "minimo_materias_aprobadas":
+        if existente.get("cantidad") == nuevo.get("cantidad"):
+            return len(existente.get("descripcion", "")) > len(nuevo.get("descripcion", ""))
+    return False
+
+
 def extraer_correlativas_de_linea(linea):
     correlativas = {}
 
@@ -536,7 +552,9 @@ def detectar_materias_generico(texto):
             if requisito:
                 if requisito.get("tipo") == "prueba_idioma":
                     requisito["materiaId"] = str(materia_actual.get("id", ""))
-                materia_actual["requisito_especial"] = requisito
+                req_existente = materia_actual.get("requisito_especial")
+                if not _requisito_tiene_prioridad(req_existente, requisito):
+                    materia_actual["requisito_especial"] = requisito
 
                 # Solo reemplazar correlativas si es un requisito cuantitativo.
                 # Los requisitos de "prueba_idioma" se agregan sin afectar
@@ -560,7 +578,9 @@ def detectar_materias_generico(texto):
             if requisito:
                 if requisito.get("tipo") == "prueba_idioma":
                     requisito["materiaId"] = str(materia_actual.get("id", ""))
-                materia_actual["requisito_especial"] = requisito
+                req_existente = materia_actual.get("requisito_especial")
+                if not _requisito_tiene_prioridad(req_existente, requisito):
+                    materia_actual["requisito_especial"] = requisito
 
                 # Solo reemplazar correlativas si es un requisito cuantitativo.
                 # Los requisitos de "prueba_idioma" se agregan sin afectar

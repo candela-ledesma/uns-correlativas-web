@@ -1,4 +1,4 @@
-export const PROMPT_VERSION = "v27";
+export const PROMPT_VERSION = "v28";
 
 export const DEFAULT_SYSTEM_PROMPT = `You are a deterministic data extraction engine for academic curricula.
 
@@ -44,7 +44,7 @@ Return ONLY a valid JSON object. No explanations, no comments, no markdown, no e
         }
       },
       "requisito_especial": {
-        "tipo": "anio_aprobado | minimo_materias_aprobadas | prueba_idioma | null",
+        "tipo": "anio_aprobado | minimo_materias_aprobadas | prueba_idioma | todas_materias_aprobadas | null",
         "descripcion": "string (verbatim prose from the PDF)",
         "anio": "number | null (only for anio_aprobado)",
         "cantidad": "number | null (only for minimo_materias_aprobadas)"
@@ -92,6 +92,7 @@ Three recognized types:
 | \`"anio_aprobado"\` | "Debe tener tercer año aprobado", "tener 3° año completo", etc. | \`"anio": 3\` (integer) |
 | \`"minimo_materias_aprobadas"\` | "mínimo 26 materias aprobadas", "al menos 30 asignaturas", etc. | \`"cantidad": 26\` (integer) |
 | \`"prueba_idioma"\` | "Debe rendir la Prueba de Suficiencia de Idioma", etc. | — |
+| \`"todas_materias_aprobadas"\` | "tener aprobadas todas las materias del plan", "deberá tener aprobada todas las materias del plan", etc. | — |
 
 Examples:
 - PDF says: *"Para cursar Debe tener tercer año aprobado. Para aprobar Debe tener tercer año aprobado."*
@@ -106,6 +107,8 @@ Examples:
   (When BOTH a minimum count AND the CGCB requirement appear in the same prose line, use \`"minimo_materias_aprobadas"\` and set \`cantidad\` to the number mentioned.)
 - PDF says: *"Debe rendir la Prueba de Suficiencia de Idioma"*
   → \`"requisito_especial": { "tipo": "prueba_idioma", "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma" }\`
+- PDF says: *"Para rendir el examen final el alumno deberá tener aprobada todas las materias del plan"*
+  → \`"requisito_especial": { "tipo": "todas_materias_aprobadas", "descripcion": "Para rendir el examen final el alumno deberá tener aprobada todas las materias del plan" }\`
 
 The prose line belongs to the subject immediately above it in the table — the same subject whose correlativas row just ended.
 

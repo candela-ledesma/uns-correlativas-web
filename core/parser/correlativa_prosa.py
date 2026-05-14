@@ -19,6 +19,13 @@ _MINIMO_MATERIAS = re.compile(
     re.IGNORECASE,
 )
 
+# Detecta "tener aprobadas todas las materias del plan" y variantes.
+# También detecta la primera mitad cuando el PDF parte la frase: "aprobada todas las [Xhs.]"
+_TODAS_MATERIAS = re.compile(
+    r'aprobad[ao]s?\s+todas\s+las\s+(?:materias\s+del\s+plan|\d+\s*hs)',
+    re.IGNORECASE,
+)
+
 # Detecta requisito de Prueba de Suficiencia de Idioma (no reemplaza correlativas).
 # Patrón: "Debe rendir la Prueba de Suficiencia de Idioma"
 _PRUEBA_SUFICIENCIA = re.compile(
@@ -27,10 +34,16 @@ _PRUEBA_SUFICIENCIA = re.compile(
 )
 
 # Detecta "Debe tener N° año aprobado" / "tener tercer año aprobado" etc.
+# También detecta la variante CGCB: "aprobado el CGCB antes de comenzar a cursar el tercer año"
 _ANIO_APROBADO = re.compile(
+    r'(?:'
     r'(?:debe\s+tener\s+)?'
     r'(primer|segundo|tercer|cuarto|quinto|sexto|1[°º]?|2[°º]?|3[°º]?|4[°º]?|5[°º]?|6[°º]?)\s+a[ñn]o'
-    r'(?:\s+(?:aprobado|completo|cursado))+',
+    r'(?:\s+(?:aprobado|completo|cursado))+'
+    r'|'
+    r'aprobado\s+(?:\w+\s+){0,4}antes\s+de\s+comenzar\s+a\s+cursar\s+el\s+'
+    r'(primer|segundo|tercer|cuarto|quinto|sexto|1[°º]?|2[°º]?|3[°º]?|4[°º]?|5[°º]?|6[°º]?)\s+a[ñn]o'
+    r')',
     re.IGNORECASE,
 )
 
@@ -48,11 +61,28 @@ _ESTADOS_VALIDOS = {"aprobada", "regular", "cursada"}
 
 def _limpiar_descripcion(texto: str) -> str:
     texto_limpio = " ".join(texto.split()).strip().rstrip(".")
+    # Eliminar IDs numéricos (4-5 dígitos) seguidos de estado
     texto_limpio = re.sub(
         r"\s+\d{4,5}\s+(?:Aprobada|Cursada|Regular)(?:\s+(?:Aprobada|Cursada|Regular))*.*$",
         "",
         texto_limpio,
     )
+    # Eliminar horas y IDs alfanuméricos al final: "64hs. I0703 Aprobada Aprobada"
+    texto_limpio = re.sub(
+        r"\s+\d+\s*hs\.?.*$",
+        "",
+        texto_limpio,
+        flags=re.IGNORECASE,
+    )
+    # Eliminar IDs alfanuméricos (ej: I0703, G1234) seguidos de estado al final
+    texto_limpio = re.sub(
+        r"\s+[A-Z]\d{4,5}\s+(?:Aprobada|Cursada|Regular).*$",
+        "",
+        texto_limpio,
+        flags=re.IGNORECASE,
+    )
+    # Eliminar artículos/preposiciones colgantes al final
+    texto_limpio = re.sub(r"\s+(?:de\s+la|del|de|el|la|los|las|un|una)\s*$", "", texto_limpio, flags=re.IGNORECASE)
     return texto_limpio.rstrip(".")
 
 
@@ -66,6 +96,14 @@ def inferir_requisito_especial(linea: str) -> dict | None:
 
     Devuelve un dict con la estructura de requisito_especial, o None si no aplica.
     """
+    # Verificar "todas las materias del plan aprobadas"
+    if _TODAS_MATERIAS.search(linea):
+        descripcion = _limpiar_descripcion(linea)
+        return {
+            "tipo": "todas_materias_aprobadas",
+            "descripcion": descripcion,
+        }
+
     # Primero verificar si es una Prueba de Suficiencia (tiene prioridad baja)
     if _PRUEBA_SUFICIENCIA.search(linea):
         descripcion = _limpiar_descripcion(linea)
@@ -88,7 +126,7 @@ def inferir_requisito_especial(linea: str) -> dict | None:
     # Verificar requisito de año aprobado: "Debe tener tercer año aprobado"
     m = _ANIO_APROBADO.search(linea)
     if m:
-        raw = m.group(1).lower().rstrip("°º")
+        raw = (m.group(1) or m.group(2) or "").lower().rstrip("°º")
         numero = _ANIO_NUMERO.get(raw)
         descripcion = _limpiar_descripcion(linea)
         resultado: dict = {

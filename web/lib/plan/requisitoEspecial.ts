@@ -6,22 +6,23 @@ import type { EstadoMateria } from "@/lib/plan/evaluarCorrelativas";
  */
 export type RequisitoEspecialType =
   | {
-      /** Requisito de aprobar una prueba de idioma antes de aprobar la materia */
       tipo: "prueba_idioma";
-      /** ID de la materia a la que se aplica (informativo) */
       materiaId?: string;
+      descripcion?: string;
     }
   | {
-      /** Requisito de tener mínimo N materias aprobadas */
       tipo: "minimo_materias_aprobadas";
-      /** Cantidad mínima de materias que deben estar aprobadas */
       cantidad: number;
+      descripcion?: string;
     }
   | {
-      /** Requisito de tener N° año completo/aprobado */
       tipo: "anio_aprobado";
-      /** Número de año requerido (1=Primer Año, 3=Tercer Año, etc.) */
       anio: number;
+      descripcion?: string;
+    }
+  | {
+      tipo: "todas_materias_aprobadas";
+      descripcion?: string;
     };
 
 /**
@@ -90,6 +91,16 @@ export function evaluarRequisitoEspecial(
     };
   }
 
+  if (requisito.tipo === "todas_materias_aprobadas") {
+    return {
+      cumple: false,
+      detalles: {
+        tipo: "todas_materias_aprobadas",
+        mensaje: "Se requiere tener todas las materias del plan aprobadas",
+      },
+    };
+  }
+
   // TypeScript exhaustiveness check
   const _exhaustive: never = requisito;
   return _exhaustive;
@@ -103,6 +114,8 @@ export function generarTextoRequisito(
   requisito: RequisitoEspecialType,
   resultado?: ResultadoRequisito
 ): string {
+  if (requisito.descripcion) return requisito.descripcion;
+
   if (requisito.tipo === "prueba_idioma") {
     return "Debe rendir la Prueba de Suficiencia de Idioma antes de aprobar";
   }
@@ -119,6 +132,10 @@ export function generarTextoRequisito(
     const nombres = ["", "Primer", "Segundo", "Tercer", "Cuarto", "Quinto", "Sexto"];
     const label = nombres[requisito.anio] ?? `${requisito.anio}°`;
     return `Se requiere tener el ${label} Año aprobado`;
+  }
+
+  if (requisito.tipo === "todas_materias_aprobadas") {
+    return "Se requiere tener todas las materias del plan aprobadas";
   }
 
   return "Requisito especial desconocido";
