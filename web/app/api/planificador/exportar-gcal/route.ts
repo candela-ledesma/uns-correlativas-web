@@ -88,14 +88,14 @@ async function findExistingEvent(blockId: string, accessToken: string): Promise<
   return data.items?.[0]?.id ?? null;
 }
 
-// Busca todos los eventos exportados por esta app (uns_planificador=true).
-async function findAllExportedEvents(accessToken: string): Promise<string[]> {
+// Busca todos los eventos exportados por esta app para una carrera específica.
+async function findAllExportedEvents(accessToken: string, careerId: string): Promise<string[]> {
   const ids: string[] = [];
   let pageToken: string | undefined;
 
   do {
     const params = new URLSearchParams({
-      privateExtendedProperty: "uns_planificador=true",
+      privateExtendedProperty: `uns_career_id=${careerId}`,
       maxResults: "250",
       showDeleted: "false",
     });
@@ -169,7 +169,7 @@ export async function POST(request: Request) {
       end: { dateTime: minutesToRFC3339Time(block.horaFin, dateStr), timeZone },
       recurrence: [`RRULE:FREQ=WEEKLY;BYDAY=${byday}`],
       extendedProperties: {
-        private: { uns_planificador: "true", uns_block_id: block.id },
+        private: { uns_planificador: "true", uns_block_id: block.id, uns_career_id: careerId },
       },
     };
 
@@ -234,7 +234,13 @@ export async function DELETE(request: Request) {
     );
   }
 
-  const eventIds = await findAllExportedEvents(accessToken);
+  const url = new URL(request.url);
+  const careerId = url.searchParams.get("careerId") ?? "";
+  if (!careerId) {
+    return NextResponse.json({ error: "Falta careerId" }, { status: 400 });
+  }
+
+  const eventIds = await findAllExportedEvents(accessToken, careerId);
 
   if (eventIds.length === 0) {
     return NextResponse.json({ deleted: 0 });
