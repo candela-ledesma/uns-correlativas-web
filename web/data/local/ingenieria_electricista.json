@@ -464,6 +464,11 @@
           "tipo": "minimo_materias_aprobadas",
           "cantidad": 12,
           "descripcion": "comenzar a cursar el tercer año de la carrera. Para cursar Debe tener al menos 12 materias"
+        },
+        {
+          "tipo": "anio_aprobado",
+          "descripcion": "aprobadas y aprobado el CGCB antes de comenzar a cursar el tercer año de la carr",
+          "anio": 3
         }
       ]
     },
@@ -612,6 +617,11 @@
           "tipo": "minimo_materias_aprobadas",
           "cantidad": 15,
           "descripcion": "Para cursar Debe tener al menos 15 materias aprobadas y aprobado el CGCB antes"
+        },
+        {
+          "tipo": "anio_aprobado",
+          "descripcion": "materias aprobadas y aprobado el CGCB antes de comenzar a cursar el tercer año",
+          "anio": 3
         }
       ]
     },
@@ -832,6 +842,11 @@
           "tipo": "minimo_materias_aprobadas",
           "cantidad": 21,
           "descripcion": "comenzar a cursar el tercer año de la carrera. Para cursar Debe tener al menos 21 materias"
+        },
+        {
+          "tipo": "anio_aprobado",
+          "descripcion": "aprobadas y aprobado el CGCB antes de comenzar a cursar el tercer año de la carr",
+          "anio": 3
         }
       ]
     },
@@ -1131,9 +1146,8 @@
     "G0763",
     "I0703"
   ],
-  "_saved_at": "2026-05-13T17:11:42.969Z",
+  "_saved_at": "2026-05-15T04:43:47.377Z",
   "_saved_by": "cmoao0axe00001qboucfn8qsn",
   "_saved_fuente": "parser",
-  "_publicado": true,
-  "_motivo_cambio": ".."
+  "_publicado": false
 }
