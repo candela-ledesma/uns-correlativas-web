@@ -1,13 +1,9 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { Role } from "@/lib/auth/roles";
-import path from "path";
-import fs from "fs/promises";
+import { prisma } from "@/lib/db/prisma";
 
 export const dynamic = "force-dynamic";
-export const runtime = "nodejs";
-
-const DATA_DIR_GEMINI = path.join(process.cwd(), "data", "gemini");
 
 export async function GET() {
   const session = await auth();
@@ -15,29 +11,18 @@ export async function GET() {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
-  try {
-    const files = await fs.readdir(DATA_DIR_GEMINI).catch(() => [] as string[]);
-    const pendingFiles = files.filter((f) => f.endsWith("_pendiente.json"));
+  const rows = await prisma.planPendiente.findMany({ orderBy: { createdAt: "desc" } });
 
-    const planes = await Promise.all(
-      pendingFiles.map(async (file) => {
-        const filePath = path.join(DATA_DIR_GEMINI, file);
-        const raw = await fs.readFile(filePath, "utf-8");
-        const data = JSON.parse(raw);
-        const stat = await fs.stat(filePath);
-        return {
-          slug: file.replace("_pendiente.json", ""),
-          file,
-          plan: data,
-          size: stat.size,
-          mtime: stat.mtime.toISOString(),
-        };
-      })
-    );
+  const planes = rows.map((row) => {
+    let plan: unknown = null;
+    try { plan = JSON.parse(row.planJson); } catch {}
+    return {
+      slug: row.slug,
+      plan,
+      size: row.planJson.length,
+      mtime: row.updatedAt.toISOString(),
+    };
+  });
 
-    return NextResponse.json({ planes });
-  } catch (err) {
-    const msg = err instanceof Error ? err.message : String(err);
-    return NextResponse.json({ error: msg }, { status: 500 });
-  }
+  return NextResponse.json({ planes });
 }

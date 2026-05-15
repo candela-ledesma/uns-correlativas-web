@@ -4,20 +4,18 @@ import { Role } from "@/lib/auth/roles";
 import { GoogleGenAI } from "@google/genai";
 import { DEFAULT_GEMINI_MODEL } from "@/lib/ai/models";
 import { DEFAULT_SYSTEM_PROMPT, PROMPT_VERSION } from "@/lib/ai/prompt";
-import path from "path";
-import fs from "fs/promises";
+import { prisma } from "@/lib/db/prisma";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 export const maxDuration = 120;
 
 const MAX_SIZE_MB = 20;
-const CONFIG_PATH = path.join(process.cwd(), "data", "admin-config.json");
 
 async function readAdminConfig(): Promise<{ systemPrompt?: string }> {
   try {
-    const raw = await fs.readFile(CONFIG_PATH, "utf-8");
-    return JSON.parse(raw);
+    const config = await prisma.adminConfig.findUnique({ where: { id: "singleton" } });
+    return config ?? {};
   } catch {
     return {};
   }

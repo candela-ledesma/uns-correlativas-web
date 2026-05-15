@@ -1,14 +1,10 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { Role } from "@/lib/auth/roles";
-import path from "path";
-import fs from "fs/promises";
+import { prisma } from "@/lib/db/prisma";
 import { createAuditEvent } from "@/lib/db/audit";
 
 export const dynamic = "force-dynamic";
-export const runtime = "nodejs";
-
-const DATA_DIR_GEMINI = path.join(process.cwd(), "data", "gemini");
 
 export async function GET(
   _req: Request,
@@ -20,16 +16,12 @@ export async function GET(
   }
 
   const { slug } = await params;
-  const filePath = path.join(DATA_DIR_GEMINI, `${slug}_pendiente.json`);
+  const row = await prisma.planPendiente.findUnique({ where: { slug } });
+  if (!row) return NextResponse.json({ error: "No encontrado" }, { status: 404 });
 
-  try {
-    const raw = await fs.readFile(filePath, "utf-8");
-    return new Response(raw, {
-      headers: { "Content-Type": "application/json; charset=utf-8" },
-    });
-  } catch {
-    return NextResponse.json({ error: "No encontrado" }, { status: 404 });
-  }
+  return new Response(row.planJson, {
+    headers: { "Content-Type": "application/json; charset=utf-8" },
+  });
 }
 
 export async function DELETE(
@@ -42,15 +34,10 @@ export async function DELETE(
   }
 
   const { slug } = await params;
-  const filePath = path.join(DATA_DIR_GEMINI, `${slug}_pendiente.json`);
-
   const { motivo } = await req.json().catch(() => ({ motivo: undefined })) as { motivo?: string };
 
-  try {
-    await fs.unlink(filePath);
-  } catch {
-    return NextResponse.json({ error: "No encontrado" }, { status: 404 });
-  }
+  const deleted = await prisma.planPendiente.deleteMany({ where: { slug } });
+  if (deleted.count === 0) return NextResponse.json({ error: "No encontrado" }, { status: 404 });
 
   await createAuditEvent({
     actorUserId: session.user.id,
