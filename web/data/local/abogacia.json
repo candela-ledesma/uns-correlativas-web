@@ -835,11 +835,13 @@
       "grupo_opcion": null,
       "subtipo": null,
       "correlativas": {},
-      "requisito_especial": {
-        "tipo": "minimo_materias_aprobadas",
-        "cantidad": 30,
-        "descripcion": "Para cursar Tener 30 asignaturas del plan cursadas Para aprobar Tener 30 asignaturas del 128hs"
-      }
+      "requisito_especial": [
+        {
+          "tipo": "minimo_materias_aprobadas",
+          "cantidad": 30,
+          "descripcion": "Para cursar Tener 30 asignaturas del plan cursadas Para aprobar Tener 30 asignaturas del 128hs"
+        }
+      ]
     },
     {
       "id": "9115",
@@ -869,11 +871,13 @@
       "grupo_opcion": null,
       "subtipo": null,
       "correlativas": {},
-      "requisito_especial": {
-        "tipo": "minimo_materias_aprobadas",
-        "cantidad": 30,
-        "descripcion": "Para cursar Tener 30 asignaturas del plan cursadas Para aprobar Tener 30 asignaturas del 32hs"
-      }
+      "requisito_especial": [
+        {
+          "tipo": "minimo_materias_aprobadas",
+          "cantidad": 30,
+          "descripcion": "Para cursar Tener 30 asignaturas del plan cursadas Para aprobar Tener 30 asignaturas del 32hs"
+        }
+      ]
     },
     {
       "id": "9141",

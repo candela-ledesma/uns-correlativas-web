@@ -34,7 +34,7 @@ export type ParseResult = {
 export type DiffItem = {
   id: string;
   nombre: string;
-  tipo: "correlativa_distinta" | "materia_faltante" | "materia_extra" | "agrupador_distinto" | "agrupador_faltante";
+  tipo: "correlativa_distinta" | "materia_faltante" | "materia_extra" | "agrupador_distinto" | "agrupador_faltante" | "requisito_distinto";
   groundTruth: string;
   gemini: string;
 };
@@ -77,6 +77,21 @@ export function computeDiffs(ground: ParseResult | null, gemini: ParseResult): D
           gemini: gemCors,
         });
       }
+
+      // requisito_especial
+      type ReqItem = { tipo?: string; cantidad?: number; anio?: number; cuatrimestre?: number };
+      const gtReqs = (Array.isArray(gm.requisito_especial) ? gm.requisito_especial : gm.requisito_especial ? [gm.requisito_especial] : []) as ReqItem[];
+      const gemReqs = (Array.isArray(gem.requisito_especial) ? gem.requisito_especial : gem.requisito_especial ? [gem.requisito_especial] : []) as ReqItem[];
+      const serOneReq = (r: ReqItem) =>
+        r.tipo ? `${r.tipo}${r.cantidad != null ? `(min ${r.cantidad})` : r.anio != null ? `(año ${r.anio}${r.cuatrimestre != null ? ` cuatri ${r.cuatrimestre}` : ""})` : ""}` : "";
+      const serReq = (rs: ReqItem[]) => rs.map(serOneReq).sort().join("|") || "ninguno";
+      if (serReq(gtReqs) !== serReq(gemReqs)) {
+        diffs.push({
+          id, nombre: gm.nombre, tipo: "requisito_distinto",
+          groundTruth: serReq(gtReqs),
+          gemini: serReq(gemReqs),
+        });
+      }
     }
   }
 
@@ -112,6 +127,7 @@ const BADGE: Record<DiffItem["tipo"], { label: string; bg: string; border: strin
   materia_extra:        { label: "materia extra",        bg: "rgba(144,190,109,0.15)", border: "rgba(144,190,109,0.4)", color: "#90be6d" },
   agrupador_distinto:   { label: "agrupador distinto",   bg: "rgba(76,201,240,0.12)",  border: "rgba(76,201,240,0.4)",  color: "#4cc9f0" },
   agrupador_faltante:   { label: "agrupador faltante",   bg: "rgba(231,111,81,0.15)",  border: "rgba(231,111,81,0.4)",  color: "#e76f51" },
+  requisito_distinto:   { label: "requisito distinto",   bg: "rgba(157,78,221,0.12)",  border: "rgba(157,78,221,0.4)",  color: "#c084fc" },
 };
 
 function diffKey(d: DiffItem) { return `${d.tipo}:${d.id}`; }
@@ -140,6 +156,9 @@ function buildFewShotBlock(
     if (diff.tipo === "correlativa_distinta") {
       lines.push(`  Ground truth correlativas: ${diff.groundTruth}`);
       lines.push(`  Gemini generated:          ${diff.gemini}`);
+    } else if (diff.tipo === "requisito_distinto") {
+      lines.push(`  Ground truth requisito: ${diff.groundTruth}`);
+      lines.push(`  Gemini generated:       ${diff.gemini}`);
     } else if (diff.tipo === "materia_faltante") {
       lines.push(`  This materia was missing from Gemini output.`);
       lines.push(`  Expected: ${diff.groundTruth}`);
@@ -154,9 +173,14 @@ function buildFewShotBlock(
   if (ground) {
     lines.push(`### Expected output fragment`);
     lines.push("```json");
+    const selectedIds = new Set(selectedDiffs.map(d => d.id));
     const fragment = ground.materias
-      .filter(m => selected.has(m.id))
-      .map(m => ({ id: m.id, nombre: m.nombre, correlativas: m.correlativas }));
+      .filter(m => selectedIds.has(m.id))
+      .map(m => {
+        const entry: Record<string, unknown> = { id: m.id, nombre: m.nombre, correlativas: m.correlativas };
+        if (m.requisito_especial) entry.requisito_especial = m.requisito_especial;
+        return entry;
+      });
     lines.push(JSON.stringify(fragment, null, 2));
     lines.push("```");
   }

@@ -1,7 +1,7 @@
 {
   "plan": {
-    "carrera": "BIOQUIMICA.",
-    "universidad": "UNIVERSIDAD NACIONAL DEL SUR",
+    "carrera": "Bioquímica",
+    "universidad": "Universidad Nacional del Sur",
     "codigo_plan": "Plan 2025 - Versión 1"
   },
   "materias": [
@@ -15,7 +15,8 @@
       "categoria": "normal",
       "grupo_opcion": null,
       "subtipo": null,
-      "correlativas": {}
+      "correlativas": {},
+      "requisito_especial": null
     },
     {
       "id": "8161",
@@ -27,7 +28,8 @@
       "categoria": "normal",
       "grupo_opcion": null,
       "subtipo": null,
-      "correlativas": {}
+      "correlativas": {},
+      "requisito_especial": null
     },
     {
       "id": "6013",
@@ -39,7 +41,8 @@
       "categoria": "normal",
       "grupo_opcion": null,
       "subtipo": null,
-      "correlativas": {}
+      "correlativas": {},
+      "requisito_especial": null
     },
     {
       "id": "3089",
@@ -56,7 +59,8 @@
           "para_cursar": "cursada",
           "para_rendir": "cursada"
         }
-      }
+      },
+      "requisito_especial": null
     },
     {
       "id": "6397",
@@ -73,7 +77,8 @@
           "para_cursar": "cursada",
           "para_rendir": "aprobada"
         }
-      }
+      },
+      "requisito_especial": null
     },
     {
       "id": "1007",
@@ -90,7 +95,8 @@
           "para_cursar": "cursada",
           "para_rendir": "cursada"
         }
-      }
+      },
+      "requisito_especial": null
     },
     {
       "id": "6012",
@@ -111,7 +117,8 @@
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
-      }
+      },
+      "requisito_especial": null
     },
     {
       "id": "6017",
@@ -128,7 +135,8 @@
           "para_cursar": "cursada",
           "para_rendir": "cursada"
         }
-      }
+      },
+      "requisito_especial": null
     },
     {
       "id": "6007",
@@ -149,7 +157,8 @@
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
-      }
+      },
+      "requisito_especial": null
     },
     {
       "id": "1082",
@@ -170,7 +179,8 @@
           "para_cursar": "cursada",
           "para_rendir": "cursada"
         }
-      }
+      },
+      "requisito_especial": null
     },
     {
       "id": "8170",
@@ -187,7 +197,8 @@
           "para_cursar": "cursada",
           "para_rendir": "cursada"
         }
-      }
+      },
+      "requisito_especial": null
     },
     {
       "id": "1018",
@@ -208,7 +219,8 @@
           "para_cursar": "cursada",
           "para_rendir": "cursada"
         }
-      }
+      },
+      "requisito_especial": null
     },
     {
       "id": "1203",
@@ -233,7 +245,8 @@
           "para_cursar": "cursada",
           "para_rendir": "cursada"
         }
-      }
+      },
+      "requisito_especial": null
     },
     {
       "id": "1291",
@@ -250,7 +263,8 @@
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
-      }
+      },
+      "requisito_especial": null
     },
     {
       "id": "1049",
@@ -271,7 +285,8 @@
           "para_cursar": "cursada",
           "para_rendir": "cursada"
         }
-      }
+      },
+      "requisito_especial": null
     },
     {
       "id": "1050",
@@ -296,7 +311,8 @@
           "para_cursar": "cursada",
           "para_rendir": "cursada"
         }
-      }
+      },
+      "requisito_especial": null
     },
     {
       "id": "1262",
@@ -321,23 +337,25 @@
           "para_cursar": "cursada",
           "para_rendir": "cursada"
         }
-      }
+      },
+      "requisito_especial": null
     },
     {
       "id": "I0654",
       "nombre": "Idioma de Bioquimica plan 2025",
       "año": "Cuarto Año",
       "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "",
+      "horas": null,
       "tipo": "materia",
-      "categoria": "normal",
+      "categoria": null,
       "grupo_opcion": null,
       "subtipo": "idioma",
-      "correlativas": {}
+      "correlativas": {},
+      "requisito_especial": null
     },
     {
       "id": "4527",
-      "nombre": "BIOÉTICA B",
+      "nombre": "BIOETICA B",
       "año": "Cuarto Año",
       "cuatrimestre": "Primer Cuatrimestre",
       "horas": "20",
@@ -358,7 +376,8 @@
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
-      }
+      },
+      "requisito_especial": null
     },
     {
       "id": "1059",
@@ -383,7 +402,8 @@
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
-      }
+      },
+      "requisito_especial": null
     },
     {
       "id": "6048",
@@ -408,7 +428,8 @@
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
-      }
+      },
+      "requisito_especial": null
     },
     {
       "id": "1149",
@@ -433,7 +454,8 @@
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
-      }
+      },
+      "requisito_especial": null
     },
     {
       "id": "1009",
@@ -462,7 +484,8 @@
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
-      }
+      },
+      "requisito_especial": null
     },
     {
       "id": "1132",
@@ -487,7 +510,8 @@
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
-      }
+      },
+      "requisito_especial": null
     },
     {
       "id": "1170",
@@ -516,19 +540,8 @@
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
-      }
-    },
-    {
-      "id": "G0654",
-      "nombre": "Optativa de Bioquimica Plan 2025",
-      "año": "Quinto Año",
-      "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "",
-      "tipo": "agrupador_requisito",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {}
+      },
+      "requisito_especial": null
     },
     {
       "id": "1002",
@@ -553,7 +566,8 @@
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
-      }
+      },
+      "requisito_especial": null
     },
     {
       "id": "1302",
@@ -578,7 +592,8 @@
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
-      }
+      },
+      "requisito_especial": null
     },
     {
       "id": "1454",
@@ -607,82 +622,8 @@
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
-      }
-    },
-    {
-      "id": "1003",
-      "nombre": "ANALISIS CLINICOS II",
-      "año": "Quinto Año",
-      "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "138",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "1002": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        },
-        "1132": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        },
-        "1170": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "I0654": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
-      }
-    },
-    {
-      "id": "1211",
-      "nombre": "HEMATOLOGIA CLINICA B",
-      "año": "Quinto Año",
-      "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "60",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "1002": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        },
-        "1170": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        },
-        "I0654": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
-      }
-    },
-    {
-      "id": "1441",
-      "nombre": "TOXICOLOGIA Y QUIMICA FORENSE",
-      "año": "Quinto Año",
-      "cuatrimestre": "Primer Cuatrimestre",
-      "horas": "124",
-      "tipo": "materia",
-      "categoria": "normal",
-      "grupo_opcion": null,
-      "subtipo": null,
-      "correlativas": {
-        "1132": {
-          "para_cursar": "cursada",
-          "para_rendir": "cursada"
-        },
-        "I0654": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
-      }
+      },
+      "requisito_especial": null
     },
     {
       "id": "1355",
@@ -731,13 +672,19 @@
           "para_cursar": "aprobada",
           "para_rendir": null
         }
-      }
+      },
+      "requisito_especial": [
+        {
+          "tipo": "todas_materias_aprobadas",
+          "descripcion": "Para aprobar Para rendir el examen final el alumno deberá tener aprobada todas las materias del plan"
+        }
+      ]
     },
     {
       "id": "1006",
       "nombre": "ANIMALES DE LABORATORIO",
-      "año": "Quinto Año",
-      "cuatrimestre": "Primer Cuatrimestre",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
       "horas": "50",
       "tipo": "materia",
       "categoria": "optativa",
@@ -760,13 +707,14 @@
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
-      }
+      },
+      "requisito_especial": null
     },
     {
       "id": "1022",
       "nombre": "BIOLOGIA DE LA NEURODEGENERACION",
-      "año": "Quinto Año",
-      "cuatrimestre": "Primer Cuatrimestre",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
       "horas": "100",
       "tipo": "materia",
       "categoria": "optativa",
@@ -789,13 +737,14 @@
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
-      }
+      },
+      "requisito_especial": null
     },
     {
       "id": "1027",
       "nombre": "BIOLOGIA DEL DESARROLLO B",
-      "año": "Quinto Año",
-      "cuatrimestre": "Primer Cuatrimestre",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
       "horas": "96",
       "tipo": "materia",
       "categoria": "optativa",
@@ -810,13 +759,14 @@
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
-      }
+      },
+      "requisito_especial": null
     },
     {
       "id": "1206",
       "nombre": "GESTION DE CALIDAD EN EL LABORATORIO",
-      "año": "Quinto Año",
-      "cuatrimestre": "Primer Cuatrimestre",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
       "horas": "",
       "tipo": "materia",
       "categoria": "optativa",
@@ -831,13 +781,14 @@
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
-      }
+      },
+      "requisito_especial": null
     },
     {
       "id": "1254",
       "nombre": "INMUNOLOGIA CLINICA",
-      "año": "Quinto Año",
-      "cuatrimestre": "Primer Cuatrimestre",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
       "horas": "50",
       "tipo": "materia",
       "categoria": "optativa",
@@ -852,13 +803,14 @@
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
-      }
+      },
+      "requisito_especial": null
     },
     {
       "id": "1255",
       "nombre": "INTRODUCCION A LA BIOLOGIA DEL CANCER",
-      "año": "Quinto Año",
-      "cuatrimestre": "Primer Cuatrimestre",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
       "horas": "50",
       "tipo": "materia",
       "categoria": "optativa",
@@ -877,13 +829,14 @@
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
-      }
+      },
+      "requisito_especial": null
     },
     {
       "id": "1261",
       "nombre": "INTRODUCCION A LA INVESTIGACION BIOMEDICA CON UN ENFOQUE TRASLACIONAL",
-      "año": "Quinto Año",
-      "cuatrimestre": "Primer Cuatrimestre",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
       "horas": "50",
       "tipo": "materia",
       "categoria": "optativa",
@@ -902,13 +855,14 @@
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
-      }
+      },
+      "requisito_especial": null
     },
     {
       "id": "1294",
       "nombre": "MICROBIOLOGIA DE LOS ALIMENTOS \"B\"",
-      "año": "Quinto Año",
-      "cuatrimestre": "Primer Cuatrimestre",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
       "horas": "52",
       "tipo": "materia",
       "categoria": "optativa",
@@ -927,13 +881,14 @@
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
-      }
+      },
+      "requisito_especial": null
     },
     {
       "id": "1346",
       "nombre": "PRACTICA OPTATIVA EN INVESTIGACION BIOQUIMICA (POIB)",
-      "año": "Quinto Año",
-      "cuatrimestre": "Primer Cuatrimestre",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
       "horas": "50",
       "tipo": "materia",
       "categoria": "optativa",
@@ -944,13 +899,14 @@
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
-      }
+      },
+      "requisito_especial": null
     },
     {
       "id": "20103",
       "nombre": "EPIDEMIOLOGIA CLINICA",
-      "año": "Quinto Año",
-      "cuatrimestre": "Primer Cuatrimestre",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
       "horas": "",
       "tipo": "materia",
       "categoria": "optativa",
@@ -965,13 +921,14 @@
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
-      }
+      },
+      "requisito_especial": null
     },
     {
       "id": "4525",
       "nombre": "BIOÉTICA",
-      "año": "Quinto Año",
-      "cuatrimestre": "Primer Cuatrimestre",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
       "horas": "96",
       "tipo": "materia",
       "categoria": "optativa",
@@ -986,13 +943,14 @@
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
-      }
+      },
+      "requisito_especial": null
     },
     {
       "id": "6293",
       "nombre": "QUIMICA AMBIENTAL B",
-      "año": "Quinto Año",
-      "cuatrimestre": "Primer Cuatrimestre",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
       "horas": "90",
       "tipo": "materia",
       "categoria": "optativa",
@@ -1007,13 +965,14 @@
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
-      }
+      },
+      "requisito_especial": null
     },
     {
       "id": "6411",
       "nombre": "RADIOQUIMICA IA",
-      "año": "Quinto Año",
-      "cuatrimestre": "Primer Cuatrimestre",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
       "horas": "",
       "tipo": "materia",
       "categoria": "optativa",
@@ -1028,13 +987,14 @@
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
-      }
+      },
+      "requisito_especial": null
     },
     {
       "id": "8129",
       "nombre": "ANALISIS DE REGRESION",
-      "año": "Quinto Año",
-      "cuatrimestre": "Primer Cuatrimestre",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
       "horas": "50",
       "tipo": "materia",
       "categoria": "optativa",
@@ -1049,7 +1009,8 @@
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
-      }
+      },
+      "requisito_especial": null
     },
     {
       "id": "4578",
@@ -1061,7 +1022,8 @@
       "categoria": "optativa",
       "grupo_opcion": "I0654",
       "subtipo": "idioma",
-      "correlativas": {}
+      "correlativas": {},
+      "requisito_especial": null
     }
   ],
   "agrupadores": [
@@ -1085,8 +1047,8 @@
         "6411",
         "8129"
       ],
-      "año": "Quinto Año",
-      "cuatrimestre": "Primer Cuatrimestre"
+      "año": "Cuarto Año",
+      "cuatrimestre": "Segundo Cuatrimestre"
     },
     {
       "id": "I0654",
@@ -1099,8 +1061,10 @@
       "cuatrimestre": "Primer Cuatrimestre"
     }
   ],
-  "_llm_confidence": 1,
-  "_llm_prompt_version": "v20",
+  "_llm_prompt_version": "v28",
   "_llm_mode": "llm",
-  "_auto_saved_at": "2026-05-11T22:46:11.427Z"
+  "_saved_at": "2026-05-14T23:58:22.286Z",
+  "_saved_by": "cmoao0axe00001qboucfn8qsn",
+  "_saved_fuente": "gemini",
+  "_publicado": false
 }

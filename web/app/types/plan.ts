@@ -22,7 +22,7 @@ export type Materia = {
   ubicacion?: Record<string, { año: string | null; cuatrimestre: string | null }>;
   subtipo: string | null;
   correlativas: Record<string, Requisito>;
-  requisito_especial?: RequisitoEspecial | null;
+  requisito_especial?: RequisitoEspecial[];
 };
 
 export type Agrupador = {

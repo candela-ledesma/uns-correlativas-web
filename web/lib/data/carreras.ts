@@ -210,6 +210,22 @@ export const CARRERAS: CarreraConfig[] = [
     ],
     disponible: true,
     },
+
+    {
+    id: "ingenieria_en_computacion" as unknown as CarreraId,
+    nombre: "Ingenieria En Computacion",
+    descripcion: "Plan de estudios y correlativas.",
+    defaultVersionId: "v1",
+    versions: [
+        {
+        versionId: "v1",
+        label: "Plan actual",
+        jsonFile: "ingenieria_en_computacion.json",
+        disponible: true,
+        },
+    ],
+    disponible: true,
+    },
 ];
 
 export function getCarreraById(id: string) {

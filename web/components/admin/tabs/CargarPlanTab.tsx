@@ -104,6 +104,7 @@ export default function CargarPlanTab({ canPublish = true }: { canPublish?: bool
   const [validationOpenLocal, setValidationOpenLocal]   = useState(true);
   const [showFewShot, setShowFewShot] = useState(false);
   const [activeDiffIdx, setActiveDiffIdx] = useState(0);
+  const [busquedaMateria, setBusquedaMateria] = useState("");
   const [confirmState, setConfirmState] = useState<ConfirmState | null>(null);
   const [prevGemini, setPrevGemini] = useState<ParseResult | null>(null);
   const [prevLocal, setPrevLocal] = useState<ParseResult | null>(null);
@@ -153,6 +154,14 @@ export default function CargarPlanTab({ canPublish = true }: { canPublish?: bool
         const container = ref.current;
         container.scrollTop = el.offsetTop - container.clientHeight / 2;
       }
+    }
+  }
+
+  function scrollToMateria(id: string) {
+    for (const ref of [scrollRefLocal, scrollRefGemini]) {
+      if (!ref.current) continue;
+      const el = ref.current.querySelector(`[data-materia-id="${id}"]`) as HTMLElement | null;
+      if (el) ref.current.scrollTop = el.offsetTop - ref.current.clientHeight / 3;
     }
   }
 
@@ -506,8 +515,56 @@ export default function CargarPlanTab({ canPublish = true }: { canPublish?: bool
       {(resultadoGemini || resultadoLocal) && (() => {
         const ambos = !!(resultadoGemini && resultadoLocal);
         const diffCount = ambos ? computedDiffs.length : undefined;
+        const todasMaterias = (resultadoLocal ?? resultadoGemini)?.materias ?? [];
+        const busquedaNorm = busquedaMateria.trim().toLowerCase();
+        const sugerencias = busquedaNorm.length >= 1
+          ? todasMaterias.filter(m =>
+              m.id.toLowerCase().includes(busquedaNorm) ||
+              m.nombre?.toLowerCase().includes(busquedaNorm)
+            ).slice(0, 6)
+          : [];
+
         return (
           <div>
+            {/* Buscador de materia */}
+            <div style={{ position: "relative", marginBottom: 10 }}>
+              <input
+                value={busquedaMateria}
+                onChange={e => setBusquedaMateria(e.target.value)}
+                placeholder="Buscar materia por ID o nombre…"
+                style={{
+                  ...INPUT, width: "100%", boxSizing: "border-box",
+                  borderRadius: 8, padding: "7px 12px", fontSize: 12,
+                }}
+              />
+              {sugerencias.length > 0 && (
+                <div style={{
+                  position: "absolute", top: "100%", left: 0, right: 0, zIndex: 10,
+                  ...SURFACE, borderRadius: 8, marginTop: 4,
+                  boxShadow: "0 4px 20px rgba(0,0,0,0.3)",
+                  overflow: "hidden",
+                }}>
+                  {sugerencias.map(m => (
+                    <button
+                      key={m.id}
+                      onClick={() => { scrollToMateria(m.id); setBusquedaMateria(""); }}
+                      style={{
+                        display: "flex", alignItems: "center", gap: 10,
+                        width: "100%", background: "none", border: "none",
+                        padding: "8px 12px", cursor: "pointer", textAlign: "left",
+                        borderBottom: `1px solid ${GLASS.border}`,
+                      }}
+                      onMouseEnter={e => (e.currentTarget.style.background = GLASS.soft)}
+                      onMouseLeave={e => (e.currentTarget.style.background = "none")}
+                    >
+                      <span style={{ fontSize: 10, fontFamily: "monospace", color: TEXT_SEC, minWidth: 44 }}>{m.id}</span>
+                      <span style={{ fontSize: 11, color: TEXT }}>{m.nombre}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
             {/* Barra de navegación de diffs */}
             {ambos && diffIds.length > 0 && (
               <div style={{

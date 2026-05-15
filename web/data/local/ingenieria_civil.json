@@ -949,11 +949,13 @@
           "para_rendir": "aprobada"
         }
       },
-      "requisito_especial": {
-        "tipo": "minimo_materias_aprobadas",
-        "cantidad": 32,
-        "descripcion": "Para cursar El alumno deberá tener 32 materias aprobadas, sin contar las suficiencias "
-      },
+      "requisito_especial": [
+        {
+          "tipo": "minimo_materias_aprobadas",
+          "cantidad": 32,
+          "descripcion": "Para cursar El alumno deberá tener 32 materias aprobadas, sin contar las suficiencias "
+        }
+      ],
       "orientaciones": [
         "Construcciones",
         "Hidráulica",

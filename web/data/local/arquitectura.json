@@ -1277,11 +1277,13 @@
           "para_rendir": "aprobada"
         }
       },
-      "requisito_especial": {
-        "tipo": "minimo_materias_aprobadas",
-        "cantidad": 35,
-        "descripcion": "Para aprobar Debe tener 35 materias del plan aprobadas"
-      }
+      "requisito_especial": [
+        {
+          "tipo": "minimo_materias_aprobadas",
+          "cantidad": 35,
+          "descripcion": "Para aprobar Debe tener 35 materias del plan aprobadas"
+        }
+      ]
     },
     {
       "id": "2146",

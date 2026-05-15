@@ -173,10 +173,12 @@ const JsonViewer = forwardRef<HTMLDivElement, Props>(function JsonViewer(
           ? `2px solid ${BORDER[line.highlight]}`
           : "2px solid transparent";
 
+        const idMatch2 = line.text.match(/"id"\s*:\s*"([^"]+)"/);
         return (
           <div
             key={i}
             data-diff-id={line.diffId ?? undefined}
+            data-materia-id={idMatch2?.[1] ?? undefined}
             title={line.tooltip ?? undefined}
             style={{
               padding: "0 12px",

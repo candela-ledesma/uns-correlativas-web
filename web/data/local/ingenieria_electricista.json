@@ -1,0 +1,1139 @@
+{
+  "plan": {
+    "carrera": "Ingenieria Electricista",
+    "universidad": "Universidad Nacional del Sur",
+    "codigo_plan": "Plan 2025 - Versión 1"
+  },
+  "materias": [
+    {
+      "id": "2758",
+      "nombre": "INTRODUCCION A LAS INGENIERIAS IE",
+      "año": "Primer Año",
+      "cuatrimestre": "Anual",
+      "horas": "64",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {}
+    },
+    {
+      "id": "5539",
+      "nombre": "ALGEBRA Y GEOMETRIA",
+      "año": "Primer Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {}
+    },
+    {
+      "id": "5551",
+      "nombre": "ANALISIS MATEMATICO I",
+      "año": "Primer Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {}
+    },
+    {
+      "id": "6323",
+      "nombre": "QUIMICA GENERAL PARA INGENIERIA",
+      "año": "Primer Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "96",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {}
+    },
+    {
+      "id": "5552",
+      "nombre": "ANALISIS MATEMATICO II",
+      "año": "Primer Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5539": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "5551": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "3051",
+      "nombre": "FISICA I",
+      "año": "Primer Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5539": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "5551": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "5415",
+      "nombre": "SISTEMAS DE REPRESENTACION",
+      "año": "Primer Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "96",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {}
+    },
+    {
+      "id": "3026",
+      "nombre": "ELECTROMAGNETISMO",
+      "año": "Segundo Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "3051": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "5539": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "5551": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "5552": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "5654",
+      "nombre": "FUNCIONES DE VARIABLE COMPLEJA",
+      "año": "Segundo Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5539": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "5551": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "5552": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "2807",
+      "nombre": "PRINCIPIOS DE COMPUTADORAS IA",
+      "año": "Segundo Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5539": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "5551": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "2720",
+      "nombre": "FUNDAMENTOS DE ELECTROTECNIA",
+      "año": "Segundo Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "3026": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "3051": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "5552": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "2783",
+      "nombre": "METODOS Y SIMULACION NUMERICA EN INGENIERIA ELECTRICA",
+      "año": "Segundo Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "2807": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "5552": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      }
+    },
+    {
+      "id": "5909",
+      "nombre": "PROBABILIDAD, VARIABLE ALEATORIA Y ESTADISTICA",
+      "año": "Segundo Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5539": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "5551": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "5552": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      }
+    },
+    {
+      "id": "2502",
+      "nombre": "ANALISIS DE CIRCUITOS Y SISTEMAS",
+      "año": "Tercer Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "2720": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "2783": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "5654": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      },
+      "requisito_especial": [
+        {
+          "tipo": "anio_aprobado",
+          "descripcion": "Para aprobar Debe tener aprobado el CGCB antes de comenzar a cursar el tercer año",
+          "anio": 3
+        }
+      ]
+    },
+    {
+      "id": "2559",
+      "nombre": "DISEÑO DE CIRCUITOS LOGICOS",
+      "año": "Tercer Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "2807": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      },
+      "requisito_especial": [
+        {
+          "tipo": "anio_aprobado",
+          "descripcion": "Para cursar Debe tener aprobado el CGCB antes de comenzar a cursar el tercer año",
+          "anio": 3
+        }
+      ]
+    },
+    {
+      "id": "3033",
+      "nombre": "ELEMENTOS DE FISICA DEL ESTADO SOLIDO",
+      "año": "Tercer Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "5654": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "5909": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      },
+      "requisito_especial": [
+        {
+          "tipo": "anio_aprobado",
+          "descripcion": "Para aprobar Debe tener aprobado el CGCB antes de comenzar a cursar el tercer año",
+          "anio": 3
+        }
+      ]
+    },
+    {
+      "id": "3034",
+      "nombre": "ELEMENTOS DE TERMODINAMICA",
+      "año": "Tercer Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {},
+      "requisito_especial": [
+        {
+          "tipo": "anio_aprobado",
+          "descripcion": "Para cursar Debe tener aprobado el CGCB antes de comenzar a cursar el tercer año",
+          "anio": 3
+        }
+      ]
+    },
+    {
+      "id": "2553",
+      "nombre": "CONVERSION ELECTROMECANICA DE LA ENERGIA",
+      "año": "Tercer Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "2720": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      },
+      "requisito_especial": [
+        {
+          "tipo": "anio_aprobado",
+          "descripcion": "Para aprobar Debe tener aprobado el CGCB antes de comenzar a cursar el tercer año",
+          "anio": 3
+        }
+      ]
+    },
+    {
+      "id": "2646",
+      "nombre": "ELEMENTOS DE ELECTRONICA BASICA",
+      "año": "Tercer Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "2502": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "2720": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "3033": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      },
+      "requisito_especial": [
+        {
+          "tipo": "anio_aprobado",
+          "descripcion": "Para cursar Debe tener aprobado el CGCB antes de comenzar a cursar el tercer año",
+          "anio": 3
+        }
+      ]
+    },
+    {
+      "id": "I0703",
+      "nombre": "Idioma de Ingeniería Electricista, plan 2025",
+      "año": "Tercer Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": "idioma",
+      "correlativas": {}
+    },
+    {
+      "id": "5347",
+      "nombre": "MAQUINAS PRIMARIAS IE",
+      "año": "Tercer Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "3034": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        }
+      },
+      "requisito_especial": [
+        {
+          "tipo": "anio_aprobado",
+          "descripcion": "Para cursar Debe tener aprobado el CGCB antes de comenzar a cursar el tercer año",
+          "anio": 3
+        }
+      ]
+    },
+    {
+      "id": "2902",
+      "nombre": "TECNICAS DE COMUNICACION ORAL Y ESCRITA PARA INGENIEROS",
+      "año": "Tercer Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {},
+      "requisito_especial": [
+        {
+          "tipo": "minimo_materias_aprobadas",
+          "cantidad": 12,
+          "descripcion": "comenzar a cursar el tercer año de la carrera. Para cursar Debe tener al menos 12 materias"
+        }
+      ]
+    },
+    {
+      "id": "5138",
+      "nombre": "ESTABILIDAD Ie",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "I0703": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      },
+      "requisito_especial": [
+        {
+          "tipo": "anio_aprobado",
+          "descripcion": "Para aprobar Debe tener aprobado el CGCB antes de comenzar a cursar el tercer año",
+          "anio": 3
+        }
+      ]
+    },
+    {
+      "id": "2717",
+      "nombre": "FUNDAMENTOS DE CONTROL REALIMENTADO",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "2502": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "2553": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "2783": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "I0703": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      },
+      "requisito_especial": [
+        {
+          "tipo": "anio_aprobado",
+          "descripcion": "Para cursar Debe tener aprobado el CGCB antes de comenzar a cursar el tercer año",
+          "anio": 3
+        }
+      ]
+    },
+    {
+      "id": "2782",
+      "nombre": "MAQUINAS ELECTRICAS",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "2553": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "I0703": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      },
+      "requisito_especial": [
+        {
+          "tipo": "anio_aprobado",
+          "descripcion": "Para cursar Debe tener aprobado el CGCB antes de comenzar a cursar el tercer año",
+          "anio": 3
+        }
+      ]
+    },
+    {
+      "id": "2781",
+      "nombre": "MEDIDAS ELECTRICAS",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "2553": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "2720": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "5909": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "I0703": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      },
+      "requisito_especial": [
+        {
+          "tipo": "anio_aprobado",
+          "descripcion": "Para aprobar Debe tener aprobado el CGCB antes de comenzar a cursar el tercer año",
+          "anio": 3
+        }
+      ]
+    },
+    {
+      "id": "5323",
+      "nombre": "LEGISLACION, SEGURIDAD E HIGIENE INDUSTRIAL",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "I0703": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      },
+      "requisito_especial": [
+        {
+          "tipo": "minimo_materias_aprobadas",
+          "cantidad": 15,
+          "descripcion": "Para cursar Debe tener al menos 15 materias aprobadas y aprobado el CGCB antes"
+        }
+      ]
+    },
+    {
+      "id": "2880",
+      "nombre": "SISTEMAS DE POTENCIA",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "2717": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "2782": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "I0703": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      },
+      "requisito_especial": [
+        {
+          "tipo": "anio_aprobado",
+          "descripcion": "Para aprobar Debe tener aprobado el CGCB antes de comenzar a cursar el tercer año",
+          "anio": 3
+        }
+      ]
+    },
+    {
+      "id": "2945",
+      "nombre": "TRANSMISION Y DISTRIBUCION I",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "2553": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "5138": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "I0703": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      },
+      "requisito_especial": [
+        {
+          "tipo": "anio_aprobado",
+          "descripcion": "Para cursar Debe tener aprobado el CGCB antes de comenzar a cursar el tercer año",
+          "anio": 3
+        }
+      ]
+    },
+    {
+      "id": "2966",
+      "nombre": "UTILIZACION DE LA ENERGIA ELECTRICA",
+      "año": "Cuarto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "2553": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "2782": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "I0703": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      },
+      "requisito_especial": [
+        {
+          "tipo": "anio_aprobado",
+          "descripcion": "Para aprobar Debe tener aprobado el CGCB antes de comenzar a cursar el tercer año",
+          "anio": 3
+        }
+      ]
+    },
+    {
+      "id": "2593",
+      "nombre": "ELECTRONICA DE POTENCIA IE",
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "2646": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "2782": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "I0703": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      },
+      "requisito_especial": [
+        {
+          "tipo": "anio_aprobado",
+          "descripcion": "Para aprobar Debe tener aprobado el CGCB antes de comenzar a cursar el tercer año",
+          "anio": 3
+        }
+      ]
+    },
+    {
+      "id": "2731",
+      "nombre": "GENERACION ELECTRICA I",
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "2717": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "3034": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "5347": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "I0703": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      },
+      "requisito_especial": [
+        {
+          "tipo": "anio_aprobado",
+          "descripcion": "Para cursar Debe tener aprobado el CGCB antes de comenzar a cursar el tercer año",
+          "anio": 3
+        }
+      ]
+    },
+    {
+      "id": "2946",
+      "nombre": "TRANSMISION Y DISTRIBUCION II",
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "2781": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "2945": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "I0703": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      },
+      "requisito_especial": [
+        {
+          "tipo": "anio_aprobado",
+          "descripcion": "Para aprobar Debe tener aprobado el CGCB antes de comenzar a cursar el tercer año",
+          "anio": 3
+        }
+      ]
+    },
+    {
+      "id": "2106",
+      "nombre": "ECONOMIA DE LA EMPRESA",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "I0703": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      },
+      "requisito_especial": [
+        {
+          "tipo": "minimo_materias_aprobadas",
+          "cantidad": 21,
+          "descripcion": "comenzar a cursar el tercer año de la carrera. Para cursar Debe tener al menos 21 materias"
+        }
+      ]
+    },
+    {
+      "id": "2799",
+      "nombre": "PRACTICA PROFESIONAL SUPERVISADA",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "I0703": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      },
+      "requisito_especial": [
+        {
+          "tipo": "minimo_materias_aprobadas",
+          "cantidad": 28,
+          "descripcion": "Para aprobar Debe tener al menos 28 materias obligatorias aprobadas y aprobado el CGCB"
+        }
+      ]
+    },
+    {
+      "id": "2813",
+      "nombre": "PROTECCIONES ELECTRICAS",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "2781": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "2880": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "2945": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "I0703": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      },
+      "requisito_especial": [
+        {
+          "tipo": "anio_aprobado",
+          "descripcion": "Para cursar Debe tener aprobado el CGCB antes de comenzar a cursar el tercer año",
+          "anio": 3
+        }
+      ]
+    },
+    {
+      "id": "2815",
+      "nombre": "PROYECTO",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "normal",
+      "grupo_opcion": null,
+      "subtipo": null,
+      "correlativas": {
+        "I0703": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      },
+      "requisito_especial": [
+        {
+          "tipo": "minimo_materias_aprobadas",
+          "cantidad": 28,
+          "descripcion": "Para cursar Debe tener al menos 28 materias obligatorias aprobadas y aprobado el CGCB"
+        }
+      ]
+    },
+    {
+      "id": "2732",
+      "nombre": "GENERACION ELECTRICA II",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G0762",
+      "subtipo": null,
+      "correlativas": {
+        "I0703": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      },
+      "requisito_especial": [
+        {
+          "tipo": "minimo_materias_aprobadas",
+          "cantidad": 25,
+          "descripcion": "Para cursar Debe tener al menos 25 materias obligatorias aprobadas y aprobado el CGCB"
+        }
+      ]
+    },
+    {
+      "id": "2845",
+      "nombre": "SEGURIDAD Y RIESGOS EN INGENIERIA ELECTRICA",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G0762",
+      "subtipo": null,
+      "correlativas": {
+        "I0703": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      },
+      "requisito_especial": [
+        {
+          "tipo": "minimo_materias_aprobadas",
+          "cantidad": 25,
+          "descripcion": "Para aprobar Debe tener al menos 25 materias obligatorias aprobadas y aprobado el CGCB"
+        }
+      ]
+    },
+    {
+      "id": "2878",
+      "nombre": "SISTEMAS ELECTRICOS INDUSTRIALES I",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G0762",
+      "subtipo": null,
+      "correlativas": {
+        "2781": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "2966": {
+          "para_cursar": "cursada",
+          "para_rendir": "cursada"
+        },
+        "I0703": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      },
+      "requisito_especial": [
+        {
+          "tipo": "minimo_materias_aprobadas",
+          "cantidad": 25,
+          "descripcion": "Para cursar Debe tener al menos 25 materias obligatorias aprobadas y aprobado el CGCB"
+        }
+      ]
+    },
+    {
+      "id": "2898",
+      "nombre": "SUBESTACIONES",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G0762",
+      "subtipo": null,
+      "correlativas": {
+        "I0703": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      },
+      "requisito_especial": [
+        {
+          "tipo": "minimo_materias_aprobadas",
+          "cantidad": 25,
+          "descripcion": "Para aprobar Debe tener al menos 25 materias obligatorias aprobadas y aprobado el CGCB"
+        }
+      ]
+    },
+    {
+      "id": "2942",
+      "nombre": "TOPICOS ESPECIALES A",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G0762",
+      "subtipo": null,
+      "correlativas": {
+        "I0703": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      },
+      "requisito_especial": [
+        {
+          "tipo": "minimo_materias_aprobadas",
+          "cantidad": 25,
+          "descripcion": "Para cursar Debe tener al menos 25 materias obligatorias aprobadas y aprobado el CGCB"
+        }
+      ]
+    },
+    {
+      "id": "8020",
+      "nombre": "OPTATIVA IE (ELECTIVA)",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G0762",
+      "subtipo": null,
+      "correlativas": {
+        "I0703": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      },
+      "requisito_especial": [
+        {
+          "tipo": "minimo_materias_aprobadas",
+          "cantidad": 25,
+          "descripcion": "Para aprobar Debe tener al menos 25 materias obligatorias aprobadas y aprobado el CGCB"
+        }
+      ]
+    },
+    {
+      "id": "2691",
+      "nombre": "EXAMEN DE SUFICIENCIA DE IDIOMA: INGLES",
+      "año": "Tercer Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "I0703",
+      "subtipo": "idioma",
+      "correlativas": {}
+    }
+  ],
+  "agrupadores": [
+    {
+      "id": "G0762",
+      "nombre": "Optativa de Ingeniería Electricista, plan 2025",
+      "tipo": "optativa_grupo",
+      "opciones": [
+        "2732",
+        "2845",
+        "2878",
+        "2898",
+        "2942",
+        "8020"
+      ],
+      "año": "Quinto Año",
+      "cuatrimestre": "Primer Cuatrimestre"
+    },
+    {
+      "id": "G0763",
+      "nombre": "Optativa de Ingeniería Electricista, plan 2025",
+      "tipo": "optativa_grupo",
+      "opciones": [
+        "2732",
+        "2845",
+        "2878",
+        "2898",
+        "2942",
+        "8020"
+      ],
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre"
+    },
+    {
+      "id": "I0703",
+      "nombre": "Idioma de Ingeniería Electricista, plan 2025",
+      "tipo": "idioma_grupo",
+      "opciones": [
+        "2691"
+      ],
+      "año": "Tercer Año",
+      "cuatrimestre": "Segundo Cuatrimestre"
+    }
+  ],
+  "_colisiones_id": [
+    "G0762",
+    "G0763",
+    "I0703"
+  ],
+  "_saved_at": "2026-05-13T17:11:42.969Z",
+  "_saved_by": "cmoao0axe00001qboucfn8qsn",
+  "_saved_fuente": "parser",
+  "_publicado": true,
+  "_motivo_cambio": ".."
+}

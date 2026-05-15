@@ -78,6 +78,8 @@ def comparar_campos(ref_map: dict, cand_map: dict, comunes: set) -> dict:
     anio_ok = anio_diff = anio_falta = 0
     cors_perfectas = cors_parciales = cors_distintas = 0
     cors_detalle: list[str] = []
+    req_ok = req_diff = req_solo_ref = req_solo_cand = 0
+    req_detalle: list[str] = []
 
     for mid in sorted(comunes):
         rm = ref_map[mid]
@@ -119,6 +121,23 @@ def comparar_campos(ref_map: dict, cand_map: dict, comunes: set) -> dict:
                 msg = f"    [{mid}] distintas — ref={sorted(rc)} cand={sorted(cc)}"
                 cors_detalle.append(msg)
 
+        # requisito_especial
+        rr = rm.get("requisito_especial")
+        cr = cm.get("requisito_especial")
+        if rr is None and cr is None:
+            req_ok += 1
+        elif rr is not None and cr is None:
+            req_solo_ref += 1
+            req_detalle.append(f"    [{mid}] solo en ref — tipo={rr.get('tipo')}")
+        elif rr is None and cr is not None:
+            req_solo_cand += 1
+            req_detalle.append(f"    [{mid}] solo en cand — tipo={cr.get('tipo')}")
+        elif rr.get("tipo") == cr.get("tipo"):
+            req_ok += 1
+        else:
+            req_diff += 1
+            req_detalle.append(f"    [{mid}] tipo difiere — ref={rr.get('tipo')} cand={cr.get('tipo')}")
+
     return {
         "nombre_ok": nombre_ok,
         "nombre_diff": nombre_diff,
@@ -129,6 +148,11 @@ def comparar_campos(ref_map: dict, cand_map: dict, comunes: set) -> dict:
         "cors_parciales": cors_parciales,
         "cors_distintas": cors_distintas,
         "cors_detalle": cors_detalle,
+        "req_ok": req_ok,
+        "req_diff": req_diff,
+        "req_solo_ref": req_solo_ref,
+        "req_solo_cand": req_solo_cand,
+        "req_detalle": req_detalle,
     }
 
 
@@ -205,6 +229,18 @@ def main():
             print(line)
         if len(stats_c["cors_detalle"]) > 20:
             print(f"    ... y {len(stats_c['cors_detalle']) - 20} más")
+
+    req_issues = stats_c["req_solo_ref"] + stats_c["req_solo_cand"] + stats_c["req_diff"]
+    print(f"  Req.esp.: {stats_c['req_ok']} iguales | {req_issues} con diferencias", end="")
+    if stats_c["req_solo_ref"]:
+        print(f" ({stats_c['req_solo_ref']} solo en ref)", end="")
+    if stats_c["req_solo_cand"]:
+        print(f" ({stats_c['req_solo_cand']} solo en cand)", end="")
+    print()
+    if stats_c["req_detalle"]:
+        print(f"\n  Detalle requisitos especiales:")
+        for line in stats_c["req_detalle"][:20]:
+            print(line)
 
     # ── 4. Agrupadores ─────────────────────────────────────────────────────────
     ref_agrup = len(ref.get("agrupadores") or [])

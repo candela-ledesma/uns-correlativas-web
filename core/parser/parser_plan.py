@@ -125,16 +125,35 @@ def asignar_orientaciones_materia(materia, orientaciones_ordenadas, orientacione
     if len(orientaciones_ordenadas_materia) > 1:
         materia["orientaciones"] = orientaciones_ordenadas_materia
 
+def _acumular_requisito(materia: dict, nuevo: dict) -> None:
+    """Agrega `nuevo` a la lista requisito_especial de la materia, evitando duplicados por tipo."""
+    lista: list = materia.setdefault("requisito_especial", [])
+    tipo_nuevo = nuevo.get("tipo")
+    # Para minimo_materias_aprobadas: conservar el de descripción más larga si misma cantidad
+    if tipo_nuevo == "minimo_materias_aprobadas":
+        for i, ex in enumerate(lista):
+            if ex.get("tipo") == "minimo_materias_aprobadas" and ex.get("cantidad") == nuevo.get("cantidad"):
+                if len(nuevo.get("descripcion", "")) > len(ex.get("descripcion", "")):
+                    lista[i] = nuevo
+                return
+    # Para anio_aprobado y cuatrimestre_cursado: duplicado solo si mismo tipo Y mismo anio
+    if tipo_nuevo in ("anio_aprobado", "cuatrimestre_cursado"):
+        if any(r.get("tipo") == tipo_nuevo and r.get("anio") == nuevo.get("anio") for r in lista):
+            return
+    # Para los demás tipos: no duplicar si ya existe el mismo tipo
+    elif any(r.get("tipo") == tipo_nuevo for r in lista):
+        return
+    lista.append(nuevo)
+
+
 def _requisito_tiene_prioridad(existente: dict | None, nuevo: dict) -> bool:
-    """Devuelve True si el requisito existente debe conservarse en lugar del nuevo."""
+    """Obsoleto — mantenido para no romper código externo. Usar _acumular_requisito."""
     if existente is None:
         return False
     tipo_e = existente.get("tipo")
     tipo_n = nuevo.get("tipo")
-    # minimo_materias_aprobadas nunca se sobreescribe con anio_aprobado
     if tipo_e == "minimo_materias_aprobadas" and tipo_n == "anio_aprobado":
         return True
-    # minimo_materias_aprobadas con misma cantidad: conservar el que tenga descripción más larga
     if tipo_e == "minimo_materias_aprobadas" and tipo_n == "minimo_materias_aprobadas":
         if existente.get("cantidad") == nuevo.get("cantidad"):
             return len(existente.get("descripcion", "")) > len(nuevo.get("descripcion", ""))
@@ -548,18 +567,14 @@ def detectar_materias_generico(texto):
             continue
 
         if tipo == "correlativa" and materia_actual is not None:
-            requisito = inferir_requisito_especial(linea)
-            if requisito:
-                if requisito.get("tipo") == "prueba_idioma":
-                    requisito["materiaId"] = str(materia_actual.get("id", ""))
-                req_existente = materia_actual.get("requisito_especial")
-                if not _requisito_tiene_prioridad(req_existente, requisito):
-                    materia_actual["requisito_especial"] = requisito
+            requisitos = inferir_requisito_especial(linea)
+            if requisitos:
+                for req in requisitos:
+                    if req.get("tipo") == "prueba_idioma":
+                        req["materiaId"] = str(materia_actual.get("id", ""))
+                    _acumular_requisito(materia_actual, req)
 
-                # Solo reemplazar correlativas si es un requisito cuantitativo.
-                # Los requisitos de "prueba_idioma" se agregan sin afectar
-                # las correlativas que ya fueron detectadas.
-                if requisito.get("tipo") == "minimo_materias_aprobadas":
+                if any(r.get("tipo") == "minimo_materias_aprobadas" for r in requisitos):
                     for cor_id in list(warnings_prosa_materia_actual.keys()):
                         materia_actual["correlativas"].pop(cor_id, None)
                     for w in warnings_prosa_materia_actual.values():
@@ -574,20 +589,14 @@ def detectar_materias_generico(texto):
             continue
 
         if tipo == "desconocida" and materia_actual is not None:
-            requisito = inferir_requisito_especial(linea)
-            if requisito:
-                if requisito.get("tipo") == "prueba_idioma":
-                    requisito["materiaId"] = str(materia_actual.get("id", ""))
-                req_existente = materia_actual.get("requisito_especial")
-                if not _requisito_tiene_prioridad(req_existente, requisito):
-                    materia_actual["requisito_especial"] = requisito
+            requisitos = inferir_requisito_especial(linea)
+            if requisitos:
+                for req in requisitos:
+                    if req.get("tipo") == "prueba_idioma":
+                        req["materiaId"] = str(materia_actual.get("id", ""))
+                    _acumular_requisito(materia_actual, req)
 
-                # Solo reemplazar correlativas si es un requisito cuantitativo.
-                # Los requisitos de "prueba_idioma" se agregan sin afectar
-                # las correlativas que ya fueron detectadas.
-                if requisito.get("tipo") == "minimo_materias_aprobadas":
-                    # Revertir correlativas y warnings de prosa acumulados para esta materia
-                    # — el requisito_especial cuantitativo las reemplaza completamente.
+                if any(r.get("tipo") == "minimo_materias_aprobadas" for r in requisitos):
                     for cor_id in list(warnings_prosa_materia_actual.keys()):
                         materia_actual["correlativas"].pop(cor_id, None)
                     for w in warnings_prosa_materia_actual.values():
@@ -597,9 +606,6 @@ def detectar_materias_generico(texto):
                             pass
                     warnings_prosa_materia_actual.clear()
 
-                # Aun cuando la línea tiene un requisito_especial, puede contener
-                # correlativas estructuradas inline (ej. "5175 Aprobada" en la misma
-                # línea que el texto del requisito). Extraerlas y registrarlas.
                 correlativas_inline = extraer_correlativas_de_linea(linea)
                 if correlativas_inline:
                     materia_actual["correlativas"].update(correlativas_inline)

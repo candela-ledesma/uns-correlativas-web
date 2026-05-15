@@ -139,6 +139,10 @@ export async function POST(request: Request) {
 
     await fs.writeFile(filePath, JSON.stringify(dataToSave, null, 2), "utf-8");
 
+    // Borrar el pendiente si existe (independiente de la fuente)
+    const pendientePath = path.join(DATA_DIR_GEMINI, `${slug}_pendiente.json`);
+    await fs.unlink(pendientePath).catch(() => {});
+
     // Solo registrar en carreras.ts si es parser (fuente de verdad)
     if (!isGemini) {
       await registrarCarreraEnConfig(slug, `${slug}.json`, plan.plan.carrera, departamento).catch(() => {});

@@ -1,6 +1,6 @@
 {
   "plan": {
-    "carrera": "Ingenieria Agronomica",
+    "carrera": "Ingeniería Agronómica",
     "universidad": "Universidad Nacional del Sur",
     "codigo_plan": "Plan 2026 - Versión 1"
   },
@@ -9,7 +9,7 @@
       "id": "818",
       "nombre": "TALLER DE SISTEMAS AGROPECUARIOS I",
       "año": "Primer Año",
-      "cuatrimestre": "Anual",
+      "cuatrimestre": null,
       "horas": "",
       "tipo": "materia",
       "categoria": "normal",
@@ -79,6 +79,14 @@
         "787": {
           "para_cursar": "cursada",
           "para_rendir": "aprobada"
+        },
+        "6136": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
+        },
+        "8165": {
+          "para_cursar": "cursada",
+          "para_rendir": "aprobada"
         }
       }
     },
@@ -137,7 +145,7 @@
       "id": "837",
       "nombre": "PRACTICA DE EXTENSION",
       "año": "Segundo Año",
-      "cuatrimestre": "Anual",
+      "cuatrimestre": null,
       "horas": "",
       "tipo": "materia",
       "categoria": "normal",
@@ -154,7 +162,7 @@
       "id": "819",
       "nombre": "TALLER DE SISTEMAS AGROPECUARIOS II",
       "año": "Segundo Año",
-      "cuatrimestre": "Anual",
+      "cuatrimestre": null,
       "horas": "",
       "tipo": "materia",
       "categoria": "normal",
@@ -342,11 +350,11 @@
     {
       "id": "I0006",
       "nombre": "Idioma de Ingeniería Agronómica, plan 2026 v1",
-      "año": "Segundo Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
+      "año": "Tercer Año",
+      "cuatrimestre": null,
       "horas": "",
       "tipo": "materia",
-      "categoria": "normal",
+      "categoria": null,
       "grupo_opcion": null,
       "subtipo": "idioma",
       "correlativas": {}
@@ -355,7 +363,7 @@
       "id": "832",
       "nombre": "TALLER DE SISTEMAS AGROPECUARIOS III",
       "año": "Tercer Año",
-      "cuatrimestre": "Anual",
+      "cuatrimestre": null,
       "horas": "",
       "tipo": "materia",
       "categoria": "normal",
@@ -570,7 +578,7 @@
       "id": "791",
       "nombre": "EXTENSION RURAL",
       "año": "Tercer Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
+      "cuatrimestre": null,
       "horas": "",
       "tipo": "materia",
       "categoria": "normal",
@@ -595,7 +603,7 @@
       "id": "803",
       "nombre": "MANEJO DE ESPECIES ARVENSES",
       "año": "Tercer Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
+      "cuatrimestre": null,
       "horas": "",
       "tipo": "materia",
       "categoria": "normal",
@@ -628,7 +636,7 @@
       "id": "808",
       "nombre": "PRINCIPIOS DE PRODUCCION ANIMAL",
       "año": "Tercer Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
+      "cuatrimestre": null,
       "horas": "",
       "tipo": "materia",
       "categoria": "normal",
@@ -638,14 +646,6 @@
         "794": {
           "para_cursar": "cursada",
           "para_rendir": "aprobada"
-        },
-        "817": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "I0006": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
         }
       }
     },
@@ -653,7 +653,7 @@
       "id": "809",
       "nombre": "PRINCIPIOS DE PRODUCCION VEGETAL",
       "año": "Tercer Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
+      "cuatrimestre": null,
       "horas": "",
       "tipo": "materia",
       "categoria": "normal",
@@ -686,7 +686,7 @@
       "id": "833",
       "nombre": "TALLER DE SISTEMAS AGROPECUARIOS IV",
       "año": "Cuarto Año",
-      "cuatrimestre": "Anual",
+      "cuatrimestre": null,
       "horas": "",
       "tipo": "materia",
       "categoria": "normal",
@@ -934,7 +934,7 @@
       "id": "796",
       "nombre": "GENETICA APLICADA",
       "año": "Cuarto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
+      "cuatrimestre": null,
       "horas": "",
       "tipo": "materia",
       "categoria": "normal",
@@ -963,7 +963,7 @@
       "id": "816",
       "nombre": "SISTEMAS DE PRODUCCION AVICOLA Y PORCINA",
       "año": "Cuarto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
+      "cuatrimestre": null,
       "horas": "",
       "tipo": "materia",
       "categoria": "normal",
@@ -992,7 +992,7 @@
       "id": "838",
       "nombre": "TRABAJO FINAL DE CARRERA",
       "año": "Quinto Año",
-      "cuatrimestre": "Anual",
+      "cuatrimestre": null,
       "horas": "",
       "tipo": "materia",
       "categoria": "normal",
@@ -1000,16 +1000,16 @@
       "subtipo": null,
       "correlativas": {
         "833": {
-          "para_cursar": null,
-          "para_rendir": "cursada"
+          "para_cursar": "cursada",
+          "para_rendir": null
         },
         "837": {
-          "para_cursar": null,
-          "para_rendir": "aprobada"
+          "para_cursar": "aprobada",
+          "para_rendir": null
         },
         "I0006": {
-          "para_cursar": null,
-          "para_rendir": "aprobada"
+          "para_cursar": "aprobada",
+          "para_rendir": null
         }
       }
     },
@@ -1120,7 +1120,7 @@
       "id": "839",
       "nombre": "PRODUCCION DE FRUTALES",
       "año": "Quinto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
+      "cuatrimestre": null,
       "horas": "",
       "tipo": "materia",
       "categoria": "optativa",
@@ -1143,20 +1143,13 @@
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
-      },
-      "requisito_especial": [
-        {
-          "tipo": "anio_aprobado",
-          "descripcion": "Para cursar Debe tener tercer año aprobado. Para aprobar Debe tener tercer año aprobado",
-          "anio": 3
-        }
-      ]
+      }
     },
     {
       "id": "840",
       "nombre": "PRODUCCION DE HORTICOLAS",
       "año": "Quinto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
+      "cuatrimestre": null,
       "horas": "",
       "tipo": "materia",
       "categoria": "optativa",
@@ -1179,20 +1172,13 @@
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
-      },
-      "requisito_especial": [
-        {
-          "tipo": "anio_aprobado",
-          "descripcion": "Para aprobar Debe tener tercer año aprobado. Para cursar Debe tener tercer año aprobado",
-          "anio": 3
-        }
-      ]
+      }
     },
     {
       "id": "841",
       "nombre": "GENESIS, CLASIFICACION Y CARTOGRAFIA DIGITAL DE SUELOS",
       "año": "Quinto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
+      "cuatrimestre": null,
       "horas": "",
       "tipo": "materia",
       "categoria": "optativa",
@@ -1215,20 +1201,13 @@
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
-      },
-      "requisito_especial": [
-        {
-          "tipo": "anio_aprobado",
-          "descripcion": "Para cursar Debe tener tercer año aprobado. Para aprobar Debe tener tercer año aprobado",
-          "anio": 3
-        }
-      ]
+      }
     },
     {
       "id": "842",
       "nombre": "FUNDAMENTOS DE APICULTURA",
       "año": "Quinto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
+      "cuatrimestre": null,
       "horas": "",
       "tipo": "materia",
       "categoria": "optativa",
@@ -1251,20 +1230,13 @@
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
-      },
-      "requisito_especial": [
-        {
-          "tipo": "anio_aprobado",
-          "descripcion": "Para aprobar Debe tener tercer año aprobado. Para cursar Debe tener tercer año aprobado",
-          "anio": 3
-        }
-      ]
+      }
     },
     {
       "id": "843",
       "nombre": "BOTANICA APICOLA",
       "año": "Quinto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
+      "cuatrimestre": null,
       "horas": "",
       "tipo": "materia",
       "categoria": "optativa",
@@ -1272,12 +1244,12 @@
       "subtipo": null,
       "correlativas": {
         "812": {
-          "para_cursar": null,
-          "para_rendir": "aprobada"
+          "para_cursar": "aprobada",
+          "para_rendir": null
         },
         "814": {
-          "para_cursar": null,
-          "para_rendir": "aprobada"
+          "para_cursar": "aprobada",
+          "para_rendir": null
         },
         "833": {
           "para_cursar": "cursada",
@@ -1291,20 +1263,13 @@
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
-      },
-      "requisito_especial": [
-        {
-          "tipo": "anio_aprobado",
-          "descripcion": "Para cursar Debe tener tercer año aprobado. Para aprobar Debe tener tercer año aprobado",
-          "anio": 3
-        }
-      ]
+      }
     },
     {
       "id": "844",
       "nombre": "RESIDUOS ORGANICOS: GESTION, VALORIZACION Y USO AGRONOMICO",
       "año": "Quinto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
+      "cuatrimestre": null,
       "horas": "",
       "tipo": "materia",
       "categoria": "optativa",
@@ -1335,20 +1300,13 @@
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
-      },
-      "requisito_especial": [
-        {
-          "tipo": "anio_aprobado",
-          "descripcion": "Para aprobar Debe tener tercer año aprobado. Para cursar Debe tener tercer año aprobado",
-          "anio": 3
-        }
-      ]
+      }
     },
     {
       "id": "845",
       "nombre": "INTRODUCCION A LOS AGRONEGOCIOS",
       "año": "Quinto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
+      "cuatrimestre": null,
       "horas": "",
       "tipo": "materia",
       "categoria": "optativa",
@@ -1371,20 +1329,13 @@
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
-      },
-      "requisito_especial": [
-        {
-          "tipo": "anio_aprobado",
-          "descripcion": "Para cursar Debe tener tercer año aprobado. Para aprobar Debe tener tercer año aprobado",
-          "anio": 3
-        }
-      ]
+      }
     },
     {
       "id": "846",
       "nombre": "FORRAJES CONSERVADOS",
       "año": "Quinto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
+      "cuatrimestre": null,
       "horas": "",
       "tipo": "materia",
       "categoria": "optativa",
@@ -1415,20 +1366,13 @@
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
-      },
-      "requisito_especial": [
-        {
-          "tipo": "anio_aprobado",
-          "descripcion": "Para aprobar Debe tener tercer año aprobado. Para cursar Debe tener tercer año aprobado",
-          "anio": 3
-        }
-      ]
+      }
     },
     {
       "id": "847",
       "nombre": "NUTRICION APLICADA A RUMIANTES",
       "año": "Quinto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
+      "cuatrimestre": null,
       "horas": "",
       "tipo": "materia",
       "categoria": "optativa",
@@ -1459,20 +1403,13 @@
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
-      },
-      "requisito_especial": [
-        {
-          "tipo": "anio_aprobado",
-          "descripcion": "Para cursar Debe tener tercer año aprobado. Para aprobar Debe tener tercer año aprobado",
-          "anio": 3
-        }
-      ]
+      }
     },
     {
       "id": "848",
       "nombre": "PLANTAS NATIVAS CON VALOR ORNAMENTAL",
       "año": "Quinto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
+      "cuatrimestre": null,
       "horas": "",
       "tipo": "materia",
       "categoria": "optativa",
@@ -1495,20 +1432,13 @@
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
-      },
-      "requisito_especial": [
-        {
-          "tipo": "anio_aprobado",
-          "descripcion": "Para cursar Debe tener tercer año aprobado. Para aprobar Debe tener tercer año aprobado",
-          "anio": 3
-        }
-      ]
+      }
     },
     {
       "id": "849",
       "nombre": "INSECTOS BENEFICOS EN AGROECOSISTEMAS",
       "año": "Quinto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
+      "cuatrimestre": null,
       "horas": "",
       "tipo": "materia",
       "categoria": "optativa",
@@ -1531,20 +1461,13 @@
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
-      },
-      "requisito_especial": [
-        {
-          "tipo": "anio_aprobado",
-          "descripcion": "Para aprobar Debe tener tercer año aprobado. Para cursar Debe tener tercer año aprobado",
-          "anio": 3
-        }
-      ]
+      }
     },
     {
       "id": "850",
       "nombre": "HIGIENE PECUARIA",
       "año": "Quinto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
+      "cuatrimestre": null,
       "horas": "",
       "tipo": "materia",
       "categoria": "optativa",
@@ -1571,20 +1494,13 @@
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
-      },
-      "requisito_especial": [
-        {
-          "tipo": "anio_aprobado",
-          "descripcion": "Para cursar Debe tener tercer año aprobado. Para aprobar Debe tener tercer año aprobado",
-          "anio": 3
-        }
-      ]
+      }
     },
     {
       "id": "851",
       "nombre": "GESTION DE CALIDAD APICOLA",
       "año": "Quinto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
+      "cuatrimestre": null,
       "horas": "",
       "tipo": "materia",
       "categoria": "optativa",
@@ -1615,20 +1531,13 @@
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
-      },
-      "requisito_especial": [
-        {
-          "tipo": "anio_aprobado",
-          "descripcion": "Para cursar Debe tener tercer año aprobado. Para aprobar Debe tener tercer año aprobado",
-          "anio": 3
-        }
-      ]
+      }
     },
     {
       "id": "852",
       "nombre": "CONTROL BIOLOGICO EN SISTEMAS AGROPECUARIOS",
       "año": "Quinto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
+      "cuatrimestre": null,
       "horas": "",
       "tipo": "materia",
       "categoria": "optativa",
@@ -1655,20 +1564,13 @@
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
-      },
-      "requisito_especial": [
-        {
-          "tipo": "anio_aprobado",
-          "descripcion": "Para aprobar Debe tener tercer año aprobado. Para cursar Debe tener tercer año aprobado",
-          "anio": 3
-        }
-      ]
+      }
     },
     {
       "id": "853",
       "nombre": "MAQUINARIA AGROPECUARIA CONVENCIONAL E INTELIGENTE",
       "año": "Quinto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
+      "cuatrimestre": null,
       "horas": "",
       "tipo": "materia",
       "categoria": "optativa",
@@ -1695,20 +1597,13 @@
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
-      },
-      "requisito_especial": [
-        {
-          "tipo": "anio_aprobado",
-          "descripcion": "Para cursar Debe tener tercer año aprobado. Para aprobar Debe tener tercer año aprobado",
-          "anio": 3
-        }
-      ]
+      }
     },
     {
       "id": "854",
       "nombre": "MANEJO Y PODA DE ORNAMENTALES",
       "año": "Quinto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
+      "cuatrimestre": null,
       "horas": "",
       "tipo": "materia",
       "categoria": "optativa",
@@ -1731,20 +1626,13 @@
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
-      },
-      "requisito_especial": [
-        {
-          "tipo": "anio_aprobado",
-          "descripcion": "Para aprobar Debe tener tercer año aprobado. Para cursar Debe tener tercer año aprobado",
-          "anio": 3
-        }
-      ]
+      }
     },
     {
       "id": "855",
       "nombre": "SILVICULTURA RURAL Y URBANA",
       "año": "Quinto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
+      "cuatrimestre": null,
       "horas": "",
       "tipo": "materia",
       "categoria": "optativa",
@@ -1767,20 +1655,13 @@
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
-      },
-      "requisito_especial": [
-        {
-          "tipo": "anio_aprobado",
-          "descripcion": "Para cursar Debe tener tercer año aprobado. Para aprobar Debe tener tercer año aprobado",
-          "anio": 3
-        }
-      ]
+      }
     },
     {
       "id": "541",
       "nombre": "EXAMEN DE SUFICIENCIA DE IDIOMA INGLES",
-      "año": "Segundo Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
+      "año": "Tercer Año",
+      "cuatrimestre": null,
       "horas": "",
       "tipo": "materia",
       "categoria": "optativa",
@@ -1790,6 +1671,16 @@
     }
   ],
   "agrupadores": [
+    {
+      "id": "I0006",
+      "nombre": "Idioma de Ingeniería Agronómica, plan 2026 v1",
+      "tipo": "idioma_grupo",
+      "opciones": [
+        "541"
+      ],
+      "año": "Tercer Año",
+      "cuatrimestre": null
+    },
     {
       "id": "G0261",
       "nombre": "Optativa de Ingeniería Agronómica, plan 2026 v1",
@@ -1814,7 +1705,7 @@
         "855"
       ],
       "año": "Quinto Año",
-      "cuatrimestre": "Segundo Cuatrimestre"
+      "cuatrimestre": null
     },
     {
       "id": "G0262",
@@ -1840,7 +1731,7 @@
         "855"
       ],
       "año": "Quinto Año",
-      "cuatrimestre": "Segundo Cuatrimestre"
+      "cuatrimestre": null
     },
     {
       "id": "G0263",
@@ -1866,7 +1757,7 @@
         "855"
       ],
       "año": "Quinto Año",
-      "cuatrimestre": "Segundo Cuatrimestre"
+      "cuatrimestre": null
     },
     {
       "id": "G0264",
@@ -1892,7 +1783,7 @@
         "855"
       ],
       "año": "Quinto Año",
-      "cuatrimestre": "Segundo Cuatrimestre"
+      "cuatrimestre": null
     },
     {
       "id": "G0265",
@@ -1918,30 +1809,11 @@
         "855"
       ],
       "año": "Quinto Año",
-      "cuatrimestre": "Segundo Cuatrimestre"
-    },
-    {
-      "id": "I0006",
-      "nombre": "Idioma de Ingeniería Agronómica, plan 2026 v1",
-      "tipo": "idioma_grupo",
-      "opciones": [
-        "541"
-      ],
-      "año": "Segundo Año",
-      "cuatrimestre": "Segundo Cuatrimestre"
+      "cuatrimestre": null
     }
   ],
-  "_colisiones_id": [
-    "G0261",
-    "G0262",
-    "G0263",
-    "G0264",
-    "G0265",
-    "I0006"
-  ],
-  "_saved_at": "2026-05-13T00:28:38.361Z",
-  "_saved_by": "cmoao0axe00001qboucfn8qsn",
-  "_saved_fuente": "parser",
-  "_publicado": true,
-  "_motivo_cambio": "se detectan los requisitos especiales"
+  "_llm_confidence": 1,
+  "_llm_prompt_version": "v25",
+  "_llm_mode": "llm",
+  "_auto_saved_at": "2026-05-12T23:55:10.466Z"
 }

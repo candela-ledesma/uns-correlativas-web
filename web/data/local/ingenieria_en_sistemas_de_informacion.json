@@ -712,7 +712,14 @@
           "para_cursar": null,
           "para_rendir": "aprobada"
         }
-      }
+      },
+      "requisito_especial": [
+        {
+          "tipo": "anio_aprobado",
+          "descripcion": "Para aprobar Se requiere tener tercer año aprobado",
+          "anio": 3
+        }
+      ]
     },
     {
       "id": "7903",
@@ -902,9 +909,14 @@
     "I0022",
     "I0023"
   ],
-  "_saved_at": "2026-05-11T22:03:52.949Z",
-  "_saved_by": "cmo2fwlcf00005xdv4536cc0l",
+  "_estado": "pendiente_revision",
+  "_enviado_at": "2026-05-14T23:05:58.637Z",
+  "_enviado_by": "cmoao0axe00001qboucfn8qsn",
+  "_enviado_by_email": "candelaledesmapm@gmail.com",
+  "_fuente": "parser",
+  "_nota_revision": "requisito especial para \"PRACTICA PROFESIONAL SUPERVISADA PARA INGENIERIA DE SOFTWARE\" detectado",
+  "_saved_at": "2026-05-14T23:12:38.376Z",
+  "_saved_by": "cmoao0axe00001qboucfn8qsn",
   "_saved_fuente": "parser",
-  "_publicado": true,
-  "_motivo_cambio": "parser local"
+  "_publicado": true
 }

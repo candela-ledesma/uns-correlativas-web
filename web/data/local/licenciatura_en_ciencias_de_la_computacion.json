@@ -628,11 +628,13 @@
           "para_rendir": "aprobada"
         }
       },
-      "requisito_especial": {
-        "tipo": "minimo_materias_aprobadas",
-        "cantidad": 15,
-        "descripcion": "cursar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
-      }
+      "requisito_especial": [
+        {
+          "tipo": "minimo_materias_aprobadas",
+          "cantidad": 15,
+          "descripcion": "cursar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
+        }
+      ]
     },
     {
       "id": "5515",
@@ -654,11 +656,13 @@
           "para_rendir": "aprobada"
         }
       },
-      "requisito_especial": {
-        "tipo": "minimo_materias_aprobadas",
-        "cantidad": 15,
-        "descripcion": "tener al menos 15 materias aprobadas o 18 cursadas"
-      }
+      "requisito_especial": [
+        {
+          "tipo": "minimo_materias_aprobadas",
+          "cantidad": 15,
+          "descripcion": "tener al menos 15 materias aprobadas o 18 cursadas"
+        }
+      ]
     },
     {
       "id": "5559",
@@ -680,11 +684,13 @@
           "para_rendir": "aprobada"
         }
       },
-      "requisito_especial": {
-        "tipo": "minimo_materias_aprobadas",
-        "cantidad": 15,
-        "descripcion": "cursar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
-      }
+      "requisito_especial": [
+        {
+          "tipo": "minimo_materias_aprobadas",
+          "cantidad": 15,
+          "descripcion": "cursar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
+        }
+      ]
     },
     {
       "id": "7534",
@@ -710,11 +716,13 @@
           "para_rendir": "aprobada"
         }
       },
-      "requisito_especial": {
-        "tipo": "minimo_materias_aprobadas",
-        "cantidad": 15,
-        "descripcion": "tener al menos 15 materias aprobadas o 18 cursadas"
-      }
+      "requisito_especial": [
+        {
+          "tipo": "minimo_materias_aprobadas",
+          "cantidad": 15,
+          "descripcion": "tener al menos 15 materias aprobadas o 18 cursadas"
+        }
+      ]
     },
     {
       "id": "7538",
@@ -732,11 +740,13 @@
           "para_rendir": "aprobada"
         }
       },
-      "requisito_especial": {
-        "tipo": "minimo_materias_aprobadas",
-        "cantidad": 15,
-        "descripcion": "aprobar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
-      }
+      "requisito_especial": [
+        {
+          "tipo": "minimo_materias_aprobadas",
+          "cantidad": 15,
+          "descripcion": "aprobar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
+        }
+      ]
     },
     {
       "id": "7539",
@@ -754,11 +764,13 @@
           "para_rendir": "aprobada"
         }
       },
-      "requisito_especial": {
-        "tipo": "minimo_materias_aprobadas",
-        "cantidad": 15,
-        "descripcion": "aprobar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
-      }
+      "requisito_especial": [
+        {
+          "tipo": "minimo_materias_aprobadas",
+          "cantidad": 15,
+          "descripcion": "aprobar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
+        }
+      ]
     },
     {
       "id": "7541",
@@ -780,11 +792,13 @@
           "para_rendir": "aprobada"
         }
       },
-      "requisito_especial": {
-        "tipo": "minimo_materias_aprobadas",
-        "cantidad": 15,
-        "descripcion": "aprobar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
-      }
+      "requisito_especial": [
+        {
+          "tipo": "minimo_materias_aprobadas",
+          "cantidad": 15,
+          "descripcion": "aprobar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
+        }
+      ]
     },
     {
       "id": "7542",
@@ -810,11 +824,13 @@
           "para_rendir": "aprobada"
         }
       },
-      "requisito_especial": {
-        "tipo": "minimo_materias_aprobadas",
-        "cantidad": 15,
-        "descripcion": "tener al menos 15 materias aprobadas o 18 cursadas"
-      }
+      "requisito_especial": [
+        {
+          "tipo": "minimo_materias_aprobadas",
+          "cantidad": 15,
+          "descripcion": "tener al menos 15 materias aprobadas o 18 cursadas"
+        }
+      ]
     },
     {
       "id": "7565",
@@ -827,11 +843,13 @@
       "grupo_opcion": "G0037",
       "subtipo": null,
       "correlativas": {},
-      "requisito_especial": {
-        "tipo": "minimo_materias_aprobadas",
-        "cantidad": 15,
-        "descripcion": "cursar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
-      }
+      "requisito_especial": [
+        {
+          "tipo": "minimo_materias_aprobadas",
+          "cantidad": 15,
+          "descripcion": "cursar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
+        }
+      ]
     },
     {
       "id": "7598",
@@ -849,11 +867,13 @@
           "para_rendir": "aprobada"
         }
       },
-      "requisito_especial": {
-        "tipo": "minimo_materias_aprobadas",
-        "cantidad": 15,
-        "descripcion": "cursar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
-      }
+      "requisito_especial": [
+        {
+          "tipo": "minimo_materias_aprobadas",
+          "cantidad": 15,
+          "descripcion": "cursar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
+        }
+      ]
     },
     {
       "id": "7626",
@@ -879,11 +899,13 @@
           "para_rendir": "aprobada"
         }
       },
-      "requisito_especial": {
-        "tipo": "minimo_materias_aprobadas",
-        "cantidad": 15,
-        "descripcion": "cursar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
-      }
+      "requisito_especial": [
+        {
+          "tipo": "minimo_materias_aprobadas",
+          "cantidad": 15,
+          "descripcion": "cursar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
+        }
+      ]
     },
     {
       "id": "7627",
@@ -909,11 +931,13 @@
           "para_rendir": "aprobada"
         }
       },
-      "requisito_especial": {
-        "tipo": "minimo_materias_aprobadas",
-        "cantidad": 15,
-        "descripcion": "aprobar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
-      }
+      "requisito_especial": [
+        {
+          "tipo": "minimo_materias_aprobadas",
+          "cantidad": 15,
+          "descripcion": "aprobar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
+        }
+      ]
     },
     {
       "id": "7629",
@@ -935,11 +959,13 @@
           "para_rendir": "aprobada"
         }
       },
-      "requisito_especial": {
-        "tipo": "minimo_materias_aprobadas",
-        "cantidad": 15,
-        "descripcion": "cursar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
-      }
+      "requisito_especial": [
+        {
+          "tipo": "minimo_materias_aprobadas",
+          "cantidad": 15,
+          "descripcion": "cursar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
+        }
+      ]
     },
     {
       "id": "7631",
@@ -961,11 +987,13 @@
           "para_rendir": "aprobada"
         }
       },
-      "requisito_especial": {
-        "tipo": "minimo_materias_aprobadas",
-        "cantidad": 15,
-        "descripcion": "aprobar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
-      }
+      "requisito_especial": [
+        {
+          "tipo": "minimo_materias_aprobadas",
+          "cantidad": 15,
+          "descripcion": "aprobar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
+        }
+      ]
     },
     {
       "id": "7661",
@@ -987,11 +1015,13 @@
           "para_rendir": "aprobada"
         }
       },
-      "requisito_especial": {
-        "tipo": "minimo_materias_aprobadas",
-        "cantidad": 15,
-        "descripcion": "aprobar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
-      }
+      "requisito_especial": [
+        {
+          "tipo": "minimo_materias_aprobadas",
+          "cantidad": 15,
+          "descripcion": "aprobar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
+        }
+      ]
     },
     {
       "id": "7663",
@@ -1013,11 +1043,13 @@
           "para_rendir": "aprobada"
         }
       },
-      "requisito_especial": {
-        "tipo": "minimo_materias_aprobadas",
-        "cantidad": 15,
-        "descripcion": "aprobar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
-      }
+      "requisito_especial": [
+        {
+          "tipo": "minimo_materias_aprobadas",
+          "cantidad": 15,
+          "descripcion": "aprobar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
+        }
+      ]
     },
     {
       "id": "7676",
@@ -1039,11 +1071,13 @@
           "para_rendir": "aprobada"
         }
       },
-      "requisito_especial": {
-        "tipo": "minimo_materias_aprobadas",
-        "cantidad": 15,
-        "descripcion": "cursar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
-      }
+      "requisito_especial": [
+        {
+          "tipo": "minimo_materias_aprobadas",
+          "cantidad": 15,
+          "descripcion": "cursar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
+        }
+      ]
     },
     {
       "id": "7682",
@@ -1065,11 +1099,13 @@
           "para_rendir": "aprobada"
         }
       },
-      "requisito_especial": {
-        "tipo": "minimo_materias_aprobadas",
-        "cantidad": 15,
-        "descripcion": "cursar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
-      }
+      "requisito_especial": [
+        {
+          "tipo": "minimo_materias_aprobadas",
+          "cantidad": 15,
+          "descripcion": "cursar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
+        }
+      ]
     },
     {
       "id": "7699",
@@ -1091,11 +1127,13 @@
           "para_rendir": "aprobada"
         }
       },
-      "requisito_especial": {
-        "tipo": "minimo_materias_aprobadas",
-        "cantidad": 15,
-        "descripcion": "aprobar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
-      }
+      "requisito_especial": [
+        {
+          "tipo": "minimo_materias_aprobadas",
+          "cantidad": 15,
+          "descripcion": "aprobar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
+        }
+      ]
     },
     {
       "id": "7702",
@@ -1117,11 +1155,13 @@
           "para_rendir": "aprobada"
         }
       },
-      "requisito_especial": {
-        "tipo": "minimo_materias_aprobadas",
-        "cantidad": 15,
-        "descripcion": "cursar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
-      }
+      "requisito_especial": [
+        {
+          "tipo": "minimo_materias_aprobadas",
+          "cantidad": 15,
+          "descripcion": "cursar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
+        }
+      ]
     },
     {
       "id": "7703",
@@ -1143,11 +1183,13 @@
           "para_rendir": "aprobada"
         }
       },
-      "requisito_especial": {
-        "tipo": "minimo_materias_aprobadas",
-        "cantidad": 15,
-        "descripcion": "cursar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
-      }
+      "requisito_especial": [
+        {
+          "tipo": "minimo_materias_aprobadas",
+          "cantidad": 15,
+          "descripcion": "cursar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
+        }
+      ]
     },
     {
       "id": "7705",
@@ -1169,11 +1211,13 @@
           "para_rendir": "aprobada"
         }
       },
-      "requisito_especial": {
-        "tipo": "minimo_materias_aprobadas",
-        "cantidad": 15,
-        "descripcion": "tener al menos 15 materias aprobadas o 18 cursadas"
-      }
+      "requisito_especial": [
+        {
+          "tipo": "minimo_materias_aprobadas",
+          "cantidad": 15,
+          "descripcion": "tener al menos 15 materias aprobadas o 18 cursadas"
+        }
+      ]
     },
     {
       "id": "7706",
@@ -1195,11 +1239,13 @@
           "para_rendir": "aprobada"
         }
       },
-      "requisito_especial": {
-        "tipo": "minimo_materias_aprobadas",
-        "cantidad": 15,
-        "descripcion": "tener al menos 15 materias aprobadas o 18 cursadas"
-      }
+      "requisito_especial": [
+        {
+          "tipo": "minimo_materias_aprobadas",
+          "cantidad": 15,
+          "descripcion": "tener al menos 15 materias aprobadas o 18 cursadas"
+        }
+      ]
     },
     {
       "id": "7737",
@@ -1229,11 +1275,13 @@
           "para_rendir": "aprobada"
         }
       },
-      "requisito_especial": {
-        "tipo": "minimo_materias_aprobadas",
-        "cantidad": 15,
-        "descripcion": "tener al menos 15 materias aprobadas o 18 cursadas"
-      }
+      "requisito_especial": [
+        {
+          "tipo": "minimo_materias_aprobadas",
+          "cantidad": 15,
+          "descripcion": "tener al menos 15 materias aprobadas o 18 cursadas"
+        }
+      ]
     },
     {
       "id": "7812",
@@ -1259,11 +1307,13 @@
           "para_rendir": "aprobada"
         }
       },
-      "requisito_especial": {
-        "tipo": "minimo_materias_aprobadas",
-        "cantidad": 15,
-        "descripcion": "tener al menos 15 materias aprobadas o 18 cursadas"
-      }
+      "requisito_especial": [
+        {
+          "tipo": "minimo_materias_aprobadas",
+          "cantidad": 15,
+          "descripcion": "tener al menos 15 materias aprobadas o 18 cursadas"
+        }
+      ]
     },
     {
       "id": "7813",
@@ -1289,11 +1339,13 @@
           "para_rendir": "aprobada"
         }
       },
-      "requisito_especial": {
-        "tipo": "minimo_materias_aprobadas",
-        "cantidad": 15,
-        "descripcion": "aprobar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
-      }
+      "requisito_especial": [
+        {
+          "tipo": "minimo_materias_aprobadas",
+          "cantidad": 15,
+          "descripcion": "aprobar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
+        }
+      ]
     },
     {
       "id": "7815",
@@ -1323,11 +1375,13 @@
           "para_rendir": "aprobada"
         }
       },
-      "requisito_especial": {
-        "tipo": "minimo_materias_aprobadas",
-        "cantidad": 15,
-        "descripcion": "tener al menos 15 materias aprobadas o 18 cursadas"
-      }
+      "requisito_especial": [
+        {
+          "tipo": "minimo_materias_aprobadas",
+          "cantidad": 15,
+          "descripcion": "tener al menos 15 materias aprobadas o 18 cursadas"
+        }
+      ]
     },
     {
       "id": "7816",
@@ -1340,11 +1394,13 @@
       "grupo_opcion": "G0037",
       "subtipo": null,
       "correlativas": {},
-      "requisito_especial": {
-        "tipo": "minimo_materias_aprobadas",
-        "cantidad": 15,
-        "descripcion": "cursar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
-      }
+      "requisito_especial": [
+        {
+          "tipo": "minimo_materias_aprobadas",
+          "cantidad": 15,
+          "descripcion": "cursar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
+        }
+      ]
     },
     {
       "id": "7830",
@@ -1370,11 +1426,13 @@
           "para_rendir": "aprobada"
         }
       },
-      "requisito_especial": {
-        "tipo": "minimo_materias_aprobadas",
-        "cantidad": 15,
-        "descripcion": "aprobar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
-      }
+      "requisito_especial": [
+        {
+          "tipo": "minimo_materias_aprobadas",
+          "cantidad": 15,
+          "descripcion": "aprobar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
+        }
+      ]
     },
     {
       "id": "7873",
@@ -1400,11 +1458,13 @@
           "para_rendir": "aprobada"
         }
       },
-      "requisito_especial": {
-        "tipo": "minimo_materias_aprobadas",
-        "cantidad": 15,
-        "descripcion": "cursar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
-      }
+      "requisito_especial": [
+        {
+          "tipo": "minimo_materias_aprobadas",
+          "cantidad": 15,
+          "descripcion": "cursar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
+        }
+      ]
     },
     {
       "id": "7883",
@@ -1422,11 +1482,13 @@
           "para_rendir": "aprobada"
         }
       },
-      "requisito_especial": {
-        "tipo": "minimo_materias_aprobadas",
-        "cantidad": 15,
-        "descripcion": "cursar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
-      }
+      "requisito_especial": [
+        {
+          "tipo": "minimo_materias_aprobadas",
+          "cantidad": 15,
+          "descripcion": "cursar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
+        }
+      ]
     },
     {
       "id": "7885",
@@ -1444,11 +1506,13 @@
           "para_rendir": "aprobada"
         }
       },
-      "requisito_especial": {
-        "tipo": "minimo_materias_aprobadas",
-        "cantidad": 15,
-        "descripcion": "aprobar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
-      }
+      "requisito_especial": [
+        {
+          "tipo": "minimo_materias_aprobadas",
+          "cantidad": 15,
+          "descripcion": "aprobar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
+        }
+      ]
     },
     {
       "id": "7888",
@@ -1474,11 +1538,13 @@
           "para_rendir": "aprobada"
         }
       },
-      "requisito_especial": {
-        "tipo": "minimo_materias_aprobadas",
-        "cantidad": 15,
-        "descripcion": "tener al menos 15 materias aprobadas o 18 cursadas"
-      }
+      "requisito_especial": [
+        {
+          "tipo": "minimo_materias_aprobadas",
+          "cantidad": 15,
+          "descripcion": "tener al menos 15 materias aprobadas o 18 cursadas"
+        }
+      ]
     },
     {
       "id": "7889",
@@ -1504,11 +1570,13 @@
           "para_rendir": "aprobada"
         }
       },
-      "requisito_especial": {
-        "tipo": "minimo_materias_aprobadas",
-        "cantidad": 15,
-        "descripcion": "aprobar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
-      }
+      "requisito_especial": [
+        {
+          "tipo": "minimo_materias_aprobadas",
+          "cantidad": 15,
+          "descripcion": "aprobar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
+        }
+      ]
     },
     {
       "id": "7901",
@@ -1530,11 +1598,13 @@
           "para_rendir": "aprobada"
         }
       },
-      "requisito_especial": {
-        "tipo": "minimo_materias_aprobadas",
-        "cantidad": 15,
-        "descripcion": "cursar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
-      }
+      "requisito_especial": [
+        {
+          "tipo": "minimo_materias_aprobadas",
+          "cantidad": 15,
+          "descripcion": "cursar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
+        }
+      ]
     },
     {
       "id": "7902",
@@ -1556,11 +1626,13 @@
           "para_rendir": "aprobada"
         }
       },
-      "requisito_especial": {
-        "tipo": "minimo_materias_aprobadas",
-        "cantidad": 15,
-        "descripcion": "aprobar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
-      }
+      "requisito_especial": [
+        {
+          "tipo": "minimo_materias_aprobadas",
+          "cantidad": 15,
+          "descripcion": "aprobar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
+        }
+      ]
     },
     {
       "id": "7905",
@@ -1578,11 +1650,13 @@
           "para_rendir": "aprobada"
         }
       },
-      "requisito_especial": {
-        "tipo": "minimo_materias_aprobadas",
-        "cantidad": 15,
-        "descripcion": "Debe tener al menos 15 materias aprobadas o 18 cursadas"
-      }
+      "requisito_especial": [
+        {
+          "tipo": "minimo_materias_aprobadas",
+          "cantidad": 15,
+          "descripcion": "Debe tener al menos 15 materias aprobadas o 18 cursadas"
+        }
+      ]
     },
     {
       "id": "7906",
@@ -1604,11 +1678,13 @@
           "para_rendir": "aprobada"
         }
       },
-      "requisito_especial": {
-        "tipo": "minimo_materias_aprobadas",
-        "cantidad": 15,
-        "descripcion": "cursar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
-      }
+      "requisito_especial": [
+        {
+          "tipo": "minimo_materias_aprobadas",
+          "cantidad": 15,
+          "descripcion": "cursar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
+        }
+      ]
     },
     {
       "id": "7907",
@@ -1634,11 +1710,13 @@
           "para_rendir": "aprobada"
         }
       },
-      "requisito_especial": {
-        "tipo": "minimo_materias_aprobadas",
-        "cantidad": 15,
-        "descripcion": "tener al menos 15 materias aprobadas o 18 cursadas"
-      }
+      "requisito_especial": [
+        {
+          "tipo": "minimo_materias_aprobadas",
+          "cantidad": 15,
+          "descripcion": "tener al menos 15 materias aprobadas o 18 cursadas"
+        }
+      ]
     },
     {
       "id": "7921",
@@ -1651,11 +1729,13 @@
       "grupo_opcion": "G0037",
       "subtipo": null,
       "correlativas": {},
-      "requisito_especial": {
-        "tipo": "minimo_materias_aprobadas",
-        "cantidad": 15,
-        "descripcion": "cursar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
-      }
+      "requisito_especial": [
+        {
+          "tipo": "minimo_materias_aprobadas",
+          "cantidad": 15,
+          "descripcion": "cursar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
+        }
+      ]
     },
     {
       "id": "7952",
@@ -1673,11 +1753,13 @@
           "para_rendir": "aprobada"
         }
       },
-      "requisito_especial": {
-        "tipo": "minimo_materias_aprobadas",
-        "cantidad": 15,
-        "descripcion": "aprobar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
-      }
+      "requisito_especial": [
+        {
+          "tipo": "minimo_materias_aprobadas",
+          "cantidad": 15,
+          "descripcion": "aprobar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
+        }
+      ]
     },
     {
       "id": "7958",
@@ -1699,11 +1781,13 @@
           "para_rendir": "aprobada"
         }
       },
-      "requisito_especial": {
-        "tipo": "minimo_materias_aprobadas",
-        "cantidad": 15,
-        "descripcion": "tener al menos 15 materias aprobadas o 18 cursadas"
-      }
+      "requisito_especial": [
+        {
+          "tipo": "minimo_materias_aprobadas",
+          "cantidad": 15,
+          "descripcion": "tener al menos 15 materias aprobadas o 18 cursadas"
+        }
+      ]
     },
     {
       "id": "7967",
@@ -1721,11 +1805,13 @@
           "para_rendir": "aprobada"
         }
       },
-      "requisito_especial": {
-        "tipo": "minimo_materias_aprobadas",
-        "cantidad": 15,
-        "descripcion": "cursar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
-      }
+      "requisito_especial": [
+        {
+          "tipo": "minimo_materias_aprobadas",
+          "cantidad": 15,
+          "descripcion": "cursar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
+        }
+      ]
     },
     {
       "id": "7994",
@@ -1747,11 +1833,13 @@
           "para_rendir": "aprobada"
         }
       },
-      "requisito_especial": {
-        "tipo": "minimo_materias_aprobadas",
-        "cantidad": 15,
-        "descripcion": "aprobar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
-      }
+      "requisito_especial": [
+        {
+          "tipo": "minimo_materias_aprobadas",
+          "cantidad": 15,
+          "descripcion": "aprobar Debe tener al menos 15 materias aprobadas o 18 materias cursadas"
+        }
+      ]
     },
     {
       "id": "8013",

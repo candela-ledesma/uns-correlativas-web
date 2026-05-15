@@ -204,37 +204,26 @@ function parseCorrelativas(
   return correlativas;
 }
 
-function parseRequisitoEspecial(
+function parseRequisitoEspecialItem(
   raw: unknown,
   path: string,
   issues: PlanValidationIssue[]
-): Materia["requisito_especial"] | undefined {
-  if (raw === undefined) return undefined;
-  if (raw === null) return null;
-
+): import("@/lib/plan/requisitoEspecial").RequisitoEspecialType | undefined {
   if (!isRecord(raw)) {
-    addIssue(issues, "shape", path, "Debe ser un objeto o null");
+    addIssue(issues, "shape", path, "Debe ser un objeto");
     return undefined;
   }
 
   const tipo = asRequiredString(raw.tipo, `${path}.tipo`, issues);
-
   const descripcion = typeof raw.descripcion === "string" && raw.descripcion ? raw.descripcion : undefined;
 
   if (tipo === "minimo_materias_aprobadas") {
     const cantidadRaw = raw.cantidad;
-    let cantidad: number | null = null;
     if (typeof cantidadRaw !== "number" || !Number.isInteger(cantidadRaw) || cantidadRaw < 1) {
       addIssue(issues, "shape", `${path}.cantidad`, "Debe ser un entero mayor o igual a 1");
-    } else {
-      cantidad = cantidadRaw;
-    }
-
-    if (cantidad === null) {
       return undefined;
     }
-
-    return { tipo, cantidad, ...(descripcion ? { descripcion } : {}) };
+    return { tipo, cantidad: cantidadRaw, ...(descripcion ? { descripcion } : {}) };
   } else if (tipo === "prueba_idioma") {
     const result: { tipo: "prueba_idioma"; materiaId?: string; descripcion?: string } = { tipo };
     if (typeof raw.materiaId === "string" && raw.materiaId) result.materiaId = raw.materiaId;
@@ -247,6 +236,18 @@ function parseRequisitoEspecial(
       return undefined;
     }
     return { tipo, anio: anioRaw, ...(descripcion ? { descripcion } : {}) };
+  } else if (tipo === "cuatrimestre_cursado") {
+    const anioRaw = raw.anio;
+    const cuatriRaw = raw.cuatrimestre;
+    if (typeof anioRaw !== "number" || !Number.isInteger(anioRaw) || anioRaw < 1 || anioRaw > 6) {
+      addIssue(issues, "shape", `${path}.anio`, "Debe ser un entero entre 1 y 6");
+      return undefined;
+    }
+    if (typeof cuatriRaw !== "number" || (cuatriRaw !== 1 && cuatriRaw !== 2)) {
+      addIssue(issues, "shape", `${path}.cuatrimestre`, "Debe ser 1 o 2");
+      return undefined;
+    }
+    return { tipo, anio: anioRaw, cuatrimestre: cuatriRaw, ...(descripcion ? { descripcion } : {}) };
   } else if (tipo === "todas_materias_aprobadas") {
     return { tipo, ...(descripcion ? { descripcion } : {}) };
   } else {
@@ -254,10 +255,27 @@ function parseRequisitoEspecial(
       issues,
       "shape",
       `${path}.tipo`,
-      "Debe ser 'minimo_materias_aprobadas', 'prueba_idioma', 'anio_aprobado' o 'todas_materias_aprobadas'"
+      "Tipo de requisito_especial desconocido"
     );
     return undefined;
   }
+}
+
+function parseRequisitoEspecial(
+  raw: unknown,
+  path: string,
+  issues: PlanValidationIssue[]
+): Materia["requisito_especial"] | undefined {
+  if (raw === undefined) return undefined;
+  // legado: objeto único → normalizar a array
+  if (raw === null) return undefined;
+  const items = Array.isArray(raw) ? raw : [raw];
+  const result: Materia["requisito_especial"] = [];
+  for (let i = 0; i < items.length; i++) {
+    const item = parseRequisitoEspecialItem(items[i], `${path}[${i}]`, issues);
+    if (item) result.push(item);
+  }
+  return result.length > 0 ? result : undefined;
 }
 
 function parseMaterias(raw: unknown, issues: PlanValidationIssue[]): Materia[] | null {
@@ -370,7 +388,7 @@ function parseMaterias(raw: unknown, issues: PlanValidationIssue[]): Materia[] |
       ubicacion: ubicacion ?? undefined,
       subtipo,
       correlativas,
-      ...(requisitoEspecial !== undefined
+      ...(requisitoEspecial !== undefined && requisitoEspecial.length > 0
         ? { requisito_especial: requisitoEspecial }
         : {}),
     });

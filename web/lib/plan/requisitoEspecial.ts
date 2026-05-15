@@ -21,6 +21,12 @@ export type RequisitoEspecialType =
       descripcion?: string;
     }
   | {
+      tipo: "cuatrimestre_cursado";
+      anio: number;
+      cuatrimestre: number;
+      descripcion?: string;
+    }
+  | {
       tipo: "todas_materias_aprobadas";
       descripcion?: string;
     };
@@ -91,6 +97,17 @@ export function evaluarRequisitoEspecial(
     };
   }
 
+  if (requisito.tipo === "cuatrimestre_cursado") {
+    return {
+      cumple: false,
+      detalles: {
+        tipo: "cuatrimestre_cursado",
+        mensaje: `Se requiere tener el ${requisito.cuatrimestre}° cuatrimestre del año ${requisito.anio} cursado`,
+        anio: requisito.anio,
+      },
+    };
+  }
+
   if (requisito.tipo === "todas_materias_aprobadas") {
     return {
       cumple: false,
@@ -132,6 +149,13 @@ export function generarTextoRequisito(
     const nombres = ["", "Primer", "Segundo", "Tercer", "Cuarto", "Quinto", "Sexto"];
     const label = nombres[requisito.anio] ?? `${requisito.anio}°`;
     return `Se requiere tener el ${label} Año aprobado`;
+  }
+
+  if (requisito.tipo === "cuatrimestre_cursado") {
+    const nombresAnio = ["", "Primer", "Segundo", "Tercer", "Cuarto", "Quinto", "Sexto"];
+    const labelAnio = nombresAnio[requisito.anio] ?? `${requisito.anio}°`;
+    const labelCuatri = requisito.cuatrimestre === 1 ? "primer" : "segundo";
+    return `Se requiere tener el ${labelCuatri} cuatrimestre del ${labelAnio} Año cursado`;
   }
 
   if (requisito.tipo === "todas_materias_aprobadas") {

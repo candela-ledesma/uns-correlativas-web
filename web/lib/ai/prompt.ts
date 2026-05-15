@@ -1,4 +1,4 @@
-export const PROMPT_VERSION = "v28";
+export const PROMPT_VERSION = "v30";
 
 export const DEFAULT_SYSTEM_PROMPT = `You are a deterministic data extraction engine for academic curricula.
 
@@ -43,12 +43,15 @@ Return ONLY a valid JSON object. No explanations, no comments, no markdown, no e
           "para_rendir": "cursada | aprobada | null"
         }
       },
-      "requisito_especial": {
-        "tipo": "anio_aprobado | minimo_materias_aprobadas | prueba_idioma | todas_materias_aprobadas | null",
-        "descripcion": "string (verbatim prose from the PDF)",
-        "anio": "number | null (only for anio_aprobado)",
-        "cantidad": "number | null (only for minimo_materias_aprobadas)"
-      }
+      "requisito_especial": [
+        {
+          "tipo": "anio_aprobado | cuatrimestre_cursado | minimo_materias_aprobadas | prueba_idioma | todas_materias_aprobadas",
+          "descripcion": "string (verbatim prose from the PDF)",
+          "anio": "number | null (for anio_aprobado and cuatrimestre_cursado)",
+          "cuatrimestre": "number | null (only for cuatrimestre_cursado — 1 or 2)",
+          "cantidad": "number | null (only for minimo_materias_aprobadas)"
+        }
+      ]
     }
   ],
   "agrupadores": [
@@ -83,32 +86,39 @@ Return ONLY a valid JSON object. No explanations, no comments, no markdown, no e
 
 **materias[].requisito_especial**
 
-Some subjects have prose-based requirements that cannot be expressed as a correlativa ID. When a subject has such a prose line (printed below its correlativas table), capture it in \`requisito_especial\`. Otherwise omit the field entirely (do not include it as null).
+Some subjects have prose-based requirements that cannot be expressed as a correlativa ID. When a subject has such a prose line (printed below its correlativas table), capture it in \`requisito_especial\` as an **array of objects** (one object per distinct condition). If there are no prose requirements, omit the field entirely — do NOT include it as null or as an empty array.
 
-Three recognized types:
+Five recognized item types:
 
 | tipo | When to use | Extra fields |
 |---|---|---|
 | \`"anio_aprobado"\` | "Debe tener tercer año aprobado", "tener 3° año completo", etc. | \`"anio": 3\` (integer) |
+| \`"cuatrimestre_cursado"\` | "primer cuatrimestre de cuarto año cursado", etc. | \`"anio": 4\`, \`"cuatrimestre": 1\` or \`2\` (integers) |
 | \`"minimo_materias_aprobadas"\` | "mínimo 26 materias aprobadas", "al menos 30 asignaturas", etc. | \`"cantidad": 26\` (integer) |
 | \`"prueba_idioma"\` | "Debe rendir la Prueba de Suficiencia de Idioma", etc. | — |
-| \`"todas_materias_aprobadas"\` | "tener aprobadas todas las materias del plan", "deberá tener aprobada todas las materias del plan", etc. | — |
+| \`"todas_materias_aprobadas"\` | "tener aprobadas todas las materias del plan", etc. | — |
+
+**IMPORTANT — multiple conditions in one prose line → multiple array entries:**
+When a single prose line contains two distinct conditions (e.g. "tercer año aprobado Y primer cuatrimestre de cuarto año cursado"), produce one entry per condition.
 
 Examples:
 - PDF says: *"Para cursar Debe tener tercer año aprobado. Para aprobar Debe tener tercer año aprobado."*
-  → \`"requisito_especial": { "tipo": "anio_aprobado", "anio": 3, "descripcion": "Para cursar Debe tener tercer año aprobado. Para aprobar Debe tener tercer año aprobado" }\`
-- PDF says: *"Para aprobar Debe tener aprobado el CGCB antes de comenzar a cursar el tercer año de la carrera. Para cursar Debe tener aprobado el CGCB antes de comenzar a cursar el tercer año de la carrera."*
-  → \`"requisito_especial": { "tipo": "anio_aprobado", "anio": 3, "descripcion": "Para aprobar Debe tener aprobado el CGCB antes de comenzar a cursar el tercer año de la carrera. Para cursar Debe tener aprobado el CGCB antes de comenzar a cursar el tercer año de la carrera" }\`
-  (CGCB = Ciclo General de Conocimientos Básicos = completing the first two years → use \`"anio_aprobado"\`, NOT \`"minimo_materias_aprobadas"\`)
+  → \`"requisito_especial": [{ "tipo": "anio_aprobado", "anio": 3, "descripcion": "Para cursar Debe tener tercer año aprobado. Para aprobar Debe tener tercer año aprobado" }]\`
+- PDF says: *"Para aprobar Debe tener aprobado el CGCB antes de comenzar a cursar el tercer año de la carrera."*
+  → \`"requisito_especial": [{ "tipo": "anio_aprobado", "anio": 3, "descripcion": "..." }]\`
+  (CGCB = completing the first two years → \`"anio_aprobado"\`, NOT \`"minimo_materias_aprobadas"\`)
+- PDF says: *"Para aprobar Se requiere tener tercer año aprobado y primer cuatrimestre de cuarto año cursado."*
+  → \`"requisito_especial": [{ "tipo": "anio_aprobado", "anio": 3, "descripcion": "..." }, { "tipo": "cuatrimestre_cursado", "anio": 4, "cuatrimestre": 1, "descripcion": "..." }]\`
+  (Two conditions → two entries. Both share the same \`descripcion\` verbatim text.)
 - PDF says: *"Para cursar debe tener como mínimo 26 materias aprobadas"*
-  → \`"requisito_especial": { "tipo": "minimo_materias_aprobadas", "cantidad": 26, "descripcion": "Para cursar debe tener como mínimo 26 materias aprobadas" }\`
-- PDF says: *"Para aprobar Debe tener al menos 12 materias aprobadas y aprobado el CGCB antes de comenzar a cursar el tercer año de la carrera."*
-  → \`"requisito_especial": { "tipo": "minimo_materias_aprobadas", "cantidad": 12, "descripcion": "Para aprobar Debe tener al menos 12 materias aprobadas y aprobado el CGCB antes de comenzar a cursar el tercer año de la carrera" }\`
-  (When BOTH a minimum count AND the CGCB requirement appear in the same prose line, use \`"minimo_materias_aprobadas"\` and set \`cantidad\` to the number mentioned.)
+  → \`"requisito_especial": [{ "tipo": "minimo_materias_aprobadas", "cantidad": 26, "descripcion": "..." }]\`
+- PDF says: *"Para aprobar Debe tener al menos 12 materias aprobadas y aprobado el CGCB antes de comenzar a cursar el tercer año."*
+  → \`"requisito_especial": [{ "tipo": "minimo_materias_aprobadas", "cantidad": 12, "descripcion": "..." }]\`
+  (Both count AND CGCB in same line → single \`minimo_materias_aprobadas\` entry with \`cantidad\` = the number mentioned.)
 - PDF says: *"Debe rendir la Prueba de Suficiencia de Idioma"*
-  → \`"requisito_especial": { "tipo": "prueba_idioma", "descripcion": "Debe rendir la Prueba de Suficiencia de Idioma" }\`
+  → \`"requisito_especial": [{ "tipo": "prueba_idioma", "descripcion": "..." }]\`
 - PDF says: *"Para rendir el examen final el alumno deberá tener aprobada todas las materias del plan"*
-  → \`"requisito_especial": { "tipo": "todas_materias_aprobadas", "descripcion": "Para rendir el examen final el alumno deberá tener aprobada todas las materias del plan" }\`
+  → \`"requisito_especial": [{ "tipo": "todas_materias_aprobadas", "descripcion": "..." }]\`
 
 The prose line belongs to the subject immediately above it in the table — the same subject whose correlativas row just ended.
 

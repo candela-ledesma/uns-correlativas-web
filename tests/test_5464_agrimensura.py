@@ -120,20 +120,26 @@ class Materia5464Tests(unittest.TestCase):
     # ── Requisito especial ────────────────────────────────────────────────────
 
     def test_requisito_especial_existe(self):
-        """5464 debe tener requisito_especial al mismo nivel que correlativas."""
-        self.assertIn("requisito_especial", self.m5464)
+        """5464 debe tener requisito_especial como lista no vacía."""
+        lista = self.m5464.get("requisito_especial", [])
+        self.assertIsInstance(lista, list)
+        self.assertGreater(len(lista), 0)
 
     def test_requisito_especial_tipo(self):
-        req = self.m5464.get("requisito_especial", {})
-        self.assertEqual(req.get("tipo"), "minimo_materias_aprobadas")
+        lista = self.m5464.get("requisito_especial", [])
+        tipos = [r.get("tipo") for r in lista]
+        self.assertIn("minimo_materias_aprobadas", tipos)
 
     def test_requisito_especial_cantidad(self):
-        req = self.m5464.get("requisito_especial", {})
+        lista = self.m5464.get("requisito_especial", [])
+        req = next((r for r in lista if r.get("tipo") == "minimo_materias_aprobadas"), None)
+        self.assertIsNotNone(req)
         self.assertEqual(req.get("cantidad"), 26)
 
     def test_requisito_especial_descripcion(self):
-        req = self.m5464.get("requisito_especial", {})
-        descripcion = req.get("descripcion", "")
+        lista = self.m5464.get("requisito_especial", [])
+        req = next((r for r in lista if r.get("tipo") == "minimo_materias_aprobadas"), None)
+        descripcion = req.get("descripcion", "") if req else ""
         self.assertIn("26", descripcion)
         self.assertIn("materias", descripcion.lower())
 

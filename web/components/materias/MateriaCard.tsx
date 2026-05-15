@@ -44,7 +44,7 @@ export default function MateriaCard({
   const canUndo           = estado !== "no_cursada" && Boolean(onUndo);
   const puedeInteractuar  = puedeClickear || canUndo;
   const tieneCorrelativas = correlativas.length > 0;
-  const tieneRequisitoEspecial = Boolean(materia.requisito_especial);
+  const tieneRequisitoEspecial = (materia.requisito_especial?.length ?? 0) > 0;
   const mostrarPanelCorrelativas = tieneCorrelativas || tieneRequisitoEspecial;
   const estadoLabel       = getEstadoLabel(estado, bloqueada);
 
@@ -164,12 +164,13 @@ export default function MateriaCard({
               </li>
             ))}
           </ul>
-          {materia.requisito_especial && (
+          {materia.requisito_especial?.map((req, i) => (
             <PanelRequisitoEspecial
-              requisito={materia.requisito_especial}
+              key={i}
+              requisito={req}
               estados={estados}
             />
-          )}
+          ))}
         </div>
       )}
     </div>

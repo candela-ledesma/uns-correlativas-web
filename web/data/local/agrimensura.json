@@ -788,11 +788,13 @@
           "para_rendir": "aprobada"
         }
       },
-      "requisito_especial": {
-        "tipo": "minimo_materias_aprobadas",
-        "cantidad": 26,
-        "descripcion": "mínimo 26 materias del plan aprobadas"
-      }
+      "requisito_especial": [
+        {
+          "tipo": "minimo_materias_aprobadas",
+          "cantidad": 26,
+          "descripcion": "mínimo 26 materias del plan aprobadas"
+        }
+      ]
     },
     {
       "id": "5485",

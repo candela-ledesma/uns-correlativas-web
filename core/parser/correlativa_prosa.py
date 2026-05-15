@@ -47,6 +47,34 @@ _ANIO_APROBADO = re.compile(
     re.IGNORECASE,
 )
 
+# Detecta combinación "año aprobado Y primer/segundo cuatrimestre de año cursado".
+# Ejemplo: "tener tercer año aprobado y primer cuatrimestre de cuarto año cursado"
+# Nota: "cursado" es opcional porque el PDF puede partir la frase en dos líneas.
+_ANIO_Y_CUATRIMESTRE = re.compile(
+    r'(primer|segundo|tercer|cuarto|quinto|sexto|1[°º]?|2[°º]?|3[°º]?|4[°º]?|5[°º]?|6[°º]?)\s+a[ñn]o'
+    r'\s+aprobado'
+    r'.{0,30}'
+    r'(primer|segundo|1[°º]?|2[°º]?)\s+cuatrimestre'
+    r'(?:\s+de\s+'
+    r'(?:el\s+)?'
+    r'(?:primer|segundo|tercer|cuarto|quinto|sexto|1[°º]?|2[°º]?|3[°º]?|4[°º]?|5[°º]?|6[°º]?)\s+a[ñn]o)?'
+    r'(?:\s+(?:aprobado|cursado))?',
+    re.IGNORECASE,
+)
+
+# Detecta combinación "año N aprobado y año M cursado" (dos años distintos).
+# Ejemplo: "tener tercer año aprobado y cuarto año cursado"
+_ANIO_Y_ANIO_CURSADO = re.compile(
+    r'(primer|segundo|tercer|cuarto|quinto|sexto|1[°º]?|2[°º]?|3[°º]?|4[°º]?|5[°º]?|6[°º]?)\s+a[ñn]o'
+    r'\s+aprobado'
+    r'.{0,20}'
+    r'(primer|segundo|tercer|cuarto|quinto|sexto|1[°º]?|2[°º]?|3[°º]?|4[°º]?|5[°º]?|6[°º]?)\s+a[ñn]o'
+    r'(?:\s+(?:aprobado|cursado))?',
+    re.IGNORECASE,
+)
+
+_CUATRIMESTRE_NUMERO = {"primer": 1, "1": 1, "segundo": 2, "2": 2}
+
 _ANIO_NUMERO = {
     "primer": 1, "1": 1,
     "segundo": 2, "2": 2,
@@ -86,56 +114,83 @@ def _limpiar_descripcion(texto: str) -> str:
     return texto_limpio.rstrip(".")
 
 
-def inferir_requisito_especial(linea: str) -> dict | None:
+def inferir_requisito_especial(linea: str) -> list[dict] | None:
     """Detecta patrones de requisitos especiales en una línea.
 
-    Soporta:
-    - Requisitos cuantitativos: "mínimo N materias aprobadas"
-    - Prueba de Suficiencia de Idioma (no reemplaza correlativas)
-    - Año aprobado: "Debe tener tercer año aprobado"
-
-    Devuelve un dict con la estructura de requisito_especial, o None si no aplica.
+    Devuelve una lista de dicts (puede ser más de uno cuando hay condiciones combinadas),
+    o None si la línea no contiene ningún requisito especial reconocible.
     """
     # Verificar "todas las materias del plan aprobadas"
     if _TODAS_MATERIAS.search(linea):
-        descripcion = _limpiar_descripcion(linea)
-        return {
-            "tipo": "todas_materias_aprobadas",
-            "descripcion": descripcion,
-        }
+        return [{"tipo": "todas_materias_aprobadas", "descripcion": _limpiar_descripcion(linea)}]
 
-    # Primero verificar si es una Prueba de Suficiencia (tiene prioridad baja)
+    # Prueba de Suficiencia de Idioma
     if _PRUEBA_SUFICIENCIA.search(linea):
-        descripcion = _limpiar_descripcion(linea)
-        return {
-            "tipo": "prueba_idioma",
-            "descripcion": descripcion,
-        }
+        return [{"tipo": "prueba_idioma", "descripcion": _limpiar_descripcion(linea)}]
 
-    # Verificar requisitos cuantitativos
+    # Requisitos cuantitativos
     m = _MINIMO_MATERIAS.search(linea)
     if m:
-        cantidad = int(m.group(1))
-        descripcion = _limpiar_descripcion(linea)
-        return {
+        return [{
             "tipo": "minimo_materias_aprobadas",
-            "cantidad": cantidad,
-            "descripcion": descripcion,
-        }
+            "cantidad": int(m.group(1)),
+            "descripcion": _limpiar_descripcion(linea),
+        }]
 
-    # Verificar requisito de año aprobado: "Debe tener tercer año aprobado"
+    # Combinación: "año N aprobado y año M cursado" (dos años completos)
+    # Ejemplo: "tercer año aprobado y cuarto año cursado"
+    # Debe evaluarse ANTES de _ANIO_Y_CUATRIMESTRE para no confundir los dos patrones.
+    ma = _ANIO_Y_ANIO_CURSADO.search(linea)
+    if ma:
+        raw_anio1 = ma.group(1).lower().rstrip("°º")
+        raw_anio2 = ma.group(2).lower().rstrip("°º")
+        numero_anio1 = _ANIO_NUMERO.get(raw_anio1)
+        numero_anio2 = _ANIO_NUMERO.get(raw_anio2)
+        fragmento = ma.group(0)
+        partes = re.split(r'\s+y\s+', fragmento, maxsplit=1, flags=re.IGNORECASE)
+        desc_anio1 = partes[0].strip().rstrip(".")
+        desc_anio2 = partes[1].strip().rstrip(".") if len(partes) > 1 else fragmento.strip()
+        req1: dict = {"tipo": "anio_aprobado", "descripcion": desc_anio1}
+        req2: dict = {"tipo": "anio_aprobado", "descripcion": desc_anio2}
+        if numero_anio1 is not None:
+            req1["anio"] = numero_anio1
+        if numero_anio2 is not None:
+            req2["anio"] = numero_anio2
+        return [req1, req2]
+
+    # Combinación: "año N aprobado y primer/segundo cuatrimestre de año M cursado"
+    # → devuelve DOS requisitos separados, cada uno con su descripción propia
+    mc = _ANIO_Y_CUATRIMESTRE.search(linea)
+    if mc:
+        raw_anio = mc.group(1).lower().rstrip("°º")
+        raw_cuatri = mc.group(2).lower().rstrip("°º")
+        numero_anio = _ANIO_NUMERO.get(raw_anio)
+        numero_cuatri = _CUATRIMESTRE_NUMERO.get(raw_cuatri)
+        # Partir la descripción en las dos condiciones usando " y " como separador
+        fragmento = mc.group(0)  # ej: "tercer año aprobado y primer cuatrimestre de cuarto año"
+        partes = re.split(r'\s+y\s+', fragmento, maxsplit=1, flags=re.IGNORECASE)
+        desc_anio = partes[0].strip().rstrip(".")
+        desc_cuatri = partes[1].strip().rstrip(".") if len(partes) > 1 else fragmento.strip()
+        req_anio: dict = {"tipo": "anio_aprobado", "descripcion": desc_anio}
+        req_cuatri: dict = {"tipo": "cuatrimestre_cursado", "descripcion": desc_cuatri}
+        if numero_anio is not None:
+            req_anio["anio"] = numero_anio
+        if numero_anio is not None:
+            # cuatrimestre_cursado refiere al año SIGUIENTE al aprobado
+            req_cuatri["anio"] = numero_anio + 1
+        if numero_cuatri is not None:
+            req_cuatri["cuatrimestre"] = numero_cuatri
+        return [req_anio, req_cuatri]
+
+    # Año aprobado simple
     m = _ANIO_APROBADO.search(linea)
     if m:
         raw = (m.group(1) or m.group(2) or "").lower().rstrip("°º")
         numero = _ANIO_NUMERO.get(raw)
-        descripcion = _limpiar_descripcion(linea)
-        resultado: dict = {
-            "tipo": "anio_aprobado",
-            "descripcion": descripcion,
-        }
+        resultado: dict = {"tipo": "anio_aprobado", "descripcion": _limpiar_descripcion(linea)}
         if numero is not None:
             resultado["anio"] = numero
-        return resultado
+        return [resultado]
 
     return None
 

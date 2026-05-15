@@ -121,11 +121,10 @@ export function cumpleCorrelativas(
     }
   }
 
-  const requisitoEspecial = materia.requisito_especial;
-  if (requisitoEspecial?.tipo === "minimo_materias_aprobadas") {
-    const { aprobadas } = contarMateriasCompletadas(estados);
-    if (aprobadas < requisitoEspecial.cantidad) {
-      return false;
+  for (const req of materia.requisito_especial ?? []) {
+    if (req.tipo === "minimo_materias_aprobadas") {
+      const { aprobadas } = contarMateriasCompletadas(estados);
+      if (aprobadas < req.cantidad) return false;
     }
   }
 

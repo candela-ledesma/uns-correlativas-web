@@ -18,7 +18,7 @@
 
 ## Panel admin — gestión de planes
 
-- `alta` [ ] **Notificar al admin cuando un MODERATOR envía un plan a revisión** — email o notificación in-app cuando se registra un `PLAN_PENDING_REVIEW` en el AuditLog.
+- `alta` [x] **Notificar al admin cuando un MODERATOR envía un plan a revisión** — email via Resend cuando se registra un `PLAN_PENDING_REVIEW`. Requiere `RESEND_API_KEY` y `ADMIN_NOTIFY_EMAIL` en `.env.local`.
 
 - `alta` [x] **Vista de revisión de planes pendientes** — sección en `/admin/dashboard` (o `/admin/revisiones`) que lista los planes con estado `pendiente_revision` leídos de `data/gemini/*_pendiente.json`, con opción de publicar o rechazar cada uno.
 

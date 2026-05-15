@@ -719,7 +719,13 @@
           "para_cursar": null,
           "para_rendir": "aprobada"
         }
-      }
+      },
+      "requisito_especial": [
+        {
+          "tipo": "todas_materias_aprobadas",
+          "descripcion": "Para aprobar Para rendir el examen final el alumno deberá tener aprobada todas"
+        }
+      ]
     },
     {
       "id": "1006",
@@ -1091,12 +1097,9 @@
     "G0654",
     "I0654"
   ],
-  "_warnings": [
-    "Correlativa inferida en prosa (ID 1002): 'Para aprobar Para rendir el examen final el alumno deberá tener aprobada todas las 600hs. 1002 Aprobada'"
-  ],
-  "_saved_at": "2026-05-11T22:52:03.925Z",
-  "_saved_by": "cmo2fwlcf00005xdv4536cc0l",
+  "_saved_at": "2026-05-14T23:58:59.200Z",
+  "_saved_by": "cmoao0axe00001qboucfn8qsn",
   "_saved_fuente": "parser",
   "_publicado": true,
-  "_motivo_cambio": "agrega año a G0654\nagrega correlativas a 1355"
+  "_motivo_cambio": "requisito especial para id: 1355 detectado correctamente"
 }

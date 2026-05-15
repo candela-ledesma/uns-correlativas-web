@@ -434,11 +434,13 @@ describe("estaHabilitada", () => {
           para_rendir: "aprobada",
         },
       },
-      requisito_especial: {
-        tipo: "minimo_materias_aprobadas",
-        cantidad: 3,
-        descripcion: "minimo 3 materias aprobadas",
-      },
+      requisito_especial: [
+        {
+          tipo: "minimo_materias_aprobadas",
+          cantidad: 3,
+          descripcion: "minimo 3 materias aprobadas",
+        },
+      ],
     };
 
     const noAlcanza: Record<string, EstadoMateria> = {
