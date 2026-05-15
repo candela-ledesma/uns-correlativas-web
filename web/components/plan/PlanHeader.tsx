@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
-import { TEXT, TEXT_SEC, SURFACE, BTN, BTN_RED as BTN_RED_BASE, INPUT, TITLE_SHADOW, STATUS_COLORS, GLASS } from "@/lib/ui/tokens";
+import { TEXT, TEXT_SEC, SURFACE, BTN, BTN_RED as BTN_RED_BASE, INPUT, TITLE_SHADOW, GLASS } from "@/lib/ui/tokens";
 const BTN_RED = { ...BTN_RED_BASE, borderRadius: 10, padding: "10px 20px", fontWeight: 700, cursor: "pointer" } as const;
 
 type VersionOption = {
@@ -27,7 +27,6 @@ type Props = {
     disponibles: number;
     total: number;
     onReset?: () => void;
-    syncStatus?: "guest" | "syncing" | "synced" | "error";
     versionSelector?: VersionSelectorConfig;
 };
 
@@ -40,30 +39,9 @@ function StatCard({ label, value }: { label: string; value: number }) {
     );
 }
 
-function SyncBadge({ syncStatus }: { syncStatus?: "guest" | "syncing" | "synced" | "error" }) {
-    if (!syncStatus) return null;
-
-    const styles: Record<string, React.CSSProperties> = {
-        guest:   { background: GLASS.base,                        border: `1px solid ${GLASS.strong}`,                         color: TEXT_SEC },
-        syncing: { background: STATUS_COLORS.disponible.badgeBg,  border: `1px solid ${STATUS_COLORS.disponible.badgeBorder}`,  color: STATUS_COLORS.disponible.accent },
-        synced:  { background: STATUS_COLORS.aprobada.badgeBg,    border: `1px solid ${STATUS_COLORS.aprobada.badgeBorder}`,    color: STATUS_COLORS.aprobada.accent },
-        error:   { background: STATUS_COLORS.danger.badgeBg,      border: `1px solid ${STATUS_COLORS.danger.badgeBorder}`,      color: STATUS_COLORS.danger.accent },
-    };
-    const labels: Record<string, string> = {
-        guest: "Guardado local", syncing: "Sincronizando...",
-        synced: "Sincronizado en nube", error: "Error de sincronizacion",
-    };
-
-    return (
-        <span style={{ ...styles[syncStatus], borderRadius: 99, padding: "4px 12px", fontSize: 12, fontWeight: 500 }}>
-            {labels[syncStatus]}
-        </span>
-    );
-}
-
 export default function PlanHeader({
     titulo, subtitulo, aprobadas, cursadas, disponibles, total,
-    onReset, syncStatus, versionSelector,
+    onReset, versionSelector,
 }: Props) {
     const [mostrarProgreso,  setMostrarProgreso]  = useState(false);
     const [confirmingReset,  setConfirmingReset]  = useState(false);
@@ -104,8 +82,6 @@ export default function PlanHeader({
                 </div>
 
                 <div data-no-print style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 10, minWidth: 0, maxWidth: "100%" }}>
-                    <SyncBadge syncStatus={syncStatus} />
-
                     {showVersionSelector && versionSelector && (
                         <label style={{ display: "inline-flex", alignItems: "center", gap: 8, ...SURFACE, borderRadius: 12, padding: "8px 12px" }}>
                             <span style={{ color: TEXT_SEC, fontSize: 14, fontWeight: 500 }}>Versión</span>
@@ -124,22 +100,12 @@ export default function PlanHeader({
                         </label>
                     )}
 
-                    <a
-                        href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        aria-label="Abrir easter egg en YouTube"
-                        style={{ ...BTN, display: "inline-flex", alignItems: "center", justifyContent: "center", width: 40, height: 40, borderRadius: 99, fontSize: 14, textDecoration: "none" }}
-                    >
-                        😬
-                    </a>
-
                     {onReset && (
                         <button
                             type="button"
                             data-testid="reset-btn"
                             onClick={() => setConfirmingReset(true)}
-                            style={{ ...BTN, borderRadius: 12, padding: "10px 16px", fontWeight: 700, cursor: "pointer" }}
+                            style={{ background: "transparent", border: `1px solid ${GLASS.border}`, color: TEXT_SEC, borderRadius: 10, padding: "6px 14px", fontSize: 13, fontWeight: 500, cursor: "pointer" }}
                         >
                             Reiniciar progreso
                         </button>
@@ -150,7 +116,7 @@ export default function PlanHeader({
                         data-testid="toggle-progreso-btn"
                         aria-expanded={mostrarProgreso}
                         onClick={() => setMostrarProgreso((p) => !p)}
-                        style={{ ...BTN, borderRadius: 12, padding: "10px 16px", fontWeight: 600, cursor: "pointer" }}
+                        style={{ ...BTN, borderRadius: 10, padding: "6px 14px", fontSize: 13, fontWeight: 600, cursor: "pointer" }}
                     >
                         {mostrarProgreso ? "Ocultar progreso" : "Mostrar progreso"}
                     </button>

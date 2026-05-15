@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { BG_GRADIENT, HEADING_FONT } from "@/lib/ui/tokens";
 import { notFound } from "next/navigation";
 import PlanViewer from "@/components/plan/PlanViewer";
@@ -91,17 +90,6 @@ export async function generateMetadata({
     return (
     <main className="min-h-screen px-4 sm:px-6 py-8 sm:py-10" style={{ background: BG_GRADIENT, fontFamily: HEADING_FONT }}>
         <div className="mx-auto max-w-7xl">
-        <div className="mb-6" data-no-print>
-            <Link
-            href="/"
-            className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition"
-            style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.15)", color: "#e2d9f3" }}
-            >
-            <span aria-hidden="true">←</span>
-            <span>Volver al inicio</span>
-            </Link>
-        </div>
-
         <PlanViewer
             data={data}
             carreraId={carreraId}

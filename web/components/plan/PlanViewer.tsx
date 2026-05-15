@@ -357,11 +357,13 @@ export default function PlanViewer({
   if (!isHydrated) return null;
 
   return (
-    <main className="mx-auto max-w-7xl">
+    <div className="mx-auto max-w-7xl">
       <PlanTabBar
         vistaActiva={vistaActiva}
         onChange={setVistaActiva}
         onOpenHelp={openOnboarding}
+        backHref="/"
+        syncStatus={syncStatus}
       />
 
       {vistaActiva === "Plan Vista" && (
@@ -407,7 +409,6 @@ export default function PlanViewer({
             disponibles={progreso.disponibles}
             total={progreso.total}
             onReset={resetMaterias}
-            syncStatus={syncStatus}
             versionSelector={{
               selectedVersionId: data.plan.version_id,
               defaultVersionId,
@@ -507,6 +508,6 @@ export default function PlanViewer({
         onDismiss={() => { void dismissOnboarding(); }}
         onComplete={() => { void completeOnboarding(); }}
       />
-    </main>
+    </div>
   );
 }
