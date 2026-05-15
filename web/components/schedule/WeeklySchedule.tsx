@@ -61,8 +61,8 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
   const [panel,      setPanel]      = useState<Panel | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [draggingId, setDraggingId] = useState<string | null>(null);
-  const [gcalState,  setGcalState]  = useState<"idle" | "loading" | "ok" | "error">("idle");
-  const [gcalMsg,    setGcalMsg]    = useState<string | null>(null);
+  const [gcalState,    setGcalState]    = useState<"idle" | "loading" | "deleting" | "ok" | "error">("idle");
+  const [gcalMsg,      setGcalMsg]      = useState<string | null>(null);
 
   const dragRef          = useRef<DragState | null>(null);
   const suppressClickRef = useRef(false);
@@ -218,13 +218,33 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
     const params = new URLSearchParams({ careerId, planId, versionId });
     const res = await fetch(`/api/planificador/exportar-gcal?${params}`, { method: "POST" }).catch(() => null);
     if (!res) { setGcalState("error"); setGcalMsg("Error de red"); return; }
-    const json = await res.json().catch(() => ({})) as { exported?: number; failed?: number; error?: string };
+    const json = await res.json().catch(() => ({})) as { created?: number; updated?: number; failed?: number; error?: string };
     if (!res.ok || json.error) {
       setGcalState("error");
       setGcalMsg(json.error ?? "Error al exportar");
     } else {
       setGcalState("ok");
-      setGcalMsg(`${json.exported ?? 0} evento${json.exported === 1 ? "" : "s"} exportado${json.exported === 1 ? "" : "s"}${json.failed ? ` · ${json.failed} fallido${json.failed === 1 ? "" : "s"}` : ""}`);
+      const parts = [];
+      if (json.created) parts.push(`${json.created} creado${json.created === 1 ? "" : "s"}`);
+      if (json.updated) parts.push(`${json.updated} actualizado${json.updated === 1 ? "" : "s"}`);
+      if (json.failed)  parts.push(`${json.failed} fallido${json.failed === 1 ? "" : "s"}`);
+      setGcalMsg(parts.length ? parts.join(" · ") : "Sin cambios");
+    }
+  }
+
+  async function handleUnlinkGCal() {
+    setGcalState("deleting");
+    setGcalMsg(null);
+    const params = new URLSearchParams({ careerId, planId, versionId });
+    const res = await fetch(`/api/planificador/exportar-gcal?${params}`, { method: "DELETE" }).catch(() => null);
+    if (!res) { setGcalState("error"); setGcalMsg("Error de red"); return; }
+    const json = await res.json().catch(() => ({})) as { deleted?: number; failed?: number; error?: string };
+    if (!res.ok || json.error) {
+      setGcalState("error");
+      setGcalMsg(json.error ?? "Error al desvincular");
+    } else {
+      setGcalState("ok");
+      setGcalMsg(json.deleted ? `${json.deleted} evento${json.deleted === 1 ? "" : "s"} eliminado${json.deleted === 1 ? "" : "s"} de Google Calendar` : "No había eventos para eliminar");
     }
   }
 
@@ -263,14 +283,24 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
           Clic en celda · arrastrá para mover
         </span>
         {blocks.length > 0 && (
-          <button
-            type="button"
-            disabled={gcalState === "loading"}
-            style={{ ...BTN, opacity: gcalState === "loading" ? 0.6 : 1 }}
-            onClick={() => void handleExportGCal()}
-          >
-            {gcalState === "loading" ? "Exportando..." : "Exportar a Google Calendar"}
-          </button>
+          <>
+            <button
+              type="button"
+              disabled={gcalState === "loading" || gcalState === "deleting"}
+              style={{ ...BTN, opacity: gcalState === "loading" ? 0.6 : 1 }}
+              onClick={() => void handleExportGCal()}
+            >
+              {gcalState === "loading" ? "Exportando..." : "Exportar a Google Calendar"}
+            </button>
+            <button
+              type="button"
+              disabled={gcalState === "loading" || gcalState === "deleting"}
+              style={{ ...BTN, opacity: gcalState === "deleting" ? 0.6 : 1, color: "#fca5a5", borderColor: "rgba(239,68,68,0.35)" }}
+              onClick={() => void handleUnlinkGCal()}
+            >
+              {gcalState === "deleting" ? "Desvinculando..." : "Desvincular Google Calendar"}
+            </button>
+          </>
         )}
         <button type="button" style={BTN_VIO} onClick={() => setPanel({ type: "create" })}>
           + Agregar

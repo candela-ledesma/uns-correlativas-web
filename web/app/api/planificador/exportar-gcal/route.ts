@@ -3,9 +3,8 @@ import { getToken } from "next-auth/jwt";
 import { prisma } from "@/lib/db/prisma";
 import { z } from "zod";
 
-const GCAL_EVENTS_URL = "https://www.googleapis.com/calendar/v3/calendars/primary/events";
+const GCAL_BASE = "https://www.googleapis.com/calendar/v3/calendars/primary/events";
 
-// dia 1=Lunes → RRULE BYDAY=MO
 const DIA_TO_BYDAY = ["MO", "TU", "WE", "TH", "FR"] as const;
 
 const querySchema = z.object({
@@ -24,10 +23,9 @@ function minutesToRFC3339Time(minutes: number, isoDate: string): string {
   return `${isoDate}T${h}:${m}:00`;
 }
 
-// Returns ISO date (YYYY-MM-DD) of the next occurrence of weekday (0=Mon…4=Fri) from today
 function nextWeekdayDate(weekday: number): string {
   const today = new Date();
-  const todayDay = (today.getDay() + 6) % 7; // JS getDay: 0=Sun → reindex to 0=Mon
+  const todayDay = (today.getDay() + 6) % 7;
   const diff = (weekday - todayDay + 7) % 7 || 7;
   const target = new Date(today);
   target.setDate(today.getDate() + diff);
@@ -45,7 +43,6 @@ async function refreshAccessToken(refreshToken: string): Promise<string | null> 
       grant_type: "refresh_token",
     }),
   });
-
   if (!res.ok) return null;
   const data = (await res.json()) as { access_token?: string };
   return data.access_token ?? null;
@@ -58,26 +55,75 @@ async function getValidAccessToken(
 ): Promise<string | null> {
   const nowSecs = Math.floor(Date.now() / 1000);
   const isExpired = expiresAt !== undefined && nowSecs >= expiresAt - 60;
-
   if (accessToken && !isExpired) return accessToken;
   if (refreshToken) return refreshAccessToken(refreshToken);
   return null;
 }
 
+function getAuthToken(token: Awaited<ReturnType<typeof getToken>>) {
+  if (!token?.sub) return null;
+  return {
+    userId: token.sub,
+    accessToken: token.googleAccessToken as string | undefined,
+    refreshToken: token.googleRefreshToken as string | undefined,
+    expiresAt: token.googleTokenExpiresAt as number | undefined,
+  };
+}
+
+// Busca en Google Calendar si ya existe un evento exportado por esta app para un block_id dado.
+// Devuelve el gcal event id o null.
+async function findExistingEvent(blockId: string, accessToken: string): Promise<string | null> {
+  const params = new URLSearchParams({
+    privateExtendedProperty: `uns_block_id=${blockId}`,
+    maxResults: "1",
+    showDeleted: "false",
+  });
+  const res = await fetch(`${GCAL_BASE}?${params}`, {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  });
+  if (!res.ok) return null;
+  const data = (await res.json()) as { items?: { id: string }[] };
+  return data.items?.[0]?.id ?? null;
+}
+
+// Busca todos los eventos exportados por esta app (uns_planificador=true).
+async function findAllExportedEvents(accessToken: string): Promise<string[]> {
+  const ids: string[] = [];
+  let pageToken: string | undefined;
+
+  do {
+    const params = new URLSearchParams({
+      privateExtendedProperty: "uns_planificador=true",
+      maxResults: "250",
+      showDeleted: "false",
+    });
+    if (pageToken) params.set("pageToken", pageToken);
+
+    const res = await fetch(`${GCAL_BASE}?${params}`, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+    if (!res.ok) break;
+
+    const data = (await res.json()) as { items?: { id: string }[]; nextPageToken?: string };
+    for (const item of data.items ?? []) ids.push(item.id);
+    pageToken = data.nextPageToken;
+  } while (pageToken);
+
+  return ids;
+}
+
+// ── POST: exportar (upsert) ────────────────────────────────────────────────
+
 export async function POST(request: Request) {
-  const token = await getToken({
+  const rawToken = await getToken({
     req: request as Parameters<typeof getToken>[0]["req"],
     secret: process.env.NEXTAUTH_SECRET ?? process.env.AUTH_SECRET,
   });
 
-  if (!token?.sub) return unauthorized();
+  const auth = getAuthToken(rawToken);
+  if (!auth) return unauthorized();
 
-  const accessToken = await getValidAccessToken(
-    token.googleAccessToken as string | undefined,
-    token.googleRefreshToken as string | undefined,
-    token.googleTokenExpiresAt as number | undefined,
-  );
-
+  const accessToken = await getValidAccessToken(auth.accessToken, auth.refreshToken, auth.expiresAt);
   if (!accessToken) {
     return NextResponse.json(
       { error: "No hay token de Google Calendar. Iniciá sesión con Google para exportar." },
@@ -91,22 +137,20 @@ export async function POST(request: Request) {
     planId: url.searchParams.get("planId"),
     versionId: url.searchParams.get("versionId"),
   });
-
   if (!queryParsed.success) {
     return NextResponse.json({ error: "Faltan careerId, planId y versionId" }, { status: 400 });
   }
 
   const { careerId, planId, versionId } = queryParsed.data;
-
   const blocks = await prisma.scheduleBlock.findMany({
-    where: { userId: token.sub, careerId, planId, versionId },
+    where: { userId: auth.userId, careerId, planId, versionId },
   });
 
   if (blocks.length === 0) {
     return NextResponse.json({ error: "No hay bloques para exportar" }, { status: 400 });
   }
 
-  const results: { id: string; gcalEventId?: string; error?: string }[] = [];
+  const results: { id: string; gcalEventId?: string; action?: "created" | "updated"; error?: string }[] = [];
 
   for (const block of blocks) {
     const weekdayIndex = block.dia - 1;
@@ -114,58 +158,104 @@ export async function POST(request: Request) {
     const dateStr = nextWeekdayDate(weekdayIndex);
     const timeZone = "America/Argentina/Buenos_Aires";
 
-    const event = {
+    const eventBody = {
       summary: block.materiaNombre,
       description: [block.comision && `Comisión: ${block.comision}`, block.notas]
         .filter(Boolean)
         .join("\n") || undefined,
-      start: {
-        dateTime: minutesToRFC3339Time(block.horaInicio, dateStr),
-        timeZone,
-      },
-      end: {
-        dateTime: minutesToRFC3339Time(block.horaFin, dateStr),
-        timeZone,
-      },
+      start: { dateTime: minutesToRFC3339Time(block.horaInicio, dateStr), timeZone },
+      end: { dateTime: minutesToRFC3339Time(block.horaFin, dateStr), timeZone },
       recurrence: [`RRULE:FREQ=WEEKLY;BYDAY=${byday}`],
       extendedProperties: {
-        private: {
-          uns_planificador: "true",
-          uns_block_id: block.id,
-        },
+        private: { uns_planificador: "true", uns_block_id: block.id },
       },
     };
 
-    const res = await fetch(GCAL_EVENTS_URL, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(event),
-    });
+    const existingId = await findExistingEvent(block.id, accessToken);
 
-    if (res.ok) {
-      const created = (await res.json()) as { id: string };
-      results.push({ id: block.id, gcalEventId: created.id });
+    const gcalRes = existingId
+      ? await fetch(`${GCAL_BASE}/${existingId}`, {
+          method: "PATCH",
+          headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" },
+          body: JSON.stringify(eventBody),
+        })
+      : await fetch(GCAL_BASE, {
+          method: "POST",
+          headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" },
+          body: JSON.stringify(eventBody),
+        });
+
+    if (gcalRes.ok) {
+      const data = (await gcalRes.json()) as { id: string };
+      results.push({ id: block.id, gcalEventId: data.id, action: existingId ? "updated" : "created" });
     } else {
-      const errBody = await res.text().catch(() => "");
-      console.error("[exportar-gcal] Google API error", res.status, errBody);
-      results.push({ id: block.id, error: `Google Calendar error ${res.status}: ${errBody}` });
+      const errBody = await gcalRes.text().catch(() => "");
+      console.error("[exportar-gcal] Google API error", gcalRes.status, errBody);
+      results.push({ id: block.id, error: `Google Calendar error ${gcalRes.status}: ${errBody}` });
     }
   }
 
   const failed = results.filter((r) => r.error);
   const succeeded = results.filter((r) => r.gcalEventId);
+  const created = succeeded.filter((r) => r.action === "created").length;
+  const updated = succeeded.filter((r) => r.action === "updated").length;
 
   const firstError = failed[0]?.error;
   return NextResponse.json(
     {
-      exported: succeeded.length,
+      created,
+      updated,
       failed: failed.length,
       results,
       ...(failed.length > 0 && succeeded.length === 0 && firstError ? { error: firstError } : {}),
     },
     { status: failed.length > 0 && succeeded.length === 0 ? 502 : 200 },
+  );
+}
+
+// ── DELETE: desvincular (eliminar todos los eventos exportados) ────────────
+
+export async function DELETE(request: Request) {
+  const rawToken = await getToken({
+    req: request as Parameters<typeof getToken>[0]["req"],
+    secret: process.env.NEXTAUTH_SECRET ?? process.env.AUTH_SECRET,
+  });
+
+  const auth = getAuthToken(rawToken);
+  if (!auth) return unauthorized();
+
+  const accessToken = await getValidAccessToken(auth.accessToken, auth.refreshToken, auth.expiresAt);
+  if (!accessToken) {
+    return NextResponse.json(
+      { error: "No hay token de Google Calendar. Iniciá sesión con Google para desvincular." },
+      { status: 403 },
+    );
+  }
+
+  const eventIds = await findAllExportedEvents(accessToken);
+
+  if (eventIds.length === 0) {
+    return NextResponse.json({ deleted: 0 });
+  }
+
+  let deleted = 0;
+  let failedCount = 0;
+
+  for (const eventId of eventIds) {
+    const res = await fetch(`${GCAL_BASE}/${eventId}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+    if (res.ok || res.status === 404) {
+      deleted++;
+    } else {
+      console.error("[exportar-gcal] DELETE error", res.status, eventId);
+      failedCount++;
+    }
+  }
+
+  return NextResponse.json(
+    { deleted, failed: failedCount },
+    { status: failedCount > 0 && deleted === 0 ? 502 : 200 },
   );
 }
