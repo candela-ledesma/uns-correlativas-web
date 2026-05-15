@@ -183,22 +183,16 @@ export default function CargarPlanTab({ canPublish = true }: { canPublish?: bool
     setStatus({ type: "loading", step: initialStep, message: STEP_LABEL[initialStep] });
     try {
       const isGemini = endpoint.includes("/parsear") && !endpoint.includes("parsear-local");
-      const controller = isGemini ? new AbortController() : null;
-      const timeoutId = controller
-        ? setTimeout(() => controller.abort(), 115_000)
-        : null;
+
+      // En prod, el browser llama directo a Render para evitar el límite de tiempo de Vercel
+      const parserApiUrl = process.env.NEXT_PUBLIC_PARSER_API_URL;
+      const url = (isGemini && parserApiUrl) ? `${parserApiUrl}/parse-gemini` : endpoint;
 
       let res: Response;
       try {
-        res = await fetch(endpoint, { method: "POST", body: fd, signal: controller?.signal });
+        res = await fetch(url, { method: "POST", body: fd });
       } catch (err) {
-        if (err instanceof DOMException && err.name === "AbortError") {
-          setStatus({ type: "error", message: "Se agotó el tiempo de espera de Gemini (>115s). El PDF puede ser muy grande o el modelo está lento. Intentá con gemini-2.5-flash-lite o un PDF más chico." });
-          return;
-        }
         throw err;
-      } finally {
-        if (timeoutId !== null) clearTimeout(timeoutId);
       }
 
       const contentType = res.headers.get("content-type") ?? "";
