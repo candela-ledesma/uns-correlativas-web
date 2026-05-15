@@ -20,7 +20,7 @@ Opciones para resolverlo a futuro:
 
 - `media` [x] **`admin-config.json` → tabla `AdminConfig` en Neon** — migrado. Routes `admin/config` y `admin/planes/parsear` leen/escriben desde Neon.
 - `media` [x] **`data/gemini/*_pendiente.json` → tabla `PlanPendiente` en Neon** — migrado. Routes `pendientes`, `pendientes/[slug]` y `enviar-revision` usan Prisma.
-- `baja` [ ] **`data/local/*.json` + `carreras.ts` → decisión de arquitectura** — los JSONs de planes son el ground truth y se usan en build time. Definir si los planes se sirven desde la BD (Opción 2 del TODO) o siguen en el repo antes de migrar.
+- `baja` [x] **`data/local/*.json` + `carreras.ts` → migrado a Neon** — nuevas tablas `PlanPublicado` y `CarreraConfig`. Routes `guardar`, `existe`, `publicados`, `publicados/[slug]`, `departamentos` y `api/planes` usan Prisma. `planDataLoader` lee desde DB como fallback cuando el filesystem no está disponible (Vercel).
 
 ---
 
