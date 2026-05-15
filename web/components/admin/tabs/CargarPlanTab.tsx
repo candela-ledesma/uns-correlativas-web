@@ -182,11 +182,34 @@ export default function CargarPlanTab({ canPublish = true }: { canPublish?: bool
   ) {
     setStatus({ type: "loading", step: initialStep, message: STEP_LABEL[initialStep] });
     try {
-      const res = await fetch(endpoint, { method: "POST", body: fd });
+      const isGemini = endpoint.includes("/parsear") && !endpoint.includes("parsear-local");
+      const controller = isGemini ? new AbortController() : null;
+      const timeoutId = controller
+        ? setTimeout(() => controller.abort(), 115_000)
+        : null;
+
+      let res: Response;
+      try {
+        res = await fetch(endpoint, { method: "POST", body: fd, signal: controller?.signal });
+      } catch (err) {
+        if (err instanceof DOMException && err.name === "AbortError") {
+          setStatus({ type: "error", message: "Se agotó el tiempo de espera de Gemini (>115s). El PDF puede ser muy grande o el modelo está lento. Intentá con gemini-2.5-flash-lite o un PDF más chico." });
+          return;
+        }
+        throw err;
+      } finally {
+        if (timeoutId !== null) clearTimeout(timeoutId);
+      }
+
       const contentType = res.headers.get("content-type") ?? "";
 
       // Gemini devuelve JSON directo (Vercel no soporta SSE real)
       if (contentType.includes("application/json")) {
+        if (!res.ok) {
+          const body = await res.text().catch(() => "");
+          setStatus({ type: "error", message: `Error ${res.status} del servidor: ${body.slice(0, 200) || res.statusText}` });
+          return;
+        }
         const event = await res.json() as { type: string; data?: ParseResult; message?: string; model?: string; usage?: UsageInfo };
         if (event.type === "done" && event.data) {
           setStatus({ type: "done", data: event.data });
@@ -198,6 +221,13 @@ export default function CargarPlanTab({ canPublish = true }: { canPublish?: bool
         } else {
           setStatus({ type: "error", message: event.message ?? "Error desconocido" });
         }
+        return;
+      }
+
+      // Si no es JSON ni SSE (ej: HTML de error 504/502 de Vercel)
+      if (!contentType.includes("text/event-stream")) {
+        const body = await res.text().catch(() => "");
+        setStatus({ type: "error", message: `Error inesperado del servidor (${res.status}): ${body.slice(0, 200) || res.statusText}` });
         return;
       }
 
