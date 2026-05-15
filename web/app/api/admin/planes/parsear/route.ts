@@ -138,6 +138,44 @@ export async function POST(request: Request) {
 
   const model = (formData.get("model") as string) || DEFAULT_GEMINI_MODEL;
 
+  const parserApiUrl = process.env.PARSER_API_URL;
+  const parserApiSecret = process.env.PARSER_API_SECRET;
+
+  // En prod (PARSER_API_URL definida) delegar a Render — sin límite de tiempo de Vercel
+  if (parserApiUrl) {
+    const adminConfig = await readAdminConfig();
+    const systemPrompt = adminConfig.systemPrompt ?? DEFAULT_SYSTEM_PROMPT;
+
+    const fd = new FormData();
+    fd.append("file", new Blob([await file.arrayBuffer()], { type: "application/pdf" }), file.name);
+    fd.append("model", model);
+    fd.append("system_prompt", systemPrompt);
+
+    const headers: Record<string, string> = {};
+    if (parserApiSecret) headers["Authorization"] = `Bearer ${parserApiSecret}`;
+
+    try {
+      const res = await fetch(`${parserApiUrl}/parse-gemini`, { method: "POST", headers, body: fd });
+      if (!res.ok) {
+        const err = await res.text().catch(() => res.statusText);
+        return NextResponse.json({ type: "error", message: `Parser API error ${res.status}: ${err}` }, { status: 502 });
+      }
+      const result = await res.json() as Record<string, unknown>;
+      // Aplicar post-proceso de IDs idioma y metadata de versión
+      if (result.data && typeof result.data === "object") {
+        const data = result.data as Record<string, unknown>;
+        corregirIdsIdioma(data);
+        data._llm_prompt_version = PROMPT_VERSION;
+        data._llm_mode = "llm";
+      }
+      return NextResponse.json(result);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      return NextResponse.json({ type: "error", message: msg }, { status: 500 });
+    }
+  }
+
+  // Local: llamar a Gemini directo desde Next.js
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
     return NextResponse.json({ error: "GEMINI_API_KEY no configurada" }, { status: 500 });
