@@ -16,6 +16,12 @@ Opciones para resolverlo a futuro:
 
 - `baja` [ ] **Opción 3: Reescribir el parser en TypeScript** — elimina la dependencia de Python completamente. Todo corre en Vercel natively. Más trabajo inicial pero la solución más limpia a largo plazo.
 
+### Migraciones a Neon priorizadas
+
+- `media` [ ] **`admin-config.json` → tabla `AdminConfig` en Neon** — 3 campos (`systemPrompt`, `version`, `updatedAt`). Trivial, desbloquea el panel admin en producción.
+- `media` [ ] **`data/gemini/*_pendiente.json` → tabla `PlanPendiente` en Neon** — elimina la dependencia de leer un directorio en runtime; mismo esfuerzo, mucho más limpio.
+- `baja` [ ] **`data/local/*.json` + `carreras.ts` → decisión de arquitectura** — los JSONs de planes son el ground truth y se usan en build time. Definir si los planes se sirven desde la BD (Opción 2 del TODO) o siguen en el repo antes de migrar.
+
 ---
 
 ## Roles de usuario
