@@ -18,11 +18,6 @@ except Exception as _e:
     raise
 
 app = FastAPI(title="UNS Parser API")
-print("[parser_api] FastAPI app creada, rutas registradas", flush=True)
-
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=int(os.environ.get("PORT", "8000")))
 
 API_SECRET = os.environ.get("PARSER_API_SECRET")
 
@@ -65,3 +60,8 @@ async def parse_pdf(
         tmp_path.unlink(missing_ok=True)
 
     return JSONResponse(content=data)
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("parser_api.main:app", host="0.0.0.0", port=int(os.environ.get("PORT", "8000")))
