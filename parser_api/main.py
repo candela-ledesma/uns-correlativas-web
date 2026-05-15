@@ -6,6 +6,7 @@ import tempfile
 from pathlib import Path
 
 from fastapi import FastAPI, File, Form, Header, HTTPException, UploadFile
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 import sys
@@ -21,6 +22,13 @@ except Exception as _e:
     raise
 
 app = FastAPI(title="UNS Parser API")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["https://uns-correlativas.vercel.app"],
+    allow_methods=["POST", "GET"],
+    allow_headers=["Authorization", "Content-Type"],
+)
 
 API_SECRET = os.environ.get("PARSER_API_SECRET")
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
