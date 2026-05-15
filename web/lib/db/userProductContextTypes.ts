@@ -38,6 +38,7 @@ export type UserProductContextResponse = {
   shouldAutoShowOnboarding: boolean;
   lastPlanByCareer: Record<string, UserLastPlan>;
   recentActivity: UserActivityItem[];
+  careerIdsWithProgress: string[];
 };
 
 export type UserSessionSummaryResponse = {

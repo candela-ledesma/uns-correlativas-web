@@ -150,6 +150,18 @@ export async function getUserProductContext(
     },
   });
 
+  const progressRows = await prisma.userPlanProgress.findMany({
+    where: { userId },
+    select: { planId: true, stateJson: true },
+  });
+  const careerIdsWithProgress = Array.from(
+    new Set(
+      progressRows
+        .filter((r) => { try { const s = JSON.parse(r.stateJson); return typeof s === "object" && s !== null && Object.keys(s).length > 0; } catch { return false; } })
+        .map((r) => r.planId)
+    )
+  );
+
   const activities = includeActivity
     ? await prisma.userActivity.findMany({
       where: { userId },
@@ -198,6 +210,7 @@ export async function getUserProductContext(
       createdAt: item.createdAt.toISOString(),
       }))
       : [],
+    careerIdsWithProgress,
   };
 }
 

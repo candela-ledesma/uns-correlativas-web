@@ -43,12 +43,10 @@ export default function ProfileWorkspace({
     return context.careers.find((c) => c.id === activeCareerId)?.nombre ?? null;
   }, [activeCareerId, context.careers]);
 
-  const onboardingHref = `${lastPlanHref}${lastPlanHref.includes("?") ? "&" : "?"}onboarding=1`;
-
-  // Enrolled careers to show in grid
+  // Enrolled careers to show in grid — only those with registered progress
   const enrolledCareers = useMemo(
-    () => context.careers.filter((c) => context.enrolledCareerIds.includes(c.id)),
-    [context.careers, context.enrolledCareerIds]
+    () => context.careers.filter((c) => context.careerIdsWithProgress.includes(c.id)),
+    [context.careers, context.careerIdsWithProgress]
   );
 
   const materiasPorCarrera = useMemo(() => {
@@ -123,7 +121,7 @@ export default function ProfileWorkspace({
           })}
 
           {enrolledCareers.length === 0 && (
-            <p className={styles.emptyState}>No estás inscripto en ninguna carrera.</p>
+            <p className={styles.emptyState}>Todavía no registraste materias en ninguna carrera.</p>
           )}
         </div>
       </section>
@@ -147,14 +145,6 @@ export default function ProfileWorkspace({
             <div className={styles.quickText}>
               <p className={styles.quickTitle}>Último plan</p>
               <p className={styles.quickSub}>{activeCareerName ?? "Sin plan reciente"}</p>
-            </div>
-            <span className={styles.quickArrow}>→</span>
-          </Link>
-
-          <Link href={onboardingHref} className={styles.quickCard}>
-            <div className={styles.quickText}>
-              <p className={styles.quickTitle}>Ver tutorial</p>
-              <p className={styles.quickSub}>Guía de uso</p>
             </div>
             <span className={styles.quickArrow}>→</span>
           </Link>
