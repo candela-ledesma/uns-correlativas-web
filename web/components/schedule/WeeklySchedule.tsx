@@ -22,6 +22,22 @@ const BTN_VIO = { ...BTN_VIOLET, borderRadius: 10, padding: "8px 16px", fontSize
 const SLOT_LINE = `1px solid ${GLASS.soft}`;    // separador de media hora en la grilla
 const COL_LINE  = `1px solid ${GLASS.medium}`;  // borde entre columnas de día
 
+// ── Paleta de colores por materia ─────────────────────────────────────────
+const BLOCK_PALETTE = [
+  "#9d4edd", "#2563eb", "#059669", "#d97706", "#dc2626",
+  "#7c3aed", "#0891b2", "#65a30d", "#ea580c", "#db2777",
+] as const;
+
+function hashString(s: string): number {
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = (Math.imul(31, h) + s.charCodeAt(i)) | 0;
+  return Math.abs(h);
+}
+
+function colorForMateria(nombre: string): string {
+  return BLOCK_PALETTE[hashString(nombre) % BLOCK_PALETTE.length];
+}
+
 // ── Constants ──────────────────────────────────────────────────────────────
 const TOTAL_SLOTS    = (HORA_FIN_GRILLA - HORA_INICIO_GRILLA) / SLOT_MINUTOS;
 const GRID_HEIGHT    = TOTAL_SLOTS * SLOT_PX;
@@ -61,6 +77,9 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
   const [panel,      setPanel]      = useState<Panel | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [draggingId, setDraggingId] = useState<string | null>(null);
+  const [gcalState,    setGcalState]    = useState<"idle" | "loading" | "deleting" | "ok" | "unlinked" | "error">("idle");
+  const [gcalMsg,      setGcalMsg]      = useState<string | null>(null);
+  const [gcalOpen,     setGcalOpen]     = useState(false);
 
   const dragRef          = useRef<DragState | null>(null);
   const suppressClickRef = useRef(false);
@@ -72,10 +91,30 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
   const rafRef           = useRef<number | null>(null);
 
   useEffect(() => {
-    function onKey(e: KeyboardEvent) { if (e.key === "Escape") setPanel(null); }
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") { setPanel(null); setGcalOpen(false); }
+    }
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
   }, []);
+
+  useEffect(() => {
+    if (!gcalOpen) return;
+    function onClickOutside() { setGcalOpen(false); }
+    document.addEventListener("click", onClickOutside);
+    return () => document.removeEventListener("click", onClickOutside);
+  }, [gcalOpen]);
+
+  useEffect(() => {
+    if (sessionStatus !== "authenticated") return;
+    const params = new URLSearchParams({ careerId });
+    fetch(`/api/planificador/exportar-gcal?${params}`)
+      .then((r) => r.json())
+      .then((json: { linked?: boolean; noToken?: boolean }) => {
+        if (json.linked) setGcalState("ok");
+      })
+      .catch(() => undefined);
+  }, [careerId, sessionStatus]);
 
   const materiaOptions = materias
     .filter((m) => m.tipo !== "agrupador")
@@ -103,7 +142,7 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
     const ini = Math.max(HORA_INICIO_GRILLA, Math.min(HORA_FIN_GRILLA - drag.duration, snapToSlot(raw)));
     const fin = ini + drag.duration;
     const conflict = findOverlaps({ id: drag.blockId, dia, horaInicio: ini, horaFin: fin }, blocks).length > 0;
-    return { dia, horaInicio: ini, horaFin: fin, hasConflict: conflict, color: drag.block.color ?? "#9d4edd" };
+    return { dia, horaInicio: ini, horaFin: fin, hasConflict: conflict, color: drag.block.color ?? colorForMateria(drag.block.materiaNombre) };
   }
 
   // Update the DOM ghost element directly — zero React re-renders during drag
@@ -209,6 +248,43 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
     if (panel?.type === "edit" && panel.block.id === id) setPanel(null);
   }
 
+  // ── Google Calendar export ────────────────────────────────────────────────
+  async function handleExportGCal() {
+    if (gcalState === "loading" || gcalState === "deleting") return;
+    setGcalState("loading");
+    setGcalMsg(null);
+    const params = new URLSearchParams({ careerId, planId, versionId });
+    const res = await fetch(`/api/planificador/exportar-gcal?${params}`, { method: "POST" }).catch(() => null);
+    if (!res) { setGcalState("error"); setGcalMsg("Error de red"); return; }
+    const json = await res.json().catch(() => ({})) as { created?: number; failed?: number; error?: string };
+    if (!res.ok || json.error) {
+      setGcalState("error");
+      setGcalMsg(json.error ?? "Error al exportar");
+    } else {
+      setGcalState("ok");
+      const parts = [];
+      if (json.created) parts.push(`${json.created} evento${json.created === 1 ? "" : "s"} exportado${json.created === 1 ? "" : "s"}`);
+      if (json.failed)  parts.push(`${json.failed} fallido${json.failed === 1 ? "" : "s"}`);
+      setGcalMsg(parts.length ? parts.join(" · ") : "Calendario actualizado");
+    }
+  }
+
+  async function handleUnlinkGCal() {
+    setGcalState("deleting");
+    setGcalMsg(null);
+    const params = new URLSearchParams({ careerId, planId, versionId });
+    const res = await fetch(`/api/planificador/exportar-gcal?${params}`, { method: "DELETE" }).catch(() => null);
+    if (!res) { setGcalState("error"); setGcalMsg("Error de red"); return; }
+    const json = await res.json().catch(() => ({})) as { deleted?: number; failed?: number; error?: string };
+    if (!res.ok || json.error) {
+      setGcalState("error");
+      setGcalMsg(json.error ?? "Error al desvincular");
+    } else {
+      setGcalState("unlinked");
+      setGcalMsg(json.deleted ? `${json.deleted} evento${json.deleted === 1 ? "" : "s"} eliminado${json.deleted === 1 ? "" : "s"} de Google Calendar` : "No había eventos para eliminar");
+    }
+  }
+
   // ── Auth guard ─────────────────────────────────────────────────────────────
   if (sessionStatus === "unauthenticated") {
     return (
@@ -243,8 +319,93 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
         <span className="hidden sm:inline" style={{ color: TEXT_SEC, fontSize: 12 }}>
           Clic en celda · arrastrá para mover
         </span>
+
+        {/* Google Calendar badge */}
+        {blocks.length > 0 && (
+          <div style={{ position: "relative" }}>
+            <div
+              role="button"
+              tabIndex={0}
+              aria-expanded={gcalOpen}
+              style={{
+                display: "inline-flex", alignItems: "center", gap: 6,
+                padding: "4px 10px", borderRadius: 99, fontSize: 12, fontWeight: 500,
+                cursor: (gcalState === "loading" || gcalState === "deleting") ? "default" : "pointer",
+                opacity: (gcalState === "loading" || gcalState === "deleting") ? 0.6 : 1,
+                userSelect: "none",
+                ...(gcalState === "error"
+                  ? { background: "rgba(239,68,68,0.10)", color: "#fca5a5" }
+                  : gcalState === "ok"
+                    ? { background: "rgba(34,197,94,0.10)", color: "#86efac" }
+                    : { background: "rgba(255,255,255,0.06)", color: TEXT_SEC }),
+              }}
+              onClick={(e) => {
+                if (gcalState === "loading" || gcalState === "deleting") return;
+                e.stopPropagation();
+                setGcalOpen((o) => !o);
+              }}
+              onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.stopPropagation(); setGcalOpen((o) => !o); } }}
+            >
+              {(gcalState !== "unlinked" && gcalState !== "idle") && (
+                <span style={{ fontSize: 11, color: gcalState === "error" ? "#fca5a5" : gcalState === "ok" ? "#6fcf6f" : TEXT_SEC }}>
+                  {gcalState === "loading" || gcalState === "deleting" ? "⏳" : gcalState === "error" ? "⚠" : "✓"}
+                </span>
+              )}
+              {gcalState === "loading" ? "Exportando..." :
+               gcalState === "deleting" ? "Desvinculando..." :
+               gcalState === "error" ? "Google Calendar" :
+               gcalState === "unlinked" ? "Vincular Google Calendar" :
+               "Google Calendar vinculado"}
+            </div>
+
+            {gcalOpen && (
+              <div
+                onClick={(e) => e.stopPropagation()}
+                style={{
+                  position: "absolute", top: "calc(100% + 6px)", right: 0, zIndex: 100,
+                  background: "rgba(18,12,36,0.97)",
+                  border: "1px solid rgba(255,255,255,0.12)",
+                  borderRadius: 12,
+                  padding: 6,
+                  minWidth: 220,
+                  boxShadow: "0 12px 32px rgba(0,0,0,0.5)",
+                  display: "grid", gap: 2,
+                }}
+              >
+                {gcalMsg && (
+                  <p style={{
+                    margin: 0, padding: "6px 10px", fontSize: 12,
+                    color: gcalState === "ok" ? "#86efac" : "#fca5a5",
+                  }}>
+                    {gcalMsg}
+                  </p>
+                )}
+                {gcalState === "ok" && (
+                  <p style={{ margin: 0, padding: "6px 10px", fontSize: 12, color: TEXT_SEC }}>
+                    Ya exportado. Re-exportar actualizará los eventos existentes.
+                  </p>
+                )}
+                <button
+                  type="button"
+                  style={{ ...BTN, width: "100%", textAlign: "left", justifyContent: "flex-start" }}
+                  onClick={() => { void handleExportGCal(); setGcalOpen(false); }}
+                >
+                  {gcalState === "ok" ? "Re-exportar horario" : "Exportar horario"}
+                </button>
+                <button
+                  type="button"
+                  style={{ ...BTN, width: "100%", textAlign: "left", justifyContent: "flex-start", color: "#fca5a5", borderColor: "rgba(239,68,68,0.35)" }}
+                  onClick={() => { void handleUnlinkGCal(); setGcalOpen(false); }}
+                >
+                  Eliminar eventos exportados
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+
         <button type="button" style={BTN_VIO} onClick={() => setPanel({ type: "create" })}>
-          + Agregar
+          + Agregar materia
         </button>
       </div>
 
@@ -295,7 +456,7 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
               return (
                 <div key={diaLabel} className="ws-col" style={{ display: "flex", flex: 1, flexDirection: "column", borderLeft: COL_LINE }}>
                   {/* Header */}
-                  <div className="ws-col-header" style={{ display: "flex", alignItems: "center", justifyContent: "center", height: SLOT_PX, borderBottom: COL_LINE, fontSize: 11, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: TEXT_SEC, overflow: "hidden" }}>
+                  <div className="ws-col-header" style={{ display: "flex", alignItems: "center", justifyContent: "center", height: SLOT_PX, borderBottom: COL_LINE, fontSize: 11, fontWeight: 700, letterSpacing: "0.04em", color: TEXT_SEC, overflow: "hidden" }}>
                     {diaLabel.slice(0, 3)}
                   </div>
 
@@ -312,21 +473,24 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
 
                     {/* Blocks */}
                     {diaBlocks.map((block) => {
-                      const top       = blockTopPx(block.horaInicio);
-                      const height    = blockHeightPx(block.horaInicio, block.horaFin);
-                      const color     = block.color ?? "#9d4edd";
+                      const top        = blockTopPx(block.horaInicio);
+                      const height     = blockHeightPx(block.horaInicio, block.horaFin);
+                      const color      = block.color ?? colorForMateria(block.materiaNombre);
                       const isDragging = draggingId === block.id;
                       const isEditing  = panel?.type === "edit" && panel.block.id === block.id;
+                      const timeLabel  = `${minutesToTimeString(block.horaInicio)}–${minutesToTimeString(block.horaFin)}`;
+                      const tooltipParts = [block.materiaNombre, timeLabel, block.comision, block.notas].filter(Boolean);
 
                       return (
                         <div
                           key={block.id}
                           data-block-id={block.id}
                           className="ws-block"
+                          title={tooltipParts.join(" · ")}
                           style={{
                             position: "absolute", left: 2, right: 2, overflow: "hidden", borderRadius: 6,
                             top: top + 1, height: height - 2,
-                            background: `${color}28`,
+                            background: `${color}22`,
                             border: `1.5px solid ${color}`,
                             outline: isEditing ? `2px solid ${color}` : undefined,
                             opacity: isDragging ? 0.25 : 1,
@@ -341,21 +505,13 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
                             setPanel({ type: "edit", block });
                           }}
                         >
-                          <div style={{ padding: "3px 6px" }}>
-                            <p className="ws-block-title" style={{ margin: 0, color, fontSize: 11, fontWeight: 700, lineHeight: 1.3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                          <div style={{ padding: "2px 5px", display: "flex", flexDirection: "column", gap: 1 }}>
+                            <p className="ws-block-title" style={{ margin: 0, color, fontSize: 10, fontWeight: 700, lineHeight: 1.25, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                               {block.materiaNombre}
                             </p>
-                            {height >= 40 && (
-                              <p className="ws-block-meta" style={{ margin: 0, color: TEXT_SEC, fontSize: 10, lineHeight: 1.3 }}>
-                                {minutesToTimeString(block.horaInicio)}–{minutesToTimeString(block.horaFin)}
-                                {block.comision ? ` · ${block.comision}` : ""}
-                              </p>
-                            )}
-                            {height >= 60 && block.notas && (
-                              <p style={{ margin: "2px 0 0", color: TEXT_SEC, fontSize: 10, opacity: 0.7, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                                {block.notas}
-                              </p>
-                            )}
+                            <p className="ws-block-meta" style={{ margin: 0, color: TEXT_SEC, fontSize: 9, lineHeight: 1.2, opacity: 0.85 }}>
+                              {timeLabel}{block.comision ? ` · ${block.comision}` : ""}
+                            </p>
                           </div>
                         </div>
                       );
