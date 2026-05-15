@@ -66,6 +66,13 @@ Opciones para resolverlo a futuro:
 
 ---
 
+## UX — navegación y estado
+
+- `media` [ ] **Persistir tab activo al hacer refresh en plan** — al recargar la página de un plan, volver al tab que estaba activo (Plan, Plan Vista, Planificador, Mapa). Implementar via query param en la URL (ej. `?tab=planificador`) para que el estado también sea compartible.
+- `media` [ ] **Persistir tab activo al hacer refresh en panel de usuario** — mismo comportamiento que el plan: al recargar el perfil, volver al tab que estaba activo. Implementar via query param.
+
+---
+
 ## Compartir plan con progreso
 
 - `media` [ ] **Generar link compartible con snapshot de progreso** — el usuario genera una URL que incluye el estado de sus materias (aprobadas/cursadas) codificado o almacenado en la BD. El destinatario abre el link y ve el plan con ese progreso como lectura, sin afectar el suyo propio.
