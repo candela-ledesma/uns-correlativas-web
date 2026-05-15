@@ -1,25 +1,24 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { Role } from "@/lib/auth/roles";
-import path from "path";
-import fs from "fs/promises";
+import { prisma } from "@/lib/db/prisma";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
-
-const FILE = path.join(process.cwd(), "data", "departamentos.json");
-
-async function leer(): Promise<Record<string, string>> {
-  const raw = await fs.readFile(FILE, "utf-8").catch(() => "{}");
-  return JSON.parse(raw);
-}
 
 export async function GET() {
   const session = await auth();
   if (!session?.user?.id || session.user.role !== Role.ADMIN) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
-  return NextResponse.json(await leer());
+
+  const carreras = await prisma.carreraConfig.findMany({ select: { id: true, departamento: true } });
+  const result: Record<string, string> = {};
+  for (const c of carreras) {
+    if (c.departamento) result[c.id] = c.departamento;
+  }
+
+  return NextResponse.json(result);
 }
 
 export async function PUT(req: Request) {
@@ -31,13 +30,19 @@ export async function PUT(req: Request) {
   const { slug, departamento }: { slug: string; departamento: string } = await req.json();
   if (!slug) return NextResponse.json({ error: "Falta slug" }, { status: 400 });
 
-  const datos = await leer();
-  if (departamento?.trim()) {
-    datos[slug] = departamento.trim();
-  } else {
-    delete datos[slug];
-  }
+  const value = departamento?.trim() || null;
 
-  await fs.writeFile(FILE, JSON.stringify(datos, null, 2), "utf-8");
-  return NextResponse.json({ ok: true, slug, departamento: datos[slug] ?? null });
+  await prisma.carreraConfig.upsert({
+    where: { id: slug },
+    update: { departamento: value },
+    create: {
+      id: slug,
+      nombre: slug,
+      jsonFile: `${slug}.json`,
+      departamento: value,
+      disponible: true,
+    },
+  });
+
+  return NextResponse.json({ ok: true, slug, departamento: value });
 }

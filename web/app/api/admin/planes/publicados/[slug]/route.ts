@@ -1,16 +1,11 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { Role } from "@/lib/auth/roles";
-import path from "path";
-import fs from "fs/promises";
+import { prisma } from "@/lib/db/prisma";
 import { createAuditEvent } from "@/lib/db/audit";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
-
-const DATA_DIR_LOCAL  = path.join(process.cwd(), "data", "local");
-const DATA_DIR_GEMINI = path.join(process.cwd(), "data", "gemini");
-const CARRERAS_FILE   = path.join(process.cwd(), "lib", "data", "carreras.ts");
 
 type Params = { params: Promise<{ slug: string }> };
 
@@ -20,28 +15,16 @@ async function requireAdmin() {
   return session;
 }
 
-function jsonFilesFor(slug: string) {
-  return {
-    local:  path.join(DATA_DIR_LOCAL,  `${slug}.json`),
-    gemini: path.join(DATA_DIR_GEMINI, `${slug}.json`),
-  };
-}
-
 // ── GET: devuelve el JSON completo del plan publicado ─────────────────────────
 export async function GET(_req: Request, { params }: Params) {
   const session = await requireAdmin();
   if (!session) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const { slug } = await params;
-  const { local, gemini } = jsonFilesFor(slug);
+  const row = await prisma.planPublicado.findUnique({ where: { slug } });
+  if (!row) return NextResponse.json({ error: "No encontrado" }, { status: 404 });
 
-  const filePath = await fs.access(local).then(() => local).catch(() => gemini);
-  try {
-    const raw = await fs.readFile(filePath, "utf-8");
-    return new Response(raw, { headers: { "Content-Type": "application/json; charset=utf-8" } });
-  } catch {
-    return NextResponse.json({ error: "No encontrado" }, { status: 404 });
-  }
+  return new Response(row.planJson, { headers: { "Content-Type": "application/json; charset=utf-8" } });
 }
 
 // ── PUT: reemplaza el JSON publicado con el body recibido ─────────────────────
@@ -50,23 +33,23 @@ export async function PUT(req: Request, { params }: Params) {
   if (!session) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const { slug } = await params;
-  const { local, gemini } = jsonFilesFor(slug);
 
   let newJson: string;
   try {
     const body = await req.text();
-    JSON.parse(body); // valida que sea JSON válido antes de escribir
+    JSON.parse(body); // valida JSON antes de persistir
     newJson = body;
   } catch {
     return NextResponse.json({ error: "JSON inválido" }, { status: 400 });
   }
 
-  const filePath = await fs.access(local).then(() => local).catch(() => gemini);
-  try {
-    await fs.writeFile(filePath, newJson, "utf-8");
-  } catch {
-    return NextResponse.json({ error: "No se pudo escribir el archivo" }, { status: 500 });
-  }
+  const existing = await prisma.planPublicado.findUnique({ where: { slug } });
+  if (!existing) return NextResponse.json({ error: "No encontrado" }, { status: 404 });
+
+  await prisma.planPublicado.update({
+    where: { slug },
+    data: { planJson: newJson, savedBy: session.user.id },
+  });
 
   await createAuditEvent({
     actorUserId: session.user.id,
@@ -82,7 +65,7 @@ export async function PUT(req: Request, { params }: Params) {
   return NextResponse.json({ ok: true, slug });
 }
 
-// ── PATCH: cambia disponible en carreras.ts ───────────────────────────────────
+// ── PATCH: cambia disponible ──────────────────────────────────────────────────
 export async function PATCH(req: Request, { params }: Params) {
   const session = await requireAdmin();
   if (!session) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
@@ -90,41 +73,24 @@ export async function PATCH(req: Request, { params }: Params) {
   const { slug } = await params;
   const { disponible }: { disponible: boolean } = await req.json();
 
-  const source = await fs.readFile(CARRERAS_FILE, "utf-8").catch(() => null);
-  if (!source) return NextResponse.json({ error: "No se pudo leer carreras.ts" }, { status: 500 });
+  // Intentar actualizar en DB dinámica primero
+  const updated = await prisma.carreraConfig.updateMany({
+    where: { id: slug },
+    data: { disponible },
+  });
 
-  // Extrae el bloque de la carrera (desde id: "slug" hasta el }, de cierre)
-  // y reemplaza el `disponible:` que aparece DESPUÉS del cierre de versions ([],)
-  // para no tocar los disponible: de las versiones individuales.
-  const blockRegex = new RegExp(
-    `(id:\\s*["']${slug}["'][\\s\\S]*?\\n    \\},?)`,
-    "m"
-  );
-  const blockMatch = source.match(blockRegex);
-  if (!blockMatch) {
-    return NextResponse.json({ error: "No se encontró la carrera en carreras.ts" }, { status: 404 });
+  if (updated.count === 0) {
+    // La carrera es estática — no podemos modificar carreras.ts en prod,
+    // pero sí podemos crear un override en CarreraConfig
+    // (Si ya existe en estáticas, no la duplicamos — solo logeamos)
+    // En este caso devolvemos ok pero indicamos que es read-only en prod
+    return NextResponse.json({
+      ok: true,
+      slug,
+      disponible,
+      warning: "La carrera es estática. El cambio no persiste hasta el próximo deploy.",
+    });
   }
-  const block = blockMatch[0];
-
-  // Operar solo en el fragmento después del cierre de versions (último ],)
-  const versionsClose = block.lastIndexOf("],");
-  if (versionsClose === -1) {
-    return NextResponse.json({ error: "Estructura inesperada en carreras.ts" }, { status: 500 });
-  }
-  const beforeVersions = block.slice(0, versionsClose + 2);
-  const afterVersions  = block.slice(versionsClose + 2).replace(
-    /(disponible:\s*)(true|false)/,
-    `$1${disponible}`
-  );
-  const updatedBlock = beforeVersions + afterVersions;
-
-  if (updatedBlock === block) {
-    return NextResponse.json({ error: "No se pudo modificar disponible en carreras.ts" }, { status: 500 });
-  }
-
-  const updated = source.replace(block, updatedBlock);
-
-  await fs.writeFile(CARRERAS_FILE, updated, "utf-8");
 
   await createAuditEvent({
     actorUserId: session.user.id,
@@ -140,30 +106,18 @@ export async function PATCH(req: Request, { params }: Params) {
   return NextResponse.json({ ok: true, slug, disponible });
 }
 
-// ── DELETE: borra el JSON y desregistra de carreras.ts ───────────────────────
+// ── DELETE: borra el plan y la carrera de DB ──────────────────────────────────
 export async function DELETE(_req: Request, { params }: Params) {
   const session = await requireAdmin();
   if (!session) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const { slug } = await params;
-  const { local, gemini } = jsonFilesFor(slug);
 
-  // Borrar archivos (local y gemini si existen)
   await Promise.all([
-    fs.unlink(local).catch(() => {}),
-    fs.unlink(gemini).catch(() => {}),
+    prisma.planPublicado.delete({ where: { slug } }).catch(() => {}),
+    prisma.planPublicado.delete({ where: { slug: `${slug}_v1_backup` } }).catch(() => {}),
+    prisma.carreraConfig.delete({ where: { id: slug } }).catch(() => {}),
   ]);
-
-  // Desregistrar de carreras.ts — elimina el bloque completo de la carrera
-  const source = await fs.readFile(CARRERAS_FILE, "utf-8").catch(() => null);
-  if (source) {
-    // Elimina el bloque que empieza con { y contiene id: "slug", hasta el },
-    const updated = source.replace(
-      new RegExp(`\\s*\\{[^{}]*id:\\s*["']${slug}["'][\\s\\S]*?\\},?`, "m"),
-      ""
-    );
-    await fs.writeFile(CARRERAS_FILE, updated, "utf-8");
-  }
 
   await createAuditEvent({
     actorUserId: session.user.id,

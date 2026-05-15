@@ -184,6 +184,32 @@ model PlanPendiente {
   updatedAt DateTime @updatedAt
 }
 
+model PlanPublicado {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  fuente      String   // "parser" | "gemini"
+  planJson    String
+  publicado   Boolean  @default(true)
+  savedBy     String?
+  savedAt     DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([slug])
+}
+
+model CarreraConfig {
+  id           String   @id // el slug mismo
+  nombre       String
+  descripcion  String   @default("Plan de estudios y correlativas.")
+  departamento String?
+  jsonFile     String
+  disponible   Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([disponible])
+}
+
 model AuditLog {
   id           String   @id @default(cuid())
   actorUserId  String?

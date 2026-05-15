@@ -1,28 +1,31 @@
 import { NextResponse } from "next/server";
 import { CARRERAS } from "@/lib/data/carreras";
-import path from "path";
-import fs from "fs/promises";
+import { prisma } from "@/lib/db/prisma";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
-const DEPTOS_FILE = path.join(process.cwd(), "data", "departamentos.json");
-
-async function leerDeptos(): Promise<Record<string, string>> {
-  const raw = await fs.readFile(DEPTOS_FILE, "utf-8").catch(() => "{}");
-  return JSON.parse(raw);
-}
-
 export async function GET() {
-  const deptos = await leerDeptos();
+  const dbCarreras = await prisma.carreraConfig.findMany({ where: { disponible: true } });
+  const staticIds = new Set(CARRERAS.map((c) => c.id as string));
 
-  const planes = CARRERAS.map((c) => ({
+  const staticPlanes = CARRERAS.map((c) => ({
     id: c.id,
     nombre: c.nombre,
     descripcion: c.descripcion,
-    departamento: deptos[c.id] ?? null,
+    departamento: null as string | null,
     disponible: c.disponible ?? true,
   }));
 
-  return NextResponse.json({ planes });
+  const dynamicPlanes = dbCarreras
+    .filter((c) => !staticIds.has(c.id))
+    .map((c) => ({
+      id: c.id,
+      nombre: c.nombre,
+      descripcion: c.descripcion,
+      departamento: c.departamento ?? null,
+      disponible: c.disponible,
+    }));
+
+  return NextResponse.json({ planes: [...staticPlanes, ...dynamicPlanes] });
 }

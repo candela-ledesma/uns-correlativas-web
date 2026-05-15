@@ -1,53 +1,12 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { Role } from "@/lib/auth/roles";
-import path from "path";
-import fs from "fs/promises";
+import { prisma } from "@/lib/db/prisma";
 import { CARRERAS } from "@/lib/data/carreras";
 import { createAuditEvent } from "@/lib/db/audit";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
-
-const DATA_DIR = path.join(process.cwd(), "data", "local");
-const DATA_DIR_GEMINI = path.join(process.cwd(), "data", "gemini");
-const CARRERAS_FILE = path.join(process.cwd(), "lib", "data", "carreras.ts");
-
-async function registrarCarreraEnConfig(
-  slug: string,
-  jsonFile: string,
-  nombre: string,
-  departamento?: string | null,
-): Promise<void> {
-  const yaRegistrada = CARRERAS.some((c) => c.id === slug);
-  if (yaRegistrada) return;
-
-  const source = await fs.readFile(CARRERAS_FILE, "utf-8");
-
-  const deptoLine = departamento ? `\n    departamento: "${departamento}",` : "";
-
-  const newEntry = `
-    {
-    id: "${slug}" as unknown as CarreraId,
-    nombre: "${nombre}",
-    descripcion: "Plan de estudios y correlativas.",${deptoLine}
-    defaultVersionId: "v1",
-    versions: [
-        {
-        versionId: "v1",
-        label: "Plan actual",
-        jsonFile: "${jsonFile}",
-        disponible: true,
-        },
-    ],
-    disponible: true,
-    },`;
-
-  // Insertamos antes del cierre del array CARRERAS
-  const updated = source.replace(/^(\];)/m, `${newEntry}\n$1`);
-
-  await fs.writeFile(CARRERAS_FILE, updated, "utf-8");
-}
 
 type ParseResult = {
   plan: { carrera: string; universidad: string; codigo_plan: string };
@@ -63,6 +22,29 @@ function slugFromPlan(plan: ParseResult["plan"]): string {
     .replace(/[̀-ͯ]/g, "")
     .replace(/[^a-z0-9]+/g, "_")
     .replace(/^_+|_+$/g, "");
+}
+
+async function registrarCarreraEnDB(
+  slug: string,
+  jsonFile: string,
+  nombre: string,
+  departamento?: string | null,
+): Promise<void> {
+  const staticEntry = CARRERAS.some((c) => c.id === slug);
+  if (staticEntry) return; // ya existe en el código estático
+
+  await prisma.carreraConfig.upsert({
+    where: { id: slug },
+    update: { nombre, jsonFile, ...(departamento != null ? { departamento } : {}) },
+    create: {
+      id: slug,
+      nombre,
+      jsonFile,
+      descripcion: "Plan de estudios y correlativas.",
+      departamento: departamento ?? null,
+      disponible: true,
+    },
+  });
 }
 
 export async function POST(request: Request) {
@@ -92,28 +74,21 @@ export async function POST(request: Request) {
   }
 
   const slug = slugFromPlan(plan.plan);
-  const isGemini = fuente === "gemini";
-  const targetDir = isGemini ? DATA_DIR_GEMINI : DATA_DIR;
-  const filePath = path.join(targetDir, `${slug}.json`);
 
   try {
-    if (isGemini) {
-      await fs.mkdir(DATA_DIR_GEMINI, { recursive: true });
-    }
-
-    const existing = await fs.readFile(filePath, "utf-8").then(JSON.parse).catch(() => null) as ParseResult | null;
+    const existing = await prisma.planPublicado.findUnique({ where: { slug } });
 
     if (existing && !resolucion) {
-      const stat = await fs.stat(filePath);
-      const diffMs = Date.now() - stat.mtimeMs;
+      const diffMs = Date.now() - existing.savedAt.getTime();
       const diffDays = Math.floor(diffMs / 86400000);
       const fechaLabel = diffDays === 0 ? "hoy" : diffDays === 1 ? "hace 1 día" : `hace ${diffDays} días`;
+      const existingPlan = JSON.parse(existing.planJson) as ParseResult;
       return NextResponse.json({
         conflict: true,
         existing: {
-          materias: (existing.materias ?? []).length,
+          materias: (existingPlan.materias ?? []).length,
           fechaCarga: fechaLabel,
-          fuente: String(existing._llm_mode ?? "parser"),
+          fuente: existing.fuente,
         },
       });
     }
@@ -133,19 +108,37 @@ export async function POST(request: Request) {
     };
 
     if (resolucion === "nueva_version" && existing) {
-      const backupPath = path.join(targetDir, `${slug}_v1_backup.json`);
-      await fs.writeFile(backupPath, JSON.stringify(existing, null, 2), "utf-8");
+      // Guardar backup con sufijo _v1_backup
+      await prisma.planPublicado.upsert({
+        where: { slug: `${slug}_v1_backup` },
+        update: { planJson: existing.planJson, fuente: existing.fuente },
+        create: { slug: `${slug}_v1_backup`, planJson: existing.planJson, fuente: existing.fuente },
+      });
     }
 
-    await fs.writeFile(filePath, JSON.stringify(dataToSave, null, 2), "utf-8");
+    await prisma.planPublicado.upsert({
+      where: { slug },
+      update: {
+        planJson: JSON.stringify(dataToSave, null, 2),
+        fuente,
+        publicado: publicar,
+        savedBy: session.user.id,
+      },
+      create: {
+        slug,
+        planJson: JSON.stringify(dataToSave, null, 2),
+        fuente,
+        publicado: publicar,
+        savedBy: session.user.id,
+      },
+    });
 
-    // Borrar el pendiente si existe (independiente de la fuente)
-    const pendientePath = path.join(DATA_DIR_GEMINI, `${slug}_pendiente.json`);
-    await fs.unlink(pendientePath).catch(() => {});
+    // Borrar pendiente si existe
+    await prisma.planPendiente.delete({ where: { slug } }).catch(() => {});
 
-    // Solo registrar en carreras.ts si es parser (fuente de verdad)
-    if (!isGemini) {
-      await registrarCarreraEnConfig(slug, `${slug}.json`, plan.plan.carrera, departamento).catch(() => {});
+    // Registrar carrera si es nueva
+    if (!fuente || fuente === "parser") {
+      await registrarCarreraEnDB(slug, `${slug}.json`, plan.plan.carrera, departamento).catch(() => {});
     }
 
     await createAuditEvent({

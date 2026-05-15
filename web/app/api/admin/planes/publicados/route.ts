@@ -1,21 +1,11 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { Role } from "@/lib/auth/roles";
-import path from "path";
-import fs from "fs/promises";
+import { prisma } from "@/lib/db/prisma";
 import { CARRERAS } from "@/lib/data/carreras";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
-
-const DATA_DIR_LOCAL  = path.join(process.cwd(), "data", "local");
-const DATA_DIR_GEMINI = path.join(process.cwd(), "data", "gemini");
-const DEPTOS_FILE     = path.join(process.cwd(), "data", "departamentos.json");
-
-async function leerDeptos(): Promise<Record<string, string>> {
-  const raw = await fs.readFile(DEPTOS_FILE, "utf-8").catch(() => "{}");
-  return JSON.parse(raw);
-}
 
 export async function GET() {
   const session = await auth();
@@ -23,50 +13,83 @@ export async function GET() {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
-  const deptos = await leerDeptos();
+  // Combina carreras estáticas (carreras.ts) + carreras dinámicas (DB)
+  const [dbCarreras, dbPlanes] = await Promise.all([
+    prisma.carreraConfig.findMany(),
+    prisma.planPublicado.findMany({ select: { slug: true, fuente: true, savedAt: true, planJson: true } }),
+  ]);
 
-  const planes = await Promise.all(
-    CARRERAS.map(async (carrera) => {
-      const version = carrera.versions.find(v => v.versionId === carrera.defaultVersionId) ?? carrera.versions[0];
-      if (!version) return null;
+  const deptosMap = new Map(dbCarreras.map((c) => [c.id, c.departamento ?? null]));
 
-      const localPath  = path.join(DATA_DIR_LOCAL,  version.jsonFile);
-      const geminiPath = path.join(DATA_DIR_GEMINI, version.jsonFile);
+  const planesMap = new Map(dbPlanes.map((p) => [p.slug, p]));
 
-      const [localStat, geminiStat] = await Promise.all([
-        fs.stat(localPath).catch(() => null),
-        fs.stat(geminiPath).catch(() => null),
-      ]);
+  // Carreras estáticas
+  const staticPlanes = CARRERAS.map((carrera) => {
+    const version = carrera.versions.find((v) => v.versionId === carrera.defaultVersionId) ?? carrera.versions[0];
+    const slug = carrera.id as string;
+    const planRow = planesMap.get(slug);
 
+    let materias: number | null = null;
+    let fuente: string | null = null;
+    let savedAt: string | null = null;
+
+    if (planRow) {
+      try {
+        const data = JSON.parse(planRow.planJson);
+        materias = (data.materias ?? []).length;
+        fuente = planRow.fuente;
+        savedAt = planRow.savedAt.toISOString();
+      } catch { /* skip */ }
+    }
+
+    return {
+      id: slug,
+      nombre: carrera.nombre,
+      departamento: deptosMap.get(slug) ?? null,
+      disponible: carrera.disponible ?? true,
+      jsonFile: version?.jsonFile ?? `${slug}.json`,
+      tieneLocal: !!planRow && planRow.fuente === "parser",
+      tieneGemini: !!planRow && planRow.fuente === "gemini",
+      materias,
+      fuente,
+      savedAt,
+      _source: "static" as const,
+    };
+  });
+
+  // Carreras dinámicas (solo las que no están en estáticas)
+  const staticIds = new Set(CARRERAS.map((c) => c.id as string));
+  const dynamicPlanes = dbCarreras
+    .filter((c) => !staticIds.has(c.id))
+    .map((carrera) => {
+      const planRow = planesMap.get(carrera.id);
       let materias: number | null = null;
       let fuente: string | null = null;
       let savedAt: string | null = null;
 
-      const srcPath = localStat ? localPath : geminiStat ? geminiPath : null;
-      if (srcPath) {
+      if (planRow) {
         try {
-          const raw = await fs.readFile(srcPath, "utf-8");
-          const data = JSON.parse(raw);
+          const data = JSON.parse(planRow.planJson);
           materias = (data.materias ?? []).length;
-          fuente = data._saved_fuente ?? (localStat ? "parser" : "gemini");
-          savedAt = data._saved_at ?? (localStat ? localStat.mtime.toISOString() : geminiStat?.mtime.toISOString() ?? null);
+          fuente = planRow.fuente;
+          savedAt = planRow.savedAt.toISOString();
         } catch { /* skip */ }
       }
 
       return {
         id: carrera.id,
         nombre: carrera.nombre,
-        departamento: deptos[carrera.id] ?? null,
-        disponible: carrera.disponible ?? true,
-        jsonFile: version.jsonFile,
-        tieneLocal:  !!localStat,
-        tieneGemini: !!geminiStat,
+        departamento: carrera.departamento ?? null,
+        disponible: carrera.disponible,
+        jsonFile: carrera.jsonFile,
+        tieneLocal: !!planRow && planRow.fuente === "parser",
+        tieneGemini: !!planRow && planRow.fuente === "gemini",
         materias,
         fuente,
         savedAt,
+        _source: "dynamic" as const,
       };
-    })
-  );
+    });
 
-  return NextResponse.json({ planes: planes.filter(Boolean) });
+  return NextResponse.json({ planes: [...staticPlanes, ...dynamicPlanes] });
 }

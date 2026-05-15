@@ -1,14 +1,10 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { Role } from "@/lib/auth/roles";
-import path from "path";
-import fs from "fs/promises";
+import { prisma } from "@/lib/db/prisma";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
-
-const DATA_DIR = path.join(process.cwd(), "data", "local");
-const DATA_DIR_GEMINI = path.join(process.cwd(), "data", "gemini");
 
 function slugFromFilename(filename: string): string {
   return filename
@@ -20,21 +16,21 @@ function slugFromFilename(filename: string): string {
     .replace(/^_+|_+$/g, "");
 }
 
-type ExistingInfo = {
-  existe: true;
-  materias: number;
-  fechaCarga: string;
-  fuente: string;
-  promptVersion: string | null;
-  data: unknown;
-} | { existe: false };
+type ExistingInfo =
+  | {
+      existe: true;
+      materias: number;
+      fechaCarga: string;
+      fuente: string;
+      promptVersion: string | null;
+      data: unknown;
+    }
+  | { existe: false };
 
-async function leerInfo(filePath: string): Promise<ExistingInfo> {
+function buildInfo(planJson: string, savedAt: Date, fuente: string): ExistingInfo {
   try {
-    const raw = await fs.readFile(filePath, "utf-8");
-    const json = JSON.parse(raw);
-    const stat = await fs.stat(filePath);
-    const diffMs = Date.now() - stat.mtimeMs;
+    const json = JSON.parse(planJson);
+    const diffMs = Date.now() - savedAt.getTime();
     const diffDays = Math.floor(diffMs / 86400000);
     const fechaLabel =
       diffDays === 0 ? "hoy" : diffDays === 1 ? "hace 1 día" : `hace ${diffDays} días`;
@@ -42,7 +38,7 @@ async function leerInfo(filePath: string): Promise<ExistingInfo> {
       existe: true,
       materias: (json.materias ?? []).length,
       fechaCarga: fechaLabel,
-      fuente: String(json._llm_mode ?? json._saved_fuente ?? "parser"),
+      fuente: String(json._llm_mode ?? json._saved_fuente ?? fuente),
       promptVersion: json._llm_prompt_version ?? null,
       data: json,
     };
@@ -65,10 +61,19 @@ export async function GET(request: Request) {
 
   const slug = slugFromFilename(filename);
 
-  const [infoParser, infoGemini] = await Promise.all([
-    leerInfo(path.join(DATA_DIR, `${slug}.json`)),
-    leerInfo(path.join(DATA_DIR_GEMINI, `${slug}.json`)),
-  ]);
+  const row = await prisma.planPublicado.findUnique({ where: { slug } });
 
-  return NextResponse.json({ slug, parser: infoParser, gemini: infoGemini });
+  let parserInfo: ExistingInfo = { existe: false };
+  let geminiInfo: ExistingInfo = { existe: false };
+
+  if (row) {
+    const info = buildInfo(row.planJson, row.savedAt, row.fuente);
+    if (row.fuente === "gemini") {
+      geminiInfo = info;
+    } else {
+      parserInfo = info;
+    }
+  }
+
+  return NextResponse.json({ slug, parser: parserInfo, gemini: geminiInfo });
 }
