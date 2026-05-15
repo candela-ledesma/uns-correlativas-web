@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useSession } from "next-auth/react";
+import { useSession, signIn } from "next-auth/react";
 import {
   DIAS_SEMANA,
   minutesToTimeString,
@@ -112,6 +112,7 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
       .then((r) => r.json())
       .then((json: { linked?: boolean; noToken?: boolean }) => {
         if (json.linked) setGcalState("ok");
+        else if (json.noToken) setGcalState("unlinked");
       })
       .catch(() => undefined);
   }, [careerId, sessionStatus]);
@@ -258,8 +259,9 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
     if (!res) { setGcalState("error"); setGcalMsg("Error de red"); return; }
     const json = await res.json().catch(() => ({})) as { created?: number; failed?: number; error?: string };
     if (!res.ok || json.error) {
-      setGcalState("error");
-      setGcalMsg(json.error ?? "Error al exportar");
+      const noToken = res.status === 403;
+      setGcalState(noToken ? "unlinked" : "error");
+      setGcalMsg(noToken ? "Iniciá sesión con Google para exportar a Calendar." : (json.error ?? "Error al exportar"));
     } else {
       setGcalState("ok");
       const parts = [];
@@ -372,33 +374,60 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
                   display: "grid", gap: 2,
                 }}
               >
-                {gcalMsg && (
-                  <p style={{
-                    margin: 0, padding: "6px 10px", fontSize: 12,
-                    color: gcalState === "ok" ? "#86efac" : "#fca5a5",
-                  }}>
-                    {gcalMsg}
-                  </p>
+                {gcalState === "unlinked" ? (
+                  <>
+                    <p style={{ margin: 0, padding: "6px 10px", fontSize: 12, color: TEXT_SEC }}>
+                      Conectá tu cuenta de Google para exportar el horario a Calendar.
+                    </p>
+                    <button
+                      type="button"
+                      style={{ ...BTN, width: "100%", textAlign: "left", justifyContent: "flex-start" }}
+                      onClick={() => void signIn("google", { callbackUrl: window.location.href })}
+                    >
+                      Conectar con Google →
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    {gcalMsg && (
+                      <p style={{
+                        margin: 0, padding: "6px 10px", fontSize: 12,
+                        color: gcalState === "ok" ? "#86efac" : "#fca5a5",
+                      }}>
+                        {gcalMsg}
+                      </p>
+                    )}
+                    {gcalState === "ok" && (
+                      <>
+                        <p style={{ margin: 0, padding: "6px 10px", fontSize: 12, color: TEXT_SEC }}>
+                          Ya exportado. Re-exportar actualizará los eventos existentes.
+                        </p>
+                        <a
+                          href="https://calendar.google.com"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{ ...BTN, width: "100%", textAlign: "left", justifyContent: "flex-start", textDecoration: "none", color: "#86efac", borderColor: "rgba(134,239,172,0.3)" }}
+                        >
+                          Abrir Google Calendar →
+                        </a>
+                      </>
+                    )}
+                    <button
+                      type="button"
+                      style={{ ...BTN, width: "100%", textAlign: "left", justifyContent: "flex-start" }}
+                      onClick={() => { void handleExportGCal(); setGcalOpen(false); }}
+                    >
+                      {gcalState === "ok" ? "Re-exportar horario" : "Exportar horario"}
+                    </button>
+                    <button
+                      type="button"
+                      style={{ ...BTN, width: "100%", textAlign: "left", justifyContent: "flex-start", color: "#fca5a5", borderColor: "rgba(239,68,68,0.35)" }}
+                      onClick={() => { void handleUnlinkGCal(); setGcalOpen(false); }}
+                    >
+                      Eliminar eventos exportados
+                    </button>
+                  </>
                 )}
-                {gcalState === "ok" && (
-                  <p style={{ margin: 0, padding: "6px 10px", fontSize: 12, color: TEXT_SEC }}>
-                    Ya exportado. Re-exportar actualizará los eventos existentes.
-                  </p>
-                )}
-                <button
-                  type="button"
-                  style={{ ...BTN, width: "100%", textAlign: "left", justifyContent: "flex-start" }}
-                  onClick={() => { void handleExportGCal(); setGcalOpen(false); }}
-                >
-                  {gcalState === "ok" ? "Re-exportar horario" : "Exportar horario"}
-                </button>
-                <button
-                  type="button"
-                  style={{ ...BTN, width: "100%", textAlign: "left", justifyContent: "flex-start", color: "#fca5a5", borderColor: "rgba(239,68,68,0.35)" }}
-                  onClick={() => { void handleUnlinkGCal(); setGcalOpen(false); }}
-                >
-                  Eliminar eventos exportados
-                </button>
               </div>
             )}
           </div>
