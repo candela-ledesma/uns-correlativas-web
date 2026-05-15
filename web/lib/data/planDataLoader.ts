@@ -11,6 +11,7 @@ import {
   type PlanValidationIssue,
   type PlanValidationIssueKind,
 } from "@/lib/data/planValidation";
+import { prisma } from "@/lib/db/prisma";
 
 type CarreraInfo = {
   id: string;
@@ -72,14 +73,25 @@ export function formatValidationIssues(
   return issues.slice(0, max).map((issue) => `${issue.path}: ${issue.message}`);
 }
 
+async function readPlanJson(slug: string, jsonFile: string): Promise<string | null> {
+  const filePath = path.join(process.cwd(), "data", "local", jsonFile);
+  const fromFile = await fs.readFile(filePath, "utf8").catch(() => null);
+  if (fromFile !== null) return fromFile;
+
+  const row = await prisma.planPublicado.findUnique({ where: { slug } }).catch(() => null);
+  return row?.planJson ?? null;
+}
+
 async function loadPlanDataFromFile(
   carreraId: string,
   jsonFile: string,
   carreraInfo: CarreraInfo,
   version: VersionInfo
 ): Promise<PlanLoadResult> {
-  const filePath = path.join(process.cwd(), "data", "local", jsonFile);
-  const fileContents = await fs.readFile(filePath, "utf8");
+  const fileContents = await readPlanJson(carreraId, jsonFile);
+  if (fileContents === null) {
+    return { status: "unavailable", carrera: carreraInfo, reason: "file-not-found" };
+  }
 
   let raw: unknown;
   try {
@@ -118,14 +130,15 @@ export async function loadPlanData(
 ): Promise<PlanLoadResult> {
   const carrera = getCarreraById(carreraId);
 
-  // Fallback: si la carrera no está registrada, buscar <carreraId>.json en data/
+  // Fallback: si la carrera no está registrada estáticamente, buscar en DB o data/local/
   if (!carrera) {
     const jsonFile = `${carreraId}.json`;
-    const filePath = path.join(process.cwd(), "data", "local", jsonFile);
-    const exists = await fs.access(filePath).then(() => true).catch(() => false);
-    if (!exists) return { status: "not-found", carreraId };
+    const contents = await readPlanJson(carreraId, jsonFile);
+    if (!contents) return { status: "not-found", carreraId };
 
-    const carreraInfo: CarreraInfo = { id: carreraId, nombre: carreraId.replace(/_/g, " ") };
+    const dbCarrera = await prisma.carreraConfig.findUnique({ where: { id: carreraId } }).catch(() => null);
+    const nombre = dbCarrera?.nombre ?? carreraId.replace(/_/g, " ");
+    const carreraInfo: CarreraInfo = { id: carreraId, nombre };
     const version: VersionInfo = { versionId: "v1", label: "Plan actual", jsonFile, disponible: true };
     try {
       return await loadPlanDataFromFile(carreraId, jsonFile, carreraInfo, version);
@@ -157,8 +170,10 @@ export async function loadPlanData(
   }
 
   try {
-    const filePath = path.join(process.cwd(), "data", "local", version.jsonFile);
-    const fileContents = await fs.readFile(filePath, "utf8");
+    const fileContents = await readPlanJson(carreraId, version.jsonFile);
+    if (fileContents === null) {
+      return { status: "unavailable", carrera: carreraInfo, reason: "file-not-found" };
+    }
 
     let raw: unknown;
     try {
@@ -221,20 +236,7 @@ export async function loadPlanData(
       data: validation.data,
       warnings: validation.warnings,
     };
-  } catch (error: unknown) {
-    if (
-      typeof error === "object" &&
-      error !== null &&
-      "code" in error &&
-      error.code === "ENOENT"
-    ) {
-      return {
-        status: "unavailable",
-        carrera: carreraInfo,
-        reason: "file-not-found",
-      };
-    }
-
+  } catch {
     return {
       status: "error",
       carrera: carreraInfo,
