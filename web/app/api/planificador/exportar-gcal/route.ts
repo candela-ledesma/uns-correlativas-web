@@ -61,12 +61,14 @@ async function getValidAccessToken(
 }
 
 function getAuthToken(token: Awaited<ReturnType<typeof getToken>>) {
-  if (!token?.sub) return null;
+  if (!token || typeof token === "string" || !token.sub) return null;
+  const sub = typeof token.sub === "string" ? token.sub : null;
+  if (!sub) return null;
   return {
-    userId: token.sub,
-    accessToken: token.googleAccessToken as string | undefined,
-    refreshToken: token.googleRefreshToken as string | undefined,
-    expiresAt: token.googleTokenExpiresAt as number | undefined,
+    userId: sub,
+    accessToken: (token as Record<string, unknown>).googleAccessToken as string | undefined,
+    refreshToken: (token as Record<string, unknown>).googleRefreshToken as string | undefined,
+    expiresAt: (token as Record<string, unknown>).googleTokenExpiresAt as number | undefined,
   };
 }
 
