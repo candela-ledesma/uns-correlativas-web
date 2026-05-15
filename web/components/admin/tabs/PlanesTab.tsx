@@ -66,7 +66,8 @@ export default function PlanesTab() {
       .finally(() => setLoading(false));
   }
 
-  useEffect(() => { cargar(); }, []);
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => { cargar(); }, []); // cargar es estable: no depende de props ni estado
 
   async function toggleDisponible(p: PlanPublicado) {
     setToggling(p.id);

@@ -23,14 +23,8 @@ async function readAdminConfig(): Promise<{ systemPrompt?: string }> {
   }
 }
 
-
-
-// Corrige IDs tipo "10022" → "I0022" en materias y correlativas.
-// Gemini confunde la letra I con el dígito 1. Este fix busca todos los IDs
-// con patrón 1XXXX en el JSON y los reemplaza por IXXXX, usando como fuente
-// tanto el propio JSON (si algún I#### aparece correcto) como la heurística
-// de que cualquier 1XXXX que no coincida con una materia numérica conocida
-// es casi seguramente un I####.
+// Corrige IDs tipo "10022" → "I0022": Gemini confunde la letra I con el dígito 1.
+// Un ID de 5 dígitos empezando con 1 nunca es una materia real en planes UNS.
 function corregirIdsIdioma(data: Record<string, unknown>): void {
   const materias = Array.isArray(data.materias) ? data.materias as Record<string, unknown>[] : [];
   const agrupadores = Array.isArray(data.agrupadores) ? data.agrupadores as Record<string, unknown>[] : [];

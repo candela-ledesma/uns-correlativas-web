@@ -18,7 +18,7 @@ export async function notificarRevisionPendiente(params: NotificarRevisionParams
 
   if (!adminEmail || !apiKey) return;
 
-  const { carrera, universidad, materias, fuente, enviadoPor, nota, slug } = params;
+  const { carrera, universidad, materias, fuente, enviadoPor, nota } = params;
 
   const adminUrl = process.env.NEXTAUTH_URL ?? process.env.AUTH_URL ?? "http://localhost:3000";
 

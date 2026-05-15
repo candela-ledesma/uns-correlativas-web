@@ -146,19 +146,6 @@ def _acumular_requisito(materia: dict, nuevo: dict) -> None:
     lista.append(nuevo)
 
 
-def _requisito_tiene_prioridad(existente: dict | None, nuevo: dict) -> bool:
-    """Obsoleto — mantenido para no romper código externo. Usar _acumular_requisito."""
-    if existente is None:
-        return False
-    tipo_e = existente.get("tipo")
-    tipo_n = nuevo.get("tipo")
-    if tipo_e == "minimo_materias_aprobadas" and tipo_n == "anio_aprobado":
-        return True
-    if tipo_e == "minimo_materias_aprobadas" and tipo_n == "minimo_materias_aprobadas":
-        if existente.get("cantidad") == nuevo.get("cantidad"):
-            return len(existente.get("descripcion", "")) > len(nuevo.get("descripcion", ""))
-    return False
-
 
 def extraer_correlativas_de_linea(linea):
     correlativas = {}

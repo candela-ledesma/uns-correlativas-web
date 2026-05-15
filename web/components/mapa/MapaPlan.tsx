@@ -77,7 +77,7 @@ function HoverStyleInjector({
           : { stroke: "rgba(157,78,221,0.08)", strokeWidth: 1.5, opacity: 0.04 },
       };
     }));
-  }, [hoveredNodeId, activeChain, caminoActivo, baseEdges]);
+  }, [hoveredNodeId, activeChain, caminoActivo, baseEdges, setEdges]);
 
   if (!css) return null;
   return <style>{css}</style>;
@@ -117,7 +117,7 @@ function CaminoStyleInjector({
           : { stroke: "rgba(157,78,221,0.08)", strokeWidth: 1.5, opacity: 0.04 },
       };
     }));
-  }, [caminoSet, baseEdges]);
+  }, [caminoSet, baseEdges, setEdges]);
 
   if (!css) return null;
   return <style>{css}</style>;
