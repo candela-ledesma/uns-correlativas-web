@@ -4,6 +4,20 @@
 
 ---
 
+## Admin en producción (Vercel) — opciones a evaluar
+
+El panel admin usa escritura en disco y subprocesos Python que no funcionan en Vercel.
+Actualmente el flujo completo (parser local, validar, guardar) solo funciona en local.
+Opciones para resolverlo a futuro:
+
+- `baja` [ ] **Opción 1: Python API separada en Railway/Render** — deployar el parser como una API REST (FastAPI o Flask) en Railway (tier gratuito, soporte Python nativo). Vercel llama a esa API en lugar de correr subprocesos locales. El filesystem se resuelve usando la DB directamente. Recomendado a futuro.
+
+- `baja` [ ] **Opción 2: Reemplazar JSONs por base de datos** — en lugar de guardar carreras como `.json` en el repo, guardarlas en Supabase o PlanetScale. Las rutas admin harían CRUD directo a la DB; Vercel lee/escribe sin problemas desde serverless functions. El parser Python correría una sola vez para migrar los JSONs existentes.
+
+- `baja` [ ] **Opción 3: Reescribir el parser en TypeScript** — elimina la dependencia de Python completamente. Todo corre en Vercel natively. Más trabajo inicial pero la solución más limpia a largo plazo.
+
+---
+
 ## Roles de usuario
 
 - `alta` [x] **Agregar enum de roles en Prisma** — campo `role` (USER/MODERATOR/ADMIN) ya existía en el schema con default USER. Migración ya aplicada.
