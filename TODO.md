@@ -66,6 +66,12 @@ Opciones para resolverlo a futuro:
 
 ---
 
+## Compartir plan con progreso
+
+- `media` [ ] **Generar link compartible con snapshot de progreso** — el usuario genera una URL que incluye el estado de sus materias (aprobadas/cursadas) codificado o almacenado en la BD. El destinatario abre el link y ve el plan con ese progreso como lectura, sin afectar el suyo propio.
+
+---
+
 ## Búsqueda y navegación de carreras
 
 - `media` [x] **Filtrar carreras por departamento** — chips de filtro en la página de inicio incluyendo "Todas"; campo `departamento` agregado a todas las carreras en `carreras.ts`; selector de departamento al guardar un plan nuevo desde el panel admin.

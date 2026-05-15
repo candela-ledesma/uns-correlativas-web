@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ACCENT, GLASS, TEXT, TEXT_SEC, SURFACE, BTN, BTN_VIOLET, INPUT, STATUS_COLORS, ERROR_PANEL } from "@/lib/ui/tokens";
+import { CARD, LABEL } from "./adminTabStyles";
 import DiffExportDrawer, { computeDiffs, type DiffItem } from "./DiffExportDrawer";
 import GuardarPlanDrawer from "./GuardarPlanDrawer";
 import type { ParseResult } from "./DiffExportDrawer";
@@ -52,18 +53,6 @@ type ConfirmState = {
   fuente: "gemini" | "parser" | "ambos";
   infoParser: ExistingInfo;
   infoGemini: ExistingInfo;
-};
-
-const CARD: React.CSSProperties = {
-  ...SURFACE,
-  borderRadius: 12,
-  padding: "20px 22px",
-  marginBottom: 16,
-};
-
-const LABEL: React.CSSProperties = {
-  fontSize: 11, fontWeight: 600, textTransform: "uppercase",
-  letterSpacing: "0.06em", color: TEXT_SEC, marginBottom: 12,
 };
 
 function useElapsedTime(status: SourceStatus): number | null {

@@ -15,8 +15,7 @@ import {
   hasMigratedPlanState,
   markPlanStateMigrated,
 } from "@/lib/plan/planStorage";
-import { scrollToGroup } from "@/lib/plan/scrollToGroup";
-import { getScrollTargetId } from "@/lib/plan/getScrollTargetId";
+import { scrollToGroup, getScrollTargetId } from "@/lib/plan/scrollToGroup";
 import { getEstadoKey } from "@/lib/plan/estadoKey";
 import { materiaElegidaEnOtroGrupo } from "@/lib/plan/materiaViewModel";
 

@@ -179,23 +179,3 @@ export function generarBadgeRequisito(resultado: ResultadoRequisito): {
   };
 }
 
-/**
- * Verifica si un requisito es de tipo prueba de idioma.
- */
-export function esPruebaIdioma(
-  requisito: RequisitoEspecialType
-): requisito is Extract<RequisitoEspecialType, { tipo: "prueba_idioma" }> {
-  return requisito.tipo === "prueba_idioma";
-}
-
-/**
- * Verifica si un requisito es de mínimo de materias aprobadas.
- */
-export function esMinimMaterias(
-  requisito: RequisitoEspecialType
-): requisito is Extract<
-  RequisitoEspecialType,
-  { tipo: "minimo_materias_aprobadas" }
-> {
-  return requisito.tipo === "minimo_materias_aprobadas";
-}

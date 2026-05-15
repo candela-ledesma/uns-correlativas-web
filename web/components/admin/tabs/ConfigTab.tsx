@@ -4,17 +4,7 @@ import { useEffect, useState } from "react";
 import { TEXT_SEC, SURFACE, BTN, BTN_VIOLET, INPUT } from "@/lib/ui/tokens";
 import { DEFAULT_SYSTEM_PROMPT, PROMPT_VERSION } from "@/lib/ai/prompt";
 
-const CARD: React.CSSProperties = {
-  ...SURFACE,
-  borderRadius: 12,
-  padding: "20px 22px",
-  marginBottom: 16,
-};
-
-const LABEL: React.CSSProperties = {
-  fontSize: 11, fontWeight: 600, textTransform: "uppercase",
-  letterSpacing: "0.06em", color: TEXT_SEC, marginBottom: 12,
-};
+import { CARD, LABEL } from "./adminTabStyles";
 
 const FIELD_LABEL: React.CSSProperties = {
   display: "block", fontSize: 11, color: TEXT_SEC,
