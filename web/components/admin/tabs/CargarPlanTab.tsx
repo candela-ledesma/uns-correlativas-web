@@ -183,8 +183,26 @@ export default function CargarPlanTab({ canPublish = true }: { canPublish?: bool
     setStatus({ type: "loading", step: initialStep, message: STEP_LABEL[initialStep] });
     try {
       const res = await fetch(endpoint, { method: "POST", body: fd });
-      if (!res.body) throw new Error("No se recibió respuesta del servidor");
+      const contentType = res.headers.get("content-type") ?? "";
 
+      // Gemini devuelve JSON directo (Vercel no soporta SSE real)
+      if (contentType.includes("application/json")) {
+        const event = await res.json() as { type: string; data?: ParseResult; message?: string; model?: string; usage?: UsageInfo };
+        if (event.type === "done" && event.data) {
+          setStatus({ type: "done", data: event.data });
+          if (event.model && event.usage) {
+            const u = event.usage;
+            setUsageByModel(prev => ({ ...prev, [event.model as string]: u }));
+            if (u.totalTokens) { addTokens(event.model as string, u.totalTokens); refreshDailyUsage(); }
+          }
+        } else {
+          setStatus({ type: "error", message: event.message ?? "Error desconocido" });
+        }
+        return;
+      }
+
+      // Parser local devuelve SSE
+      if (!res.body) throw new Error("No se recibió respuesta del servidor");
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
       let buffer = "";

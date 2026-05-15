@@ -114,10 +114,6 @@ function extraerJSON(raw: string): unknown {
   );
 }
 
-function sseEvent(type: string, payload: Record<string, unknown>): string {
-  return `data: ${JSON.stringify({ type, ...payload })}\n\n`;
-}
-
 export async function POST(request: Request) {
   const session = await auth();
   if (!session?.user?.id || (session.user.role !== Role.ADMIN && session.user.role !== Role.MODERATOR)) {
@@ -147,70 +143,48 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "GEMINI_API_KEY no configurada" }, { status: 500 });
   }
 
-  const stream = new ReadableStream({
-    async start(controller) {
-      const send = (type: string, payload: Record<string, unknown> = {}) => {
-        controller.enqueue(new TextEncoder().encode(sseEvent(type, payload)));
-      };
+  try {
+    const bytes = await file.arrayBuffer();
+    const pdfBase64 = Buffer.from(bytes).toString("base64");
 
-      try {
-        send("progress", { step: "leyendo", message: "Leyendo el PDF…" });
-        const bytes = await file.arrayBuffer();
-        const pdfBase64 = Buffer.from(bytes).toString("base64");
+    const ai = new GoogleGenAI({ apiKey });
+    const adminConfig = await readAdminConfig();
+    const systemInstruction = adminConfig.systemPrompt ?? DEFAULT_SYSTEM_PROMPT;
 
-        send("progress", { step: "enviando", message: "Enviando a Gemini…" });
-        const ai = new GoogleGenAI({ apiKey });
+    const response = await ai.models.generateContent({
+      model,
+      contents: [
+        {
+          role: "user",
+          parts: [{ inlineData: { mimeType: "application/pdf", data: pdfBase64 } }],
+        },
+      ],
+      config: { systemInstruction, temperature: 0 },
+    });
 
-        send("progress", { step: "generando", message: "Generando JSON…" });
-        const adminConfig = await readAdminConfig();
-        const systemInstruction = adminConfig.systemPrompt ?? DEFAULT_SYSTEM_PROMPT;
-        const response = await ai.models.generateContent({
-          model,
-          contents: [
-            {
-              role: "user",
-              parts: [
-                { inlineData: { mimeType: "application/pdf", data: pdfBase64 } },
-              ],
-            },
-          ],
-          config: { systemInstruction, temperature: 0 },
-        });
+    const rawText = response.text ?? "";
+    const data = extraerJSON(rawText) as Record<string, unknown>;
+    corregirIdsIdioma(data);
+    data._llm_prompt_version = PROMPT_VERSION;
+    data._llm_mode = "llm";
 
-        const rawText = response.text ?? "";
-        const data = extraerJSON(rawText) as Record<string, unknown>;
-        corregirIdsIdioma(data);
-        data._llm_prompt_version = PROMPT_VERSION;
-        data._llm_mode = "llm";
-
-        const usage = response.usageMetadata ?? null;
-        send("done", {
-          data,
-          model,
-          usage: usage ? {
-            promptTokens: usage.promptTokenCount ?? null,
-            candidateTokens: usage.candidatesTokenCount ?? null,
-            totalTokens: usage.totalTokenCount ?? null,
-          } : null,
-        });
-      } catch (err) {
-        let msg = err instanceof Error ? err.message : String(err);
-        try {
-          const parsed = JSON.parse(msg);
-          if (parsed?.error?.message) msg = parsed.error.message;
-        } catch {}
-        send("error", { message: msg });
-      } finally {
-        controller.close();
-      }
-    },
-  });
-
-  return new Response(stream, {
-    headers: {
-      "Content-Type": "text/event-stream",
-      "Cache-Control": "no-cache",
-      Connection: "keep-alive",
-    },
-  });
+    const usage = response.usageMetadata ?? null;
+    return NextResponse.json({
+      type: "done",
+      data,
+      model,
+      usage: usage ? {
+        promptTokens: usage.promptTokenCount ?? null,
+        candidateTokens: usage.candidatesTokenCount ?? null,
+        totalTokens: usage.totalTokenCount ?? null,
+      } : null,
+    });
+  } catch (err) {
+    let msg = err instanceof Error ? err.message : String(err);
+    try {
+      const parsed = JSON.parse(msg);
+      if (parsed?.error?.message) msg = parsed.error.message;
+    } catch {}
+    return NextResponse.json({ type: "error", message: msg }, { status: 500 });
+  }
 }
