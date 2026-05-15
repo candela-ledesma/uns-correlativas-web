@@ -10,11 +10,20 @@ El panel admin usa escritura en disco y subprocesos Python que no funcionan en V
 Actualmente el flujo completo (parser local, validar, guardar) solo funciona en local.
 Opciones para resolverlo a futuro:
 
-- `baja` [ ] **Opción 1: Python API separada en Railway/Render** — deployar el parser como una API REST (FastAPI o Flask) en Railway (tier gratuito, soporte Python nativo). Vercel llama a esa API en lugar de correr subprocesos locales. El filesystem se resuelve usando la DB directamente. Recomendado a futuro.
+- `baja` [x] **Opción 1: Python API separada en Render** — `uns-parser-api` deployado en Render (FastAPI). Parser local y Gemini corren desde ahí; Vercel delega ambos cuando `PARSER_API_URL` está definida.
 
 - `baja` [ ] **Opción 2: Reemplazar JSONs por base de datos** — en lugar de guardar carreras como `.json` en el repo, guardarlas en Supabase o PlanetScale. Las rutas admin harían CRUD directo a la DB; Vercel lee/escribe sin problemas desde serverless functions. El parser Python correría una sola vez para migrar los JSONs existentes.
 
 - `baja` [ ] **Opción 3: Reescribir el parser en TypeScript** — elimina la dependencia de Python completamente. Todo corre en Vercel natively. Más trabajo inicial pero la solución más limpia a largo plazo.
+
+### Admin prod (Vercel + Render) — resuelto
+
+- [x] **Filesystem read-only en Vercel** — JSONs y carreras migrados a Neon (tablas `PlanPublicado`, `CarreraConfig`). `planDataLoader` lee desde DB como fallback.
+- [x] **SSE no funciona en Vercel** — route Gemini convertido a JSON directo.
+- [x] **Timeout de Vercel (60s) para Gemini** — el browser llama directo a Render (`NEXT_PUBLIC_PARSER_API_URL`), evitando el límite serverless. Render no tiene límite de tiempo para requests externos.
+- [x] **CORS** — `CORSMiddleware` en FastAPI con origen `uns-correlativas.vercel.app`.
+- [x] **Auth en `/parse-gemini`** — eliminada; el acceso lo controla la sesión de Next.js.
+- `alta` [ ] **Parseo Gemini desde prod (Vercel) no funciona** — el browser llama directo a Render (`NEXT_PUBLIC_PARSER_API_URL`) pero la request nunca completa. Posibles causas: `GEMINI_API_KEY` no cargada en Render, cold start + tiempo de Gemini supera el timeout del browser, o problema no identificado. Pendiente de diagnóstico con logs de Render.
 
 ### Migraciones a Neon priorizadas
 
