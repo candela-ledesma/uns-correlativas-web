@@ -269,8 +269,8 @@
     {
       "id": "5923",
       "nombre": "CONCEPTOS DE ANALISIS NUMERICO",
-      "año": "Segundo Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
+      "año": "Tercer Año",
+      "cuatrimestre": "Primer Cuatrimestre",
       "horas": "64",
       "tipo": "materia",
       "categoria": "normal",
@@ -296,8 +296,8 @@
     {
       "id": "5654",
       "nombre": "FUNCIONES DE VARIABLE COMPLEJA",
-      "año": "Segundo Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
+      "año": "Tercer Año",
+      "cuatrimestre": "Primer Cuatrimestre",
       "horas": "128",
       "tipo": "materia",
       "categoria": "normal",
@@ -315,8 +315,8 @@
     {
       "id": "7820",
       "nombre": "MODELOS ESTADISTICOS PARA CIENCIAS DE LA COMPUTACION",
-      "año": "Segundo Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
+      "año": "Tercer Año",
+      "cuatrimestre": "Primer Cuatrimestre",
       "horas": "64",
       "tipo": "materia",
       "categoria": "normal",
@@ -342,7 +342,7 @@
     {
       "id": "2516",
       "nombre": "ANALISIS DE CIRCUITOS ELECTRICOS",
-      "año": "Segundo Año",
+      "año": "Tercer Año",
       "cuatrimestre": "Segundo Cuatrimestre",
       "horas": "128",
       "tipo": "materia",
@@ -365,7 +365,7 @@
     {
       "id": "7642",
       "nombre": "ELEMENTOS DE BASES DE DATOS",
-      "año": "Segundo Año",
+      "año": "Tercer Año",
       "cuatrimestre": "Segundo Cuatrimestre",
       "horas": "128",
       "tipo": "materia",
@@ -384,7 +384,7 @@
     {
       "id": "5949",
       "nombre": "SISTEMAS OPERATIVOS",
-      "año": "Segundo Año",
+      "año": "Tercer Año",
       "cuatrimestre": "Segundo Cuatrimestre",
       "horas": "128",
       "tipo": "materia",
@@ -613,7 +613,8 @@
       "cuatrimestre": "Primer Cuatrimestre",
       "horas": "128",
       "tipo": "materia",
-      "categoria": "normal",
+      "categoria": "optativa",
+      "grupo_opcion": "G1206",
       "correlativas": {
         "5786": {
           "para_cursar": "cursada",
@@ -650,18 +651,27 @@
       "cuatrimestre": "Segundo Cuatrimestre",
       "horas": null,
       "tipo": "materia",
-      "categoria": "normal",
+      "categoria": "optativa",
+      "grupo_opcion": "G1207",
       "correlativas": {
         "10022": {
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
       },
-      "requisito_especial": {
-        "tipo": "minimo_materias_aprobadas",
-        "descripcion": "Para aprobar Se requiere tener tercer año aprobado y primer cuatrimestre de cuarto año cursado",
-        "cantidad": null
-      }
+      "requisito_especial": [
+        {
+          "tipo": "anio_aprobado",
+          "anio": 3,
+          "descripcion": "Para aprobar Se requiere tener tercer año aprobado y primer cuatrimestre de cuarto año cursado"
+        },
+        {
+          "tipo": "cuatrimestre_cursado",
+          "anio": 4,
+          "cuatrimestre": 1,
+          "descripcion": "Para aprobar Se requiere tener tercer año aprobado y primer cuatrimestre de cuarto año cursado"
+        }
+      ]
     },
     {
       "id": "7895",
@@ -670,27 +680,36 @@
       "cuatrimestre": "Segundo Cuatrimestre",
       "horas": null,
       "tipo": "materia",
-      "categoria": "normal",
+      "categoria": "optativa",
+      "grupo_opcion": "G1207",
       "correlativas": {
         "10022": {
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
       },
-      "requisito_especial": {
-        "tipo": "minimo_materias_aprobadas",
-        "descripcion": "Para aprobar Se requiere tener tercer año aprobado y cuarto año cursado",
-        "cantidad": null
-      }
+      "requisito_especial": [
+        {
+          "tipo": "anio_aprobado",
+          "anio": 3,
+          "descripcion": "Para aprobar Se requiere tener tercer año aprobado y cuarto año cursado"
+        },
+        {
+          "tipo": "anio_aprobado",
+          "anio": 4,
+          "descripcion": "Para aprobar Se requiere tener tercer año aprobado y cuarto año cursado"
+        }
+      ]
     },
     {
       "id": "7901",
       "nombre": "SEGURIDAD EN SISTEMAS",
       "año": "Quinto Año",
       "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "128",
+      "horas": null,
       "tipo": "materia",
-      "categoria": "normal",
+      "categoria": "optativa",
+      "grupo_opcion": "G1207",
       "correlativas": {
         "5786": {
           "para_cursar": "cursada",
@@ -716,11 +735,13 @@
       "categoria": "optativa",
       "grupo_opcion": "G1207",
       "correlativas": {},
-      "requisito_especial": {
-        "tipo": "anio_aprobado",
-        "descripcion": "Para cursar Se requiere tener tercer año aprobado Para aprobar Se requiere tener tercer año aprobado",
-        "anio": 3
-      }
+      "requisito_especial": [
+        {
+          "tipo": "anio_aprobado",
+          "anio": 3,
+          "descripcion": "Para cursar Se requiere tener tercer año aprobado Para aprobar Se requiere tener tercer año aprobado"
+        }
+      ]
     },
     {
       "id": "8058",
@@ -732,21 +753,23 @@
       "categoria": "optativa",
       "grupo_opcion": "G1207",
       "correlativas": {},
-      "requisito_especial": {
-        "tipo": "anio_aprobado",
-        "descripcion": "Para cursar Se requiere tener tercer año aprobado Para aprobar Se requiere tener tercer año aprobado",
-        "anio": 3
-      }
+      "requisito_especial": [
+        {
+          "tipo": "anio_aprobado",
+          "anio": 3,
+          "descripcion": "Para cursar Se requiere tener tercer año aprobado Para aprobar Se requiere tener tercer año aprobado"
+        }
+      ]
     },
     {
       "id": "5559",
       "nombre": "ARQUITECTURAS MODERNAS",
       "año": "Quinto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
+      "cuatrimestre": "Primer Cuatrimestre",
       "horas": null,
       "tipo": "materia",
       "categoria": "optativa",
-      "grupo_opcion": "G1207",
+      "grupo_opcion": "G1206",
       "correlativas": {
         "7526": {
           "para_cursar": "cursada",
@@ -757,42 +780,46 @@
           "para_rendir": "aprobada"
         }
       },
-      "requisito_especial": {
-        "tipo": "anio_aprobado",
-        "descripcion": "Para cursar Se requiere tener tercer año aprobado Para aprobar Se requiere tener tercer año aprobado",
-        "anio": 3
-      }
+      "requisito_especial": [
+        {
+          "tipo": "anio_aprobado",
+          "anio": 3,
+          "descripcion": "Para cursar Se requiere tener tercer año aprobado Para aprobar Se requiere tener tercer año aprobado"
+        }
+      ]
     },
     {
       "id": "7539",
       "nombre": "OPTIMIZACION Y PLANEAMIENTO MEDIANTE INTELIGENCIA ARTIFICIAL",
       "año": "Quinto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
+      "cuatrimestre": "Primer Cuatrimestre",
       "horas": null,
       "tipo": "materia",
       "categoria": "optativa",
-      "grupo_opcion": "G1207",
+      "grupo_opcion": "G1206",
       "correlativas": {
         "10022": {
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
       },
-      "requisito_especial": {
-        "tipo": "anio_aprobado",
-        "descripcion": "Para cursar Se requiere tener tercer año aprobado Para aprobar Se requiere tener tercer año aprobado",
-        "anio": 3
-      }
+      "requisito_especial": [
+        {
+          "tipo": "anio_aprobado",
+          "anio": 3,
+          "descripcion": "Para cursar Se requiere tener tercer año aprobado Para aprobar Se requiere tener tercer año aprobado"
+        }
+      ]
     },
     {
       "id": "7541",
       "nombre": "DISEÑO DE VISUALIZACIONES",
       "año": "Quinto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
+      "cuatrimestre": "Primer Cuatrimestre",
       "horas": null,
       "tipo": "materia",
       "categoria": "optativa",
-      "grupo_opcion": "G1207",
+      "grupo_opcion": "G1206",
       "correlativas": {
         "7655": {
           "para_cursar": "aprobada",
@@ -807,21 +834,23 @@
           "para_rendir": "aprobada"
         }
       },
-      "requisito_especial": {
-        "tipo": "anio_aprobado",
-        "descripcion": "Para cursar Se requiere tener tercer año aprobado Para aprobar Se requiere tener tercer año aprobado",
-        "anio": 3
-      }
+      "requisito_especial": [
+        {
+          "tipo": "anio_aprobado",
+          "anio": 3,
+          "descripcion": "Para cursar Se requiere tener tercer año aprobado Para aprobar Se requiere tener tercer año aprobado"
+        }
+      ]
     },
     {
       "id": "7564",
       "nombre": "PROCESAMIENTO DE IMAGENES IC",
       "año": "Quinto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
+      "cuatrimestre": "Primer Cuatrimestre",
       "horas": "128",
       "tipo": "materia",
       "categoria": "optativa",
-      "grupo_opcion": "G1207",
+      "grupo_opcion": "G1206",
       "correlativas": {
         "7655": {
           "para_cursar": "aprobada",
@@ -836,96 +865,100 @@
           "para_rendir": "aprobada"
         }
       },
-      "requisito_especial": {
-        "tipo": "anio_aprobado",
-        "descripcion": "Para aprobar Se requiere tener tercer año aprobado Para cursar Se requiere tener tercer año aprobado",
-        "anio": 3
-      }
+      "requisito_especial": [
+        {
+          "tipo": "anio_aprobado",
+          "anio": 3,
+          "descripcion": "Para aprobar Se requiere tener tercer año aprobado Para cursar Se requiere tener tercer año aprobado"
+        }
+      ]
     },
     {
       "id": "7565",
       "nombre": "FUNDAMENTOS DEL ENTRETENIMIENTO DIGITAL",
       "año": "Quinto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
+      "cuatrimestre": "Primer Cuatrimestre",
       "horas": null,
       "tipo": "materia",
       "categoria": "optativa",
-      "grupo_opcion": "G1207",
+      "grupo_opcion": "G1206",
       "correlativas": {
         "10022": {
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
       },
-      "requisito_especial": {
-        "tipo": "anio_aprobado",
-        "descripcion": "Para aprobar Se requiere tener tercer año aprobado Para cursar Se requiere tener tercer año aprobado",
-        "anio": 3
-      }
+      "requisito_especial": [
+        {
+          "tipo": "anio_aprobado",
+          "anio": 3,
+          "descripcion": "Para aprobar Se requiere tener tercer año aprobado Para cursar Se requiere tener tercer año aprobado"
+        }
+      ]
     },
     {
       "id": "7596",
       "nombre": "COMPUTACION EVOLUTIVA",
       "año": "Quinto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
+      "cuatrimestre": "Primer Cuatrimestre",
       "horas": "128",
       "tipo": "materia",
       "categoria": "optativa",
-      "grupo_opcion": "G1207",
+      "grupo_opcion": "G1206",
       "correlativas": {
+        "7655": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
+        "7949": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        },
         "10022": {
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
       },
-      "requisito_especial": {
-        "tipo": "anio_aprobado",
-        "descripcion": "Para cursar Se requiere tener tercer año aprobado Para aprobar Se requiere tener tercer año aprobado",
-        "anio": 3
-      }
+      "requisito_especial": [
+        {
+          "tipo": "anio_aprobado",
+          "anio": 3,
+          "descripcion": "Para cursar Se requiere tener tercer año aprobado Para aprobar Se requiere tener tercer año aprobado"
+        }
+      ]
     },
     {
       "id": "7598",
       "nombre": "COMUNICACION E INTERACCION EN REDES SOCIALES",
       "año": "Quinto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
+      "cuatrimestre": "Primer Cuatrimestre",
       "horas": "128",
       "tipo": "materia",
       "categoria": "optativa",
-      "grupo_opcion": "G1207",
+      "grupo_opcion": "G1206",
       "correlativas": {
-        "7642": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "7820": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "7949": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
         "10022": {
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         }
       },
-      "requisito_especial": {
-        "tipo": "anio_aprobado",
-        "descripcion": "Para aprobar Se requiere tener tercer año aprobado Para cursar Se requiere tener tercer año aprobado",
-        "anio": 3
-      }
+      "requisito_especial": [
+        {
+          "tipo": "anio_aprobado",
+          "anio": 3,
+          "descripcion": "Para aprobar Se requiere tener tercer año aprobado Para cursar Se requiere tener tercer año aprobado"
+        }
+      ]
     },
     {
       "id": "7615",
       "nombre": "CONCEPTOS DE INTELIGENCIA ARTIFICIAL",
       "año": "Quinto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
+      "cuatrimestre": "Primer Cuatrimestre",
       "horas": "128",
       "tipo": "materia",
       "categoria": "optativa",
-      "grupo_opcion": "G1207",
+      "grupo_opcion": "G1206",
       "correlativas": {
         "7642": {
           "para_cursar": "aprobada",
@@ -944,21 +977,23 @@
           "para_rendir": "aprobada"
         }
       },
-      "requisito_especial": {
-        "tipo": "anio_aprobado",
-        "descripcion": "Para cursar Se requiere tener tercer año aprobado Para aprobar Se requiere tener tercer año aprobado",
-        "anio": 3
-      }
+      "requisito_especial": [
+        {
+          "tipo": "anio_aprobado",
+          "anio": 3,
+          "descripcion": "Para cursar Se requiere tener tercer año aprobado Para aprobar Se requiere tener tercer año aprobado"
+        }
+      ]
     },
     {
       "id": "7616",
       "nombre": "CONCEPTOS DE DATAMINIG Y APRENDIZAJE AUTOMATIZADO",
       "año": "Quinto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
+      "cuatrimestre": "Primer Cuatrimestre",
       "horas": null,
       "tipo": "materia",
       "categoria": "optativa",
-      "grupo_opcion": "G1207",
+      "grupo_opcion": "G1206",
       "correlativas": {
         "5946": {
           "para_cursar": "cursada",
@@ -977,11 +1012,13 @@
           "para_rendir": "aprobada"
         }
       },
-      "requisito_especial": {
-        "tipo": "anio_aprobado",
-        "descripcion": "Para aprobar Se requiere tener tercer año aprobado Para cursar Se requiere tener tercer año aprobado",
-        "anio": 3
-      }
+      "requisito_especial": [
+        {
+          "tipo": "anio_aprobado",
+          "anio": 3,
+          "descripcion": "Para aprobar Se requiere tener tercer año aprobado Para cursar Se requiere tener tercer año aprobado"
+        }
+      ]
     },
     {
       "id": "7624",
@@ -993,12 +1030,12 @@
       "categoria": "optativa",
       "grupo_opcion": "G1207",
       "correlativas": {
-        "5949": {
+        "7642": {
           "para_cursar": "cursada",
           "para_rendir": "aprobada"
         },
-        "7642": {
-          "para_cursar": "cursada",
+        "7713": {
+          "para_cursar": "aprobada",
           "para_rendir": "aprobada"
         },
         "10022": {
@@ -1006,11 +1043,13 @@
           "para_rendir": "aprobada"
         }
       },
-      "requisito_especial": {
-        "tipo": "anio_aprobado",
-        "descripcion": "Para cursar Se requiere tener tercer año aprobado Para aprobar Se requiere tener tercer año aprobado",
-        "anio": 3
-      }
+      "requisito_especial": [
+        {
+          "tipo": "anio_aprobado",
+          "anio": 3,
+          "descripcion": "Para cursar Se requiere tener tercer año aprobado Para aprobar Se requiere tener tercer año aprobado"
+        }
+      ]
     },
     {
       "id": "7625",
@@ -1039,11 +1078,13 @@
           "para_rendir": "aprobada"
         }
       },
-      "requisito_especial": {
-        "tipo": "anio_aprobado",
-        "descripcion": "Para aprobar Se requiere tener tercer año aprobado Para cursar Se requiere tener tercer año aprobado",
-        "anio": 3
-      }
+      "requisito_especial": [
+        {
+          "tipo": "anio_aprobado",
+          "anio": 3,
+          "descripcion": "Para aprobar Se requiere tener tercer año aprobado Para cursar Se requiere tener tercer año aprobado"
+        }
+      ]
     },
     {
       "id": "7635",
@@ -1056,7 +1097,7 @@
       "grupo_opcion": "G1207",
       "correlativas": {
         "7642": {
-          "para_cursar": "aprobada",
+          "para_cursar": "cursada",
           "para_rendir": "aprobada"
         },
         "10022": {
@@ -1064,11 +1105,13 @@
           "para_rendir": "aprobada"
         }
       },
-      "requisito_especial": {
-        "tipo": "anio_aprobado",
-        "descripcion": "Para aprobar Se requiere tener tercer año aprobado Para cursar Se requiere tener tercer año aprobado",
-        "anio": 3
-      }
+      "requisito_especial": [
+        {
+          "tipo": "anio_aprobado",
+          "anio": 3,
+          "descripcion": "Para aprobar Se requiere tener tercer año aprobado Para cursar Se requiere tener tercer año aprobado"
+        }
+      ]
     },
     {
       "id": "7643",
@@ -1089,11 +1132,13 @@
           "para_rendir": "aprobada"
         }
       },
-      "requisito_especial": {
-        "tipo": "anio_aprobado",
-        "descripcion": "Para cursar Se requiere tener tercer año aprobado Para aprobar Se requiere tener tercer año aprobado",
-        "anio": 3
-      }
+      "requisito_especial": [
+        {
+          "tipo": "anio_aprobado",
+          "anio": 3,
+          "descripcion": "Para cursar Se requiere tener tercer año aprobado Para aprobar Se requiere tener tercer año aprobado"
+        }
+      ]
     },
     {
       "id": "7664",
@@ -1118,11 +1163,13 @@
           "para_rendir": "aprobada"
         }
       },
-      "requisito_especial": {
-        "tipo": "anio_aprobado",
-        "descripcion": "Para aprobar Se requiere tener tercer año aprobado Para cursar Se requiere tener tercer año aprobado",
-        "anio": 3
-      }
+      "requisito_especial": [
+        {
+          "tipo": "anio_aprobado",
+          "anio": 3,
+          "descripcion": "Para aprobar Se requiere tener tercer año aprobado Para cursar Se requiere tener tercer año aprobado"
+        }
+      ]
     },
     {
       "id": "7675",
@@ -1151,11 +1198,13 @@
           "para_rendir": "aprobada"
         }
       },
-      "requisito_especial": {
-        "tipo": "anio_aprobado",
-        "descripcion": "Para aprobar Se requiere tener tercer año aprobado Para cursar Se requiere tener tercer año aprobado",
-        "anio": 3
-      }
+      "requisito_especial": [
+        {
+          "tipo": "anio_aprobado",
+          "anio": 3,
+          "descripcion": "Para aprobar Se requiere tener tercer año aprobado Para cursar Se requiere tener tercer año aprobado"
+        }
+      ]
     },
     {
       "id": "7705",
@@ -1176,11 +1225,13 @@
           "para_rendir": "aprobada"
         }
       },
-      "requisito_especial": {
-        "tipo": "anio_aprobado",
-        "descripcion": "Para aprobar Se requiere tener tercer año aprobado Para cursar Se requiere tener tercer año aprobado",
-        "anio": 3
-      }
+      "requisito_especial": [
+        {
+          "tipo": "anio_aprobado",
+          "anio": 3,
+          "descripcion": "Para aprobar Se requiere tener tercer año aprobado Para cursar Se requiere tener tercer año aprobado"
+        }
+      ]
     },
     {
       "id": "7816",
@@ -1195,46 +1246,19 @@
         "7642": {
           "para_cursar": "cursada",
           "para_rendir": "aprobada"
-        },
-        "7713": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        },
-        "7791": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
         }
       },
-      "requisito_especial": {
-        "tipo": "anio_aprobado",
-        "descripcion": "Para cursar Se requiere tercer año aprobado Para aprobar Se requiere tercer año aprobado",
-        "anio": 3
-      }
+      "requisito_especial": [
+        {
+          "tipo": "anio_aprobado",
+          "anio": 3,
+          "descripcion": "Para cursar Se requiere tercer año aprobado Para aprobar Se requiere tercer año aprobado"
+        }
+      ]
     },
     {
       "id": "7884",
       "nombre": "PROCESAMIENTO INTELIGENTE DE FLUJOS DE INFORMACION EN LA WEB SOCIAL",
-      "año": "Quinto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "128",
-      "tipo": "materia",
-      "categoria": "optativa",
-      "grupo_opcion": "G1207",
-      "correlativas": {
-        "7642": {
-          "para_cursar": "aprobada",
-          "para_rendir": "aprobada"
-        }
-      },
-      "requisito_especial": {
-        "tipo": "anio_aprobado",
-        "descripcion": "Para aprobar Se requiere tener tercer año aprobado Para cursar Se requiere tener tercer año aprobado",
-        "anio": 3
-      }
-    },
-    {
-      "id": "7898",
-      "nombre": "PROCESAMIENTO DE IMAGENES",
       "año": "Quinto Año",
       "cuatrimestre": "Segundo Cuatrimestre",
       "horas": "128",
@@ -1251,11 +1275,36 @@
           "para_rendir": "aprobada"
         }
       },
-      "requisito_especial": {
-        "tipo": "anio_aprobado",
-        "descripcion": "Para cursar Se requiere tener tercer año aprobado Para aprobar Se requiere tener tercer año aprobado",
-        "anio": 3
-      }
+      "requisito_especial": [
+        {
+          "tipo": "anio_aprobado",
+          "anio": 3,
+          "descripcion": "Para aprobar Se requiere tener tercer año aprobado Para cursar Se requiere tener tercer año aprobado"
+        }
+      ]
+    },
+    {
+      "id": "7898",
+      "nombre": "PROCESAMIENTO DE IMAGENES",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G1207",
+      "correlativas": {
+        "10022": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      },
+      "requisito_especial": [
+        {
+          "tipo": "anio_aprobado",
+          "anio": 3,
+          "descripcion": "Para cursar Se requiere tener tercer año aprobado Para aprobar Se requiere tener tercer año aprobado"
+        }
+      ]
     },
     {
       "id": "7905",
@@ -1272,11 +1321,13 @@
           "para_rendir": "aprobada"
         }
       },
-      "requisito_especial": {
-        "tipo": "anio_aprobado",
-        "descripcion": "Para cursar Se requiere tercer año aprobado. Para aprobar Se requiere tercer año aprobado.",
-        "anio": 3
-      }
+      "requisito_especial": [
+        {
+          "tipo": "anio_aprobado",
+          "anio": 3,
+          "descripcion": "Para cursar Se requiere tercer año aprobado. Para aprobar Se requiere tercer año aprobado."
+        }
+      ]
     },
     {
       "id": "7908",
@@ -1291,24 +1342,7 @@
         "7642": {
           "para_cursar": "cursada",
           "para_rendir": "cursada"
-        }
-      },
-      "requisito_especial": {
-        "tipo": "anio_aprobado",
-        "descripcion": "Para aprobar Se requiere tener tercer año aprobado Para cursar Se requiere tener tercer año aprobado",
-        "anio": 3
-      }
-    },
-    {
-      "id": "7921",
-      "nombre": "SISTEMAS MULTIAGENTES Y APLICACIONES",
-      "año": "Quinto Año",
-      "cuatrimestre": "Segundo Cuatrimestre",
-      "horas": "128",
-      "tipo": "materia",
-      "categoria": "optativa",
-      "grupo_opcion": "G1207",
-      "correlativas": {
+        },
         "7688": {
           "para_cursar": "aprobada",
           "para_rendir": "aprobada"
@@ -1318,15 +1352,17 @@
           "para_rendir": "aprobada"
         }
       },
-      "requisito_especial": {
-        "tipo": "anio_aprobado",
-        "descripcion": "Para aprobar Se requiere tener tercer año aprobado Para cursar Se requiere tener tercer año aprobado",
-        "anio": 3
-      }
+      "requisito_especial": [
+        {
+          "tipo": "anio_aprobado",
+          "anio": 3,
+          "descripcion": "Para aprobar Se requiere tener tercer año aprobado Para cursar Se requiere tener tercer año aprobado"
+        }
+      ]
     },
     {
-      "id": "7923",
-      "nombre": "SISTEMAS MOVILES Y AD HOC",
+      "id": "7921",
+      "nombre": "SISTEMAS MULTIAGENTES Y APLICACIONES",
       "año": "Quinto Año",
       "cuatrimestre": "Segundo Cuatrimestre",
       "horas": "128",
@@ -1347,11 +1383,36 @@
           "para_rendir": "aprobada"
         }
       },
-      "requisito_especial": {
-        "tipo": "anio_aprobado",
-        "descripcion": "Para cursar Se requiere tener tercer año aprobado Para aprobar Se requiere tener tercer año aprobado",
-        "anio": 3
-      }
+      "requisito_especial": [
+        {
+          "tipo": "anio_aprobado",
+          "anio": 3,
+          "descripcion": "Para aprobar Se requiere tener tercer año aprobado Para cursar Se requiere tener tercer año aprobado"
+        }
+      ]
+    },
+    {
+      "id": "7923",
+      "nombre": "SISTEMAS MOVILES Y AD HOC",
+      "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre",
+      "horas": "128",
+      "tipo": "materia",
+      "categoria": "optativa",
+      "grupo_opcion": "G1207",
+      "correlativas": {
+        "10022": {
+          "para_cursar": "aprobada",
+          "para_rendir": "aprobada"
+        }
+      },
+      "requisito_especial": [
+        {
+          "tipo": "anio_aprobado",
+          "anio": 3,
+          "descripcion": "Para cursar Se requiere tener tercer año aprobado Para aprobar Se requiere tener tercer año aprobado"
+        }
+      ]
     },
     {
       "id": "7952",
@@ -1368,11 +1429,13 @@
           "para_rendir": "aprobada"
         }
       },
-      "requisito_especial": {
-        "tipo": "anio_aprobado",
-        "descripcion": "Para cursar Se requiere tener tercer año aprobado Para aprobar Se requiere tener tercer año aprobado",
-        "anio": 3
-      }
+      "requisito_especial": [
+        {
+          "tipo": "anio_aprobado",
+          "anio": 3,
+          "descripcion": "Para cursar Se requiere tener tercer año aprobado Para aprobar Se requiere tener tercer año aprobado"
+        }
+      ]
     },
     {
       "id": "7958",
@@ -1397,11 +1460,13 @@
           "para_rendir": "aprobada"
         }
       },
-      "requisito_especial": {
-        "tipo": "anio_aprobado",
-        "descripcion": "Para cursar Se requiere tener tercer año aprobado Para aprobar Se requiere tener tercer año aprobado",
-        "anio": 3
-      }
+      "requisito_especial": [
+        {
+          "tipo": "anio_aprobado",
+          "anio": 3,
+          "descripcion": "Para cursar Se requiere tener tercer año aprobado Para aprobar Se requiere tener tercer año aprobado"
+        }
+      ]
     },
     {
       "id": "7967",
@@ -1418,26 +1483,25 @@
           "para_rendir": "aprobada"
         }
       },
-      "requisito_especial": {
-        "tipo": "anio_aprobado",
-        "descripcion": "Para aprobar Se requiere tener tercer año aprobado Para cursar Se requiere tener tercer año aprobado",
-        "anio": 3
-      }
+      "requisito_especial": [
+        {
+          "tipo": "anio_aprobado",
+          "anio": 3,
+          "descripcion": "Para aprobar Se requiere tener tercer año aprobado Para cursar Se requiere tener tercer año aprobado"
+        }
+      ]
     },
     {
       "id": "5596",
       "nombre": "EXAMEN DE SUFICIENCIA DE IDIOMA:INGLES",
-      "año": "Quinto Año",
+      "año": "Cuarto Año",
       "cuatrimestre": "Segundo Cuatrimestre",
       "horas": null,
       "tipo": "materia",
       "categoria": "optativa",
-      "grupo_opcion": "G1207",
-      "correlativas": {},
-      "requisito_especial": {
-        "tipo": "prueba_idioma",
-        "descripcion": "Examen de Suficiencia de Idioma Inglés, Dpto de Computación"
-      }
+      "subtipo": "idioma",
+      "grupo_opcion": "10022",
+      "correlativas": {}
     }
   ],
   "agrupadores": [
@@ -1445,7 +1509,9 @@
       "id": "G1206",
       "nombre": "Optativa de Ingeniería en Computación, plan 2013",
       "tipo": "optativa_grupo",
-      "opciones": [],
+      "opciones": [
+        "5941"
+      ],
       "año": "Quinto Año",
       "cuatrimestre": "Primer Cuatrimestre"
     },
@@ -1454,6 +1520,9 @@
       "nombre": "Optativa de Ingeniería en Computación, plan 2013",
       "tipo": "optativa_grupo",
       "opciones": [
+        "7885",
+        "7895",
+        "7901",
         "8013",
         "8058",
         "5559",
@@ -1481,16 +1550,25 @@
         "7923",
         "7952",
         "7958",
-        "7967",
-        "5596"
+        "7967"
       ],
       "año": "Quinto Año",
+      "cuatrimestre": "Segundo Cuatrimestre"
+    },
+    {
+      "id": "10022",
+      "nombre": "Examen de Suficiencia de Idioma Inglés, Dpto de Computación",
+      "tipo": "idioma_grupo",
+      "opciones": [
+        "5596"
+      ],
+      "año": "Cuarto Año",
       "cuatrimestre": "Segundo Cuatrimestre"
     }
   ],
   "_llm_prompt_version": "v30",
   "_llm_mode": "llm",
-  "_saved_at": "2026-05-15T01:26:26.934Z",
+  "_saved_at": "2026-05-15T01:35:51.531Z",
   "_saved_by": "cmoao0axe00001qboucfn8qsn",
   "_saved_fuente": "gemini",
   "_publicado": false

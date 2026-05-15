@@ -31,7 +31,8 @@ export async function GET() {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
   const config = await readConfig();
-  return NextResponse.json({ config });
+  // La versión siempre refleja el código fuente, no lo que esté guardado en el JSON
+  return NextResponse.json({ config: config ? { ...config, version: PROMPT_VERSION } : null });
 }
 
 export async function POST(request: Request) {

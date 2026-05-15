@@ -121,22 +121,31 @@ def comparar_campos(ref_map: dict, cand_map: dict, comunes: set) -> dict:
                 msg = f"    [{mid}] distintas — ref={sorted(rc)} cand={sorted(cc)}"
                 cors_detalle.append(msg)
 
-        # requisito_especial
+        # requisito_especial (puede ser lista o None)
+        def _req_tipos(r):
+            if r is None:
+                return []
+            if isinstance(r, list):
+                return sorted(x.get("tipo", "") for x in r)
+            return [r.get("tipo", "")]
+
         rr = rm.get("requisito_especial")
         cr = cm.get("requisito_especial")
-        if rr is None and cr is None:
+        rr_tipos = _req_tipos(rr)
+        cr_tipos = _req_tipos(cr)
+        if not rr_tipos and not cr_tipos:
             req_ok += 1
-        elif rr is not None and cr is None:
+        elif rr_tipos and not cr_tipos:
             req_solo_ref += 1
-            req_detalle.append(f"    [{mid}] solo en ref — tipo={rr.get('tipo')}")
-        elif rr is None and cr is not None:
+            req_detalle.append(f"    [{mid}] solo en ref — tipos={rr_tipos}")
+        elif not rr_tipos and cr_tipos:
             req_solo_cand += 1
-            req_detalle.append(f"    [{mid}] solo en cand — tipo={cr.get('tipo')}")
-        elif rr.get("tipo") == cr.get("tipo"):
+            req_detalle.append(f"    [{mid}] solo en cand — tipos={cr_tipos}")
+        elif rr_tipos == cr_tipos:
             req_ok += 1
         else:
             req_diff += 1
-            req_detalle.append(f"    [{mid}] tipo difiere — ref={rr.get('tipo')} cand={cr.get('tipo')}")
+            req_detalle.append(f"    [{mid}] tipos difieren — ref={rr_tipos} cand={cr_tipos}")
 
     return {
         "nombre_ok": nombre_ok,
