@@ -6,11 +6,19 @@ from fastapi import FastAPI, File, Header, HTTPException, UploadFile
 from fastapi.responses import JSONResponse
 
 import sys
-sys.path.insert(0, str(Path(__file__).parent.parent))  # funciona local y en Render
+_root = str(Path(__file__).parent.parent)
+sys.path.insert(0, _root)
+print(f"[parser_api] sys.path root: {_root}", flush=True)
 
-from core.parser.cli import parsear_plan_pdf
+try:
+    from core.parser.cli import parsear_plan_pdf
+    print("[parser_api] core.parser.cli importado OK", flush=True)
+except Exception as _e:
+    print(f"[parser_api] ERROR importando core: {_e}", flush=True)
+    raise
 
 app = FastAPI(title="UNS Parser API")
+print("[parser_api] FastAPI app creada, rutas registradas", flush=True)
 
 if __name__ == "__main__":
     import uvicorn
