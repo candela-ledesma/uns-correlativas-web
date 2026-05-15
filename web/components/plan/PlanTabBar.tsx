@@ -13,7 +13,7 @@ type Props = {
 const tabBarStyle    = { background: "rgba(255,255,255,0.06)", borderRadius: 10, padding: 4 };
 const tabActiveStyle = { background: "rgba(157,78,221,0.30)", color: "#e2d9f3", boxShadow: `0 1px 4px ${ACCENT}44` };
 const tabIdleStyle   = { color: TEXT_SEC };
-const iconBtnStyle   = { background: "transparent", border: "none", color: TEXT_SEC, cursor: "pointer", borderRadius: 8, width: 32, height: 32, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16 } as const;
+const iconBtnStyle   = { background: "transparent", border: `1px solid ${GLASS.strong}`, color: TEXT_SEC, cursor: "pointer", borderRadius: 8, width: 32, height: 32, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16 } as const;
 
 export default function PlanTabBar({ vistaActiva, onChange, onOpenHelp }: Props) {
   return (
@@ -48,15 +48,17 @@ export default function PlanTabBar({ vistaActiva, onChange, onOpenHelp }: Props)
           ⬇
         </button>
 
-        <button
-          type="button"
-          title="Ayuda rápida"
-          aria-label="Ver ayuda rápida"
-          onClick={onOpenHelp}
-          style={iconBtnStyle}
-        >
-          ?
-        </button>
+        {vistaActiva === "plan" && (
+          <button
+            type="button"
+            title="Ayuda rápida"
+            aria-label="Ver ayuda rápida"
+            onClick={onOpenHelp}
+            style={iconBtnStyle}
+          >
+            ?
+          </button>
+        )}
       </div>
     </div>
   );
