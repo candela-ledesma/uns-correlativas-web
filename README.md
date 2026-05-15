@@ -1,28 +1,26 @@
 # UNS Correlativas Parser + Web
 
-Documentacion integral del proyecto completo:
-- parser PDF -> JSON estructurado,
-- validacion de contrato de datos,
-- aplicacion web Next.js con progreso por usuario,
-- flujo de datos y operacion end-to-end.
+Pipeline completo que convierte planes de estudio en PDF a JSON estructurado y los publica en una app web con progreso por usuario.
 
 ## 1) Que resuelve este proyecto
 
-Este repo transforma planes de estudio en PDF a una estructura JSON consistente y publica esa informacion en una app web para:
-- visualizar materias y correlativas,
-- gestionar el progreso del usuario,
-- sincronizar progreso con base de datos,
-- operar roles (USER, MODERATOR, ADMIN) con auditoria.
+Transforma planes de estudio UNS (PDF) en JSON valido para:
+- visualizar materias y correlativas por carrera,
+- gestionar el progreso del usuario (cursada/aprobada),
+- operar roles (USER, MODERATOR, ADMIN) con auditoria,
+- evaluar la calidad del output de Gemini vs. parser local.
 
 ## 2) Arquitectura de alto nivel
 
 ```mermaid
 flowchart LR
   A[PDF de plan] --> B1[Parser Python]
-  A --> B2[Gemini API]
-  B1 --> C[JSON en web/data]
-  B2 --> C
-  C --> D[Validador de datos Web]
+  A --> B2[Gemini API visión nativa]
+  B1 --> C[web/data/local/]
+  B2 --> PP[corregirIdsIdioma]
+  PP --> C2[web/data/gemini/]
+  C --> D[Validador planValidation.ts]
+  C2 --> D
   D --> E[App Next.js]
   E --> F[APIs /api/*]
   F --> G[(PostgreSQL + Prisma)]
@@ -35,67 +33,148 @@ flowchart LR
 
 ```text
 .
-|-- app.py                          # Entrypoint parser CLI
 |-- core/
-|   `-- parser/                     # Extraccion, limpieza, parseo y contrato
+|   `-- parser/           # Parser PDF: extraccion, correlativas, contrato
+|       |-- parser_plan.py
+|       |-- correlativa_prosa.py   # Deteccion de requisito_especial en prosa
+|       `-- contract_validator.py
 |-- scripts/
-|   `-- comparar_json.py            # Evaluacion de similitud entre dos JSONs
-|-- tests/                          # Tests parser + contrato + fixtures
-|-- pdf/                            # Fixtures PDF
+|   `-- comparar_json.py  # Evalua similitud ref vs. candidato (score /100)
+|-- tests/                # Tests parser + contrato + fixtures PDF
+|-- pdf/                  # PDFs de planes (fixtures)
 `-- web/
-    |-- app/                        # Next.js App Router (paginas + api routes)
-    |   `-- api/admin/planes/       # parsear/ (Gemini), parsear-local/ (parser), guardar/
-    |-- components/                 # Componentes React por dominio
-    |   |-- admin/                  # AdminPanel, CargarPlanTab, HistorialTab, ConfigTab, DiffExportDrawer, GuardarPlanDrawer
-    |   |-- plan/                   # PlanViewer, PlanHeader, PlanFilters, PlanTabBar, OrientationSelector, PlanStatus
-    |   |-- materias/               # MateriaCard, MateriasGrid, AnioSection, GrupoMaterias
-    |   |-- kanban/                 # KanbanPlan (vista tablero con drag & drop)
-    |   |-- mapa/                   # MapaPlan, Toolbar, nodeTypes
-    |   |   `-- panels/             # DetailPanel, EditorPanel, BestPathPanel
-    |   |-- schedule/               # WeeklySchedule, ScheduleBlockForm
-    |   |-- auth/                   # LoginActions, HomeSessionPanel
-    |   |-- profile/                # ProfileWorkspace, AdminRoleManager
-    |   `-- onboarding/             # PlanOnboarding
-    |-- data/                       # JSON de planes publicados (ground truth)
-    |-- hooks/                      # usePlanState, useSchedule, useOnboarding
-    |-- lib/                        # Logica de negocio y servicios
-    |   |-- ai/                     # Modelos Gemini disponibles y default
-    |   |-- plan/                   # Dominio academico (evaluarCorrelativas, materiaViewModel, filtros, progreso...)
-    |   |-- mapa/                   # Logica pura del grafo (graphUtils, bestPath)
-    |   |-- data/                   # Carga y validacion de planes (carreras, planDataLoader, planValidation...)
-    |   |-- db/                     # Capa de base de datos (prisma, userProductContext, audit, actividad...)
-    |   |-- auth/                   # Permisos y autenticacion (roles, authz, authProviders)
-    |   |-- schedule/               # Validacion del planificador horario
-    |   `-- ui/                     # Tokens de diseno y estilos de cards
-    |-- prisma/                     # Schema y migraciones
-    `-- tests/e2e/                  # Playwright end-to-end
+    |-- app/
+    |   |-- api/admin/planes/
+    |   |   |-- parsear/      # Gemini (SSE): PDF → JSON + corregirIdsIdioma
+    |   |   |-- parsear-local/# Parser Python (SSE)
+    |   |   |-- guardar/      # Persiste JSON en data/
+    |   |   |-- existe/       # Chequea si ya hay borrador guardado
+    |   |   |-- validar/      # Compara con ground truth via comparar_json.py
+    |   |   `-- enviar-revision/ # Envio a revisión (MODERATOR → ADMIN)
+    |   `-- admin/revisiones/ # Vista de revisión de planes pendientes
+    |-- components/
+    |   |-- admin/
+    |   |   |-- tabs/CargarPlanTab.tsx    # Flujo subida PDF + comparacion
+    |   |   |-- tabs/DiffExportDrawer.tsx # Exportacion few-shot
+    |   |   `-- tabs/ConfigTab.tsx        # Prompt, version, modelo
+    |   `-- materias/MateriaCard.tsx      # Muestra requisito_especial[]
+    |-- data/
+    |   |-- local/        # JSONs generados por parser Python (ground truth)
+    |   |-- gemini/       # JSONs generados por Gemini (borradores)
+    |   `-- admin-config.json  # Prompt activo + version
+    `-- lib/
+        |-- ai/prompt.ts  # DEFAULT_SYSTEM_PROMPT + PROMPT_VERSION (v30)
+        |-- plan/
+        |   |-- evaluarCorrelativas.ts
+        |   `-- requisitoEspecial.ts  # Tipos y evaluacion de requisito_especial[]
+        `-- data/planValidation.ts    # Parseo y validacion del schema PlanData
 ```
 
-## 4) Flujo completo (end-to-end)
+## 4) Flujo de procesamiento: PDF → JSON de Gemini
 
-1. Un admin sube un PDF desde `/admin` (parser local, Gemini, o ambos).
-2. El parser local extrae texto, limpia ruido y detecta materias/correlativas.
-3. Gemini recibe el PDF directo y genera el JSON via LLM.
-4. El admin compara los resultados lado a lado, valida y elige cuál publicar.
-5. El JSON elegido se guarda en `web/data` y queda registrado en el audit log.
-6. La web carga el JSON via `loadPlanData` y ejecuta validacion de consistencia.
-7. El usuario interactua con el plan (estados de materias).
-8. APIs de progreso aplican resolucion `last-write-wins` y guardan snapshots en DB.
-9. Se registran eventos de auditoria y actividad de usuario.
-10. E2E y validadores batch aseguran que datos y comportamiento sigan correctos.
+```
+Usuario sube PDF en /admin
+        │
+        ▼
+[1] /api/admin/planes/existe
+    Verifica si ya existe borrador guardado para ese PDF
+        │
+        ▼
+[2] /api/admin/planes/parsear  (SSE)
+    1. Lee PDF como base64
+    2. Lee systemPrompt de admin-config.json (fallback: DEFAULT_SYSTEM_PROMPT)
+    3. Llama a Gemini con visión nativa (temperature=0)
+    4. extraerJSON()       → parsea la respuesta como JSON
+    5. corregirIdsIdioma() → corrige 1XXXX → IXXXX automáticamente
+    6. Anota _llm_prompt_version y _llm_mode
+    7. Devuelve JSON via SSE
 
-## 5) Requisitos
+        │  (en paralelo, opcional)
+        ▼
+   /api/admin/planes/parsear-local  (SSE)
+    1. Guarda PDF en /tmp
+    2. Ejecuta: python3 -m core.parser <pdf> <output.json>
+    3. Devuelve JSON via SSE
+        │
+        ▼
+[3] Panel muestra ambos side-by-side con diff
+        │
+        ▼
+[4] /api/admin/planes/guardar
+    Escribe JSON en data/gemini/ o data/local/
+    Si publicar=true, actualiza carreras.ts
+        │
+        ▼
+[5] (Opcional) /api/admin/planes/enviar-revision
+    MODERATOR envía para aprobación → ADMIN revisa en /admin/revisiones/[slug]
+```
+
+## 5) Schema JSON (PlanData)
+
+```json
+{
+  "plan": { "carrera": "string", "universidad": "string", "codigo_plan": "string" },
+  "materias": [{
+    "id": "string",
+    "nombre": "string",
+    "año": "Primer Año | ... | Sexto Año | null",
+    "cuatrimestre": "Primer Cuatrimestre | Segundo Cuatrimestre | null",
+    "horas": "string",
+    "tipo": "materia | agrupador_requisito",
+    "categoria": "normal | optativa",
+    "grupo_opcion": "string | null",
+    "subtipo": "idioma | null",
+    "correlativas": { "<id>": { "para_cursar": "cursada|aprobada|null", "para_rendir": "cursada|aprobada|null" } },
+    "requisito_especial": [
+      { "tipo": "anio_aprobado", "anio": 3, "descripcion": "string" },
+      { "tipo": "cuatrimestre_cursado", "anio": 4, "cuatrimestre": 1, "descripcion": "string" }
+    ]
+  }],
+  "agrupadores": [{ "id": "string", "nombre": "string", "tipo": "optativa_grupo|idioma_grupo", "opciones": ["string"], "año": "string", "cuatrimestre": "string" }]
+}
+```
+
+`requisito_especial` es un **array** (puede tener 0, 1 o 2 entradas por materia). Tipos soportados: `anio_aprobado`, `cuatrimestre_cursado`, `minimo_materias_aprobadas`, `prueba_idioma`, `todas_materias_aprobadas`.
+
+## 6) Post-procesamiento automático de Gemini
+
+Solo hay dos transformaciones que se aplican al output de Gemini en el servidor:
+
+1. **`extraerJSON()`** — parsea el texto como JSON tolerando bloques markdown.
+2. **`corregirIdsIdioma()`** — reemplaza `1XXXX` → `IXXXX` en `materias[].id`, `materias[].correlativas` y `agrupadores[].opciones`. Heurística: un ID de 5 dígitos empezando con `1` nunca es una materia real en los planes UNS.
+
+## 7) Prompt Gemini
+
+- Versión actual: **v30** — `web/lib/ai/prompt.ts`
+- La versión siempre se lee del código fuente (no del JSON guardado).
+- El prompt activo se puede editar desde `/admin` → tab Configuración y se persiste en `web/data/admin-config.json`.
+- El panel admin incluye la herramienta **"Exportar diff como few-shot"** que genera bloques de corrección para mejorar el prompt manualmente.
+
+### Scores Gemini v30 por carrera
+
+| Carrera | Score |
+|---|---|
+| Ingenieria Electricista | 98.9/100 |
+| Ingenieria en Sistemas de Informacion | 98.7/100 |
+| Ingenieria Agronomica | 98.6/100 |
+| Agrimensura | 98.6/100 |
+| Contador Publico | 95.6/100 |
+| Arquitectura | 95.9/100 |
+| Bioquimica | 90.8/100 |
+| Abogacia | 89.5/100 |
+| Farmacia | 86.0/100 |
+| Ingenieria en Computacion | 93.6/100 |
+| Ingenieria Civil | 23.0/100 (fallo estructural: orientaciones multiples) |
+
+## 8) Requisitos
 
 - Node.js 20+
-- npm 10+
 - Python 3.11+
-- PostgreSQL accesible para `web`
+- PostgreSQL
 
-## 6) Setup rapido
+## 9) Setup rapido
 
-### 6.1 Parser (Python)
-
-Desde la raiz del repo:
+### Parser Python
 
 ```bash
 python3 -m venv .venv
@@ -103,275 +182,127 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 6.2 Web (Next.js + Prisma)
+Generar JSON desde PDF:
+
+```bash
+python3 -m core.parser pdf/arquitectura.pdf web/data/local/arquitectura.json
+```
+
+Comparar dos JSONs:
+
+```bash
+python3 -m scripts.comparar_json web/data/local/carrera.json web/data/gemini/carrera.json
+```
+
+### Web (Next.js)
 
 ```bash
 cd web
 npm install
 cp .env.example .env.local
-```
-
-Importante para Prisma CLI:
-- Prisma toma variables desde `.env` por defecto.
-- Si usas `.env.local`, ejecuta scripts `*:env` o sourcea variables explicitamente.
-
-Ejemplo:
-
-```bash
-set -a && . ./.env && . ./.env.local && set +a && npm run prisma:status:env
-```
-
-## 7) Variables de entorno clave (web)
-
-Definidas en `web/.env.example`:
-
-- `DATABASE_URL`
-- `DATABASE_URL_E2E` (opcional)
-- `AUTH_SECRET`, `AUTH_URL`
-- `NEXTAUTH_SECRET`, `NEXTAUTH_URL`
-- `ADMIN_SEED_EMAIL` (fallback: `admin@uns.local` si no se define)
-- `GEMINI_API_KEY` (requerida para el panel admin — parseo con Gemini)
-- `AUTH_ENABLE_DEV_LOGIN`
-- `NEXT_PUBLIC_ENABLE_DEV_LOGIN`
-- `AUTH_ALLOW_DEV_ROLE_OVERRIDE`
-- `NEXT_PUBLIC_ALLOW_DEV_ROLE_OVERRIDE`
-- `AUTH_DEV_LOGIN_EMAIL_ALLOWLIST`
-
-## 8) Parser: uso y contrato
-
-### 8.1 Entrypoints parser
-
-- `app.py` (entrypoint principal)
-- `core/parser/cli.py` (orquestacion CLI)
-
-### 8.2 Generar JSON desde PDF
-
-Desde la raiz:
-
-```bash
-python app.py pdf/arquitectura.pdf web/data/arquitectura.json
-```
-
-Opciones utiles:
-
-```bash
-python app.py pdf/arquitectura.pdf web/data/arquitectura.json --indent 2
-python app.py pdf/arquitectura.pdf web/data/arquitectura.json --ensure-ascii
-python app.py pdf/arquitectura.pdf web/data/arquitectura.json --skip-contract-validation
-```
-
-### 8.3 Contrato parser -> JSON
-
-Archivo: `core/parser/contract_validator.py`
-
-Valida, entre otros:
-- `plan.carrera`, `plan.universidad`, `plan.codigo_plan`
-- `materias[]` con campos requeridos (`id`, `nombre`, `anio`, `cuatrimestre`, `tipo`, `categoria`, etc.)
-- estados de correlativas (`cursada`, `aprobada`, o `null`)
-- referencias de `grupo_opcion` y `agrupadores`
-- referencias a IDs inexistentes (warning)
-
-Regla actual:
-- errores bloquean salida (`exit 1`),
-- warnings no bloquean (se informan por consola).
-
-## 9) Web: ejecucion, migraciones y seed
-
-Desde `web/`:
-
-```bash
 npm run dev
-npm run build
-npm run start
-npm run lint
 ```
 
-Prisma:
+Variables de entorno clave:
+
+| Variable | Descripcion |
+|---|---|
+| `DATABASE_URL` | PostgreSQL |
+| `AUTH_SECRET` | NextAuth secret |
+| `GEMINI_API_KEY` | Requerida para parsear con Gemini |
+| `RESEND_API_KEY` | Notificaciones email al admin |
+| `ADMIN_NOTIFY_EMAIL` | Email del admin para notificaciones |
+
+## 10) Testing
+
+### Parser Python
 
 ```bash
-npm run prisma:generate
-npm run prisma:migrate
-npm run prisma:migrate:env
-npm run prisma:deploy
-npm run prisma:deploy:env
-npm run prisma:status:env
-npm run db:seed
-npm run db:prepare
-npm run prisma:studio
+python3 -m pytest tests/ --ignore=tests/test_parser_fixtures.py -q
 ```
 
-## 10) Flujo funcional en producto (usuario)
+### Web (Vitest)
 
-1. Usuario entra al home (`/`) y selecciona carrera.
-2. Se abre plan (`/planes/[carrera]`) y se carga JSON/version.
-3. Onboarding puede mostrarse por estado de perfil o query `onboarding=1`.
-4. Cambios de estado de materias llaman `PUT /api/progreso`.
-5. Se persiste snapshot por usuario/plan/version y se registra actividad.
-6. Perfil (`/perfil`) permite gestionar carreras inscriptas y carrera activa.
-7. Admin (`/admin`) gestiona roles, consulta auditoria y publica nuevos planes.
+```bash
+cd web && npm test -- --run
+```
+
+### E2E (Playwright)
+
+```bash
+cd web && npm run test:e2e
+```
+
+### Validacion batch de datos
+
+```bash
+cd web && npm run validate:data
+```
 
 ## 11) Endpoints API principales
 
-- `GET /api/materias/[carrera]`
-- `GET|PUT|DELETE /api/progreso`
-- `POST /api/progreso/sync`
-- `GET|PUT /api/perfil/contexto`
-- `GET|POST /api/perfil/onboarding`
-- `POST /api/perfil/plan-visit`
-- `GET /api/perfil/resumen`
-- `PATCH /api/admin/users/[userId]/role`
-- `GET /api/admin/auditoria`
-- `POST /api/admin/planes/parsear` (Gemini, SSE)
-- `POST /api/admin/planes/parsear-local` (parser Python, SSE)
-- `POST /api/admin/planes/guardar`
-- `GET|POST /api/auth/[...nextauth]`
+| Endpoint | Descripcion |
+|---|---|
+| `POST /api/admin/planes/parsear` | Gemini (SSE stream) |
+| `POST /api/admin/planes/parsear-local` | Parser Python (SSE stream) |
+| `POST /api/admin/planes/guardar` | Persiste JSON |
+| `GET /api/admin/planes/existe` | Chequea borrador existente |
+| `POST /api/admin/planes/validar` | Compara con ground truth |
+| `POST /api/admin/planes/enviar-revision` | Envio a revision |
+| `GET /api/admin/config` | Lee prompt activo + version |
+| `POST /api/admin/config` | Guarda prompt customizado |
+| `GET /api/materias/[carrera]` | Materias de una carrera |
+| `GET|PUT /api/progreso` | Progreso del usuario |
 
-## 12) Reglas de dominio importantes
+## 12) Reglas de dominio
 
-### 12.1 Estados de materia
+### Correlativas
 
-Orden de avance:
-- `no_cursada` -> `cursada` -> `aprobada`
+- `para_cursar`: requisito para inscribirse a la materia.
+- `para_rendir`: requisito para rendir el examen final.
+- Puede referenciar una materia (ID numerico) o un agrupador (`G####` o `I####`).
 
-### 12.2 Correlativas
+### requisito_especial
 
-- `para_cursar` controla habilitacion para cursar.
-- `para_rendir` controla habilitacion para rendir.
-- Puede referenciar materia o agrupador.
+Cuando el PDF tiene texto en prosa como condicion adicional (no expresable como ID de correlativa), se captura en `requisito_especial[]`. Ejemplo:
 
-### 12.3 Sincronizacion de progreso
-
-Estrategia:
-- `last-write-wins` por timestamp (`updatedAt`).
-
-## 13) Testing y calidad
-
-### 13.1 Parser (Python)
-
-Desde la raiz, con venv activa:
-
-```bash
-python -m unittest discover -s tests -p "test_*.py"
+```json
+"requisito_especial": [
+  { "tipo": "anio_aprobado", "anio": 3, "descripcion": "tercer año aprobado" },
+  { "tipo": "cuatrimestre_cursado", "anio": 4, "cuatrimestre": 1, "descripcion": "primer cuatrimestre de cuarto año" }
+]
 ```
 
-Incluye:
-- `tests/test_parser_cli.py`
-- `tests/test_parser_contract_validator.py`
-- `tests/test_parser_fixtures.py`
+### IDs de idioma (I####)
 
-### 13.2 Web unit tests (Vitest)
+Los IDs de grupos de idioma empiezan con la letra `I` (no el digito `1`). Gemini frecuentemente los confunde. El post-proceso `corregirIdsIdioma()` los corrige automaticamente.
 
-Desde `web/`:
+### Roles
 
-```bash
-npm test -- --run
-npm run test:watch
-```
+- `USER`: acceso a la app, gestiona su propio progreso.
+- `MODERATOR`: puede subir y procesar PDFs, no puede publicar.
+- `ADMIN`: puede publicar planes, gestionar usuarios y revisar envios de moderadores.
 
-### 13.3 Web E2E (Playwright)
-
-Desde `web/`:
-
-```bash
-npm run test:e2e
-```
-
-### 13.4 Validacion batch de datos publicados
-
-Desde `web/`:
-
-```bash
-npm run validate:data
-npm run validate:data:json
-npm run validate:data:strict
-npm run check:premerge
-```
-
-## 14) Guia de publicacion de una nueva carrera/version
+## 13) Publicar una nueva carrera
 
 ### Via panel admin (recomendado)
 
-1. Ir a `/admin` → tab "Cargar plan".
-2. Subir el PDF y elegir parser local, Gemini, o ambos.
-3. Comparar resultados, validar y elegir cuál publicar.
-4. Confirmar guardado — el JSON queda en `web/data/` y se registra en el historial.
+1. Ir a `/admin` → "Cargar plan".
+2. Subir el PDF → ejecutar Gemini y/o parser local.
+3. Comparar side-by-side, validar, guardar borrador.
+4. Publicar (ADMIN) o enviar a revision (MODERATOR).
 
-### Via CLI (alternativo)
-
-1. Agregar PDF fixture en `pdf/`.
-2. Generar JSON con parser CLI: `python app.py pdf/carrera.pdf web/data/carrera.json`
-3. Validar contrato parser (automatico en CLI).
-4. Registrar archivo en configuracion de carreras/versiones web.
-5. Ejecutar `npm run validate:data` en `web/`.
-6. Correr unit + e2e.
-7. Revisar visualmente home, plan y correlativas.
-8. Hacer commit y push.
-
-## 15) Troubleshooting rapido
-
-### Prisma no toma variables de `.env.local`
-
-Usar scripts `*:env` o source manual:
+### Via CLI
 
 ```bash
-set -a && . ./.env && . ./.env.local && set +a && npm run prisma:migrate
+python3 -m core.parser pdf/carrera.pdf web/data/local/carrera.json
+cd web && npm run validate:data
 ```
 
-### Error "No se encontro el PDF de entrada"
+## 14) Documentacion complementaria
 
-Verificar ruta relativa/absoluta del archivo PDF de entrada.
-
-### JSON invalido en web
-
-Correr:
-
-```bash
-cd web
-npm run validate:data:strict
-```
-
-Revisar reporte por carrera/version y corregir shape o referencias.
-
-### Onboarding se muestra mas de una vez por query
-
-El flujo actual consume `onboarding=1` en modo one-shot. Si reaparece, revisar logica en `PlanViewer` y pagina `planes/[carrera]`.
-
-## 16) Documentacion complementaria
-
-- Guia web detallada: `web/README.md`
-- Esquema DB: `web/prisma/schema.prisma`
 - Contrato parser: `core/parser/contract_validator.py`
-- Carga y validacion web: `web/lib/data/planDataLoader.ts`, `web/lib/data/planValidation.ts`
-
-## 17) Checklist de produccion
-
-Antes de publicar, usar este flujo:
-
-1. Preparar variables de entorno de produccion en `web/.env.local` (base: `web/.env.production.example`).
-2. Ejecutar chequeo integral:
-
-```bash
-npm run check:prod
-```
-
-3. Aplicar migraciones productivas:
-
-```bash
-cd web
-npm run prisma:deploy
-```
-
-4. Generar y levantar build:
-
-```bash
-cd web
-npm run build
-npm run start
-```
-
-Que valida `check:prod`:
-
-- consistencia de variables de auth y seguridad,
-- provider de autenticacion habilitado (Google o dev-login restringido),
-- validacion de datos publicados (bloquea issues criticos),
-- lint, tests unitarios y build de Next.js.
+- Tipos de datos web: `web/app/types/plan.ts`
+- Validacion schema: `web/lib/data/planValidation.ts`
+- Schema DB: `web/prisma/schema.prisma`
+- Issues por carrera: `issues/*.md`

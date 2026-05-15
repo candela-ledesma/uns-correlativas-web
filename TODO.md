@@ -22,7 +22,7 @@
 
 - `alta` [x] **Vista de revisión de planes pendientes** — sección en `/admin/dashboard` (o `/admin/revisiones`) que lista los planes con estado `pendiente_revision` leídos de `data/gemini/*_pendiente.json`, con opción de publicar o rechazar cada uno.
 
-- `alta` [ ] **Auto-guardado de Gemini sin confirmación** — actualmente el JSON generado por Gemini se guarda en `data/gemini/` de forma silenciosa al terminar de parsear. Agregar confirmación explícita del usuario antes de escribir el archivo (o al menos un modal con resumen antes de persistir).
+- `alta` [x] **Auto-guardado de Gemini sin confirmación** — actualmente el JSON generado por Gemini se guarda en `data/gemini/` de forma silenciosa al terminar de parsear. Agregar confirmación explícita del usuario antes de escribir el archivo (o al menos un modal con resumen antes de persistir).
 
 - `media` [x] **Gestión de planes publicados desde el panel admin** — además de crear planes (ya existe), el admin debe poder modificar y eliminar planes publicados: editar el JSON directamente o eliminarlo de `data/local/` y desregistrarlo de `carreras.ts`.
 
@@ -100,24 +100,29 @@ El planificador actual (`WeeklySchedule`, `useSchedule`, `/api/planificador`) ma
 
 ## Prompt Gemini — issues conocidos por carrera
 
-| Carrera | Score Gemini | Issues principales |
+| Carrera | Score Gemini (v30) | Issues principales |
 |---|---|---|
-| arquitectura | 85.4/100 | `I2201 → 12201` en correlativas (29 materias); `G2324` generado en `materias[]`; materia `858` extra |
-| agrimensura | — | Casing mayúsculas resuelto (v22); `5175` correlativa en `5464` resuelto en parser; issues menores pendientes en issue file |
-| ingenieria_civil | 21/100 | Fallo estructural: 3 orientaciones con IDs repetidos; Gemini no puede deduplicar; límite del modelo |
-| abogacia | — | Ver `issues/abogacia.md` |
-| bioquimica | — | Ver `issues/bioquimica.md` |
-| farmacia | — | Ver `issues/farmacia.md` |
-| contador_publico | — | Ver `issues/contador_publico.md` |
-| ingenieria_en_sistemas_de_informacion | — | Ver `issues/ingenieria_en_sistemas_de_informacion.md` |
+| ingenieria_electricista | 98.9/100 | Solo tildes en nombre del plan |
+| agrimensura | 98.6/100 | 2 correlativas distintas, 1 req solo en ref |
+| ingenieria_agronomica | 98.6/100 | 17 requisito_especial que parser detecta pero Gemini omite |
+| ingenieria_en_sistemas_de_informacion | 98.7/100 | Nombre en mayúsculas, 1 req diferente |
+| contador_publico | 95.6/100 | 5 parciales, 2 distintas |
+| arquitectura | 95.9/100 | `I2201 → 12201` corregido por post-proceso; materia `858` extra |
+| bioquimica | 90.8/100 | 3 materias ausentes en candidato |
+| abogacia | 89.5/100 | 4 agrupadores extra, nombre mal, 2 req solo en ref |
+| farmacia | 86.0/100 | I0902 ausente, 13 correlativas parciales |
+| ingenieria_en_computacion | 93.6/100 | `I0022 → 10022` corregido por post-proceso; 9 parciales, 5 distintas en optativas |
+| ingenieria_civil | 23.0/100 | Fallo estructural: orientaciones múltiples con IDs repetidos; Gemini no deduplica |
 
-**Prompt actual**: v27 — `web/lib/ai/prompt.ts` / `web/data/admin-config.json`
+**Prompt actual**: v30 — `web/lib/ai/prompt.ts` / `web/data/admin-config.json`
 
-**Problema abierto más relevante**: `3033`/`3034` en Electricista — Gemini confunde a cuál materia pertenece la correlativa `5909` (posible page break ambiguo en el PDF).
+**Cambios v30**: `requisito_especial` migrado a array; nuevos tipos `cuatrimestre_cursado` y `anio_y_anio_cursado`; la versión del prompt siempre se lee desde el código (no del JSON guardado).
 
-**Resuelto en v27**: `I#### → 1####` en correlativas corregido con cross-check reforzado + ejemplo `I0703`; CGCB clasificado correctamente como `anio_aprobado`.
+**Post-proceso automático**: `corregirIdsIdioma()` en `parsear/route.ts` corrige `1XXXX → IXXXX` en tiempo real al parsear con Gemini.
 
-**Carreras procesadas**: abogacia, agrimensura, arquitectura, bioquimica, contador_publico, farmacia, ingenieria_civil, ingenieria_en_sistemas_de_informacion, lic_computacion, ingenieria_agronomica, ingenieria_electricista.
+**Few-shot**: herramienta de exportación manual en el panel admin (botón "Exportar diff como few-shot") que genera bloques de correcciones para pegar en el prompt.
+
+**Carreras procesadas con parser local**: abogacia, agrimensura, arquitectura, bioquimica, contador_publico, farmacia, ingenieria_civil, ingenieria_en_sistemas_de_informacion, lic_computacion, ingenieria_agronomica, ingenieria_electricista, ingenieria_en_computacion.
 
 ---
 
