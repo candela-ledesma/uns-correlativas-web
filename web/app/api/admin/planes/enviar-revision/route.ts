@@ -1,15 +1,11 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { Role } from "@/lib/auth/roles";
-import path from "path";
-import fs from "fs/promises";
+import { prisma } from "@/lib/db/prisma";
 import { createAuditEvent } from "@/lib/db/audit";
 import { notificarRevisionPendiente } from "@/lib/email/notificar";
 
 export const dynamic = "force-dynamic";
-export const runtime = "nodejs";
-
-const DATA_DIR_GEMINI = path.join(process.cwd(), "data", "gemini");
 
 type ParseResult = {
   plan: { carrera: string; universidad: string; codigo_plan: string };
@@ -51,9 +47,6 @@ export async function POST(request: Request) {
   }
 
   const slug = slugFromPlan(plan.plan);
-  const filePath = path.join(DATA_DIR_GEMINI, `${slug}_pendiente.json`);
-
-  await fs.mkdir(DATA_DIR_GEMINI, { recursive: true });
 
   const dataToSave = {
     ...plan,
@@ -65,7 +58,11 @@ export async function POST(request: Request) {
     ...(nota ? { _nota_revision: nota } : {}),
   };
 
-  await fs.writeFile(filePath, JSON.stringify(dataToSave, null, 2), "utf-8");
+  await prisma.planPendiente.upsert({
+    where: { slug },
+    update: { planJson: JSON.stringify(dataToSave), submittedBy: session.user.id },
+    create: { slug, planJson: JSON.stringify(dataToSave), submittedBy: session.user.id },
+  });
 
   await createAuditEvent({
     actorUserId: session.user.id,
@@ -84,7 +81,6 @@ export async function POST(request: Request) {
     },
   });
 
-  // Notificar al admin — best-effort, no interrumpe el flujo si falla
   notificarRevisionPendiente({
     carrera: plan.plan.carrera,
     universidad: plan.plan.universidad,
