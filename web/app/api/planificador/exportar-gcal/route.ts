@@ -72,22 +72,6 @@ function getAuthToken(token: Awaited<ReturnType<typeof getToken>>) {
   };
 }
 
-// Busca en Google Calendar si ya existe un evento exportado por esta app para un block_id dado.
-// Devuelve el gcal event id o null.
-async function findExistingEvent(blockId: string, accessToken: string): Promise<string | null> {
-  const params = new URLSearchParams({
-    privateExtendedProperty: `uns_block_id=${blockId}`,
-    maxResults: "1",
-    showDeleted: "false",
-  });
-  const res = await fetch(`${GCAL_BASE}?${params}`, {
-    headers: { Authorization: `Bearer ${accessToken}` },
-  });
-  if (!res.ok) return null;
-  const data = (await res.json()) as { items?: { id: string }[] };
-  return data.items?.[0]?.id ?? null;
-}
-
 // Busca todos los eventos exportados por esta app para una carrera específica.
 async function findAllExportedEvents(accessToken: string, careerId: string): Promise<string[]> {
   const ids: string[] = [];
@@ -112,6 +96,43 @@ async function findAllExportedEvents(accessToken: string, careerId: string): Pro
   } while (pageToken);
 
   return ids;
+}
+
+// ── GET: verificar si hay eventos exportados para esta carrera ────────────
+
+export async function GET(request: Request) {
+  const rawToken = await getToken({
+    req: request as Parameters<typeof getToken>[0]["req"],
+    secret: process.env.NEXTAUTH_SECRET ?? process.env.AUTH_SECRET,
+  });
+
+  const auth = getAuthToken(rawToken);
+  if (!auth) return unauthorized();
+
+  const accessToken = await getValidAccessToken(auth.accessToken, auth.refreshToken, auth.expiresAt);
+  if (!accessToken) {
+    return NextResponse.json({ linked: false, noToken: true });
+  }
+
+  const url = new URL(request.url);
+  const careerId = url.searchParams.get("careerId") ?? "";
+  if (!careerId) {
+    return NextResponse.json({ error: "Falta careerId" }, { status: 400 });
+  }
+
+  const params = new URLSearchParams({
+    privateExtendedProperty: `uns_career_id=${careerId}`,
+    maxResults: "1",
+    showDeleted: "false",
+  });
+  const res = await fetch(`${GCAL_BASE}?${params}`, {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  });
+
+  if (!res.ok) return NextResponse.json({ linked: false });
+
+  const data = (await res.json()) as { items?: unknown[] };
+  return NextResponse.json({ linked: (data.items?.length ?? 0) > 0 });
 }
 
 // ── POST: exportar (upsert) ────────────────────────────────────────────────
@@ -152,7 +173,16 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "No hay bloques para exportar" }, { status: 400 });
   }
 
-  const results: { id: string; gcalEventId?: string; action?: "created" | "updated"; error?: string }[] = [];
+  // Eliminar eventos anteriores de esta carrera antes de crear los nuevos
+  const existingIds = await findAllExportedEvents(accessToken, careerId);
+  for (const eventId of existingIds) {
+    await fetch(`${GCAL_BASE}/${eventId}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+  }
+
+  const results: { id: string; gcalEventId?: string; error?: string }[] = [];
 
   for (const block of blocks) {
     const weekdayIndex = block.dia - 1;
@@ -173,23 +203,15 @@ export async function POST(request: Request) {
       },
     };
 
-    const existingId = await findExistingEvent(block.id, accessToken);
-
-    const gcalRes = existingId
-      ? await fetch(`${GCAL_BASE}/${existingId}`, {
-          method: "PATCH",
-          headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" },
-          body: JSON.stringify(eventBody),
-        })
-      : await fetch(GCAL_BASE, {
-          method: "POST",
-          headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" },
-          body: JSON.stringify(eventBody),
-        });
+    const gcalRes = await fetch(GCAL_BASE, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" },
+      body: JSON.stringify(eventBody),
+    });
 
     if (gcalRes.ok) {
       const data = (await gcalRes.json()) as { id: string };
-      results.push({ id: block.id, gcalEventId: data.id, action: existingId ? "updated" : "created" });
+      results.push({ id: block.id, gcalEventId: data.id });
     } else {
       const errBody = await gcalRes.text().catch(() => "");
       console.error("[exportar-gcal] Google API error", gcalRes.status, errBody);
@@ -199,14 +221,11 @@ export async function POST(request: Request) {
 
   const failed = results.filter((r) => r.error);
   const succeeded = results.filter((r) => r.gcalEventId);
-  const created = succeeded.filter((r) => r.action === "created").length;
-  const updated = succeeded.filter((r) => r.action === "updated").length;
 
   const firstError = failed[0]?.error;
   return NextResponse.json(
     {
-      created,
-      updated,
+      created: succeeded.length,
       failed: failed.length,
       results,
       ...(failed.length > 0 && succeeded.length === 0 && firstError ? { error: firstError } : {}),

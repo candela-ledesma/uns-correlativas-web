@@ -105,6 +105,17 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
     return () => document.removeEventListener("click", onClickOutside);
   }, [gcalOpen]);
 
+  useEffect(() => {
+    if (sessionStatus !== "authenticated") return;
+    const params = new URLSearchParams({ careerId });
+    fetch(`/api/planificador/exportar-gcal?${params}`)
+      .then((r) => r.json())
+      .then((json: { linked?: boolean; noToken?: boolean }) => {
+        if (json.linked) setGcalState("ok");
+      })
+      .catch(() => undefined);
+  }, [careerId, sessionStatus]);
+
   const materiaOptions = materias
     .filter((m) => m.tipo !== "agrupador")
     .map((m) => ({ id: String(m.id), nombre: m.nombre }))
@@ -239,22 +250,22 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
 
   // ── Google Calendar export ────────────────────────────────────────────────
   async function handleExportGCal() {
+    if (gcalState === "loading" || gcalState === "deleting") return;
     setGcalState("loading");
     setGcalMsg(null);
     const params = new URLSearchParams({ careerId, planId, versionId });
     const res = await fetch(`/api/planificador/exportar-gcal?${params}`, { method: "POST" }).catch(() => null);
     if (!res) { setGcalState("error"); setGcalMsg("Error de red"); return; }
-    const json = await res.json().catch(() => ({})) as { created?: number; updated?: number; failed?: number; error?: string };
+    const json = await res.json().catch(() => ({})) as { created?: number; failed?: number; error?: string };
     if (!res.ok || json.error) {
       setGcalState("error");
       setGcalMsg(json.error ?? "Error al exportar");
     } else {
       setGcalState("ok");
       const parts = [];
-      if (json.created) parts.push(`${json.created} creado${json.created === 1 ? "" : "s"}`);
-      if (json.updated) parts.push(`${json.updated} actualizado${json.updated === 1 ? "" : "s"}`);
+      if (json.created) parts.push(`${json.created} evento${json.created === 1 ? "" : "s"} exportado${json.created === 1 ? "" : "s"}`);
       if (json.failed)  parts.push(`${json.failed} fallido${json.failed === 1 ? "" : "s"}`);
-      setGcalMsg(parts.length ? parts.join(" · ") : "Sin cambios");
+      setGcalMsg(parts.length ? parts.join(" · ") : "Calendario actualizado");
     }
   }
 
@@ -369,12 +380,17 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
                     {gcalMsg}
                   </p>
                 )}
+                {gcalState === "ok" && (
+                  <p style={{ margin: 0, padding: "6px 10px", fontSize: 12, color: TEXT_SEC }}>
+                    Ya exportado. Re-exportar actualizará los eventos existentes.
+                  </p>
+                )}
                 <button
                   type="button"
                   style={{ ...BTN, width: "100%", textAlign: "left", justifyContent: "flex-start" }}
                   onClick={() => { void handleExportGCal(); setGcalOpen(false); }}
                 >
-                  Exportar horario
+                  {gcalState === "ok" ? "Re-exportar horario" : "Exportar horario"}
                 </button>
                 <button
                   type="button"
