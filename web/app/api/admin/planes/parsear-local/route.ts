@@ -13,12 +13,14 @@ export const maxDuration = 120;
 const MAX_SIZE_MB = 20;
 const PROJECT_ROOT = path.join(process.cwd(), "..");
 const PYTHON = path.join(PROJECT_ROOT, ".venv", "bin", "python3");
+const PARSER_API_URL = process.env.PARSER_API_URL;
+const PARSER_API_SECRET = process.env.PARSER_API_SECRET;
 
 function sseEvent(type: string, payload: Record<string, unknown>): string {
   return `data: ${JSON.stringify({ type, ...payload })}\n\n`;
 }
 
-function runParser(pdfPath: string, outPath: string): Promise<void> {
+function runParserLocal(pdfPath: string, outPath: string): Promise<void> {
   return new Promise((resolve, reject) => {
     const proc = spawn(PYTHON, ["-m", "core.parser", pdfPath, outPath], {
       cwd: PROJECT_ROOT,
@@ -35,6 +37,21 @@ function runParser(pdfPath: string, outPath: string): Promise<void> {
 
     proc.on("error", (err) => reject(new Error(`No se pudo ejecutar el parser: ${err.message}`)));
   });
+}
+
+async function runParserRemote(fileBytes: ArrayBuffer, filename: string): Promise<Record<string, unknown>> {
+  const formData = new FormData();
+  formData.append("file", new Blob([fileBytes], { type: "application/pdf" }), filename);
+
+  const headers: Record<string, string> = {};
+  if (PARSER_API_SECRET) headers["Authorization"] = `Bearer ${PARSER_API_SECRET}`;
+
+  const res = await fetch(`${PARSER_API_URL}/parse`, { method: "POST", headers, body: formData });
+  if (!res.ok) {
+    const err = await res.text().catch(() => res.statusText);
+    throw new Error(`Parser API error ${res.status}: ${err}`);
+  }
+  return res.json() as Promise<Record<string, unknown>>;
 }
 
 export async function POST(request: Request) {
@@ -65,29 +82,42 @@ export async function POST(request: Request) {
         controller.enqueue(new TextEncoder().encode(sseEvent(type, payload)));
       };
 
-      const ts = Date.now();
-      const pdfPath = path.join(tmpdir(), `uns_parser_${ts}.pdf`);
-      const outPath = path.join(tmpdir(), `uns_parser_${ts}.json`);
-
       try {
-        send("progress", { step: "guardando", message: "Preparando el PDF…" });
         const bytes = await file.arrayBuffer();
-        await writeFile(pdfPath, Buffer.from(bytes));
 
-        send("progress", { step: "parseando", message: "Ejecutando parser local…" });
-        await runParser(pdfPath, outPath);
+        if (PARSER_API_URL) {
+          // Prod: usar la API remota en Railway
+          send("progress", { step: "parseando", message: "Ejecutando parser…" });
+          const data = await runParserRemote(bytes, file.name);
+          send("progress", { step: "leyendo", message: "Procesando resultado…" });
+          send("done", { data });
+        } else {
+          // Local: usar subprocess Python
+          const ts = Date.now();
+          const pdfPath = path.join(tmpdir(), `uns_parser_${ts}.pdf`);
+          const outPath = path.join(tmpdir(), `uns_parser_${ts}.json`);
 
-        send("progress", { step: "leyendo", message: "Procesando resultado…" });
-        const raw = await readFile(outPath, "utf-8");
-        const data = JSON.parse(raw) as Record<string, unknown>;
+          try {
+            send("progress", { step: "guardando", message: "Preparando el PDF…" });
+            await writeFile(pdfPath, Buffer.from(bytes));
 
-        send("done", { data });
+            send("progress", { step: "parseando", message: "Ejecutando parser local…" });
+            await runParserLocal(pdfPath, outPath);
+
+            send("progress", { step: "leyendo", message: "Procesando resultado…" });
+            const raw = await readFile(outPath, "utf-8");
+            const data = JSON.parse(raw) as Record<string, unknown>;
+
+            send("done", { data });
+          } finally {
+            await unlink(pdfPath).catch(() => {});
+            await unlink(outPath).catch(() => {});
+          }
+        }
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err);
         send("error", { message: msg });
       } finally {
-        await unlink(pdfPath).catch(() => {});
-        await unlink(outPath).catch(() => {});
         controller.close();
       }
     },
