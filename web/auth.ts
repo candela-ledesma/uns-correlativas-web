@@ -42,6 +42,13 @@ if (hasGoogleProvider) {
     Google({
       clientId: process.env.AUTH_GOOGLE_CLIENT_ID as string,
       clientSecret: process.env.AUTH_GOOGLE_CLIENT_SECRET as string,
+      authorization: {
+        params: {
+          scope: "openid email profile https://www.googleapis.com/auth/calendar.events",
+          access_type: "offline",
+          prompt: "consent",
+        },
+      },
     }),
   );
 }
@@ -114,7 +121,7 @@ export const authOptions: NextAuthOptions = {
   },
   providers,
   callbacks: {
-    jwt: async ({ token, user }) => {
+    jwt: async ({ token, user, account }) => {
       if (user) {
         token.sub = user.id;
         const roleFromUser = (user as { role?: string }).role;
@@ -124,6 +131,12 @@ export const authOptions: NextAuthOptions = {
         } else {
           token.role = Role.USER;
         }
+      }
+
+      if (account?.provider === "google" && account.access_token) {
+        token.googleAccessToken = account.access_token;
+        token.googleRefreshToken = account.refresh_token;
+        token.googleTokenExpiresAt = account.expires_at;
       }
 
       if (token.sub && !token.role) {

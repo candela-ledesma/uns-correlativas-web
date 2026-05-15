@@ -61,6 +61,8 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
   const [panel,      setPanel]      = useState<Panel | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [draggingId, setDraggingId] = useState<string | null>(null);
+  const [gcalState,  setGcalState]  = useState<"idle" | "loading" | "ok" | "error">("idle");
+  const [gcalMsg,    setGcalMsg]    = useState<string | null>(null);
 
   const dragRef          = useRef<DragState | null>(null);
   const suppressClickRef = useRef(false);
@@ -209,6 +211,23 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
     if (panel?.type === "edit" && panel.block.id === id) setPanel(null);
   }
 
+  // ── Google Calendar export ────────────────────────────────────────────────
+  async function handleExportGCal() {
+    setGcalState("loading");
+    setGcalMsg(null);
+    const params = new URLSearchParams({ careerId, planId, versionId });
+    const res = await fetch(`/api/planificador/exportar-gcal?${params}`, { method: "POST" }).catch(() => null);
+    if (!res) { setGcalState("error"); setGcalMsg("Error de red"); return; }
+    const json = await res.json().catch(() => ({})) as { exported?: number; failed?: number; error?: string };
+    if (!res.ok || json.error) {
+      setGcalState("error");
+      setGcalMsg(json.error ?? "Error al exportar");
+    } else {
+      setGcalState("ok");
+      setGcalMsg(`${json.exported ?? 0} evento${json.exported === 1 ? "" : "s"} exportado${json.exported === 1 ? "" : "s"}${json.failed ? ` · ${json.failed} fallido${json.failed === 1 ? "" : "s"}` : ""}`);
+    }
+  }
+
   // ── Auth guard ─────────────────────────────────────────────────────────────
   if (sessionStatus === "unauthenticated") {
     return (
@@ -243,10 +262,37 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
         <span className="hidden sm:inline" style={{ color: TEXT_SEC, fontSize: 12 }}>
           Clic en celda · arrastrá para mover
         </span>
+        {blocks.length > 0 && (
+          <button
+            type="button"
+            disabled={gcalState === "loading"}
+            style={{ ...BTN, opacity: gcalState === "loading" ? 0.6 : 1 }}
+            onClick={() => void handleExportGCal()}
+          >
+            {gcalState === "loading" ? "Exportando..." : "Exportar a Google Calendar"}
+          </button>
+        )}
         <button type="button" style={BTN_VIO} onClick={() => setPanel({ type: "create" })}>
           + Agregar
         </button>
       </div>
+
+      {/* Google Calendar feedback */}
+      {gcalMsg && (
+        <div
+          data-no-print
+          style={{
+            borderRadius: 10,
+            padding: "10px 14px",
+            fontSize: 13,
+            ...(gcalState === "ok"
+              ? { background: "rgba(34,197,94,0.1)", border: "1px solid rgba(34,197,94,0.3)", color: "#86efac" }
+              : { ...ERROR_PANEL }),
+          }}
+        >
+          {gcalMsg}
+        </div>
+      )}
 
       {/* Error */}
       {error && (
