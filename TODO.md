@@ -91,12 +91,12 @@ Opciones para resolverlo a futuro:
 
 El planificador actual (`WeeklySchedule`, `useSchedule`, `/api/planificador`) maneja bloques con `dia`, `horaInicio`, `horaFin`, `materiaNombre`, `comision` y `notas`. La integración debe exportar esos bloques como eventos recurrentes semanales a Google Calendar.
 
-- `alta` [ ] **OAuth con Google** — agregar `google` como provider en NextAuth con scope `https://www.googleapis.com/auth/calendar.events`; guardar `access_token` y `refresh_token` en sesión
-- `alta` [ ] **Endpoint de exportación** — `POST /api/planificador/exportar-gcal` que tome los bloques del usuario y los convierta a eventos Google Calendar con recurrencia semanal (`RRULE:FREQ=WEEKLY`)
-- `alta` [ ] **Mapeo de bloques a eventos** — convertir `dia` (1–5) + `horaInicio`/`horaFin` (minutos desde medianoche) a `dateTime` en formato ISO 8601; usar `materiaNombre` como título y `notas`/`comision` como descripción
-- `alta` [ ] **Botón "Exportar a Google Calendar"** en `WeeklySchedule.tsx` — visible solo si hay bloques cargados; maneja estado de loading/error/éxito
-- `media` [ ] **Manejo de token expirado** — refresh automático con `refresh_token` antes de llamar a la API de Google
-- `media` [ ] **Evitar duplicados** — al re-exportar, detectar eventos ya creados por esta app (via `extendedProperties`) y actualizarlos en lugar de crear nuevos
+- `alta` [x] **OAuth con Google** — `google` provider en NextAuth con scope `calendar.events`; `access_token` y `refresh_token` guardados en sesión
+- `alta` [x] **Endpoint de exportación** — `POST /api/planificador/exportar-gcal` convierte bloques a eventos Google Calendar con recurrencia semanal (`RRULE:FREQ=WEEKLY`)
+- `alta` [x] **Mapeo de bloques a eventos** — `dia` + `horaInicio`/`horaFin` convertidos a `dateTime` ISO 8601; `materiaNombre` como título, `notas`/`comision` como descripción
+- `alta` [x] **Botón "Exportar a Google Calendar"** en `WeeklySchedule.tsx` — visible solo si hay bloques cargados; maneja loading/error/éxito con badge de estado
+- `media` [x] **Manejo de token expirado** — refresh automático con `refresh_token` antes de llamar a la API de Google
+- `media` [x] **Evitar duplicados** — al re-exportar usa delete-then-create aislado por carrera (via `extendedProperties`); fix para no borrar eventos de otras carreras
 - `baja` [ ] **Variable de entorno** — documentar `GOOGLE_CLIENT_ID` y `GOOGLE_CLIENT_SECRET` en `.env.example`
 
 ---
@@ -142,7 +142,7 @@ El planificador actual (`WeeklySchedule`, `useSchedule`, `/api/planificador`) ma
 
 ## Planes de estudio — carreras pendientes de generar
 
-Carreras ya procesadas: abogacia, agrimensura, arquitectura, bioquimica, contador_publico, farmacia, ing_civil, ingenieria_en_sistemas_de_informacion, lic_computacion.
+Carreras ya procesadas: abogacia, agrimensura, arquitectura, bioquimica, contador_publico, farmacia, ingenieria_civil, ingenieria_en_sistemas_de_informacion, lic_computacion, ingenieria_agronomica, ingenieria_electricista, ingenieria_en_computacion.
 
 | Carrera | Departamento | Duración |
 |---|---|---|
@@ -150,7 +150,7 @@ Carreras ya procesadas: abogacia, agrimensura, arquitectura, bioquimica, contado
 | [x] INGENIERIA ELECTRICISTA | Ingeniería Eléctrica y de Computadoras | 10 Cuat. |
 | [ ] INGENIERIA ELECTRONICA | Ingeniería Eléctrica y de Computadoras | 10 Cuat. |
 | [ ] INGENIERIA EN ALIMENTOS | Ingeniería Química | 10 Cuat. |
-| [ ] INGENIERIA EN COMPUTACION | Ciencias e Ingeniería de la Computación | 10 Cuat. |
+| [x] INGENIERIA EN COMPUTACION | Ciencias e Ingeniería de la Computación | 10 Cuat. |
 | [ ] INGENIERÍA EN TELECOMUNICACIONES | Ingeniería Eléctrica y de Computadoras | 10 Cuat. |
 | [ ] INGENIERIA INDUSTRIAL | Ingeniería | 10 Cuat. |
 | [ ] INGENIERIA MECANICA | Ingeniería | 10 Cuat. |
