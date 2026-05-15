@@ -101,9 +101,7 @@ async def parse_gemini(
     file: UploadFile = File(...),
     model: str = Form(default="gemini-2.5-flash"),
     system_prompt: str = Form(default=""),
-    authorization: str | None = Header(default=None),
 ):
-    _check_auth(authorization)
 
     if not GEMINI_API_KEY:
         raise HTTPException(status_code=500, detail="GEMINI_API_KEY no configurada en el servidor")
