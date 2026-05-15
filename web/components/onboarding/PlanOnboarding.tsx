@@ -1,12 +1,12 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { TEXT, TEXT_DET, ACCENT, GLASS, BTN, BTN_VIOLET, SURFACE } from "@/lib/ui/tokens";
 
 type Props = {
   open: boolean;
   onDismiss: () => void;
   onComplete: () => void;
-  isSubmitting?: boolean;
 };
 
 type Step = {
@@ -16,29 +16,24 @@ type Step = {
 
 const STEPS: Step[] = [
   {
-    title: "Marcar materias",
-    body: "Cada click sobre una materia avanza su estado: no cursada, cursada y aprobada. Si no cumple correlativas, no cambia.",
+    title: "Hacé click en una materia",
+    body: "Cada click avanza el estado: disponible → cursada → aprobada. Si no cumplís las correlativas, el estado no cambia.",
   },
   {
-    title: "Deshacer cambios",
-    body: "En cada tarjeta podés volver un paso: de aprobada a cursada o de cursada a no cursada. El sistema reajusta dependencias automáticamente.",
+    title: "Podés deshacer",
+    body: "En cada tarjeta hay un botón para volver un paso atrás — de aprobada a cursada, o de cursada a disponible. Las dependencias se recalculan solas.",
   },
   {
-    title: "Cómo se calcula habilitación",
-    body: "Una materia queda habilitada cuando cumplís las correlativas para cursar o para aprobar, según las reglas del plan.",
+    title: "Cómo funcionan las correlativas",
+    body: "Una materia se habilita cuando cumplís sus requisitos: algunas piden que otra esté cursada, otras que esté aprobada. El plan lo indica automáticamente.",
   },
   {
-    title: "Ejemplo práctico",
-    body: "Si Materia B requiere Materia A cursada, al marcar A como cursada B pasa a disponible. Si B requiere A aprobada, recién se habilita al aprobar A.",
+    title: "Ejemplo rápido",
+    body: "Si Análisis II requiere Análisis I cursada, al marcar Análisis I como cursada, Análisis II pasa a disponible. Si requiere aprobada, recién se habilita al aprobarla.",
   },
 ];
 
-export default function PlanOnboarding({
-  open,
-  onDismiss,
-  onComplete,
-  isSubmitting = false,
-}: Props) {
+export default function PlanOnboarding({ open, onDismiss, onComplete }: Props) {
   const [stepIndex, setStepIndex] = useState(0);
 
   const currentStep = STEPS[stepIndex] ?? STEPS[0];
@@ -46,7 +41,7 @@ export default function PlanOnboarding({
 
   const progressPercent = useMemo(() => {
     if (STEPS.length <= 1) return 100;
-    return Math.round((stepIndex / (STEPS.length - 1)) * 100);
+    return Math.round(((stepIndex + 1) / STEPS.length) * 100);
   }, [stepIndex]);
 
   if (!open) return null;
@@ -54,15 +49,20 @@ export default function PlanOnboarding({
   return (
     <div
       data-testid="plan-onboarding-modal"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 p-4"
+      style={{ position: "fixed", inset: 0, zIndex: 50, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(0,0,0,0.55)", backdropFilter: "blur(4px)", padding: 24 }}
+      onClick={onDismiss}
     >
-      <div className="w-full max-w-xl rounded-2xl border border-zinc-200 bg-white p-5 shadow-2xl">
-        <div className="mb-4 flex items-start justify-between gap-3">
+      <div
+        style={{ ...SURFACE, borderRadius: 20, padding: "28px 24px", maxWidth: 480, width: "100%", boxShadow: "0 24px 64px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04)", display: "flex", flexDirection: "column", gap: 20 }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
-              Onboarding inicial
+            <p style={{ color: ACCENT, fontSize: 11, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 6 }}>
+              Guía rápida · {stepIndex + 1} de {STEPS.length}
             </p>
-            <h2 className="mt-1 text-xl font-extrabold text-zinc-900">
+            <h2 style={{ color: TEXT, fontSize: 18, fontWeight: 800, lineHeight: 1.2, margin: 0 }}>
               {currentStep.title}
             </h2>
           </div>
@@ -70,61 +70,67 @@ export default function PlanOnboarding({
             type="button"
             data-testid="plan-onboarding-dismiss"
             onClick={onDismiss}
-            disabled={isSubmitting}
-            className="rounded-lg border border-zinc-300 px-3 py-1.5 text-xs font-semibold text-zinc-600"
+            style={{ ...BTN, padding: "6px 14px", fontSize: 12, fontWeight: 500, borderRadius: 8, cursor: "pointer", flexShrink: 0 }}
           >
             Omitir
           </button>
         </div>
 
-        <div className="mb-4 h-2 w-full overflow-hidden rounded-full bg-zinc-100">
+        {/* Progress bar */}
+        <div style={{ height: 4, width: "100%", borderRadius: 99, background: GLASS.medium, overflow: "hidden" }}>
           <div
-            className="h-full rounded-full bg-zinc-900 transition-[width] duration-200"
-            style={{ width: `${progressPercent}%` }}
+            style={{ height: "100%", borderRadius: 99, background: `linear-gradient(90deg, ${ACCENT}, #c77dff)`, transition: "width 0.25s", width: `${progressPercent}%` }}
           />
         </div>
 
-        <p className="mb-6 text-sm leading-relaxed text-zinc-700">{currentStep.body}</p>
+        {/* Body */}
+        <p style={{ color: TEXT_DET, fontSize: 14, lineHeight: 1.7, margin: 0 }}>
+          {currentStep.body}
+        </p>
 
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="text-xs text-zinc-500">
-            Paso {stepIndex + 1} de {STEPS.length}
-          </div>
+        {/* Dot indicators */}
+        <div style={{ display: "flex", justifyContent: "center", gap: 6 }}>
+          {STEPS.map((_, i) => (
+            <button
+              key={i}
+              type="button"
+              onClick={() => setStepIndex(i)}
+              style={{ width: i === stepIndex ? 20 : 8, height: 8, borderRadius: 99, border: "none", cursor: "pointer", transition: "all 0.2s", background: i === stepIndex ? ACCENT : GLASS.strong, padding: 0 }}
+              aria-label={`Ir al paso ${i + 1}`}
+            />
+          ))}
+        </div>
 
-          <div className="flex items-center gap-2">
+        {/* Footer */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+          <button
+            type="button"
+            disabled={stepIndex === 0}
+            onClick={() => setStepIndex((p) => Math.max(0, p - 1))}
+            style={{ ...BTN, padding: "8px 18px", fontSize: 13, fontWeight: 600, borderRadius: 10, cursor: "pointer", opacity: stepIndex === 0 ? 0.4 : 1 }}
+          >
+            ← Anterior
+          </button>
+
+          {!isLastStep ? (
             <button
               type="button"
-              disabled={stepIndex === 0 || isSubmitting}
-              onClick={() => setStepIndex((prev) => Math.max(0, prev - 1))}
-              className="rounded-lg border border-zinc-300 px-3 py-2 text-sm font-semibold text-zinc-700 disabled:opacity-50"
+              data-testid="plan-onboarding-next"
+              onClick={() => setStepIndex((p) => Math.min(STEPS.length - 1, p + 1))}
+              style={{ ...BTN_VIOLET, padding: "8px 18px", fontSize: 13, fontWeight: 700, borderRadius: 10, cursor: "pointer" }}
             >
-              Anterior
+              Siguiente →
             </button>
-
-            {!isLastStep && (
-              <button
-                type="button"
-                data-testid="plan-onboarding-next"
-                disabled={isSubmitting}
-                onClick={() => setStepIndex((prev) => Math.min(STEPS.length - 1, prev + 1))}
-                className="rounded-lg border border-zinc-900 bg-zinc-900 px-3 py-2 text-sm font-semibold text-white"
-              >
-                Siguiente
-              </button>
-            )}
-
-            {isLastStep && (
-              <button
-                type="button"
-                data-testid="plan-onboarding-complete"
-                disabled={isSubmitting}
-                onClick={onComplete}
-                className="rounded-lg border border-zinc-900 bg-zinc-900 px-3 py-2 text-sm font-semibold text-white"
-              >
-                {isSubmitting ? "Guardando..." : "Finalizar"}
-              </button>
-            )}
-          </div>
+          ) : (
+            <button
+              type="button"
+              data-testid="plan-onboarding-complete"
+              onClick={onComplete}
+              style={{ ...BTN_VIOLET, padding: "8px 18px", fontSize: 13, fontWeight: 700, borderRadius: 10, cursor: "pointer" }}
+            >
+              ¡Entendido!
+            </button>
+          )}
         </div>
       </div>
     </div>

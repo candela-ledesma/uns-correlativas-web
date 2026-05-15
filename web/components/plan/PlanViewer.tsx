@@ -504,7 +504,6 @@ export default function PlanViewer({
 
       <PlanOnboarding
         open={isOnboardingOpen}
-        isSubmitting={isOnboardingSubmitting}
         onDismiss={() => { void dismissOnboarding(); }}
         onComplete={() => { void completeOnboarding(); }}
       />
