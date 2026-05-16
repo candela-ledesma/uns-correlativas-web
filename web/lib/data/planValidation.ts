@@ -250,6 +250,8 @@ function parseRequisitoEspecialItem(
     return { tipo, anio: anioRaw, cuatrimestre: cuatriRaw, ...(descripcion ? { descripcion } : {}) };
   } else if (tipo === "todas_materias_aprobadas") {
     return { tipo, ...(descripcion ? { descripcion } : {}) };
+  } else if (tipo === "cgcb_aprobado") {
+    return { tipo, ...(descripcion ? { descripcion } : {}) };
   } else {
     addIssue(
       issues,

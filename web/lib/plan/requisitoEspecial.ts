@@ -29,6 +29,10 @@ export type RequisitoEspecialType =
   | {
       tipo: "todas_materias_aprobadas";
       descripcion?: string;
+    }
+  | {
+      tipo: "cgcb_aprobado";
+      descripcion?: string;
     };
 
 /**
@@ -118,6 +122,16 @@ export function evaluarRequisitoEspecial(
     };
   }
 
+  if (requisito.tipo === "cgcb_aprobado") {
+    return {
+      cumple: false,
+      detalles: {
+        tipo: "cgcb_aprobado",
+        mensaje: "Se requiere tener aprobado el CGCB",
+      },
+    };
+  }
+
   // TypeScript exhaustiveness check
   const _exhaustive: never = requisito;
   return _exhaustive;
@@ -160,6 +174,10 @@ export function generarTextoRequisito(
 
   if (requisito.tipo === "todas_materias_aprobadas") {
     return "Se requiere tener todas las materias del plan aprobadas";
+  }
+
+  if (requisito.tipo === "cgcb_aprobado") {
+    return "Se requiere tener aprobado el CGCB";
   }
 
   return "Requisito especial desconocido";
