@@ -14,7 +14,6 @@ const MAX_SIZE_MB = 20;
 const PROJECT_ROOT = path.join(process.cwd(), "..");
 const PYTHON = path.join(PROJECT_ROOT, ".venv", "bin", "python3");
 const PARSER_API_URL = process.env.PARSER_API_URL;
-const PARSER_API_SECRET = process.env.PARSER_API_SECRET;
 
 function sseEvent(type: string, payload: Record<string, unknown>): string {
   return `data: ${JSON.stringify({ type, ...payload })}\n\n`;
@@ -43,15 +42,13 @@ async function runParserRemote(fileBytes: ArrayBuffer, filename: string): Promis
   const formData = new FormData();
   formData.append("file", new Blob([fileBytes], { type: "application/pdf" }), filename);
 
-  const headers: Record<string, string> = {};
-  if (PARSER_API_SECRET) headers["Authorization"] = `Bearer ${PARSER_API_SECRET}`;
-
-  const res = await fetch(`${PARSER_API_URL}/parse`, { method: "POST", headers, body: formData });
+  const res = await fetch(`${PARSER_API_URL}/parse`, { method: "POST", body: formData });
   if (!res.ok) {
     const err = await res.text().catch(() => res.statusText);
     throw new Error(`Parser API error ${res.status}: ${err}`);
   }
-  return res.json() as Promise<Record<string, unknown>>;
+  const body = await res.json() as { type: string; data: Record<string, unknown> };
+  return body.data;
 }
 
 export async function POST(request: Request) {

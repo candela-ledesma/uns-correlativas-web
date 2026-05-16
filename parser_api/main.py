@@ -5,7 +5,7 @@ import re
 import tempfile
 from pathlib import Path
 
-from fastapi import FastAPI, File, Form, Header, HTTPException, UploadFile
+from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
@@ -49,10 +49,7 @@ def health():
 @app.post("/parse")
 async def parse_pdf(
     file: UploadFile = File(...),
-    authorization: str | None = Header(default=None),
 ):
-    _check_auth(authorization)
-
     if not file.filename or not file.filename.lower().endswith(".pdf"):
         raise HTTPException(status_code=400, detail="Se requiere un archivo PDF")
 
@@ -71,7 +68,7 @@ async def parse_pdf(
     finally:
         tmp_path.unlink(missing_ok=True)
 
-    return JSONResponse(content=data)
+    return JSONResponse(content={"type": "done", "data": data})
 
 
 def _extraer_json(raw: str) -> dict:

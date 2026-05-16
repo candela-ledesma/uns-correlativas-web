@@ -193,10 +193,13 @@ export default function CargarPlanTab({ canPublish = true }: { canPublish?: bool
     setStatus({ type: "loading", step: initialStep, message: STEP_LABEL[initialStep] });
     try {
       const isGemini = endpoint.includes("/parsear") && !endpoint.includes("parsear-local");
+      const isLocal = endpoint.includes("parsear-local");
 
       // En prod, el browser llama directo a Render para evitar el límite de tiempo de Vercel
       const parserApiUrl = process.env.NEXT_PUBLIC_PARSER_API_URL;
-      const url = (isGemini && parserApiUrl) ? `${parserApiUrl}/parse-gemini` : endpoint;
+      const url = parserApiUrl && isGemini ? `${parserApiUrl}/parse-gemini`
+        : parserApiUrl && isLocal  ? `${parserApiUrl}/parse`
+        : endpoint;
 
       const res = await fetch(url, { method: "POST", body: fd });
 
