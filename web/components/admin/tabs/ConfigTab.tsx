@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { TEXT_SEC, SURFACE, BTN, BTN_VIOLET, INPUT } from "@/lib/ui/tokens";
+import { TEXT_SEC, BTN, BTN_VIOLET, INPUT } from "@/lib/ui/tokens";
 import { DEFAULT_SYSTEM_PROMPT, PROMPT_VERSION } from "@/lib/ai/prompt";
 
 import { CARD, LABEL } from "./adminTabStyles";

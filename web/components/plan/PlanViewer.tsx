@@ -87,11 +87,10 @@ export default function PlanViewer({
   }, [scrollTarget]);
 
   const {
-    isOpen:       isOnboardingOpen,
-    isSubmitting: isOnboardingSubmitting,
-    open:         openOnboarding,
-    dismiss:      dismissOnboarding,
-    complete:     completeOnboarding,
+    isOpen:   isOnboardingOpen,
+    open:     openOnboarding,
+    dismiss:  dismissOnboarding,
+    complete: completeOnboarding,
   } = useOnboarding({
     carreraId,
     versionId:           data.plan.version_id,

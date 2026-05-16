@@ -22,7 +22,6 @@ type Props = HTMLAttributes<HTMLDivElement> & {
   materia: Materia;
   estado: EstadoMateria;
   puedeCursar: boolean;
-  puedeAprobar: boolean;
   puedeClickear: boolean;
   bloqueada: boolean;
   onToggle: () => void;
@@ -35,8 +34,7 @@ type Props = HTMLAttributes<HTMLDivElement> & {
 
 // ── Component ─────────────────────────────────────────────────────────────────
 export default function MateriaCard({
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  materia, estado, puedeCursar, puedeAprobar, puedeClickear, bloqueada,
+  materia, estado, puedeCursar, puedeClickear, bloqueada,
   onToggle, onUndo, undoTestId, correlativas = [], estados, verCorrelativasTestId, ...rest
 }: Props) {
   const [mostrarCorrelativas, setMostrarCorrelativas] = useState(false);

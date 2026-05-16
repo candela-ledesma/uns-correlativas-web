@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { TEXT, TEXT_SEC, GLASS, ACCENT, STATUS_COLORS } from "@/lib/ui/tokens";
+import { TEXT_SEC, GLASS, ACCENT, STATUS_COLORS } from "@/lib/ui/tokens";
 
 export type PlanVista = "plan" | "Plan Vista" | "Planificador" | "Mapa";
 export type SyncStatus = "guest" | "syncing" | "synced" | "error";
@@ -14,7 +14,6 @@ type Props = {
   syncStatus?: SyncStatus;
 };
 
-const tabBarStyle    = { background: "rgba(255,255,255,0.06)", borderRadius: 10, padding: 4 };
 const tabActiveStyle = { background: "rgba(157,78,221,0.30)", color: "#e2d9f3", boxShadow: `0 1px 4px ${ACCENT}44` };
 const tabIdleStyle   = { color: TEXT_SEC };
 const iconBtnStyle   = { background: "transparent", border: `1px solid ${GLASS.strong}`, color: TEXT_SEC, cursor: "pointer", borderRadius: 8, width: 32, height: 32, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16 } as const;

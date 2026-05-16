@@ -65,7 +65,6 @@ export default function AnioSection({
                                             materia={materia}
                                             estado={vm.estado}
                                             puedeCursar={vm.puedeCursar}
-                                            puedeAprobar={vm.puedeAprobar}
                                             puedeClickear={vm.puedeClickear}
                                             bloqueada={vm.bloqueada}
                                             onToggle={() => onToggle(materia)}

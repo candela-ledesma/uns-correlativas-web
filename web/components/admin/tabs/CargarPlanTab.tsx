@@ -198,12 +198,7 @@ export default function CargarPlanTab({ canPublish = true }: { canPublish?: bool
       const parserApiUrl = process.env.NEXT_PUBLIC_PARSER_API_URL;
       const url = (isGemini && parserApiUrl) ? `${parserApiUrl}/parse-gemini` : endpoint;
 
-      let res: Response;
-      try {
-        res = await fetch(url, { method: "POST", body: fd });
-      } catch (err) {
-        throw err;
-      }
+      const res = await fetch(url, { method: "POST", body: fd });
 
       const contentType = res.headers.get("content-type") ?? "";
 
@@ -839,7 +834,7 @@ function ModelSelector({
       {open && (
         <div style={{
           position: "absolute", top: "calc(100% + 4px)", left: 0, right: 0, zIndex: 50,
-          background: "#1c2444",
+          background: "#16213e",
           borderRadius: 10, overflow: "hidden",
           boxShadow: "0 8px 30px rgba(0,0,0,0.6)",
           border: `1px solid ${GLASS.border}`,

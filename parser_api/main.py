@@ -12,26 +12,26 @@ from fastapi.responses import JSONResponse
 import sys
 _root = str(Path(__file__).parent.parent)
 sys.path.insert(0, _root)
-print(f"[parser_api] sys.path root: {_root}", flush=True)
 
 try:
     from core.parser.cli import parsear_plan_pdf
-    print("[parser_api] core.parser.cli importado OK", flush=True)
 except Exception as _e:
     print(f"[parser_api] ERROR importando core: {_e}", flush=True)
     raise
 
 app = FastAPI(title="UNS Parser API")
 
+API_SECRET = os.environ.get("PARSER_API_SECRET")
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
+ALLOWED_ORIGIN = os.environ.get("ALLOWED_ORIGIN", "https://uns-correlativas.vercel.app")
+MAX_SIZE_BYTES = 20 * 1024 * 1024
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://uns-correlativas.vercel.app"],
+    allow_origins=[ALLOWED_ORIGIN],
     allow_methods=["POST", "GET"],
     allow_headers=["Authorization", "Content-Type"],
 )
-
-API_SECRET = os.environ.get("PARSER_API_SECRET")
-GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 
 
 def _check_auth(authorization: str | None) -> None:
@@ -57,7 +57,7 @@ async def parse_pdf(
         raise HTTPException(status_code=400, detail="Se requiere un archivo PDF")
 
     contents = await file.read()
-    if len(contents) > 20 * 1024 * 1024:
+    if len(contents) > MAX_SIZE_BYTES:
         raise HTTPException(status_code=400, detail="El archivo supera los 20 MB")
 
     with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as tmp:
@@ -110,7 +110,7 @@ async def parse_gemini(
         raise HTTPException(status_code=400, detail="Se requiere un archivo PDF")
 
     contents = await file.read()
-    if len(contents) > 20 * 1024 * 1024:
+    if len(contents) > MAX_SIZE_BYTES:
         raise HTTPException(status_code=400, detail="El archivo supera los 20 MB")
 
     try:
