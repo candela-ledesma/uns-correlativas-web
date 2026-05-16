@@ -33,17 +33,22 @@ _PRUEBA_SUFICIENCIA = re.compile(
     re.IGNORECASE,
 )
 
+# Detecta requisito CGCB: "aprobado el CGCB para cursar el 3º año" y variantes.
+# Siempre se evalúa ANTES que _ANIO_APROBADO para no clasificarlo como anio_aprobado.
+_CGCB = re.compile(
+    r'(?:tener\s+)?aprobado\s+el\s+CGCB'
+    r'(?:\s+(?:antes\s+de\s+comenzar\s+a\s+cursar|para\s+cursar)'
+    r'\s+(?:el\s+)?'
+    r'(?:primer|segundo|tercer|cuarto|quinto|sexto|1[°º]?|2[°º]?|3[°º]?|4[°º]?|5[°º]?|6[°º]?|[1-6]o)'
+    r'\s+a[ñn]o)?',
+    re.IGNORECASE,
+)
+
 # Detecta "Debe tener N° año aprobado" / "tener tercer año aprobado" etc.
-# También detecta la variante CGCB: "aprobado el CGCB antes de comenzar a cursar el tercer año"
 _ANIO_APROBADO = re.compile(
-    r'(?:'
     r'(?:debe\s+tener\s+)?'
     r'(primer|segundo|tercer|cuarto|quinto|sexto|1[°º]?|2[°º]?|3[°º]?|4[°º]?|5[°º]?|6[°º]?)\s+a[ñn]o'
-    r'(?:\s+(?:aprobado|completo|cursado))+'
-    r'|'
-    r'aprobado\s+(?:\w+\s+){0,4}antes\s+de\s+comenzar\s+a\s+cursar\s+el\s+'
-    r'(primer|segundo|tercer|cuarto|quinto|sexto|1[°º]?|2[°º]?|3[°º]?|4[°º]?|5[°º]?|6[°º]?)\s+a[ñn]o'
-    r')',
+    r'(?:\s+(?:aprobado|completo|cursado))+',
     re.IGNORECASE,
 )
 
@@ -76,12 +81,12 @@ _ANIO_Y_ANIO_CURSADO = re.compile(
 _CUATRIMESTRE_NUMERO = {"primer": 1, "1": 1, "segundo": 2, "2": 2}
 
 _ANIO_NUMERO = {
-    "primer": 1, "1": 1,
-    "segundo": 2, "2": 2,
-    "tercer": 3, "3": 3,
-    "cuarto": 4, "4": 4,
-    "quinto": 5, "5": 5,
-    "sexto": 6, "6": 6,
+    "primer": 1, "1": 1, "1o": 1,
+    "segundo": 2, "2": 2, "2o": 2,
+    "tercer": 3, "3": 3, "3o": 3,
+    "cuarto": 4, "4": 4, "4o": 4,
+    "quinto": 5, "5": 5, "5o": 5,
+    "sexto": 6, "6": 6, "6o": 6,
 }
 
 _ESTADOS_VALIDOS = {"aprobada", "regular", "cursada"}
@@ -89,6 +94,13 @@ _ESTADOS_VALIDOS = {"aprobada", "regular", "cursada"}
 
 def _limpiar_descripcion(texto: str) -> str:
     texto_limpio = " ".join(texto.split()).strip().rstrip(".")
+    # Eliminar encabezado "Para cursar/aprobar Debe" al inicio del texto
+    texto_limpio = re.sub(
+        r"^Para\s+(?:cursar|aprobar)\s+Debe\s+",
+        "",
+        texto_limpio,
+        flags=re.IGNORECASE,
+    )
     # Eliminar IDs numéricos (4-5 dígitos) seguidos de estado
     texto_limpio = re.sub(
         r"\s+\d{4,5}\s+(?:Aprobada|Cursada|Regular)(?:\s+(?:Aprobada|Cursada|Regular))*.*$",
@@ -109,8 +121,21 @@ def _limpiar_descripcion(texto: str) -> str:
         texto_limpio,
         flags=re.IGNORECASE,
     )
-    # Eliminar artículos/preposiciones colgantes al final
-    texto_limpio = re.sub(r"\s+(?:de\s+la|del|de|el|la|los|las|un|una)\s*$", "", texto_limpio, flags=re.IGNORECASE)
+    # Truncar en segunda oración de requisito: "Para cursar/aprobar Debe" indica
+    # el inicio de un bloque distinto que el PDF partió en la misma línea.
+    texto_limpio = re.sub(
+        r"\s+Para\s+(?:cursar|aprobar)\s+Debe\b.*$",
+        "",
+        texto_limpio,
+        flags=re.IGNORECASE,
+    )
+    # Eliminar palabras colgantes al final (artículos, preposiciones, verbos incompletos)
+    texto_limpio = re.sub(
+        r"\s+(?:y\s+(?:debe\s+)?tener(?:\s+aprobado(?:\s+el)?)?|de\s+la|del|de|el|la|los|las|un|una|y|debe|tener)\s*$",
+        "",
+        texto_limpio,
+        flags=re.IGNORECASE,
+    )
     return texto_limpio.rstrip(".")
 
 
@@ -128,14 +153,32 @@ def inferir_requisito_especial(linea: str) -> list[dict] | None:
     if _PRUEBA_SUFICIENCIA.search(linea):
         return [{"tipo": "prueba_idioma", "descripcion": _limpiar_descripcion(linea)}]
 
-    # Requisitos cuantitativos
+    # Requisitos cuantitativos — puede venir combinado con CGCB o año aprobado.
+    # Ejemplo: "al menos 12 materias aprobadas y tener aprobado el CGCB para cursar el 3o año"
     m = _MINIMO_MATERIAS.search(linea)
     if m:
-        return [{
+        req_minimo: dict = {
             "tipo": "minimo_materias_aprobadas",
             "cantidad": int(m.group(1)),
             "descripcion": _limpiar_descripcion(linea),
-        }]
+        }
+        mc = _CGCB.search(linea)
+        if mc:
+            return [req_minimo, {"tipo": "cgcb_aprobado", "descripcion": "tener aprobado el CGCB"}]
+        ma = _ANIO_APROBADO.search(linea)
+        if ma:
+            raw = ma.group(1).lower().rstrip("°º")
+            req_anio: dict = {"tipo": "anio_aprobado", "descripcion": _limpiar_descripcion(ma.group(0))}
+            numero = _ANIO_NUMERO.get(raw)
+            if numero is not None:
+                req_anio["anio"] = numero
+            return [req_minimo, req_anio]
+        return [req_minimo]
+
+    # CGCB simple: "tener aprobado el CGCB para cursar el 3º año"
+    mc = _CGCB.search(linea)
+    if mc:
+        return [{"tipo": "cgcb_aprobado", "descripcion": "tener aprobado el CGCB"}]
 
     # Combinación: "año N aprobado y año M cursado" (dos años completos)
     # Ejemplo: "tercer año aprobado y cuarto año cursado"
@@ -185,7 +228,7 @@ def inferir_requisito_especial(linea: str) -> list[dict] | None:
     # Año aprobado simple
     m = _ANIO_APROBADO.search(linea)
     if m:
-        raw = (m.group(1) or m.group(2) or "").lower().rstrip("°º")
+        raw = m.group(1).lower().rstrip("°º")
         numero = _ANIO_NUMERO.get(raw)
         resultado: dict = {"tipo": "anio_aprobado", "descripcion": _limpiar_descripcion(linea)}
         if numero is not None:

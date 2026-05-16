@@ -1,6 +1,6 @@
 import unittest
 
-from core.parser.correlativa_prosa import inferir_correlativa_en_prosa
+from core.parser.correlativa_prosa import inferir_correlativa_en_prosa, inferir_requisito_especial
 
 
 class InferirCorrelativaEnProsa(unittest.TestCase):
@@ -49,6 +49,44 @@ class InferirCorrelativaEnProsa(unittest.TestCase):
 
         self.assertEqual(correlativas, {})
         self.assertEqual(warnings, [])
+
+
+class InferirRequisitoEspecialTests(unittest.TestCase):
+
+    def test_minimo_materias_simple(self):
+        r = inferir_requisito_especial("al menos 26 materias del plan aprobadas.")
+        self.assertEqual(len(r), 1)
+        self.assertEqual(r[0]["tipo"], "minimo_materias_aprobadas")
+        self.assertEqual(r[0]["cantidad"], 26)
+
+    def test_minimo_materias_con_cgcb_para_cursar(self):
+        # Caso ing-electrónica: minimo + CGCB con "para cursar el 3o año"
+        linea = "Debe tener al menos 12 materias aprobadas y tener aprobado el CGCB para cursar el 3o año"
+        r = inferir_requisito_especial(linea)
+        self.assertEqual(len(r), 2)
+        self.assertEqual(r[0]["tipo"], "minimo_materias_aprobadas")
+        self.assertEqual(r[0]["cantidad"], 12)
+        self.assertEqual(r[1]["tipo"], "cgcb_aprobado")
+
+    def test_minimo_materias_con_cgcb_antes_de_comenzar(self):
+        linea = "al menos 12 materias aprobadas y tener aprobado el CGCB antes de comenzar a cursar el tercer año"
+        r = inferir_requisito_especial(linea)
+        self.assertEqual(len(r), 2)
+        self.assertEqual(r[0]["tipo"], "minimo_materias_aprobadas")
+        self.assertEqual(r[0]["cantidad"], 12)
+        self.assertEqual(r[1]["tipo"], "cgcb_aprobado")
+
+    def test_cgcb_solo_para_cursar(self):
+        linea = "tener aprobado el CGCB para cursar el 3o año"
+        r = inferir_requisito_especial(linea)
+        self.assertEqual(len(r), 1)
+        self.assertEqual(r[0]["tipo"], "cgcb_aprobado")
+
+    def test_anio_aprobado_simple(self):
+        r = inferir_requisito_especial("tercer año aprobado")
+        self.assertEqual(len(r), 1)
+        self.assertEqual(r[0]["tipo"], "anio_aprobado")
+        self.assertEqual(r[0]["anio"], 3)
 
 
 if __name__ == "__main__":
