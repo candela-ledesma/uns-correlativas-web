@@ -10,6 +10,16 @@ export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 export const maxDuration = 120;
 
+export async function GET() {
+  const session = await auth();
+  if (!session?.user?.id || (session.user.role !== Role.ADMIN && session.user.role !== Role.MODERATOR)) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+  const adminConfig = await readAdminConfig();
+  const systemPrompt = adminConfig.systemPrompt ?? DEFAULT_SYSTEM_PROMPT;
+  return NextResponse.json({ systemPrompt, version: PROMPT_VERSION });
+}
+
 const MAX_SIZE_MB = 20;
 
 async function readAdminConfig(): Promise<{ systemPrompt?: string }> {

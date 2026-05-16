@@ -103,6 +103,8 @@ async def parse_gemini(
     system_prompt: str = Form(default=""),
 ):
 
+    print(f"[parse-gemini] model={model!r} system_prompt_len={len(system_prompt)}", flush=True)
+
     if not GEMINI_API_KEY:
         raise HTTPException(status_code=500, detail="GEMINI_API_KEY no configurada en el servidor")
 

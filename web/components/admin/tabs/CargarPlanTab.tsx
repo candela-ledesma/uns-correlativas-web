@@ -104,10 +104,10 @@ export default function CargarPlanTab({ canPublish = true }: { canPublish?: bool
 
   const systemPromptRef = useRef<string>("");
   useEffect(() => {
-    fetch("/api/admin/config")
+    fetch("/api/admin/planes/parsear")
       .then(r => r.ok ? r.json() : null)
-      .then((body: { config?: { systemPrompt?: string } } | null) => {
-        if (body?.config?.systemPrompt) systemPromptRef.current = body.config.systemPrompt;
+      .then((body: { systemPrompt?: string } | null) => {
+        if (body?.systemPrompt) systemPromptRef.current = body.systemPrompt;
       })
       .catch(() => {});
   }, []);
