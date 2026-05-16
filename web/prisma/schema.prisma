@@ -197,6 +197,19 @@ model PlanPublicado {
   @@index([slug])
 }
 
+model PlanBorrador {
+  id          String   @id @default(cuid())
+  slug        String
+  fuente      String   // "parser" | "gemini"
+  planJson    String
+  createdBy   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([slug, fuente])
+  @@index([slug])
+}
+
 model CarreraConfig {
   id           String   @id // el slug mismo
   nombre       String

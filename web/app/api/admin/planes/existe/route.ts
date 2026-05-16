@@ -61,19 +61,18 @@ export async function GET(request: Request) {
 
   const slug = slugFromFilename(filename);
 
-  const row = await prisma.planPublicado.findUnique({ where: { slug } });
+  const [borradorParser, borradorGemini] = await Promise.all([
+    prisma.planBorrador.findUnique({ where: { slug_fuente: { slug, fuente: "parser" } } }),
+    prisma.planBorrador.findUnique({ where: { slug_fuente: { slug, fuente: "gemini" } } }),
+  ]);
 
-  let parserInfo: ExistingInfo = { existe: false };
-  let geminiInfo: ExistingInfo = { existe: false };
+  const parserInfo: ExistingInfo = borradorParser
+    ? buildInfo(borradorParser.planJson, borradorParser.updatedAt, "parser")
+    : { existe: false };
 
-  if (row) {
-    const info = buildInfo(row.planJson, row.savedAt, row.fuente);
-    if (row.fuente === "gemini") {
-      geminiInfo = info;
-    } else {
-      parserInfo = info;
-    }
-  }
+  const geminiInfo: ExistingInfo = borradorGemini
+    ? buildInfo(borradorGemini.planJson, borradorGemini.updatedAt, "gemini")
+    : { existe: false };
 
   return NextResponse.json({ slug, parser: parserInfo, gemini: geminiInfo });
 }

@@ -1317,9 +1317,9 @@ function ColumnaResultado({
             }}
           >
             {borradorState === "saving" ? "Guardando…"
-              : borradorState === "saved" ? `✓ Borrador guardado en data/${fuente === "gemini" ? "gemini" : "local"}/`
+              : borradorState === "saved" ? `✓ Borrador ${fuente === "gemini" ? "Gemini" : "parser"} guardado`
               : borradorState === "error" ? "Error al guardar"
-              : `💾 Guardar borrador en ${fuente === "gemini" ? "Gemini" : "local"}`}
+              : `💾 Guardar borrador ${fuente === "gemini" ? "Gemini" : "parser"}`}
           </button>
         ))}
         {canPublish ? (
