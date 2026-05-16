@@ -29,6 +29,7 @@ Opciones para resolverlo a futuro:
 - `media` [x] **`admin-config.json` → tabla `AdminConfig` en Neon** — migrado. Routes `admin/config` y `admin/planes/parsear` leen/escriben desde Neon.
 - `media` [x] **`data/gemini/*_pendiente.json` → tabla `PlanPendiente` en Neon** — migrado. Routes `pendientes`, `pendientes/[slug]` y `enviar-revision` usan Prisma.
 - `baja` [x] **`data/local/*.json` + `carreras.ts` → migrado a Neon** — nuevas tablas `PlanPublicado` y `CarreraConfig`. Routes `guardar`, `existe`, `publicados`, `publicados/[slug]`, `departamentos` y `api/planes` usan Prisma. `planDataLoader` lee desde DB como fallback cuando el filesystem no está disponible (Vercel).
+- `media` [x] **`data/local/` y `data/gemini/` → tabla `PlanBorrador` en Neon** — nueva tabla con `@@unique([slug, fuente])`. Los parseos de Gemini y parser local se autoguardan en `PlanBorrador` al terminar. El endpoint `guardar` separa borradores (`PlanBorrador`) de publicados (`PlanPublicado`). El endpoint `existe` lee desde `PlanBorrador`. Migración inicial cargó 12 JSONs locales + 11 Gemini. Los archivos en disco se mantienen como backup.
 
 ---
 
@@ -147,6 +148,7 @@ El planificador actual (`WeeklySchedule`, `useSchedule`, `/api/planificador`) ma
 | agrimensura | 98.6/100 | 2 correlativas distintas, 1 req solo en ref |
 | ingenieria_agronomica | 98.6/100 | 17 requisito_especial que parser detecta pero Gemini omite |
 | ingenieria_en_sistemas_de_informacion | 98.7/100 | Nombre en mayúsculas, 1 req diferente |
+| ingenieria_electronica | 97.8/100 | 31 `anio_aprobado` solo en Gemini, 2 agrupadores extra (G0723/G0724), 3 correlativas distintas |
 | contador_publico | 95.6/100 | 5 parciales, 2 distintas |
 | arquitectura | 95.9/100 | `I2201 → 12201` corregido por post-proceso; materia `858` extra |
 | bioquimica | 90.8/100 | 3 materias ausentes en candidato |
@@ -175,7 +177,7 @@ Carreras ya procesadas: abogacia, agrimensura, arquitectura, bioquimica, contado
 |---|---|---|
 | [x] INGENIERIA AGRONOMICA | Agronomía | 10 Cuat. |
 | [x] INGENIERIA ELECTRICISTA | Ingeniería Eléctrica y de Computadoras | 10 Cuat. |
-| [ ] INGENIERIA ELECTRONICA | Ingeniería Eléctrica y de Computadoras | 10 Cuat. |
+| [x] INGENIERIA ELECTRONICA | Ingeniería Eléctrica y de Computadoras | 10 Cuat. |
 | [ ] INGENIERIA EN ALIMENTOS | Ingeniería Química | 10 Cuat. |
 | [x] INGENIERIA EN COMPUTACION | Ciencias e Ingeniería de la Computación | 10 Cuat. |
 | [ ] INGENIERÍA EN TELECOMUNICACIONES | Ingeniería Eléctrica y de Computadoras | 10 Cuat. |
