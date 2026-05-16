@@ -102,6 +102,16 @@ export default function CargarPlanTab({ canPublish = true }: { canPublish?: bool
   const [usageByModel, setUsageByModel] = useState<Record<string, UsageInfo>>({});
   const { usage: dailyUsage, refresh: refreshDailyUsage } = useDailyUsage();
 
+  const systemPromptRef = useRef<string>("");
+  useEffect(() => {
+    fetch("/api/admin/config")
+      .then(r => r.ok ? r.json() : null)
+      .then((body: { config?: { systemPrompt?: string } } | null) => {
+        if (body?.config?.systemPrompt) systemPromptRef.current = body.config.systemPrompt;
+      })
+      .catch(() => {});
+  }, []);
+
   const resultadoGemini = statusGemini.type === "done" ? statusGemini.data : null;
   const resultadoLocal  = statusLocal.type  === "done" ? statusLocal.data  : null;
   const hayLoading = statusGemini.type === "loading" || statusLocal.type === "loading";
@@ -268,6 +278,7 @@ export default function CargarPlanTab({ canPublish = true }: { canPublish?: bool
       const fd = new FormData();
       fd.append("file", file);
       fd.append("model", model);
+      if (systemPromptRef.current) fd.append("system_prompt", systemPromptRef.current);
       parsearSSE("/api/admin/planes/parsear", fd, "leyendo", setStatusGemini);
     }
     if (fuente === "parser" || fuente === "ambos") {
