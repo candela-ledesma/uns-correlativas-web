@@ -19,8 +19,10 @@ flowchart LR
   VP -->|POST /parse-gemini directo| B2[Render: FastAPI + Gemini]
   I -->|POST /api/admin/planes/parsear-local SSE| B1[Render: Parser Python]
   B2 --> PP[corregirIdsIdioma]
-  PP --> D[Validador planValidation.ts]
-  B1 --> D
+  PP --> BD[(Neon: PlanBorrador fuente=gemini)]
+  B1 --> BD2[(Neon: PlanBorrador fuente=parser)]
+  BD --> D[Validador planValidation.ts]
+  BD2 --> D
   D --> E[App Next.js - Vercel]
   E --> F[APIs /api/*]
   F --> G[(Neon PostgreSQL + Prisma)]
@@ -43,10 +45,10 @@ flowchart LR
 `-- web/
     |-- app/
     |   |-- api/admin/planes/
-    |   |   |-- parsear/      # Gemini (SSE): PDF → JSON + corregirIdsIdioma
-    |   |   |-- parsear-local/# Parser Python (SSE)
-    |   |   |-- guardar/      # Persiste JSON en data/
-    |   |   |-- existe/       # Chequea si ya hay borrador guardado
+    |   |   |-- parsear/      # Gemini: PDF → JSON + corregirIdsIdioma + autoguarda en PlanBorrador
+    |   |   |-- parsear-local/# Parser Python (SSE) + autoguarda en PlanBorrador
+    |   |   |-- guardar/      # Borrador → PlanBorrador / Publicar → PlanPublicado
+    |   |   |-- existe/       # Chequea borradores en PlanBorrador por fuente
     |   |   |-- validar/      # Compara con ground truth via comparar_json.py
     |   |   `-- enviar-revision/ # Envio a revisión (MODERATOR → ADMIN)
     |   `-- admin/revisiones/ # Vista de revisión de planes pendientes
@@ -57,8 +59,10 @@ flowchart LR
     |   |   `-- tabs/ConfigTab.tsx        # Prompt, version, modelo
     |   `-- materias/MateriaCard.tsx      # Muestra requisito_especial[]
     |-- data/
-    |   |-- local/        # JSONs generados por parser Python (ground truth, ref local)
-    |   `-- gemini/       # JSONs generados por Gemini (borradores locales)
+    |   |-- local/        # JSONs del parser Python (backup en disco; fuente de verdad: Neon)
+    |   `-- gemini/       # JSONs de Gemini (backup en disco; fuente de verdad: Neon)
+    |-- scripts/
+    |   `-- migrate-jsons-to-db.ts  # Migracion inicial: data/local + data/gemini → Neon
     `-- lib/
         |-- ai/prompt.ts  # DEFAULT_SYSTEM_PROMPT + PROMPT_VERSION (v30)
         |-- plan/
@@ -67,7 +71,7 @@ flowchart LR
         `-- data/planValidation.ts    # Parseo y validacion del schema PlanData
 ```
 
-## 4) Flujo de procesamiento: PDF → JSON de Gemini
+## 4) Flujo de procesamiento: PDF → JSON
 
 ```
 Usuario sube PDF en /admin (Vercel)
@@ -81,12 +85,13 @@ Usuario sube PDF en /admin (Vercel)
 [2] POST <RENDER_URL>/parse-gemini  (browser → Render directo, sin pasar por Vercel)
     1. Recibe PDF + model + system_prompt
     2. Llama a Gemini con visión nativa (temperature=0)
-    3. extraerJSON()  → parsea la respuesta como JSON
+    3. extraerJSON() → parsea la respuesta como JSON
     4. Devuelve { type: "done", data, model, usage }
         │
         ▼ (Vercel aplica post-proceso al resultado)
     corregirIdsIdioma() → corrige 1XXXX → IXXXX
     Anota _llm_prompt_version y _llm_mode
+    Autoguarda en Neon: PlanBorrador(fuente="gemini")
 
         │  (en paralelo, opcional)
         ▼
@@ -94,13 +99,16 @@ Usuario sube PDF en /admin (Vercel)
     1. Render guarda PDF en /tmp
     2. Ejecuta: python3 -m core.parser <pdf>
     3. Devuelve JSON via SSE
+    Autoguarda en Neon: PlanBorrador(fuente="parser")
         │
         ▼
 [3] Panel muestra ambos side-by-side con diff
         │
+        ├── "Guardar borrador" → PlanBorrador (no publica)
+        │
         ▼
-[4] /api/admin/planes/guardar
-    Persiste JSON en Neon (tablas PlanPublicado / PlanPendiente)
+[4] "Usar Gemini / Usar parser local" → /api/admin/planes/guardar
+    Persiste en Neon: PlanPublicado (publicado=true)
         │
         ▼
 [5] (Opcional) /api/admin/planes/enviar-revision
@@ -162,6 +170,7 @@ Solo hay dos transformaciones que se aplican al output de Gemini en el servidor:
 | Abogacia | 89.5/100 |
 | Farmacia | 86.0/100 |
 | Ingenieria en Computacion | 93.6/100 |
+| Ingenieria Electronica | 97.8/100 |
 | Ingenieria Civil | 23.0/100 (fallo estructural: orientaciones multiples) |
 
 ## 8) Requisitos

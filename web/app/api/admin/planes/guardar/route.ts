@@ -76,6 +76,52 @@ export async function POST(request: Request) {
   const slug = slugFromPlan(plan.plan);
 
   try {
+    const dataToSave = {
+      ...plan,
+      _saved_at: new Date().toISOString(),
+      _saved_by: session.user.id,
+      _saved_fuente: fuente,
+      _publicado: publicar,
+      ...(motivo ? { _motivo_cambio: motivo } : {}),
+      ...(resolucion === "nueva_version" ? { _version: "v2" } : {}),
+    };
+    const planJsonStr = JSON.stringify(dataToSave, null, 2);
+
+    // Guardar borrador (sin publicar)
+    if (!publicar) {
+      const existingBorrador = await prisma.planBorrador.findUnique({
+        where: { slug_fuente: { slug, fuente } },
+      });
+
+      if (existingBorrador && !resolucion) {
+        const diffMs = Date.now() - existingBorrador.updatedAt.getTime();
+        const diffDays = Math.floor(diffMs / 86400000);
+        const fechaLabel = diffDays === 0 ? "hoy" : diffDays === 1 ? "hace 1 día" : `hace ${diffDays} días`;
+        const existingPlan = JSON.parse(existingBorrador.planJson) as ParseResult;
+        return NextResponse.json({
+          conflict: true,
+          existing: {
+            materias: (existingPlan.materias ?? []).length,
+            fechaCarga: fechaLabel,
+            fuente: existingBorrador.fuente,
+          },
+        });
+      }
+
+      if (resolucion === "conservar") {
+        return NextResponse.json({ ok: true, slug, action: "conserved" });
+      }
+
+      await prisma.planBorrador.upsert({
+        where: { slug_fuente: { slug, fuente } },
+        update: { planJson: planJsonStr, updatedAt: new Date() },
+        create: { slug, fuente, planJson: planJsonStr, createdBy: session.user.id },
+      });
+
+      return NextResponse.json({ ok: true, slug });
+    }
+
+    // Publicar: verificar conflicto con PlanPublicado
     const existing = await prisma.planPublicado.findUnique({ where: { slug } });
 
     if (existing && !resolucion) {
@@ -97,18 +143,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ ok: true, slug, action: "conserved" });
     }
 
-    const dataToSave = {
-      ...plan,
-      _saved_at: new Date().toISOString(),
-      _saved_by: session.user.id,
-      _saved_fuente: fuente,
-      _publicado: publicar,
-      ...(motivo ? { _motivo_cambio: motivo } : {}),
-      ...(resolucion === "nueva_version" ? { _version: "v2" } : {}),
-    };
-
     if (resolucion === "nueva_version" && existing) {
-      // Guardar backup con sufijo _v1_backup
       await prisma.planPublicado.upsert({
         where: { slug: `${slug}_v1_backup` },
         update: { planJson: existing.planJson, fuente: existing.fuente },
@@ -118,19 +153,8 @@ export async function POST(request: Request) {
 
     await prisma.planPublicado.upsert({
       where: { slug },
-      update: {
-        planJson: JSON.stringify(dataToSave, null, 2),
-        fuente,
-        publicado: publicar,
-        savedBy: session.user.id,
-      },
-      create: {
-        slug,
-        planJson: JSON.stringify(dataToSave, null, 2),
-        fuente,
-        publicado: publicar,
-        savedBy: session.user.id,
-      },
+      update: { planJson: planJsonStr, fuente, publicado: true, savedBy: session.user.id },
+      create: { slug, planJson: planJsonStr, fuente, publicado: true, savedBy: session.user.id },
     });
 
     // Borrar pendiente si existe

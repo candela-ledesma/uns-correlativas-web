@@ -101,6 +101,17 @@ function corregirIdsIdioma(data: Record<string, unknown>): void {
   }
 }
 
+function slugFromData(data: Record<string, unknown>): string | null {
+  const carrera = (data.plan as Record<string, unknown> | undefined)?.carrera;
+  if (typeof carrera !== "string" || !carrera) return null;
+  return carrera
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "");
+}
+
 function extraerJSON(raw: string): unknown {
   const direct = raw.trim();
   const errors: string[] = [];
@@ -177,6 +188,15 @@ export async function POST(request: Request) {
         corregirIdsIdioma(data);
         data._llm_prompt_version = PROMPT_VERSION;
         data._llm_mode = "llm";
+        // Autoguardar borrador Gemini en BD
+        const slug = slugFromData(data);
+        if (slug) {
+          await prisma.planBorrador.upsert({
+            where: { slug_fuente: { slug, fuente: "gemini" } },
+            update: { planJson: JSON.stringify(data), updatedAt: new Date() },
+            create: { slug, fuente: "gemini", planJson: JSON.stringify(data) },
+          }).catch(() => {});
+        }
       }
       return NextResponse.json(result);
     } catch (err) {
@@ -215,6 +235,16 @@ export async function POST(request: Request) {
     corregirIdsIdioma(data);
     data._llm_prompt_version = PROMPT_VERSION;
     data._llm_mode = "llm";
+
+    // Autoguardar borrador Gemini en BD
+    const slug = slugFromData(data);
+    if (slug) {
+      await prisma.planBorrador.upsert({
+        where: { slug_fuente: { slug, fuente: "gemini" } },
+        update: { planJson: JSON.stringify(data), updatedAt: new Date() },
+        create: { slug, fuente: "gemini", planJson: JSON.stringify(data) },
+      }).catch(() => {});
+    }
 
     const usage = response.usageMetadata ?? null;
     return NextResponse.json({
