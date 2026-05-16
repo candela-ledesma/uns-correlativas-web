@@ -14,19 +14,17 @@ Transforma planes de estudio UNS (PDF) en JSON valido para:
 
 ```mermaid
 flowchart LR
-  A[PDF de plan] --> B1[Parser Python]
-  A --> B2[Gemini API visión nativa]
-  B1 --> C[web/data/local/]
+  A[PDF de plan] --> I[Admin /admin - Vercel]
+  I -->|GET /api/admin/planes/parsear| VP[Vercel: obtiene prompt activo]
+  VP -->|POST /parse-gemini directo| B2[Render: FastAPI + Gemini]
+  I -->|POST /api/admin/planes/parsear-local SSE| B1[Render: Parser Python]
   B2 --> PP[corregirIdsIdioma]
-  PP --> C2[web/data/gemini/]
-  C --> D[Validador planValidation.ts]
-  C2 --> D
-  D --> E[App Next.js]
+  PP --> D[Validador planValidation.ts]
+  B1 --> D
+  D --> E[App Next.js - Vercel]
   E --> F[APIs /api/*]
-  F --> G[(PostgreSQL + Prisma)]
+  F --> G[(Neon PostgreSQL + Prisma)]
   E --> H[Playwright + Vitest]
-  I[Admin /admin] --> B1
-  I --> B2
 ```
 
 ## 3) Estructura principal del repositorio
@@ -59,9 +57,8 @@ flowchart LR
     |   |   `-- tabs/ConfigTab.tsx        # Prompt, version, modelo
     |   `-- materias/MateriaCard.tsx      # Muestra requisito_especial[]
     |-- data/
-    |   |-- local/        # JSONs generados por parser Python (ground truth)
-    |   |-- gemini/       # JSONs generados por Gemini (borradores)
-    |   `-- admin-config.json  # Prompt activo + version
+    |   |-- local/        # JSONs generados por parser Python (ground truth, ref local)
+    |   `-- gemini/       # JSONs generados por Gemini (borradores locales)
     `-- lib/
         |-- ai/prompt.ts  # DEFAULT_SYSTEM_PROMPT + PROMPT_VERSION (v30)
         |-- plan/
@@ -73,27 +70,29 @@ flowchart LR
 ## 4) Flujo de procesamiento: PDF → JSON de Gemini
 
 ```
-Usuario sube PDF en /admin
+Usuario sube PDF en /admin (Vercel)
         │
         ▼
-[1] /api/admin/planes/existe
-    Verifica si ya existe borrador guardado para ese PDF
+[1] GET /api/admin/planes/parsear  (Vercel — request liviano)
+    Lee el prompt activo desde Neon (fallback: DEFAULT_SYSTEM_PROMPT)
+    Devuelve { systemPrompt, version }
         │
         ▼
-[2] /api/admin/planes/parsear  (SSE)
-    1. Lee PDF como base64
-    2. Lee systemPrompt de admin-config.json (fallback: DEFAULT_SYSTEM_PROMPT)
-    3. Llama a Gemini con visión nativa (temperature=0)
-    4. extraerJSON()       → parsea la respuesta como JSON
-    5. corregirIdsIdioma() → corrige 1XXXX → IXXXX automáticamente
-    6. Anota _llm_prompt_version y _llm_mode
-    7. Devuelve JSON via SSE
+[2] POST <RENDER_URL>/parse-gemini  (browser → Render directo, sin pasar por Vercel)
+    1. Recibe PDF + model + system_prompt
+    2. Llama a Gemini con visión nativa (temperature=0)
+    3. extraerJSON()  → parsea la respuesta como JSON
+    4. Devuelve { type: "done", data, model, usage }
+        │
+        ▼ (Vercel aplica post-proceso al resultado)
+    corregirIdsIdioma() → corrige 1XXXX → IXXXX
+    Anota _llm_prompt_version y _llm_mode
 
         │  (en paralelo, opcional)
         ▼
-   /api/admin/planes/parsear-local  (SSE)
-    1. Guarda PDF en /tmp
-    2. Ejecuta: python3 -m core.parser <pdf> <output.json>
+   POST /api/admin/planes/parsear-local  (SSE, Vercel → Render)
+    1. Render guarda PDF en /tmp
+    2. Ejecuta: python3 -m core.parser <pdf>
     3. Devuelve JSON via SSE
         │
         ▼
@@ -101,8 +100,7 @@ Usuario sube PDF en /admin
         │
         ▼
 [4] /api/admin/planes/guardar
-    Escribe JSON en data/gemini/ o data/local/
-    Si publicar=true, actualiza carreras.ts
+    Persiste JSON en Neon (tablas PlanPublicado / PlanPendiente)
         │
         ▼
 [5] (Opcional) /api/admin/planes/enviar-revision
@@ -147,7 +145,7 @@ Solo hay dos transformaciones que se aplican al output de Gemini en el servidor:
 
 - Versión actual: **v30** — `web/lib/ai/prompt.ts`
 - La versión siempre se lee del código fuente (no del JSON guardado).
-- El prompt activo se puede editar desde `/admin` → tab Configuración y se persiste en `web/data/admin-config.json`.
+- El prompt activo se puede editar desde `/admin` → tab Configuración y se persiste en Neon (tabla `AdminConfig`).
 - El panel admin incluye la herramienta **"Exportar diff como few-shot"** que genera bloques de corrección para mejorar el prompt manualmente.
 
 ### Scores Gemini v30 por carrera
@@ -205,13 +203,23 @@ npm run dev
 
 Variables de entorno clave:
 
+**Vercel (Next.js):**
+
 | Variable | Descripcion |
 |---|---|
-| `DATABASE_URL` | PostgreSQL |
+| `DATABASE_URL` | PostgreSQL (Neon) |
 | `AUTH_SECRET` | NextAuth secret |
-| `GEMINI_API_KEY` | Requerida para parsear con Gemini |
 | `RESEND_API_KEY` | Notificaciones email al admin |
 | `ADMIN_NOTIFY_EMAIL` | Email del admin para notificaciones |
+| `PARSER_API_URL` | URL interna de Render (server-side, para parsear-local) |
+| `NEXT_PUBLIC_PARSER_API_URL` | URL publica de Render (client-side, para Gemini directo) |
+
+**Render (FastAPI):**
+
+| Variable | Descripcion |
+|---|---|
+| `GEMINI_API_KEY` | Requerida para parsear con Gemini |
+| `PARSER_API_SECRET` | Secret compartido con Vercel (opcional) |
 
 ## 10) Testing
 
@@ -243,13 +251,14 @@ cd web && npm run validate:data
 
 | Endpoint | Descripcion |
 |---|---|
-| `POST /api/admin/planes/parsear` | Gemini (SSE stream) |
-| `POST /api/admin/planes/parsear-local` | Parser Python (SSE stream) |
-| `POST /api/admin/planes/guardar` | Persiste JSON |
+| `GET /api/admin/planes/parsear` | Devuelve prompt activo + version (ADMIN/MODERATOR) |
+| `POST /api/admin/planes/parsear` | Gemini: JSON directo (usado como fallback sin Render) |
+| `POST /api/admin/planes/parsear-local` | Parser Python (SSE stream via Render) |
+| `POST /api/admin/planes/guardar` | Persiste JSON en Neon |
 | `GET /api/admin/planes/existe` | Chequea borrador existente |
 | `POST /api/admin/planes/validar` | Compara con ground truth |
 | `POST /api/admin/planes/enviar-revision` | Envio a revision |
-| `GET /api/admin/config` | Lee prompt activo + version |
+| `GET /api/admin/config` | Lee prompt activo + version (solo ADMIN) |
 | `POST /api/admin/config` | Guarda prompt customizado |
 | `GET /api/materias/[carrera]` | Materias de una carrera |
 | `GET|PUT /api/progreso` | Progreso del usuario |
