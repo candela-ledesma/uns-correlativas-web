@@ -14,7 +14,6 @@ Opciones para resolverlo a futuro:
 
 - `baja` [ ] **Opción 2: Reemplazar JSONs por base de datos** — en lugar de guardar carreras como `.json` en el repo, guardarlas en Supabase o PlanetScale. Las rutas admin harían CRUD directo a la DB; Vercel lee/escribe sin problemas desde serverless functions. El parser Python correría una sola vez para migrar los JSONs existentes.
 
-- `baja` [ ] **Opción 3: Reescribir el parser en TypeScript** — elimina la dependencia de Python completamente. Todo corre en Vercel natively. Más trabajo inicial pero la solución más limpia a largo plazo.
 
 ### Admin prod (Vercel + Render) — resuelto
 
@@ -23,7 +22,7 @@ Opciones para resolverlo a futuro:
 - [x] **Timeout de Vercel (60s) para Gemini** — el browser llama directo a Render (`NEXT_PUBLIC_PARSER_API_URL`), evitando el límite serverless. Render no tiene límite de tiempo para requests externos.
 - [x] **CORS** — `CORSMiddleware` en FastAPI con origen `uns-correlativas.vercel.app`.
 - [x] **Auth en `/parse-gemini`** — eliminada; el acceso lo controla la sesión de Next.js.
-- `alta` [ ] **Parseo Gemini desde prod (Vercel) no funciona** — el browser llama directo a Render (`NEXT_PUBLIC_PARSER_API_URL`) pero la request nunca completa. Posibles causas: `GEMINI_API_KEY` no cargada en Render, cold start + tiempo de Gemini supera el timeout del browser, o problema no identificado. Pendiente de diagnóstico con logs de Render.
+- [x] **Parseo Gemini desde prod (Vercel) no funciona** — causa raíz: el cliente llamaba directo a Render sin incluir `system_prompt`, por lo que Gemini respondía en markdown libre. Fix: nuevo `GET /api/admin/planes/parsear` devuelve el prompt activo (ADMIN/MODERATOR); el cliente lo fetchea al montar y lo incluye en el FormData antes de llamar a Render.
 
 ### Migraciones a Neon priorizadas
 
