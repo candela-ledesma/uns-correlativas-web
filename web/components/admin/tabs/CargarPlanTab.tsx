@@ -330,7 +330,7 @@ export default function CargarPlanTab({ canPublish = true }: { canPublish?: bool
         <div style={LABEL}>Universidad</div>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
           {(["uns", "otra"] as const).map(u => (
-            <button
+            <button className="btn-press"
               key={u}
               onClick={() => setUniType(u)}
               style={{
@@ -386,7 +386,7 @@ export default function CargarPlanTab({ canPublish = true }: { canPublish?: bool
             style={{ display: "none" }}
             onChange={e => { const f = e.target.files?.[0]; if (f) handleFile(f); }}
           />
-          <button
+          <button className="btn-press"
             onClick={e => { e.stopPropagation(); fileInputRef.current?.click(); }}
             style={{ ...BTN, borderRadius: 8, padding: "7px 16px", fontSize: 12, fontWeight: 500 }}
           >
@@ -411,7 +411,7 @@ export default function CargarPlanTab({ canPublish = true }: { canPublish?: bool
               <span style={{ width: 6, height: 6, borderRadius: "50%", background: STATUS_COLORS.disponible.accent, display: "inline-block" }} />
               Listo para parsear
             </div>
-            <button
+            <button className="btn-press"
               onClick={limpiar}
               style={{ background: "none", border: "none", color: TEXT_SEC, cursor: "pointer", fontSize: 18, lineHeight: 1, padding: "2px 4px" }}
             >×</button>
@@ -434,7 +434,7 @@ export default function CargarPlanTab({ canPublish = true }: { canPublish?: bool
           display: "flex", alignItems: "center", gap: 10,
           paddingTop: 16, marginTop: 4, borderTop: `1px solid ${GLASS.border}`,
         }}>
-          <button
+          <button className="btn-press"
             onClick={parsear}
             disabled={!file || hayLoading}
             style={{
@@ -448,7 +448,7 @@ export default function CargarPlanTab({ canPublish = true }: { canPublish?: bool
             <span>🤖</span>
             {statusGemini.type === "loading" ? statusGemini.message : "Gemini"}
           </button>
-          <button
+          <button className="btn-press"
             onClick={parsearLocal}
             disabled={!file || hayLoading}
             style={{
@@ -462,7 +462,7 @@ export default function CargarPlanTab({ canPublish = true }: { canPublish?: bool
             <span>⚙️</span>
             {statusLocal.type === "loading" ? statusLocal.message : "Parser local"}
           </button>
-          <button
+          <button className="btn-press"
             onClick={parsearAmbos}
             disabled={!file || hayLoading}
             style={{
@@ -477,7 +477,7 @@ export default function CargarPlanTab({ canPublish = true }: { canPublish?: bool
             <span>⚡</span>
             Ambos
           </button>
-          <button
+          <button className="btn-press"
             onClick={limpiar}
             disabled={!file && statusGemini.type === "idle" && statusLocal.type === "idle"}
             style={{
@@ -585,7 +585,7 @@ export default function CargarPlanTab({ canPublish = true }: { canPublish?: bool
                   overflow: "hidden",
                 }}>
                   {sugerencias.map(m => (
-                    <button
+                    <button className="btn-press"
                       key={m.id}
                       onClick={() => { scrollToMateria(m.id); setBusquedaMateria(""); }}
                       style={{
@@ -617,14 +617,14 @@ export default function CargarPlanTab({ canPublish = true }: { canPublish?: bool
                   {activeDiffId && <span style={{ color: TEXT_SEC }}> — {computedDiffs.find(d => d.id === activeDiffId)?.nombre}</span>}
                 </span>
                 <div style={{ display: "flex", gap: 6, marginLeft: "auto" }}>
-                  <button
+                  <button className="btn-press"
                     onClick={() => navegarDiff(-1)}
                     disabled={activeDiffIdx === 0}
                     style={{ ...BTN, borderRadius: 6, padding: "4px 10px", fontSize: 11, opacity: activeDiffIdx === 0 ? 0.4 : 1 }}
                   >
                     ← Anterior
                   </button>
-                  <button
+                  <button className="btn-press"
                     onClick={() => navegarDiff(1)}
                     disabled={activeDiffIdx >= diffIds.length - 1}
                     style={{ ...BTN, borderRadius: 6, padding: "4px 10px", fontSize: 11, opacity: activeDiffIdx >= diffIds.length - 1 ? 0.4 : 1 }}
@@ -681,7 +681,7 @@ export default function CargarPlanTab({ canPublish = true }: { canPublish?: bool
 
             {ambos && (
               <div style={{ marginTop: 12, display: "flex", justifyContent: "flex-end" }}>
-                <button
+                <button className="btn-press"
                   onClick={() => setShowFewShot(v => !v)}
                   style={{ ...BTN, borderRadius: 8, padding: "8px 14px", fontSize: 12, fontWeight: 500 }}
                 >
@@ -702,7 +702,7 @@ export default function CargarPlanTab({ canPublish = true }: { canPublish?: bool
             {(prevGemini || prevLocal) && (
               <div style={{ marginTop: 12, display: "flex", gap: 8, flexWrap: "wrap" }}>
                 {prevLocal && resultadoLocal && (
-                  <button
+                  <button className="btn-press"
                     onClick={() => setShowPrevLocal(v => !v)}
                     style={{ ...BTN, borderRadius: 8, padding: "8px 14px", fontSize: 12, fontWeight: 500 }}
                   >
@@ -710,7 +710,7 @@ export default function CargarPlanTab({ canPublish = true }: { canPublish?: bool
                   </button>
                 )}
                 {prevGemini && resultadoGemini && (
-                  <button
+                  <button className="btn-press"
                     onClick={() => setShowPrevGemini(v => !v)}
                     style={{ ...BTN, borderRadius: 8, padding: "8px 14px", fontSize: 12, fontWeight: 500 }}
                   >
@@ -815,7 +815,7 @@ function ModelSelector({
 
   return (
     <div style={{ position: "relative" }}>
-      <button
+      <button className="btn-press"
         onClick={() => setOpen(v => !v)}
         style={{
           ...INPUT, borderRadius: 8, padding: "8px 10px", fontSize: 13,
@@ -858,7 +858,7 @@ function ModelSelector({
             const dayEntry = dailyUsage.byModel[m.value] ?? null;
             const { rpm, tpm, rpd } = m.limits as ModelLimits;
             return (
-              <button
+              <button className="btn-press"
                 key={m.value}
                 onClick={() => { onSelect(m.value as GeminiModelValue); setOpen(false); }}
                 style={{
@@ -957,7 +957,7 @@ function ModalConfirmar({
         ))}
 
         <div style={{ display: "flex", gap: 10, marginTop: 20 }}>
-          <button
+          <button className="btn-press"
             onClick={onConfirmar}
             style={{
               flex: 1, ...BTN_VIOLET, borderRadius: 8,
@@ -966,7 +966,7 @@ function ModalConfirmar({
           >
             Sí, regenerar
           </button>
-          <button
+          <button className="btn-press"
             onClick={onCancelar}
             style={{
               flex: 1, ...BTN, borderRadius: 8,
@@ -991,7 +991,7 @@ function ColHeader({ label, json, copied, onCopy }: { label: string; json: unkno
       <span style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em", color: TEXT_SEC }}>
         {label}
       </span>
-      <button
+      <button className="btn-press"
         onClick={onCopy}
         disabled={!json}
         style={{
@@ -1068,20 +1068,20 @@ function CompararConAnterior({
         <div style={{ marginLeft: "auto", display: "flex", gap: 6, alignItems: "center" }}>
           {diffIds.length > 0 && (
             <>
-              <button
+              <button className="btn-press"
                 onClick={() => setIdx(i => Math.max(0, i - 1))}
                 disabled={idx === 0}
                 style={{ ...BTN, borderRadius: 6, padding: "3px 8px", fontSize: 11, opacity: idx === 0 ? 0.4 : 1 }}
               >← Anterior</button>
               <span style={{ fontSize: 11, color: TEXT_SEC }}>{idx + 1}/{diffIds.length}</span>
-              <button
+              <button className="btn-press"
                 onClick={() => setIdx(i => Math.min(diffIds.length - 1, i + 1))}
                 disabled={idx >= diffIds.length - 1}
                 style={{ ...BTN, borderRadius: 6, padding: "3px 8px", fontSize: 11, opacity: idx >= diffIds.length - 1 ? 0.4 : 1 }}
               >Siguiente →</button>
             </>
           )}
-          <button
+          <button className="btn-press"
             onClick={onClose}
             style={{ ...BTN, borderRadius: 6, padding: "3px 10px", fontSize: 12 }}
           >✕</button>
@@ -1256,13 +1256,13 @@ function ColumnaResultado({
           <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
             <span style={{ fontSize: 11, color: "#f59e0b" }}>Ya existe un borrador. ¿Sobreescribir?</span>
             <div style={{ display: "flex", gap: 6 }}>
-              <button
+              <button className="btn-press"
                 onClick={() => setBorradorState("idle")}
                 style={{ ...BTN, flex: 1, borderRadius: 6, padding: "5px 0", fontSize: 11, cursor: "pointer" }}
               >
                 Cancelar
               </button>
-              <button
+              <button className="btn-press"
                 onClick={async () => {
                   setBorradorState("saving");
                   try {
@@ -1288,7 +1288,7 @@ function ColumnaResultado({
             </div>
           </div>
         ) : (
-          <button
+          <button className="btn-press"
             onClick={async () => {
               setBorradorState("saving");
               try {
@@ -1323,7 +1323,7 @@ function ColumnaResultado({
           </button>
         ))}
         {canPublish ? (
-          <button
+          <button className="btn-press"
             onClick={() => setGuardarFuente(fuente)}
             disabled={hayErroresCriticos}
             title={hayErroresCriticos ? "Corregí los errores críticos antes de guardar" : undefined}
@@ -1340,7 +1340,7 @@ function ColumnaResultado({
             ✓ Usar {fuente === "gemini" ? "Gemini" : "parser local"}
           </button>
         ) : (
-          <button
+          <button className="btn-press"
             onClick={() => { setRevisionAbierta(v => !v); setRevisionState("idle"); }}
             disabled={hayErroresCriticos}
             title={hayErroresCriticos ? "Corregí los errores críticos antes de enviar" : undefined}
@@ -1392,7 +1392,7 @@ function ColumnaResultado({
                 <div style={{ fontSize: 11, color: "#fca5a5", marginTop: 6 }}>No se pudo enviar. Intentá de nuevo.</div>
               )}
               <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
-                <button
+                <button className="btn-press"
                   disabled={revisionState === "sending"}
                   onClick={async () => {
                     setRevisionState("sending");
@@ -1416,7 +1416,7 @@ function ColumnaResultado({
                 >
                   {revisionState === "sending" ? "Enviando…" : "Confirmar envío"}
                 </button>
-                <button
+                <button className="btn-press"
                   onClick={() => setRevisionAbierta(false)}
                   style={{
                     background: "none", border: `1px solid ${GLASS.border}`,

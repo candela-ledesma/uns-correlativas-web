@@ -202,13 +202,13 @@ export default function HistorialTab() {
                         </div>
                         {confirmOverwrite === p.slug && (
                           <div style={{ display: "flex", gap: 6, marginTop: 4 }}>
-                            <button
+                            <button className="btn-press"
                               onClick={() => { setConfirmOverwrite(null); setPublishMsg(null); }}
                               style={{ ...BTN, borderRadius: 5, padding: "3px 8px", fontSize: 11, cursor: "pointer" }}
                             >
                               Cancelar
                             </button>
-                            <button
+                            <button className="btn-press"
                               onClick={() => publicarPendiente(p, "reemplazar")}
                               disabled={publishing === p.slug}
                               style={{
@@ -240,13 +240,13 @@ export default function HistorialTab() {
                           ¿Seguro que querés descartar?
                         </span>
                         <div style={{ display: "flex", gap: 6 }}>
-                          <button
+                          <button className="btn-press"
                             onClick={() => setConfirmDiscard(null)}
                             style={{ ...BTN, borderRadius: 6, padding: "4px 10px", fontSize: 11, cursor: "pointer" }}
                           >
                             Cancelar
                           </button>
-                          <button
+                          <button className="btn-press"
                             onClick={() => descartarPendiente(p)}
                             disabled={discarding === p.slug}
                             style={{
@@ -265,19 +265,19 @@ export default function HistorialTab() {
                       </div>
                     ) : (
                       <div style={{ display: "flex", gap: 6 }}>
-                        <button
+                        <button className="btn-press"
                           onClick={() => setConfirmDiscard(p.slug)}
                           style={{ ...BTN, borderRadius: 6, padding: "5px 14px", fontSize: 12, fontWeight: 600, cursor: "pointer" }}
                         >
                           Descartar
                         </button>
-                        <button
+                        <button className="btn-press"
                           onClick={() => window.open(`/admin/revisiones/${p.slug}`, "_blank")}
                           style={{ ...BTN, borderRadius: 6, padding: "5px 14px", fontSize: 12, fontWeight: 600, cursor: "pointer" }}
                         >
                           Revisar
                         </button>
-                        <button
+                        <button className="btn-press"
                           onClick={() => publicarPendiente(p)}
                           disabled={publishing === p.slug}
                           style={{

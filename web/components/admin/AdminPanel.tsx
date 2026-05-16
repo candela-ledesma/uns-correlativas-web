@@ -76,7 +76,7 @@ export default function AdminPanel({ canPublish = true }: { canPublish?: boolean
           marginBottom: 28,
         }}>
           {TABS.map(t => (
-            <button
+            <button className="btn-press"
               key={t.id}
               onClick={() => setTab(t.id)}
               style={{

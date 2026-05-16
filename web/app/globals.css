@@ -56,6 +56,14 @@ body {
   }
 }
 
+.btn-press {
+  transition: transform 0.1s ease, filter 0.1s ease;
+}
+.btn-press:active:not(:disabled) {
+  transform: scale(0.95);
+  filter: brightness(0.85);
+}
+
 @keyframes dropdownIn {
   from {
     opacity: 0;

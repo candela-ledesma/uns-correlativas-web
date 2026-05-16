@@ -134,7 +134,7 @@ export default function ConfigTab({ canEdit = true }: { canEdit?: boolean }) {
         </div>
         <div style={{ display: "flex", gap: 8, marginTop: 12, alignItems: "center" }}>
           {canEdit && (
-            <button
+            <button className="btn-press"
               onClick={guardar}
               disabled={saveState === "saving"}
               style={{
@@ -147,7 +147,7 @@ export default function ConfigTab({ canEdit = true }: { canEdit?: boolean }) {
               {saveState === "saving" ? "Guardando…" : saveState === "saved" ? "✓ Guardado" : saveState === "error" ? "⚠ Error" : "💾 Guardar"}
             </button>
           )}
-          <button
+          <button className="btn-press"
             onClick={copiarPrompt}
             style={{
               ...BTN, borderRadius: 8, padding: "8px 16px", fontSize: 13,
@@ -158,7 +158,7 @@ export default function ConfigTab({ canEdit = true }: { canEdit?: boolean }) {
             {promptCopied ? "✓ Copiado" : "📋 Copiar"}
           </button>
           {canEdit && (
-            <button
+            <button className="btn-press"
               onClick={restaurar}
               style={{ ...BTN, borderRadius: 8, padding: "8px 16px", fontSize: 13 }}
             >

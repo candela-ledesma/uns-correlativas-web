@@ -127,7 +127,7 @@ export default function GuardarPlanDrawer({
           {saveState.type === "conflict" ? "⚠ Este plan ya existe" : saveState.type === "success" ? "✓ Plan guardado" : "Guardar plan"}
         </div>
         {saveState.type !== "saving" && (
-          <button onClick={onClose} style={{ background: "none", border: "none", color: TEXT_SEC, cursor: "pointer", fontSize: 20, lineHeight: 1, padding: "2px 6px" }}>×</button>
+          <button className="btn-press" onClick={onClose} style={{ background: "none", border: "none", color: TEXT_SEC, cursor: "pointer", fontSize: 20, lineHeight: 1, padding: "2px 6px" }}>×</button>
         )}
       </div>
 
@@ -153,7 +153,7 @@ export default function GuardarPlanDrawer({
             <div style={{ ...ERROR_PANEL, borderRadius: 8, padding: "10px 14px", fontSize: 12, marginBottom: 12 }}>
               ⚠ {saveState.message}
             </div>
-            <button
+            <button className="btn-press"
               onClick={() => setSaveState({ type: "confirming" })}
               style={{ ...BTN, borderRadius: 8, padding: "7px 14px", fontSize: 12 }}
             >
@@ -223,7 +223,7 @@ export default function GuardarPlanDrawer({
               <span><strong style={{ color: TEXT }}>Publicar inmediatamente</strong></span>
             </label>
             <div style={{ display: "flex", gap: 10, paddingTop: 4 }}>
-              <button
+              <button className="btn-press"
                 onClick={iniciarGuardado}
                 disabled={isSaving}
                 style={{
@@ -236,7 +236,7 @@ export default function GuardarPlanDrawer({
               >
                 Confirmar y guardar
               </button>
-              <button onClick={onClose} style={{ ...BTN, borderRadius: 8, padding: "8px 14px", fontSize: 13 }}>Cancelar</button>
+              <button className="btn-press" onClick={onClose} style={{ ...BTN, borderRadius: 8, padding: "8px 14px", fontSize: 13 }}>Cancelar</button>
             </div>
           </div>
         )}
@@ -320,7 +320,7 @@ export default function GuardarPlanDrawer({
 
             {/* Acciones */}
             <div style={{ display: "flex", gap: 10, paddingTop: 4 }}>
-              <button
+              <button className="btn-press"
                 onClick={confirmarConflicto}
                 disabled={!resolucion || (resolucion !== "conservar" && !motivo.trim()) || isSaving}
                 style={{
@@ -338,7 +338,7 @@ export default function GuardarPlanDrawer({
                   resolucion === "nueva_version" ? "Guardar como v2" :
                   "Confirmar"}
               </button>
-              <button onClick={onClose} style={{ ...BTN, borderRadius: 8, padding: "8px 14px", fontSize: 13 }}>Cancelar</button>
+              <button className="btn-press" onClick={onClose} style={{ ...BTN, borderRadius: 8, padding: "8px 14px", fontSize: 13 }}>Cancelar</button>
             </div>
           </div>
         )}

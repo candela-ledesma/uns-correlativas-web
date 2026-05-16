@@ -172,7 +172,7 @@ export default function PlanesTab() {
     return (
       <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <button
+          <button className="btn-press"
             onClick={() => setEditor({ type: "idle" })}
             style={{ ...BTN, borderRadius: 8, padding: "4px 14px", fontSize: 12 }}
           >
@@ -181,13 +181,13 @@ export default function PlanesTab() {
           <span style={{ fontWeight: 600, fontSize: 14, color: TEXT }}>{e.nombre}</span>
           <span style={{ fontSize: 11, color: TEXT_SEC }}>— editando JSON</span>
           <div style={{ marginLeft: "auto", display: "flex", gap: 8 }}>
-            <button
+            <button className="btn-press"
               onClick={() => setEditor({ ...e, editedJson: e.originalJson })}
               style={{ ...BTN, borderRadius: 8, padding: "4px 14px", fontSize: 12 }}
             >
               Restaurar original
             </button>
-            <button
+            <button className="btn-press"
               onClick={guardarEdicion}
               disabled={editor.type === "saving"}
               style={{
@@ -284,14 +284,14 @@ export default function PlanesTab() {
                         fontSize: 11, width: 240,
                       }}
                     />
-                    <button
+                    <button className="btn-press"
                       onClick={() => guardarDepto(p.id)}
                       disabled={savingDepto === p.id}
                       style={{ ...BTN_VIOLET, borderRadius: 5, padding: "3px 10px", fontSize: 11, fontWeight: 600, cursor: "pointer" }}
                     >
                       {savingDepto === p.id ? "…" : "Guardar"}
                     </button>
-                    <button
+                    <button className="btn-press"
                       onClick={() => setEditingDepto(null)}
                       style={{ ...BTN, borderRadius: 5, padding: "3px 8px", fontSize: 11, cursor: "pointer" }}
                     >
@@ -325,10 +325,10 @@ export default function PlanesTab() {
                 <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 4, flexShrink: 0 }}>
                   <span style={{ fontSize: 11, color: "#f87171", fontWeight: 500 }}>¿Eliminar permanentemente?</span>
                   <div style={{ display: "flex", gap: 6 }}>
-                    <button onClick={() => setConfirmDelete(null)} style={{ ...BTN, borderRadius: 6, padding: "4px 10px", fontSize: 11 }}>
+                    <button className="btn-press" onClick={() => setConfirmDelete(null)} style={{ ...BTN, borderRadius: 6, padding: "4px 10px", fontSize: 11 }}>
                       Cancelar
                     </button>
-                    <button
+                    <button className="btn-press"
                       onClick={() => eliminar(p)}
                       disabled={deleting === p.id}
                       style={{
@@ -343,7 +343,7 @@ export default function PlanesTab() {
                 </div>
               ) : (
                 <div style={{ display: "flex", gap: 6, flexShrink: 0, flexWrap: "wrap", justifyContent: "flex-end" }}>
-                  <button
+                  <button className="btn-press"
                     onClick={() => toggleDisponible(p)}
                     disabled={toggling === p.id}
                     style={{
@@ -354,13 +354,13 @@ export default function PlanesTab() {
                   >
                     {toggling === p.id ? "…" : p.disponible ? "Deshabilitar" : "Habilitar"}
                   </button>
-                  <button
+                  <button className="btn-press"
                     onClick={() => abrirEditor(p)}
                     style={{ ...BTN, borderRadius: 6, padding: "5px 12px", fontSize: 11, fontWeight: 600 }}
                   >
                     Editar JSON
                   </button>
-                  <button
+                  <button className="btn-press"
                     onClick={() => { setConfirmDelete(p.id); setMsg(null); }}
                     style={{
                       background: "rgba(248,113,113,0.1)", border: "1px solid rgba(248,113,113,0.35)",
