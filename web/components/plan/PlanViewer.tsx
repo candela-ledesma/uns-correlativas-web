@@ -16,6 +16,9 @@ import { usePlanState } from "@/hooks/usePlanState";
 import { usePlanStructure } from "@/hooks/usePlanStructure";
 import { useOnboarding } from "@/hooks/useOnboarding";
 import PlanTabBar, { type PlanVista } from "@/components/plan/PlanTabBar";
+
+const TAB_SLUG: Record<PlanVista, string> = { plan: "plan", "Plan Vista": "vista", Planificador: "planificador", Mapa: "mapa" };
+const SLUG_TAB: Record<string, PlanVista> = { plan: "plan", vista: "Plan Vista", planificador: "Planificador", mapa: "Mapa" };
 import {
   agruparPorAnioYCuatrimestre,
   construirPunterosGruposPorAnioYCuatrimestre,
@@ -64,8 +67,6 @@ export default function PlanViewer({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { idsAgrupadores } = usePlanStructure(data);
-  const TAB_SLUG: Record<PlanVista, string> = { plan: "plan", "Plan Vista": "vista", Planificador: "planificador", Mapa: "mapa" };
-  const SLUG_TAB: Record<string, PlanVista> = { plan: "plan", vista: "Plan Vista", planificador: "Planificador", mapa: "Mapa" };
   const tabFromUrl = SLUG_TAB[searchParams.get("tab") ?? ""] ?? "plan";
   const [vistaActiva, setVistaActiva] = useState<PlanVista>(tabFromUrl);
   const [scrollTarget, setScrollTarget] = useState<string | null>(null);

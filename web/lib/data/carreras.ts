@@ -1,4 +1,4 @@
-export type CarreraId = "arquitectura" | "bioquimica" | "abogacia" | "agrimensura" | "farmacia" | "contador_publico" | "ingenieria_en_sistemas_de_informacion" | "licenciatura_en_ciencias_de_la_computacion" | "ingenieria_civil";
+export type CarreraId = "arquitectura" | "bioquimica" | "abogacia" | "agrimensura" | "farmacia" | "contador_publico" | "ingenieria_en_sistemas_de_informacion" | "licenciatura_en_ciencias_de_la_computacion" | "ingenieria_civil" | "ingenieria_agronomica" | "ingenieria_electricista" | "ingenieria_en_computacion";
 
 export type CarreraVersionConfig = {
     versionId: string;
@@ -180,7 +180,7 @@ export const CARRERAS: CarreraConfig[] = [
     },
 
     {
-    id: "ingenieria_agronomica" as unknown as CarreraId,
+    id: "ingenieria_agronomica",
     nombre: "Ingeniería Agronómica",
     descripcion: "Plan de estudios y correlativas.",
     defaultVersionId: "v1",
@@ -196,7 +196,7 @@ export const CARRERAS: CarreraConfig[] = [
     },
 
     {
-    id: "ingenieria_electricista" as unknown as CarreraId,
+    id: "ingenieria_electricista",
     nombre: "Ingeniería Electricista",
     descripcion: "Plan de estudios y correlativas.",
     defaultVersionId: "v1",
@@ -212,7 +212,7 @@ export const CARRERAS: CarreraConfig[] = [
     },
 
     {
-    id: "ingenieria_en_computacion" as unknown as CarreraId,
+    id: "ingenieria_en_computacion",
     nombre: "Ingenieria En Computacion",
     descripcion: "Plan de estudios y correlativas.",
     defaultVersionId: "v1",
