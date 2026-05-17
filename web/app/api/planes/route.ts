@@ -8,12 +8,13 @@ export const runtime = "nodejs";
 export async function GET() {
   const dbCarreras = await prisma.carreraConfig.findMany({ where: { disponible: true } });
   const staticIds = new Set(CARRERAS.map((c) => c.id as string));
+  const depMap = new Map(dbCarreras.map((c) => [c.id, c.departamento ?? null]));
 
   const staticPlanes = CARRERAS.map((c) => ({
     id: c.id,
     nombre: c.nombre,
     descripcion: c.descripcion,
-    departamento: null as string | null,
+    departamento: depMap.get(c.id as string) ?? null,
     disponible: c.disponible ?? true,
   }));
 
