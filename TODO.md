@@ -77,7 +77,8 @@ Opciones para resolverlo a futuro:
 
 ## UX — navegación y estado
 
-- `media` [ ] **Persistir tab activo al hacer refresh en plan** — al recargar la página de un plan, volver al tab que estaba activo (Plan, Plan Vista, Planificador, Mapa). Implementar via query param en la URL (ej. `?tab=planificador`) para que el estado también sea compartible.
+- `media` [x] **Persistir tab activo al hacer refresh en plan** — `?tab=vista|planificador|mapa` en la URL; `plan` es el default y no aparece. Implementado en `PlanViewer.tsx`.
+- `media` [x] **Persistir tab activo al hacer refresh en panel admin** — `?tab=planes|historial|config` en la URL; `cargar` es el default. Implementado en `AdminPanel.tsx`.
 - `media` [ ] **Persistir tab activo al hacer refresh en panel de usuario** — mismo comportamiento que el plan: al recargar el perfil, volver al tab que estaba activo. Implementar via query param.
 
 ---

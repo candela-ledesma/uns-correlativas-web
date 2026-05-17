@@ -64,7 +64,10 @@ export default function PlanViewer({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { idsAgrupadores } = usePlanStructure(data);
-  const [vistaActiva, setVistaActiva] = useState<PlanVista>("plan");
+  const TAB_SLUG: Record<PlanVista, string> = { plan: "plan", "Plan Vista": "vista", Planificador: "planificador", Mapa: "mapa" };
+  const SLUG_TAB: Record<string, PlanVista> = { plan: "plan", vista: "Plan Vista", planificador: "Planificador", mapa: "Mapa" };
+  const tabFromUrl = SLUG_TAB[searchParams.get("tab") ?? ""] ?? "plan";
+  const [vistaActiva, setVistaActiva] = useState<PlanVista>(tabFromUrl);
   const [scrollTarget, setScrollTarget] = useState<string | null>(null);
   const planVisitKeyRef = useRef<string | null>(null);
 
@@ -217,6 +220,18 @@ export default function PlanViewer({
     || filtrosConOrientacion.estado !== FILTROS_INICIALES.estado
     || filtrosConOrientacion.orientacion !== FILTROS_INICIALES.orientacion;
 
+  function cambiarVista(vista: PlanVista) {
+    setVistaActiva(vista);
+    const params = new URLSearchParams(searchParams.toString());
+    if (vista === "plan") {
+      params.delete("tab");
+    } else {
+      params.set("tab", TAB_SLUG[vista]);
+    }
+    const query = params.toString();
+    router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
+  }
+
   function actualizarOrientacionEnUrl(orientacion: string) {
     const params = new URLSearchParams(searchParams.toString());
 
@@ -359,7 +374,7 @@ export default function PlanViewer({
     <div className="mx-auto max-w-7xl">
       <PlanTabBar
         vistaActiva={vistaActiva}
-        onChange={setVistaActiva}
+        onChange={cambiarVista}
         onOpenHelp={openOnboarding}
         backHref="/"
         syncStatus={syncStatus}
@@ -392,7 +407,7 @@ export default function PlanViewer({
           carreraId={carreraId}
           reglamentoUrl={data.plan.reglamento_url}
           onVerEnPlan={(materiaId: string) => {
-            setVistaActiva("plan");
+            cambiarVista("plan");
             setScrollTarget(materiaId);
           }}
         />

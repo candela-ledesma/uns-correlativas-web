@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { ACCENT, BG_GRADIENT, GLASS, TEXT, TEXT_SEC } from "@/lib/ui/tokens";
 import CargarPlanTab from "./tabs/CargarPlanTab";
 import HistorialTab from "./tabs/HistorialTab";
@@ -17,8 +18,26 @@ const TABS: { id: Tab; label: string; icon: string }[] = [
   { id: "config",    label: "Configuración", icon: "⚙" },
 ];
 
+const VALID_TABS = new Set<Tab>(["cargar", "planes", "historial", "config"]);
+
 export default function AdminPanel({ canPublish = true }: { canPublish?: boolean }) {
-  const [tab, setTab] = useState<Tab>("cargar");
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const tabFromUrl = (searchParams.get("tab") ?? "") as Tab;
+  const [tab, setTab] = useState<Tab>(VALID_TABS.has(tabFromUrl) ? tabFromUrl : "cargar");
+
+  function cambiarTab(t: Tab) {
+    setTab(t);
+    const params = new URLSearchParams(searchParams.toString());
+    if (t === "cargar") {
+      params.delete("tab");
+    } else {
+      params.set("tab", t);
+    }
+    const query = params.toString();
+    router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
+  }
 
   return (
     <div style={{ background: BG_GRADIENT, minHeight: "100vh", fontFamily: "var(--font-body)" }}>
@@ -78,7 +97,7 @@ export default function AdminPanel({ canPublish = true }: { canPublish?: boolean
           {TABS.map(t => (
             <button className="btn-press"
               key={t.id}
-              onClick={() => setTab(t.id)}
+              onClick={() => cambiarTab(t.id)}
               style={{
                 background: "none", border: "none",
                 color: tab === t.id ? "#c084fc" : TEXT_SEC,
