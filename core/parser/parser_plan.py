@@ -561,7 +561,7 @@ def detectar_materias_generico(texto):
                         req["materiaId"] = str(materia_actual.get("id", ""))
                     _acumular_requisito(materia_actual, req)
 
-                if any(r.get("tipo") == "minimo_materias_aprobadas" for r in requisitos):
+                if any(r.get("tipo") in ("minimo_materias_aprobadas", "minimo_examenes_finales") for r in requisitos):
                     for cor_id in list(warnings_prosa_materia_actual.keys()):
                         materia_actual["correlativas"].pop(cor_id, None)
                     for w in warnings_prosa_materia_actual.values():
@@ -583,7 +583,7 @@ def detectar_materias_generico(texto):
                         req["materiaId"] = str(materia_actual.get("id", ""))
                     _acumular_requisito(materia_actual, req)
 
-                if any(r.get("tipo") == "minimo_materias_aprobadas" for r in requisitos):
+                if any(r.get("tipo") in ("minimo_materias_aprobadas", "minimo_examenes_finales") for r in requisitos):
                     for cor_id in list(warnings_prosa_materia_actual.keys()):
                         materia_actual["correlativas"].pop(cor_id, None)
                     for w in warnings_prosa_materia_actual.values():
