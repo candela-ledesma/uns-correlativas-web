@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 import { TEXT, TEXT_SEC, SURFACE, BTN, BTN_RED as BTN_RED_BASE, INPUT, TITLE_SHADOW, GLASS } from "@/lib/ui/tokens";
@@ -49,6 +49,8 @@ export default function PlanHeader({
 }: Props) {
     const [mostrarProgreso,  setMostrarProgreso]  = useState(false);
     const [confirmingReset,  setConfirmingReset]  = useState(false);
+    const [copiedInModal,    setCopiedInModal]     = useState(false);
+    const shareLinkInputRef = useRef<HTMLInputElement>(null);
     const pathname = usePathname();
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -66,6 +68,17 @@ export default function PlanHeader({
         document.addEventListener("keydown", handler);
         return () => document.removeEventListener("keydown", handler);
     }, [confirmingReset]);
+
+    useEffect(() => {
+        if (!shareLink) { setCopiedInModal(false); return; }
+        const handler = (e: KeyboardEvent) => { if (e.key === "Escape") onClearShareLink?.(); };
+        document.addEventListener("keydown", handler);
+        // Auto-seleccionar al montar
+        const t = setTimeout(() => {
+            shareLinkInputRef.current?.select();
+        }, 50);
+        return () => { document.removeEventListener("keydown", handler); clearTimeout(t); };
+    }, [shareLink, onClearShareLink]);
 
     function updateVersion(versionId: string) {
         if (!versionSelector || versionId === versionSelector.selectedVersionId) return;
@@ -175,6 +188,7 @@ export default function PlanHeader({
                 <div
                     role="dialog"
                     aria-modal="true"
+                    aria-labelledby="share-modal-title"
                     style={{
                         position: "fixed", inset: 0, zIndex: 1000,
                         background: "rgba(0,0,0,0.55)", backdropFilter: "blur(4px)",
@@ -194,17 +208,19 @@ export default function PlanHeader({
                         onClick={(e) => e.stopPropagation()}
                     >
                         <div>
-                            <h2 style={{ color: TEXT, fontSize: 16, fontWeight: 800, margin: "0 0 6px" }}>
+                            <h2 id="share-modal-title" style={{ color: TEXT, fontSize: 16, fontWeight: 800, margin: "0 0 6px" }}>
                                 Link generado
                             </h2>
                             <p style={{ color: TEXT_SEC, fontSize: 13, lineHeight: 1.5, margin: 0 }}>
-                                No se pudo copiar automáticamente. Copiá el link manualmente:
+                                El texto ya está seleccionado — presioná <kbd style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 4, padding: "1px 5px", fontSize: 11, fontFamily: "monospace" }}>Ctrl+C</kbd> o <kbd style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 4, padding: "1px 5px", fontSize: 11, fontFamily: "monospace" }}>⌘C</kbd> para copiar.
                             </p>
                         </div>
                         <input
+                            ref={shareLinkInputRef}
                             readOnly
                             value={shareLink}
                             onFocus={(e) => e.target.select()}
+                            onClick={(e) => (e.target as HTMLInputElement).select()}
                             style={{
                                 ...INPUT, borderRadius: 8, padding: "8px 12px",
                                 fontSize: 12, fontFamily: "var(--font-mono, monospace)",
@@ -218,6 +234,27 @@ export default function PlanHeader({
                                 style={{ ...BTN, borderRadius: 10, padding: "8px 18px", fontSize: 13, cursor: "pointer" }}
                             >
                                 Cerrar
+                            </button>
+                            <button
+                                type="button"
+                                onClick={async () => {
+                                    try {
+                                        await navigator.clipboard.writeText(shareLink);
+                                        setCopiedInModal(true);
+                                        setTimeout(() => setCopiedInModal(false), 2000);
+                                    } catch {
+                                        shareLinkInputRef.current?.select();
+                                    }
+                                }}
+                                style={{
+                                    background: copiedInModal ? "rgba(144,190,109,0.2)" : "rgba(157,78,221,0.85)",
+                                    border: copiedInModal ? "1px solid #90be6d" : "1px solid #9d4edd",
+                                    color: copiedInModal ? "#90be6d" : "#fff",
+                                    borderRadius: 10, padding: "8px 18px", fontSize: 13,
+                                    fontWeight: 600, cursor: "pointer", transition: "all 0.2s",
+                                }}
+                            >
+                                {copiedInModal ? "✓ Copiado" : "Copiar"}
                             </button>
                         </div>
                     </div>
