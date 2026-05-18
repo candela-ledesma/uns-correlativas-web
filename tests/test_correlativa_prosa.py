@@ -88,6 +88,28 @@ class InferirRequisitoEspecialTests(unittest.TestCase):
         self.assertEqual(r[0]["tipo"], "anio_aprobado")
         self.assertEqual(r[0]["anio"], 3)
 
+    def test_minimo_examenes_finales_para_cursar(self):
+        # Caso exacto del profesorado en filosofía, materia 4844
+        linea = "Para cursar Se requiere haber aprobado 16 exámenes finales de las materias disciplinares."
+        r = inferir_requisito_especial(linea)
+        self.assertEqual(len(r), 1)
+        self.assertEqual(r[0]["tipo"], "minimo_examenes_finales")
+        self.assertEqual(r[0]["cantidad"], 16)
+
+    def test_minimo_examenes_finales_para_aprobar(self):
+        linea = "Para aprobar Se requiere haber aprobado 16 exámenes finales de las materias disciplinares."
+        r = inferir_requisito_especial(linea)
+        self.assertEqual(len(r), 1)
+        self.assertEqual(r[0]["tipo"], "minimo_examenes_finales")
+        self.assertEqual(r[0]["cantidad"], 16)
+
+    def test_minimo_examenes_finales_sin_haber(self):
+        linea = "aprobado 8 exámenes finales"
+        r = inferir_requisito_especial(linea)
+        self.assertEqual(len(r), 1)
+        self.assertEqual(r[0]["tipo"], "minimo_examenes_finales")
+        self.assertEqual(r[0]["cantidad"], 8)
+
 
 if __name__ == "__main__":
     unittest.main()

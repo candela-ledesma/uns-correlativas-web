@@ -252,6 +252,13 @@ function parseRequisitoEspecialItem(
     return { tipo, ...(descripcion ? { descripcion } : {}) };
   } else if (tipo === "cgcb_aprobado") {
     return { tipo, ...(descripcion ? { descripcion } : {}) };
+  } else if (tipo === "minimo_examenes_finales") {
+    const cantidadRaw = raw.cantidad;
+    if (typeof cantidadRaw !== "number" || !Number.isInteger(cantidadRaw) || cantidadRaw < 1) {
+      addIssue(issues, "shape", `${path}.cantidad`, "Debe ser un entero mayor o igual a 1");
+      return undefined;
+    }
+    return { tipo, cantidad: cantidadRaw, ...(descripcion ? { descripcion } : {}) };
   } else {
     addIssue(
       issues,

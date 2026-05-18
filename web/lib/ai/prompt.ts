@@ -1,4 +1,4 @@
-export const PROMPT_VERSION = "v31";
+export const PROMPT_VERSION = "v32";
 
 export const DEFAULT_SYSTEM_PROMPT = `You are a deterministic data extraction engine for academic curricula.
 
@@ -45,11 +45,11 @@ Return ONLY a valid JSON object. No explanations, no comments, no markdown, no e
       },
       "requisito_especial": [
         {
-          "tipo": "anio_aprobado | cuatrimestre_cursado | minimo_materias_aprobadas | cgcb_aprobado | prueba_idioma | todas_materias_aprobadas",
+          "tipo": "anio_aprobado | cuatrimestre_cursado | minimo_materias_aprobadas | minimo_examenes_finales | cgcb_aprobado | prueba_idioma | todas_materias_aprobadas",
           "descripcion": "string (verbatim prose from the PDF)",
           "anio": "number | null (for anio_aprobado and cuatrimestre_cursado)",
           "cuatrimestre": "number | null (only for cuatrimestre_cursado — 1 or 2)",
-          "cantidad": "number | null (only for minimo_materias_aprobadas)"
+          "cantidad": "number | null (only for minimo_materias_aprobadas and minimo_examenes_finales)"
         }
       ]
     }
@@ -95,6 +95,7 @@ Six recognized item types:
 | \`"anio_aprobado"\` | "Debe tener tercer año aprobado", "tener 3° año completo", etc. | \`"anio": 3\` (integer) |
 | \`"cuatrimestre_cursado"\` | "primer cuatrimestre de cuarto año cursado", etc. | \`"anio": 4\`, \`"cuatrimestre": 1\` or \`2\` (integers) |
 | \`"minimo_materias_aprobadas"\` | "mínimo 26 materias aprobadas", "al menos 30 asignaturas", etc. | \`"cantidad": 26\` (integer) |
+| \`"minimo_examenes_finales"\` | "haber aprobado N exámenes finales", "aprobado N exámenes finales de las materias disciplinares", etc. | \`"cantidad": 16\` (integer) |
 | \`"cgcb_aprobado"\` | any mention of "CGCB" as a requirement (with or without a year reference) | — |
 | \`"prueba_idioma"\` | "Debe rendir la Prueba de Suficiencia de Idioma", etc. | — |
 | \`"todas_materias_aprobadas"\` | "tener aprobadas todas las materias del plan", etc. | — |
@@ -120,6 +121,9 @@ Examples:
   → \`"requisito_especial": [{ "tipo": "prueba_idioma", "descripcion": "..." }]\`
 - PDF says: *"Para rendir el examen final el alumno deberá tener aprobada todas las materias del plan"*
   → \`"requisito_especial": [{ "tipo": "todas_materias_aprobadas", "descripcion": "..." }]\`
+- PDF says: *"Para cursar Se requiere haber aprobado 16 exámenes finales de las materias disciplinares. Para aprobar Se requiere haber aprobado 16 exámenes finales de las materias disciplinares."*
+  → \`"requisito_especial": [{ "tipo": "minimo_examenes_finales", "cantidad": 16, "descripcion": "..." }]\`
+  (Both para_cursar and para_aprobar state the same condition → ONE entry. Use \`"minimo_examenes_finales"\` — NEVER \`"minimo_materias_aprobadas"\`.)
 
 The prose line belongs to the subject immediately above it in the table — the same subject whose correlativas row just ended.
 

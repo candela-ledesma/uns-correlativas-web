@@ -26,6 +26,13 @@ _TODAS_MATERIAS = re.compile(
     re.IGNORECASE,
 )
 
+# Detecta requisito de N exámenes finales aprobados: "haber aprobado 16 exámenes finales"
+# Patrón: "haber aprobado N exámenes finales" o "aprobado N exámenes finales"
+_MINIMO_EXAMENES_FINALES = re.compile(
+    r'(?:haber\s+)?aprobado\s+(\d+)\s+ex[aá]menes?\s+finales?',
+    re.IGNORECASE,
+)
+
 # Detecta requisito de Prueba de Suficiencia de Idioma (no reemplaza correlativas).
 # Patrón: "Debe rendir la Prueba de Suficiencia de Idioma"
 _PRUEBA_SUFICIENCIA = re.compile(
@@ -148,6 +155,15 @@ def inferir_requisito_especial(linea: str) -> list[dict] | None:
     # Verificar "todas las materias del plan aprobadas"
     if _TODAS_MATERIAS.search(linea):
         return [{"tipo": "todas_materias_aprobadas", "descripcion": _limpiar_descripcion(linea)}]
+
+    # Requisito de N exámenes finales aprobados
+    m = _MINIMO_EXAMENES_FINALES.search(linea)
+    if m:
+        return [{
+            "tipo": "minimo_examenes_finales",
+            "cantidad": int(m.group(1)),
+            "descripcion": _limpiar_descripcion(linea),
+        }]
 
     # Prueba de Suficiencia de Idioma
     if _PRUEBA_SUFICIENCIA.search(linea):

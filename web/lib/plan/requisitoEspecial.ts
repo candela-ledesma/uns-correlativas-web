@@ -33,6 +33,11 @@ export type RequisitoEspecialType =
   | {
       tipo: "cgcb_aprobado";
       descripcion?: string;
+    }
+  | {
+      tipo: "minimo_examenes_finales";
+      cantidad: number;
+      descripcion?: string;
     };
 
 /**
@@ -132,6 +137,17 @@ export function evaluarRequisitoEspecial(
     };
   }
 
+  if (requisito.tipo === "minimo_examenes_finales") {
+    return {
+      cumple: false,
+      detalles: {
+        tipo: "minimo_examenes_finales",
+        mensaje: `Se requiere tener ${requisito.cantidad} exámenes finales aprobados`,
+        requerido: requisito.cantidad,
+      },
+    };
+  }
+
   // TypeScript exhaustiveness check
   const _exhaustive: never = requisito;
   return _exhaustive;
@@ -178,6 +194,14 @@ export function generarTextoRequisito(
 
   if (requisito.tipo === "cgcb_aprobado") {
     return "Se requiere tener aprobado el CGCB";
+  }
+
+  if (requisito.tipo === "minimo_examenes_finales") {
+    if (resultado) {
+      const { requerido } = resultado.detalles;
+      return `Se requiere haber aprobado ${requerido} exámenes finales`;
+    }
+    return `Se requiere haber aprobado ${requisito.cantidad} exámenes finales`;
   }
 
   return "Requisito especial desconocido";
