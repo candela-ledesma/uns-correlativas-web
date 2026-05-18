@@ -25,8 +25,9 @@ type Materia = { id: string; nombre: string };
 function extraerMaterias(raw: string): Materia[] {
   try {
     const obj = JSON.parse(raw);
-    const lista: unknown[] = Array.isArray(obj.materias) ? obj.materias : [];
-    return lista
+    const materias: unknown[] = Array.isArray(obj.materias) ? obj.materias : [];
+    const agrupadores: unknown[] = Array.isArray(obj.agrupadores) ? obj.agrupadores : [];
+    return [...materias, ...agrupadores]
       .filter((m): m is Record<string, unknown> => !!m && typeof m === "object")
       .map(m => ({ id: String(m.id ?? ""), nombre: String(m.nombre ?? "") }))
       .filter(m => m.id);
