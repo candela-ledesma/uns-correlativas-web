@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { GLASS, TEXT, TEXT_SEC, SURFACE, STATUS_COLORS, BTN, BTN_VIOLET, BTN_RED, INPUT } from "@/lib/ui/tokens";
+import PlanEditorModal from "./PlanEditorModal";
 
 type PlanPublicado = {
   id: string;
@@ -19,7 +20,7 @@ type PlanPublicado = {
 type EditorState =
   | { type: "idle" }
   | { type: "loading" }
-  | { type: "open"; slug: string; nombre: string; originalJson: string; editedJson: string }
+  | { type: "open"; slug: string; nombre: string; departamento: string; originalJson: string }
   | { type: "saving" };
 
 function tiempoRelativo(iso: string): string {
@@ -51,7 +52,6 @@ export default function PlanesTab() {
   const [deleting, setDeleting] = useState<string | null>(null);
   const [msg, setMsg] = useState<{ slug: string; ok: boolean; text: string } | null>(null);
   const [editor, setEditor] = useState<EditorState>({ type: "idle" });
-  const [jsonError, setJsonError] = useState<string | null>(null);
   const [editingDepto, setEditingDepto] = useState<string | null>(null);
   const [deptoValue, setDeptoValue] = useState("");
   const [savingDepto, setSavingDepto] = useState<string | null>(null);
@@ -121,7 +121,6 @@ export default function PlanesTab() {
 
   async function abrirEditor(p: PlanPublicado) {
     setEditor({ type: "loading" });
-    setJsonError(null);
     const res = await fetch(`/api/admin/planes/publicados/${p.id}`);
     if (!res.ok) {
       setEditor({ type: "idle" });
@@ -129,31 +128,33 @@ export default function PlanesTab() {
     }
     const raw = await res.text();
     const pretty = JSON.stringify(JSON.parse(raw), null, 2);
-    setEditor({ type: "open", slug: p.id, nombre: p.nombre, originalJson: pretty, editedJson: pretty });
+    setEditor({ type: "open", slug: p.id, nombre: p.nombre, departamento: p.departamento ?? "", originalJson: pretty });
   }
 
-  async function guardarEdicion() {
+  async function guardarEdicion(newJson: string, newNombre: string, newDepartamento: string) {
     if (editor.type !== "open") return;
-    setJsonError(null);
-    const { slug, editedJson } = editor;
-    try {
-      JSON.parse(editedJson);
-    } catch {
-      setJsonError("JSON inválido — revisá la sintaxis antes de guardar.");
-      return;
-    }
+    const { slug } = editor;
     setEditor({ type: "saving" });
-    const res = await fetch(`/api/admin/planes/publicados/${slug}`, {
-      method: "PUT",
-      body: editedJson,
-    });
-    const data = await res.json();
-    if (data.ok) {
-      setMsg({ slug, ok: true, text: "JSON guardado correctamente." });
+
+    // Guardar JSON y metadata en paralelo
+    const [resJson, resMeta] = await Promise.all([
+      fetch(`/api/admin/planes/publicados/${slug}`, { method: "PUT", body: newJson }),
+      fetch(`/api/admin/planes/publicados/${slug}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nombre: newNombre, departamento: newDepartamento }),
+      }),
+    ]);
+
+    const [dataJson, dataMeta] = await Promise.all([resJson.json(), resMeta.json()]);
+
+    if (dataJson.ok && dataMeta.ok) {
+      setMsg({ slug, ok: true, text: "Plan guardado correctamente." });
       setEditor({ type: "idle" });
       cargar();
     } else {
-      setMsg({ slug, ok: false, text: data.error ?? "Error al guardar." });
+      const err = (!dataJson.ok ? dataJson.error : dataMeta.error) ?? "Error al guardar.";
+      setMsg({ slug, ok: false, text: err });
       setEditor({ type: "idle" });
     }
   }
@@ -162,7 +163,7 @@ export default function PlanesTab() {
   if (editor.type === "loading") {
     return (
       <div style={{ ...SURFACE, borderRadius: 12, padding: "60px 22px", textAlign: "center", color: TEXT_SEC, fontSize: 13 }}>
-        Cargando JSON…
+        Cargando…
       </div>
     );
   }
@@ -170,63 +171,15 @@ export default function PlanesTab() {
   if (editor.type === "open" || editor.type === "saving") {
     const e = editor as Extract<typeof editor, { type: "open" }>;
     return (
-      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <button className="btn-press"
-            onClick={() => setEditor({ type: "idle" })}
-            style={{ ...BTN, borderRadius: 8, padding: "4px 14px", fontSize: 12 }}
-          >
-            ← Volver
-          </button>
-          <span style={{ fontWeight: 600, fontSize: 14, color: TEXT }}>{e.nombre}</span>
-          <span style={{ fontSize: 11, color: TEXT_SEC }}>— editando JSON</span>
-          <div style={{ marginLeft: "auto", display: "flex", gap: 8 }}>
-            <button className="btn-press"
-              onClick={() => setEditor({ ...e, editedJson: e.originalJson })}
-              style={{ ...BTN, borderRadius: 8, padding: "4px 14px", fontSize: 12 }}
-            >
-              Restaurar original
-            </button>
-            <button className="btn-press"
-              onClick={guardarEdicion}
-              disabled={editor.type === "saving"}
-              style={{
-                ...BTN_VIOLET, borderRadius: 8, padding: "4px 16px", fontSize: 12, fontWeight: 600,
-                opacity: editor.type === "saving" ? 0.6 : 1,
-                cursor: editor.type === "saving" ? "not-allowed" : "pointer",
-              }}
-            >
-              {editor.type === "saving" ? "Guardando…" : "Guardar"}
-            </button>
-          </div>
-        </div>
-        {jsonError && (
-          <div style={{ color: "#f87171", fontSize: 12, padding: "6px 10px", background: "rgba(248,113,113,0.1)", borderRadius: 6, border: "1px solid rgba(248,113,113,0.3)" }}>
-            {jsonError}
-          </div>
-        )}
-        <textarea
-          value={e.editedJson}
-          onChange={ev => {
-            setJsonError(null);
-            setEditor({ ...e, editedJson: ev.target.value });
-          }}
-          spellCheck={false}
-          style={{
-            ...INPUT,
-            borderRadius: 10,
-            padding: "14px 16px",
-            fontSize: 12,
-            lineHeight: 1.65,
-            fontFamily: "var(--font-mono, monospace)",
-            minHeight: 600,
-            resize: "vertical",
-            width: "100%",
-            boxSizing: "border-box",
-            whiteSpace: "pre",
-          }}
-        />
-      </div>
+      <PlanEditorModal
+        slug={e.slug}
+        nombre={e.nombre}
+        departamento={e.departamento}
+        jsonStr={e.originalJson}
+        saving={editor.type === "saving"}
+        onGuardar={guardarEdicion}
+        onCancelar={() => setEditor({ type: "idle" })}
+      />
     );
   }
 

@@ -65,45 +65,51 @@ export async function PUT(req: Request, { params }: Params) {
   return NextResponse.json({ ok: true, slug });
 }
 
-// ── PATCH: cambia disponible ──────────────────────────────────────────────────
+// ── PATCH: cambia disponible, nombre, o departamento ─────────────────────────
 export async function PATCH(req: Request, { params }: Params) {
   const session = await requireAdmin();
   if (!session) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const { slug } = await params;
-  const { disponible }: { disponible: boolean } = await req.json();
+  const body: { disponible?: boolean; nombre?: string; departamento?: string } = await req.json();
 
-  // Intentar actualizar en DB dinámica primero
+  const configData: Record<string, unknown> = {};
+  if (body.disponible !== undefined) configData.disponible = body.disponible;
+  if (body.nombre !== undefined) configData.nombre = body.nombre;
+  if (body.departamento !== undefined) configData.departamento = body.departamento;
+
+  if (Object.keys(configData).length === 0) {
+    return NextResponse.json({ error: "Sin campos para actualizar" }, { status: 400 });
+  }
+
   const updated = await prisma.carreraConfig.updateMany({
     where: { id: slug },
-    data: { disponible },
+    data: configData,
   });
 
   if (updated.count === 0) {
-    // La carrera es estática — no podemos modificar carreras.ts en prod,
-    // pero sí podemos crear un override en CarreraConfig
-    // (Si ya existe en estáticas, no la duplicamos — solo logeamos)
-    // En este caso devolvemos ok pero indicamos que es read-only en prod
     return NextResponse.json({
-      ok: true,
-      slug,
-      disponible,
+      ok: true, slug, ...body,
       warning: "La carrera es estática. El cambio no persiste hasta el próximo deploy.",
     });
   }
+
+  const action = body.disponible !== undefined
+    ? (body.disponible ? "PLAN_ENABLED" : "PLAN_DISABLED")
+    : "PLAN_EDITED";
 
   await createAuditEvent({
     actorUserId: session.user.id,
     actorEmail: session.user.email ?? null,
     actorRole: session.user.role,
-    action: disponible ? "PLAN_ENABLED" : "PLAN_DISABLED",
+    action,
     entityType: "plan",
     entityId: slug,
     reason: null,
-    after: { disponible },
+    after: body,
   }).catch(() => {});
 
-  return NextResponse.json({ ok: true, slug, disponible });
+  return NextResponse.json({ ok: true, slug, ...body });
 }
 
 // ── DELETE: borra el plan y la carrera de DB ──────────────────────────────────
