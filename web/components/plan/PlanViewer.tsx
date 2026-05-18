@@ -72,6 +72,7 @@ export default function PlanViewer({
   const [scrollTarget, setScrollTarget] = useState<string | null>(null);
   const planVisitKeyRef = useRef<string | null>(null);
   const [shareStatus, setShareStatus] = useState<"idle" | "loading" | "copied" | "error">("idle");
+  const [shareLink, setShareLink] = useState<string | null>(null);
 
   // Scroll to materia when coming from Mapa "Ver en Plan"
   useEffect(() => {
@@ -372,6 +373,7 @@ export default function PlanViewer({
 
   async function compartirProgreso() {
     setShareStatus("loading");
+    let url: string | null = null;
     try {
       const res = await fetch("/api/progreso/share", {
         method: "POST",
@@ -384,14 +386,23 @@ export default function PlanViewer({
       });
       if (!res.ok) throw new Error("share-failed");
       const { token } = (await res.json()) as { token: string };
-      const url = `${window.location.origin}/planes/${carreraId}/share/${token}`;
-      await navigator.clipboard.writeText(url);
-      setShareStatus("copied");
-      setTimeout(() => setShareStatus("idle"), 3000);
+      url = `${window.location.origin}/planes/${carreraId}/share/${token}`;
     } catch {
       setShareStatus("error");
       setTimeout(() => setShareStatus("idle"), 3000);
+      return;
     }
+
+    // Intentar copiar al portapapeles — puede fallar en HTTP o sin foco
+    try {
+      await navigator.clipboard.writeText(url);
+      setShareStatus("copied");
+    } catch {
+      // Clipboard no disponible: mostrar el link para que lo copie manualmente
+      setShareLink(url);
+      setShareStatus("idle");
+    }
+    setTimeout(() => setShareStatus("idle"), 3000);
   }
 
   if (!isHydrated) return null;
@@ -451,6 +462,8 @@ export default function PlanViewer({
             onReset={resetMaterias}
             onShare={compartirProgreso}
             shareStatus={shareStatus}
+            shareLink={shareLink}
+            onClearShareLink={() => setShareLink(null)}
             versionSelector={{
               selectedVersionId: data.plan.version_id,
               defaultVersionId,

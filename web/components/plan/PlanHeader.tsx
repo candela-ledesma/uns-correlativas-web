@@ -29,6 +29,8 @@ type Props = {
     onReset?: () => void;
     onShare?: () => void;
     shareStatus?: "idle" | "loading" | "copied" | "error";
+    shareLink?: string | null;
+    onClearShareLink?: () => void;
     versionSelector?: VersionSelectorConfig;
 };
 
@@ -43,7 +45,7 @@ function StatCard({ label, value }: { label: string; value: number }) {
 
 export default function PlanHeader({
     titulo, subtitulo, aprobadas, cursadas, disponibles, total,
-    onReset, onShare, shareStatus = "idle", versionSelector,
+    onReset, onShare, shareStatus = "idle", shareLink, onClearShareLink, versionSelector,
 }: Props) {
     const [mostrarProgreso,  setMostrarProgreso]  = useState(false);
     const [confirmingReset,  setConfirmingReset]  = useState(false);
@@ -164,6 +166,60 @@ export default function PlanHeader({
                         <StatCard label="Aprobadas" value={aprobadas} />
                         <StatCard label="Cursadas"  value={cursadas}  />
                         <StatCard label="Disponibles" value={disponibles} />
+                    </div>
+                </div>
+            )}
+
+            {/* Share link modal — aparece cuando el clipboard no está disponible */}
+            {shareLink && (
+                <div
+                    role="dialog"
+                    aria-modal="true"
+                    style={{
+                        position: "fixed", inset: 0, zIndex: 1000,
+                        background: "rgba(0,0,0,0.55)", backdropFilter: "blur(4px)",
+                        display: "flex", alignItems: "center", justifyContent: "center", padding: 24,
+                    }}
+                    onClick={onClearShareLink}
+                >
+                    <div
+                        style={{
+                            background: "rgba(18,12,36,0.97)",
+                            border: "1px solid rgba(255,255,255,0.12)",
+                            borderRadius: 20, padding: "24px 20px", maxWidth: 480, width: "100%",
+                            backdropFilter: "blur(24px)",
+                            boxShadow: "0 24px 64px rgba(0,0,0,0.6)",
+                            display: "grid", gap: 16,
+                        }}
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div>
+                            <h2 style={{ color: TEXT, fontSize: 16, fontWeight: 800, margin: "0 0 6px" }}>
+                                Link generado
+                            </h2>
+                            <p style={{ color: TEXT_SEC, fontSize: 13, lineHeight: 1.5, margin: 0 }}>
+                                No se pudo copiar automáticamente. Copiá el link manualmente:
+                            </p>
+                        </div>
+                        <input
+                            readOnly
+                            value={shareLink}
+                            onFocus={(e) => e.target.select()}
+                            style={{
+                                ...INPUT, borderRadius: 8, padding: "8px 12px",
+                                fontSize: 12, fontFamily: "var(--font-mono, monospace)",
+                                cursor: "text",
+                            }}
+                        />
+                        <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
+                            <button
+                                type="button"
+                                onClick={onClearShareLink}
+                                style={{ ...BTN, borderRadius: 10, padding: "8px 18px", fontSize: 13, cursor: "pointer" }}
+                            >
+                                Cerrar
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}
