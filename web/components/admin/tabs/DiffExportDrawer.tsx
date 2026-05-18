@@ -95,8 +95,9 @@ export function computeDiffs(ground: ParseResult | null, gemini: ParseResult): D
     }
   }
 
+  const groundAgrIds = new Set(ground.agrupadores.map(a => String(a.id ?? "")));
   for (const [id, gem] of geminiMap) {
-    if (!groundMap.has(id)) {
+    if (!groundMap.has(id) && !groundAgrIds.has(id)) {
       diffs.push({
         id, nombre: gem.nombre, tipo: "materia_extra",
         groundTruth: "(no estaba en el parser)",
