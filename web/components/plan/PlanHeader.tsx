@@ -27,6 +27,8 @@ type Props = {
     disponibles: number;
     total: number;
     onReset?: () => void;
+    onShare?: () => void;
+    shareStatus?: "idle" | "loading" | "copied" | "error";
     versionSelector?: VersionSelectorConfig;
 };
 
@@ -41,7 +43,7 @@ function StatCard({ label, value }: { label: string; value: number }) {
 
 export default function PlanHeader({
     titulo, subtitulo, aprobadas, cursadas, disponibles, total,
-    onReset, versionSelector,
+    onReset, onShare, shareStatus = "idle", versionSelector,
 }: Props) {
     const [mostrarProgreso,  setMostrarProgreso]  = useState(false);
     const [confirmingReset,  setConfirmingReset]  = useState(false);
@@ -98,6 +100,25 @@ export default function PlanHeader({
                                 ))}
                             </select>
                         </label>
+                    )}
+
+                    {onShare && (
+                        <button
+                            type="button"
+                            onClick={onShare}
+                            disabled={shareStatus === "loading"}
+                            style={{
+                                background: "transparent",
+                                border: `1px solid ${GLASS.border}`,
+                                color: shareStatus === "copied" ? "#90be6d" : shareStatus === "error" ? "#f87171" : TEXT_SEC,
+                                borderRadius: 10, padding: "6px 14px", fontSize: 13, fontWeight: 500,
+                                cursor: shareStatus === "loading" ? "not-allowed" : "pointer",
+                                opacity: shareStatus === "loading" ? 0.6 : 1,
+                                transition: "color 0.2s",
+                            }}
+                        >
+                            {shareStatus === "loading" ? "Generando…" : shareStatus === "copied" ? "✓ Link copiado" : shareStatus === "error" ? "Error al compartir" : "Compartir progreso"}
+                        </button>
                     )}
 
                     {onReset && (

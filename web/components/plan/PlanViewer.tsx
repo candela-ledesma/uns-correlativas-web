@@ -71,6 +71,7 @@ export default function PlanViewer({
   const [vistaActiva, setVistaActiva] = useState<PlanVista>(tabFromUrl);
   const [scrollTarget, setScrollTarget] = useState<string | null>(null);
   const planVisitKeyRef = useRef<string | null>(null);
+  const [shareStatus, setShareStatus] = useState<"idle" | "loading" | "copied" | "error">("idle");
 
   // Scroll to materia when coming from Mapa "Ver en Plan"
   useEffect(() => {
@@ -369,6 +370,30 @@ export default function PlanViewer({
     }).catch(() => undefined);
   }, [carreraId, data.plan.plan_id, data.plan.version_id, sessionStatus]);
 
+  async function compartirProgreso() {
+    setShareStatus("loading");
+    try {
+      const res = await fetch("/api/progreso/share", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          planId: data.plan.plan_id,
+          versionId: data.plan.version_id,
+          state: estados,
+        }),
+      });
+      if (!res.ok) throw new Error("share-failed");
+      const { token } = (await res.json()) as { token: string };
+      const url = `${window.location.origin}/planes/${carreraId}/share/${token}`;
+      await navigator.clipboard.writeText(url);
+      setShareStatus("copied");
+      setTimeout(() => setShareStatus("idle"), 3000);
+    } catch {
+      setShareStatus("error");
+      setTimeout(() => setShareStatus("idle"), 3000);
+    }
+  }
+
   if (!isHydrated) return null;
 
   return (
@@ -424,6 +449,8 @@ export default function PlanViewer({
             disponibles={progreso.disponibles}
             total={progreso.total}
             onReset={resetMaterias}
+            onShare={compartirProgreso}
+            shareStatus={shareStatus}
             versionSelector={{
               selectedVersionId: data.plan.version_id,
               defaultVersionId,
