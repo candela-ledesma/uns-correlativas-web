@@ -86,7 +86,7 @@ Opciones para resolverlo a futuro:
 
 ## Compartir plan con progreso
 
-- `media` [ ] **Generar link compartible con snapshot de progreso** — el usuario genera una URL que incluye el estado de sus materias (aprobadas/cursadas) codificado o almacenado en la BD. El destinatario abre el link y ve el plan con ese progreso como lectura, sin afectar el suyo propio.
+- `media` [x] **Generar link compartible con snapshot de progreso** — tabla `ProgressShare` en Neon con token único. Botón "Compartir progreso" en PlanHeader genera el link y lo copia al portapapeles. Si el clipboard no está disponible (HTTP/sin foco), abre un modal con el link pre-seleccionado, botón Copiar y cierre con Escape. El destinatario ve el plan en `/planes/[carrera]/share/[token]` en modo lectura (sin auth requerida).
 
 ---
 
