@@ -25,10 +25,14 @@ export default function AdminPanel({ canPublish = true }: { canPublish?: boolean
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const tabFromUrl = (searchParams.get("tab") ?? "") as Tab;
-  const [tab, setTab] = useState<Tab>(VALID_TABS.has(tabFromUrl) ? tabFromUrl : "cargar");
+  const initialTab: Tab = VALID_TABS.has(tabFromUrl) ? tabFromUrl : "cargar";
+  const [tab, setTab] = useState<Tab>(initialTab);
+  // Rastrea qué tabs fueron visitados para montarlos solo cuando se necesitan
+  const [mounted, setMounted] = useState<Set<Tab>>(new Set([initialTab]));
 
   function cambiarTab(t: Tab) {
     setTab(t);
+    setMounted(prev => prev.has(t) ? prev : new Set([...prev, t]));
     const params = new URLSearchParams(searchParams.toString());
     if (t === "cargar") {
       params.delete("tab");
@@ -116,10 +120,10 @@ export default function AdminPanel({ canPublish = true }: { canPublish?: boolean
           ))}
         </nav>
 
-        {tab === "cargar"    && <CargarPlanTab canPublish={canPublish} />}
-        {tab === "planes"    && <PlanesTab />}
-        {tab === "historial" && <HistorialTab />}
-        {tab === "config"    && <ConfigTab canEdit={canPublish} />}
+        {mounted.has("cargar")    && <div style={{ display: tab === "cargar"    ? undefined : "none" }}><CargarPlanTab canPublish={canPublish} /></div>}
+        {mounted.has("planes")    && <div style={{ display: tab === "planes"    ? undefined : "none" }}><PlanesTab /></div>}
+        {mounted.has("historial") && <div style={{ display: tab === "historial" ? undefined : "none" }}><HistorialTab /></div>}
+        {mounted.has("config")    && <div style={{ display: tab === "config"    ? undefined : "none" }}><ConfigTab canEdit={canPublish} /></div>}
       </main>
     </div>
   );
