@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import {
   GLASS, TEXT, TEXT_SEC, SURFACE, BTN, BTN_VIOLET, INPUT,
 } from "@/lib/ui/tokens";
@@ -105,7 +105,7 @@ function CorrelativasEditor({
       </div>
       <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
         {items.map((c, i) => (
-          <div key={i} style={{ display: "flex", gap: 4, alignItems: "center" }}>
+          <div key={`${c.id}-${i}`} style={{ display: "flex", gap: 4, alignItems: "center" }}>
             <input
               value={c.id}
               onChange={e => {
@@ -289,7 +289,7 @@ export default function PlanEditorModal({
   const [mode, setMode] = useState<"form" | "json">("form");
 
   // Form state
-  const initialPlan = parsePlan(jsonStr);
+  const initialPlan = useMemo(() => parsePlan(jsonStr), [jsonStr]);
   const [metadata, setMetadata] = useState<PlanMetadata>(
     initialPlan?.plan ?? { carrera: "", universidad: "", codigo_plan: "" }
   );

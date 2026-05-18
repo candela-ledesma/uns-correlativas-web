@@ -16,9 +16,6 @@ import { usePlanState } from "@/hooks/usePlanState";
 import { usePlanStructure } from "@/hooks/usePlanStructure";
 import { useOnboarding } from "@/hooks/useOnboarding";
 import PlanTabBar, { type PlanVista } from "@/components/plan/PlanTabBar";
-
-const TAB_SLUG: Record<PlanVista, string> = { plan: "plan", "Plan Vista": "vista", Planificador: "planificador", Mapa: "mapa" };
-const SLUG_TAB: Record<string, PlanVista> = { plan: "plan", vista: "Plan Vista", planificador: "Planificador", mapa: "Mapa" };
 import {
   agruparPorAnioYCuatrimestre,
   construirPunterosGruposPorAnioYCuatrimestre,
@@ -31,6 +28,9 @@ import {
   normalizarTextoBusqueda,
   type FiltrosPlan,
 } from "@/lib/plan/filtrarMaterias";
+
+const TAB_SLUG: Record<PlanVista, string> = { plan: "plan", "Plan Vista": "vista", Planificador: "planificador", Mapa: "mapa" };
+const SLUG_TAB: Record<string, PlanVista> = { plan: "plan", vista: "Plan Vista", planificador: "Planificador", mapa: "Mapa" };
 
 type Props = {
   data: PlanData;
@@ -466,7 +466,6 @@ export default function PlanViewer({
             onClearShareLink={() => setShareLink(null)}
             versionSelector={{
               selectedVersionId: data.plan.version_id,
-              defaultVersionId,
               options: versionOptions,
             }}
           />

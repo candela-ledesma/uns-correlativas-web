@@ -15,7 +15,6 @@ type VersionOption = {
 
 type VersionSelectorConfig = {
     selectedVersionId: string;
-    defaultVersionId: string;
     options: VersionOption[];
 };
 

@@ -1,5 +1,6 @@
 "use client";
 
+import type { CSSProperties } from "react";
 import Link from "next/link";
 import { TEXT_SEC, GLASS, ACCENT, STATUS_COLORS } from "@/lib/ui/tokens";
 
@@ -18,7 +19,7 @@ const tabActiveStyle = { background: "rgba(157,78,221,0.30)", color: "#e2d9f3", 
 const tabIdleStyle   = { color: TEXT_SEC };
 const iconBtnStyle   = { background: "transparent", border: `1px solid ${GLASS.strong}`, color: TEXT_SEC, cursor: "pointer", borderRadius: 8, width: 32, height: 32, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16 } as const;
 
-const syncStyles: Record<SyncStatus, React.CSSProperties> = {
+const syncStyles: Record<SyncStatus, CSSProperties> = {
   guest:   { background: GLASS.base,                        border: `1px solid ${GLASS.strong}`,                         color: TEXT_SEC },
   syncing: { background: STATUS_COLORS.disponible.badgeBg,  border: `1px solid ${STATUS_COLORS.disponible.badgeBorder}`,  color: STATUS_COLORS.disponible.accent },
   synced:  { background: STATUS_COLORS.aprobada.badgeBg,    border: `1px solid ${STATUS_COLORS.aprobada.badgeBorder}`,    color: STATUS_COLORS.aprobada.accent },
