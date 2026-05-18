@@ -42,7 +42,7 @@ export function buildInitialOrder(
   const porCol = new Map<string, string[]>();
 
   for (const m of materias) {
-    if (m.categoria === "optativa" && !idsAgrupadores.has(String(m.id))) continue;
+    if (m.categoria === "optativa" && m.grupo_opcion && idsAgrupadores.has(String(m.grupo_opcion))) continue;
     const anio = m.año ?? "Sin año";
     const slot = normalizeCuatrimestre(m.cuatrimestre);
     const key  = `${anio}|${slot}`;
