@@ -167,6 +167,19 @@ model ScheduleBlock {
   @@index([userId, careerId, planId, versionId])
 }
 
+model ProgressShare {
+  id        String   @id @default(cuid())
+  token     String   @unique @default(cuid())
+  planId    String
+  versionId String
+  stateJson String
+  createdBy String?
+  createdAt DateTime @default(now())
+
+  @@index([token])
+  @@index([createdBy])
+}
+
 model AdminConfig {
   id           String   @id @default("singleton")
   systemPrompt String

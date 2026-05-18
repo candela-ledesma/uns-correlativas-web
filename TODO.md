@@ -54,6 +54,7 @@ Opciones para resolverlo a futuro:
 - `alta` [x] **Auto-guardado de Gemini sin confirmación** — actualmente el JSON generado por Gemini se guarda en `data/gemini/` de forma silenciosa al terminar de parsear. Agregar confirmación explícita del usuario antes de escribir el archivo (o al menos un modal con resumen antes de persistir).
 
 - `media` [x] **Gestión de planes publicados desde el panel admin** — además de crear planes (ya existe), el admin debe poder modificar y eliminar planes publicados: editar el JSON directamente o eliminarlo de `data/local/` y desregistrarlo de `carreras.ts`.
+- `media` [x] **Editor estructurado de planes** — reemplaza el textarea JSON crudo por un formulario con campos para nombre (CarreraConfig), departamento, carrera/universidad/código_plan (JSON), y tabla editable de materias con correlativas. Toggle entre modo formulario y modo JSON, ambos sincronizados. API PATCH extendida para actualizar nombre/departamento en `CarreraConfig`.
 
 - `baja` [x] **UX panel admin** — botones ← Inicio y Perfil a la izquierda del header; título + badge + ícono a la derecha. Texto hardcodeado "Sin materias registradas aún" en perfil reemplazado por conteo real de actividad.
 
@@ -158,7 +159,11 @@ El planificador actual (`WeeklySchedule`, `useSchedule`, `/api/planificador`) ma
 | ingenieria_en_computacion | 93.6/100 | `I0022 → 10022` corregido por post-proceso; 9 parciales, 5 distintas en optativas |
 | ingenieria_civil | 23.0/100 | Fallo estructural: orientaciones múltiples con IDs repetidos; Gemini no deduplica |
 
-**Prompt actual**: v30 — `web/lib/ai/prompt.ts` / `web/data/admin-config.json`
+**Prompt actual**: v32 — `web/lib/ai/prompt.ts` / `web/data/admin-config.json`
+
+**Cambios v32**: nuevo tipo `minimo_examenes_finales` para requisitos del estilo "haber aprobado N exámenes finales de las materias disciplinares" (detectado en Profesorado en Filosofía, materia 4844). Agregado en schema, tabla de tipos, ejemplo concreto, `planValidation.ts`, `requisitoEspecial.ts` y `correlativa_prosa.py`.
+
+**Cambios v31**: (sin cambio de comportamiento — bump interno).
 
 **Cambios v30**: `requisito_especial` migrado a array; nuevos tipos `cuatrimestre_cursado` y `anio_y_anio_cursado`; la versión del prompt siempre se lee desde el código (no del JSON guardado).
 
