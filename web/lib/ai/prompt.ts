@@ -1,4 +1,4 @@
-export const PROMPT_VERSION = "v34";
+export const PROMPT_VERSION = "v33";
 
 export const DEFAULT_SYSTEM_PROMPT = `You are a deterministic data extraction engine for academic curricula.
 
@@ -79,16 +79,6 @@ The PDF shows prerequisites in a table with two status columns: the FIRST is \`p
   - Only para_rendir filled → \`{"para_cursar": null, "para_rendir": "aprobada"}\`
   - Both filled → use both values as shown
 - No prerequisites → empty object \`{}\`
-
-**CRITICAL — correlativas belong exclusively to their visual row:**
-
-Each prerequisite ID belongs ONLY to the subject whose table row contains it. When subjects are visually close (consecutive rows, same page section), do NOT "spill" a prerequisite from one subject into a neighboring subject.
-
-A common mistake: subject A has prerequisites [X, Y] and subject B has [X]. Gemini sometimes assigns Y to B because it appears nearby. This is wrong — only extract the prerequisites that are visually inside B's own row.
-
-Example of correct extraction:
-- Subject A row contains: 1149 (Cursada/Cursada), 1376 (Aprobada/Aprobada) → A's correlativas = \`{"1149": {...}, "1376": {...}}\`
-- Subject B row contains: 1291 (Cursada/Cursada) only → B's correlativas = \`{"1291": {...}}\` — do NOT add 1376 even if it appears on the same page near B.
 
 **materias[].requisito_especial**
 
