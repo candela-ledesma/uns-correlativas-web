@@ -3,11 +3,13 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { ACCENT, BG_GRADIENT, GLASS, TEXT, TEXT_SEC } from "@/lib/ui/tokens";
 import CargarPlanTab from "./tabs/CargarPlanTab";
 import HistorialTab from "./tabs/HistorialTab";
 import ConfigTab from "./tabs/ConfigTab";
 import PlanesTab from "./tabs/PlanesTab";
+import RoleSwitcher from "./RoleSwitcher";
 
 type Tab = "cargar" | "planes" | "historial" | "config";
 
@@ -73,6 +75,7 @@ export default function AdminPanel({ canPublish = true }: { canPublish?: boolean
           </Link>
         </div>
         <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 10 }}>
+          <RoleSwitcher />
           <span style={{ fontWeight: 700, fontSize: 14, color: TEXT }}>Panel de administración</span>
           <span style={{
             background: "rgba(157,78,221,0.2)",

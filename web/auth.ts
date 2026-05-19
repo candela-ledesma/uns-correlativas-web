@@ -121,7 +121,18 @@ export const authOptions: NextAuthOptions = {
   },
   providers,
   callbacks: {
-    jwt: async ({ token, user, account }) => {
+    jwt: async ({ token, user, account, trigger, session: sessionData }) => {
+      // Simulación de rol temporal — solo ADMINs pueden activarla
+      if (trigger === "update" && sessionData && token.role === Role.ADMIN) {
+        const incoming = (sessionData as { effectiveRole?: string | null }).effectiveRole;
+        if (incoming === null) {
+          token.effectiveRole = undefined;
+        } else if (incoming === Role.USER || incoming === Role.MODERATOR) {
+          token.effectiveRole = incoming;
+        }
+        return token;
+      }
+
       if (user) {
         token.sub = user.id;
         const roleFromUser = (user as { role?: string }).role;
@@ -131,6 +142,8 @@ export const authOptions: NextAuthOptions = {
         } else {
           token.role = Role.USER;
         }
+        // Al hacer login nuevo, limpiar cualquier simulación previa
+        token.effectiveRole = undefined;
       }
 
       if (account?.provider === "google" && account.access_token) {
@@ -153,12 +166,20 @@ export const authOptions: NextAuthOptions = {
     session: async ({ session, token }) => {
       if (session.user) {
         session.user.id = token.sub ?? "";
-        session.user.role =
+        const realRole =
           token.role === Role.ADMIN
             ? Role.ADMIN
             : token.role === Role.MODERATOR
               ? Role.MODERATOR
               : Role.USER;
+        // Si hay simulación activa, el role visible es effectiveRole; realRole se expone aparte
+        if (token.effectiveRole && token.role === Role.ADMIN) {
+          session.user.role = token.effectiveRole;
+          session.user.realRole = realRole;
+        } else {
+          session.user.role = realRole;
+          session.user.realRole = undefined;
+        }
       }
 
       return session;
