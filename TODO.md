@@ -69,6 +69,7 @@ Opciones para resolverlo a futuro:
 - `alta` [x] **Comparar con versión anterior** — tras regenerar, botón para ver diff side-by-side entre el resultado nuevo y el JSON que había antes
 - `alta` [x] **ConfigTab — versión y fecha del prompt** — muestra versión (ej. v25) y timestamp de última modificación debajo del textarea
 - `media` [ ] **Validación de schema completo** — validar el JSON contra el schema completo de PlanData, no solo IDs/años/correlativas
+- `media` [ ] **Merge interactivo de diferencias (estilo GitHub)** — al comparar parser vs Gemini, el admin puede resolver diferencia por diferencia eligiendo qué bloque conservar (parser, Gemini, o edición manual). El resultado es un JSON merged que se puede publicar directamente. Aplica a: correlativas extra/faltantes, requisito_especial distinto, campos de metadata distintos. Ejemplo: Gemini genera 8 correlativas para una materia y el parser genera 3 — el admin ve ambos bloques side-by-side y elige cuál es correcto antes de publicar.
 - `media` [x] **Selector de modelo con rate limits** — barra de progreso de RPD por modelo en el dropdown; verde/amarillo/rojo según consumo diario
 - `baja` [x] **Botones ConfigTab sin handler** — "Guardar" persiste prompt en `data/admin-config.json`; "Restaurar" vuelve al prompt default; temperatura eliminada
 - `baja` [x] **Temperatura en ConfigTab** — eliminada; `temperature: 0` hardcodeado en el route de parsear
