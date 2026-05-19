@@ -369,16 +369,26 @@ export default function CargarPlanTab({ canPublish = true }: { canPublish?: bool
           onClick={() => fileInputRef.current?.click()}
           style={{
             border: `2px dashed ${dragging ? ACCENT : GLASS.raised}`,
-            borderRadius: 10, padding: "28px 20px",
+            borderRadius: 10, padding: "clamp(16px, 4vw, 28px) 20px",
+            minHeight: "clamp(120px, 20vw, 160px)",
             textAlign: "center", cursor: "pointer",
             background: dragging ? "rgba(157,78,221,0.08)" : "transparent",
             transition: "all 0.2s",
+            display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
           }}
         >
           <div style={{ fontSize: 28, marginBottom: 8, opacity: 0.4 }}>📄</div>
           <div style={{ fontSize: 13, color: TEXT_SEC, marginBottom: 12 }}>
-            <span style={{ color: TEXT, fontWeight: 600 }}>Arrastrá el PDF aquí</span>
-            {" "}o hacé click para buscar
+            <style>{`
+              .dz-desktop { display: inline; }
+              .dz-mobile  { display: none; }
+              @media (max-width: 640px) {
+                .dz-desktop { display: none; }
+                .dz-mobile  { display: inline; }
+              }
+            `}</style>
+            <span style={{ color: TEXT, fontWeight: 600 }} className="dz-desktop">Arrastrá el PDF aquí o hacé click para buscar</span>
+            <span style={{ color: TEXT, fontWeight: 600 }} className="dz-mobile">Tocá para buscar el PDF</span>
           </div>
           <input
             ref={fileInputRef}
@@ -422,7 +432,7 @@ export default function CargarPlanTab({ canPublish = true }: { canPublish?: bool
       {/* Opciones */}
       <div style={CARD}>
         <div style={LABEL}>Opciones de parseo</div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr)", gap: 12 }}>
           <div>
             <div style={{ fontSize: 11, color: TEXT_SEC, fontWeight: 500, marginBottom: 5 }}>Modelo</div>
             <ModelSelector model={model} onSelect={setModel} usageByModel={usageByModel} dailyUsage={dailyUsage} />
@@ -431,7 +441,7 @@ export default function CargarPlanTab({ canPublish = true }: { canPublish?: bool
 
         {/* Actions */}
         <div style={{
-          display: "flex", alignItems: "center", gap: 10,
+          display: "flex", flexWrap: "wrap", alignItems: "center", gap: 10,
           paddingTop: 16, marginTop: 4, borderTop: `1px solid ${GLASS.border}`,
         }}>
           <button className="btn-press"
