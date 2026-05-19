@@ -5,6 +5,7 @@ import unicodedata
 from .classifiers import clasificar_linea
 from .normalizers import normalizar_anio, normalizar_cuatrimestre
 from .builders import crear_materia, crear_agrupador, crear_requisito
+from .cleaner import limpiar_sufijos_encabezado
 from .patterns import (
     PATRON_MATERIA,
     PATRON_CORRELATIVA,
@@ -362,7 +363,7 @@ def detectar_materias_generico(texto):
         if tipo == "grupo":
             mg = PATRON_GRUPO.match(linea)
             codigo = mg.group(1).strip()
-            nombre = mg.group(2).strip() or f"Grupo {codigo}"
+            nombre = limpiar_sufijos_encabezado(mg.group(2).strip()) or f"Grupo {codigo}"
 
             grupo_actual = codigo
             materia_actual = None
@@ -397,7 +398,7 @@ def detectar_materias_generico(texto):
         agrupador_info = es_linea_agrupador(linea, seccion_actual)
         if agrupador_info:
             codigo = agrupador_info["codigo"]
-            nombre = agrupador_info["nombre"]
+            nombre = limpiar_sufijos_encabezado(agrupador_info["nombre"])
             tipo_agrupador = agrupador_info["tipo"]
 
             grupo_actual = codigo

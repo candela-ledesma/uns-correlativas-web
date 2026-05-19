@@ -41,6 +41,7 @@ _SUFIJOS_ENCABEZADO = (
     " Correlativas Para cursar Para rendir",
     " Para cursar Para rendir",
     " Carga Horaria",
+    " Horaria",
 )
 
 
