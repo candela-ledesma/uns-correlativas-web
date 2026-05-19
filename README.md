@@ -64,7 +64,7 @@ flowchart LR
     |-- scripts/
     |   `-- migrate-jsons-to-db.ts  # Migracion inicial: data/local + data/gemini → Neon
     `-- lib/
-        |-- ai/prompt.ts  # DEFAULT_SYSTEM_PROMPT + PROMPT_VERSION (v30)
+        |-- ai/prompt.ts  # DEFAULT_SYSTEM_PROMPT + PROMPT_VERSION (v32)
         |-- plan/
         |   |-- evaluarCorrelativas.ts
         |   `-- requisitoEspecial.ts  # Tipos y evaluacion de requisito_especial[]
@@ -140,7 +140,7 @@ Usuario sube PDF en /admin (Vercel)
 }
 ```
 
-`requisito_especial` es un **array** (puede tener 0, 1 o 2 entradas por materia). Tipos soportados: `anio_aprobado`, `cuatrimestre_cursado`, `minimo_materias_aprobadas`, `prueba_idioma`, `todas_materias_aprobadas`.
+`requisito_especial` es un **array** (puede tener 0, 1 o más entradas por materia). Tipos soportados: `anio_aprobado`, `cuatrimestre_cursado`, `minimo_materias_aprobadas`, `minimo_examenes_finales`, `cgcb_aprobado`, `prueba_idioma`, `todas_materias_aprobadas`.
 
 ## 6) Post-procesamiento automático de Gemini
 
@@ -151,12 +151,12 @@ Solo hay dos transformaciones que se aplican al output de Gemini en el servidor:
 
 ## 7) Prompt Gemini
 
-- Versión actual: **v30** — `web/lib/ai/prompt.ts`
+- Versión actual: **v32** — `web/lib/ai/prompt.ts`
 - La versión siempre se lee del código fuente (no del JSON guardado).
 - El prompt activo se puede editar desde `/admin` → tab Configuración y se persiste en Neon (tabla `AdminConfig`).
 - El panel admin incluye la herramienta **"Exportar diff como few-shot"** que genera bloques de corrección para mejorar el prompt manualmente.
 
-### Scores Gemini v30 por carrera
+### Scores Gemini v32 por carrera
 
 | Carrera | Score |
 |---|---|
@@ -271,6 +271,10 @@ cd web && npm run validate:data
 | `POST /api/admin/config` | Guarda prompt customizado |
 | `GET /api/materias/[carrera]` | Materias de una carrera |
 | `GET|PUT /api/progreso` | Progreso del usuario |
+| `POST /api/progreso/share` | Genera token de snapshot compartible |
+| `GET /api/progreso/share/[token]` | Devuelve snapshot para vista pública |
+| `PATCH /api/admin/planes/publicados/[slug]` | Actualiza nombre/departamento/disponible |
+| `PUT /api/admin/planes/publicados/[slug]` | Reemplaza JSON del plan publicado |
 
 ## 12) Reglas de dominio
 
@@ -299,7 +303,7 @@ Los IDs de grupos de idioma empiezan con la letra `I` (no el digito `1`). Gemini
 
 - `USER`: acceso a la app, gestiona su propio progreso.
 - `MODERATOR`: puede subir y procesar PDFs, no puede publicar.
-- `ADMIN`: puede publicar planes, gestionar usuarios y revisar envios de moderadores.
+- `ADMIN`: puede publicar planes, gestionar usuarios y revisar envios de moderadores. Puede simular temporalmente los roles USER/MODERADOR desde el topbar del panel admin sin afectar la DB (JWT `effectiveRole`).
 
 ## 13) Publicar una nueva carrera
 
@@ -324,3 +328,12 @@ cd web && npm run validate:data
 - Validacion schema: `web/lib/data/planValidation.ts`
 - Schema DB: `web/prisma/schema.prisma`
 - Issues por carrera: `issues/*.md`
+
+## 15) Features de la web
+
+- **Vista "Plan"**: materias por año/cuatrimestre, click para marcar cursada/aprobada, filtros, buscador, mapa de correlativas, planificador horario semanal, vista Kanban.
+- **Progreso sincronizado**: almacenado en `localStorage` + Neon (`UserPlanProgress`) con LWW sync al iniciar sesión.
+- **Compartir progreso**: botón en el header del plan genera un link `/planes/[carrera]/share/[token]` con vista de solo lectura del progreso del usuario. Persiste en tabla `ProgressShare`.
+- **Editor estructurado de planes**: desde Planes en el panel admin, formulario con campos de metadata + tabla editable de materias con correlativas. Toggle formulario ↔ JSON crudo sincronizado.
+- **Simulación de rol**: el ADMIN puede ver la app como USER o MODERADOR temporalmente desde el topbar del panel admin (el JWT guarda `effectiveRole`, el rol real en DB no cambia).
+- **Google Calendar**: exporta el horario semanal del planificador como eventos recurrentes a Google Calendar via OAuth.

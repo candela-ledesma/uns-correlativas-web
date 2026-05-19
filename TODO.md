@@ -70,6 +70,9 @@ Opciones para resolverlo a futuro:
 - `alta` [x] **ConfigTab — versión y fecha del prompt** — muestra versión (ej. v25) y timestamp de última modificación debajo del textarea
 - `media` [ ] **Validación de schema completo** — validar el JSON contra el schema completo de PlanData, no solo IDs/años/correlativas
 - `media` [ ] **Merge interactivo de diferencias (estilo GitHub)** — al comparar parser vs Gemini, el admin puede resolver diferencia por diferencia eligiendo qué bloque conservar (parser, Gemini, o edición manual). El resultado es un JSON merged que se puede publicar directamente. Aplica a: correlativas extra/faltantes, requisito_especial distinto, campos de metadata distintos. Ejemplo: Gemini genera 8 correlativas para una materia y el parser genera 3 — el admin ve ambos bloques side-by-side y elige cuál es correcto antes de publicar.
+- `media` [x] **Navegación entre tabs sin perder estado de generación** — `CargarPlanTab` se mantiene montado con `display:none` al cambiar de tab; los demás tabs se montan en su primera visita (lazy mount) para no disparar fetches innecesarios al cargar el panel.
+- `media` [x] **Editor estructurado de planes publicados** — reemplaza el textarea JSON crudo por formulario con campos para nombre (CarreraConfig), departamento, carrera/universidad/código_plan (JSON), y tabla editable de materias con correlativas. Toggle formulario ↔ JSON sincronizado.
+- `baja` [x] **Simulación temporal de rol para admin** — desde el topbar del panel admin, el admin puede ver la app como USER o MODERADOR sin tocar la DB. El JWT guarda `effectiveRole`; al volver a loguear recupera ADMIN automáticamente.
 - `media` [x] **Selector de modelo con rate limits** — barra de progreso de RPD por modelo en el dropdown; verde/amarillo/rojo según consumo diario
 - `baja` [x] **Botones ConfigTab sin handler** — "Guardar" persiste prompt en `data/admin-config.json`; "Restaurar" vuelve al prompt default; temperatura eliminada
 - `baja` [x] **Temperatura en ConfigTab** — eliminada; `temperature: 0` hardcodeado en el route de parsear
@@ -172,13 +175,13 @@ El planificador actual (`WeeklySchedule`, `useSchedule`, `/api/planificador`) ma
 
 **Few-shot**: herramienta de exportación manual en el panel admin (botón "Exportar diff como few-shot") que genera bloques de correcciones para pegar en el prompt.
 
-**Carreras procesadas con parser local**: abogacia, agrimensura, arquitectura, bioquimica, contador_publico, farmacia, ingenieria_civil, ingenieria_en_sistemas_de_informacion, lic_computacion, ingenieria_agronomica, ingenieria_electricista, ingenieria_en_computacion.
+**Carreras procesadas con parser local**: abogacia, agrimensura, arquitectura, bioquimica, contador_publico, farmacia, ingenieria_civil, ingenieria_en_sistemas_de_informacion, lic_computacion, ingenieria_agronomica, ingenieria_electricista, ingenieria_en_computacion, ingenieria_mecanica, ingenieria_industrial, profesorado_en_letras, profesorado_en_filosofia, licenciatura_en_economia.
 
 ---
 
 ## Planes de estudio — carreras pendientes de generar
 
-Carreras ya procesadas: abogacia, agrimensura, arquitectura, bioquimica, contador_publico, farmacia, ingenieria_civil, ingenieria_en_sistemas_de_informacion, lic_computacion, ingenieria_agronomica, ingenieria_electricista, ingenieria_en_computacion.
+Carreras ya procesadas: abogacia, agrimensura, arquitectura, bioquimica, contador_publico, farmacia, ingenieria_civil, ingenieria_en_sistemas_de_informacion, lic_computacion, ingenieria_agronomica, ingenieria_electricista, ingenieria_en_computacion, ingenieria_mecanica, ingenieria_industrial, profesorado_en_letras, profesorado_en_filosofia, licenciatura_en_economia.
 
 | Carrera | Departamento | Duración |
 |---|---|---|
@@ -188,15 +191,15 @@ Carreras ya procesadas: abogacia, agrimensura, arquitectura, bioquimica, contado
 | [ ] INGENIERIA EN ALIMENTOS | Ingeniería Química | 10 Cuat. |
 | [x] INGENIERIA EN COMPUTACION | Ciencias e Ingeniería de la Computación | 10 Cuat. |
 | [ ] INGENIERÍA EN TELECOMUNICACIONES | Ingeniería Eléctrica y de Computadoras | 10 Cuat. |
-| [ ] INGENIERIA INDUSTRIAL | Ingeniería | 10 Cuat. |
-| [ ] INGENIERIA MECANICA | Ingeniería | 10 Cuat. |
+| [x] INGENIERIA INDUSTRIAL | Ingeniería | 10 Cuat. |
+| [x] INGENIERIA MECANICA | Ingeniería | 10 Cuat. |
 | [ ] INGENIERIA QUIMICA | Ingeniería Química | 10 Cuat. |
 | [ ] LICENCIATURA EN ADMINISTRACION | Ciencias de la Administración | 10 Cuat. |
 | [ ] LICENCIATURA EN CIENCIAS AMBIENTALES | Química | 10 Cuat. |
 | [ ] LICENCIATURA EN CIENCIAS BIOLOGICAS | Biología, Bioquímica y Farmacia | 10 Cuat. |
 | [ ] LICENCIATURA EN CIENCIAS DE LA EDUCACION | Ciencias de la Educación | 10 Cuat. |
 | [ ] LICENCIATURA EN CIENCIAS GEOLOGICAS | Geología | 10 Cuat. |
-| [ ] LICENCIATURA EN ECONOMIA | Economía | 9 Cuat. |
+| [x] LICENCIATURA EN ECONOMIA | Economía | 9 Cuat. |
 | [ ] LICENCIATURA EN ENFERMERIA | Ciencias de la Salud | 10 Cuat. |
 | [ ] LICENCIATURA EN FILOSOFIA | Humanidades | 10 Cuat. |
 | [ ] LICENCIATURA EN FISICA | Física | 10 Cuat. |
@@ -221,12 +224,12 @@ Carreras ya procesadas: abogacia, agrimensura, arquitectura, bioquimica, contado
 | [ ] PROFESORADO EN ECONOMIA PARA LA ENSEÑANZA SECUNDARIA | Economía | 8 Cuat. |
 | [ ] PROFESORADO EN EDUCACION SECUNDARIA EN CIENCIAS DE LA ADMINISTRACION | Ciencias de la Administración | 8 Cuat. |
 | [ ] PROFESORADO EN EDUCACION SECUNDARIA Y SUPERIOR EN CIENCIAS DE LA ADMINISTRACION | Ciencias de la Administración | 10 Cuat. |
-| [ ] PROFESORADO EN FILOSOFIA | Humanidades | 10 Cuat. |
+| [x] PROFESORADO EN FILOSOFIA | Humanidades | 10 Cuat. |
 | [ ] PROFESORADO EN FISICA | Física | 8 Cuat. |
 | [ ] PROFESORADO EN GEOCIENCIAS | Geología | 8 Cuat. |
 | [ ] PROFESORADO EN GEOGRAFIA | Geografía y Turismo | 9 Cuat. |
 | [ ] PROFESORADO EN HISTORIA | Humanidades | 10 Cuat. |
-| [ ] PROFESORADO EN LETRAS | Humanidades | 10 Cuat. |
+| [x] PROFESORADO EN LETRAS | Humanidades | 10 Cuat. |
 | [ ] PROFESORADO EN MATEMATICA | Matemática | 8 Cuat. |
 | [ ] PROFESORADO EN QUIMICA | Química | 10 Cuat. |
 | [ ] PROFESORADO EN QUIMICA DE LA ENSEÑANZA MEDIA | Química | 8 Cuat. |
@@ -258,6 +261,9 @@ Carreras ya procesadas: abogacia, agrimensura, arquitectura, bioquimica, contado
 
 - `media` [x] **`--mode regex` en parsear-local** — argumento inexistente removido del route `parsear-local/route.ts`
 - `media` [x] **Correlativas inline con `requisito_especial`** — parser ahora extrae correlativas estructuradas embebidas en líneas de prosa (ej. `5175 Aprobada` en misma línea que texto de requisito cuantitativo)
+- `media` [x] **Nuevo tipo `minimo_examenes_finales`** — detecta "haber aprobado N exámenes finales de las materias disciplinares" como requisito especial. Agregado en parser, planValidation.ts, requisitoEspecial.ts y prompt Gemini v32.
+- `media` [x] **Nuevo tipo `prueba_idioma` extendido** — cubre "Examen de Comprensión de Inglés I/II" además de "Prueba de Suficiencia de Idioma". El cleaner fusiona líneas de prosa partidas con artículo/preposición colgante.
+- `media` [x] **Nombre de agrupadores limpio** — el sufijo " Horaria" (encabezado de columna del PDF) se eliminaba correctamente de materias pero no de agrupadores. Ahora `limpiar_sufijos_encabezado()` se aplica también al crear agrupadores.
 - `baja` [ ] **`5293` cuatrimestre `null` en agrimensura** — parser devuelve `null`, debería ser `"Anual"`; ver `issues/agrimensura.md`
 - `baja` [ ] **`3616` correlativas incorrectas en agrimensura** — parser asigna `3051, 5415, 5539` en lugar de solo `6323`; ver `issues/agrimensura.md`
 
