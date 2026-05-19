@@ -33,10 +33,13 @@ _MINIMO_EXAMENES_FINALES = re.compile(
     re.IGNORECASE,
 )
 
-# Detecta requisito de Prueba de Suficiencia de Idioma (no reemplaza correlativas).
-# Patrón: "Debe rendir la Prueba de Suficiencia de Idioma"
+# Detecta requisito de Prueba/Examen de idioma:
+# - "Prueba de Suficiencia de Idioma"
+# - "Examen de Comprensión de Inglés I/II"
+# - "aprobarse el Examen de Comprensión de Inglés"
 _PRUEBA_SUFICIENCIA = re.compile(
-    r'(?:Debe\s+rendir\s+la\s+)?Prueba\s+de\s+Suficiencia\s+(?:de\s+)?Idioma',
+    r'(?:Debe\s+rendir\s+la\s+)?Prueba\s+de\s+Suficiencia\s+(?:de\s+)?Idioma'
+    r'|(?:aprobarse\s+)?(?:el\s+)?[Ee]xamen\s+de\s+Comprens?i[oó]n\s+de\s+Ingl[eé]s',
     re.IGNORECASE,
 )
 

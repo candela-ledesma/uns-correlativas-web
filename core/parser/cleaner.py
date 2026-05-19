@@ -157,6 +157,21 @@ def recomponer_lineas_partidas(texto):
             i += 2
             continue
 
+        # Caso 4: línea de prosa que termina en artículo/preposición colgante
+        # "Para cursar Debe aprobarse el Examen de Comprensión de Inglés II antes de iniciar el"
+        # "cursado del cuarto año."
+        # La siguiente empieza en minúscula y no es materia ni correlativa.
+        if (
+            siguiente is not None
+            and PATRON_INICIO_CORRELATIVA_PROSA.match(actual)
+            and re.search(r'\b(el|la|los|las|un|una|de|del|que|y|e|o|u|a)\s*$', actual, re.IGNORECASE)
+            and re.match(r'^[a-záéíóúü]', siguiente)
+            and not re.match(r'^[A-Z]?\d', siguiente)
+        ):
+            resultado.append(actual + " " + siguiente)
+            i += 2
+            continue
+
         resultado.append(actual)
         i += 1
 

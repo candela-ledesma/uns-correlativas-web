@@ -110,6 +110,20 @@ class InferirRequisitoEspecialTests(unittest.TestCase):
         self.assertEqual(r[0]["tipo"], "minimo_examenes_finales")
         self.assertEqual(r[0]["cantidad"], 8)
 
+    def test_prueba_idioma_examen_comprension_ingles(self):
+        # Caso exacto de ingeniería mecánica (líneas fusionadas por el cleaner)
+        linea = "Para cursar Debe aprobarse el Examen de Comprensión de Inglés II antes de iniciar el cursado del cuarto año."
+        r = inferir_requisito_especial(linea)
+        self.assertIsNotNone(r)
+        self.assertEqual(len(r), 1)
+        self.assertEqual(r[0]["tipo"], "prueba_idioma")
+
+    def test_prueba_idioma_examen_comprension_sin_tilde(self):
+        linea = "Debe aprobarse el Examen de Comprension de Ingles I antes de iniciar el cursado del tercer año."
+        r = inferir_requisito_especial(linea)
+        self.assertIsNotNone(r)
+        self.assertEqual(r[0]["tipo"], "prueba_idioma")
+
 
 if __name__ == "__main__":
     unittest.main()
