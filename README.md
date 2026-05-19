@@ -155,6 +155,7 @@ Solo hay dos transformaciones que se aplican al output de Gemini en el servidor:
 - La versión siempre se lee del código fuente (no del JSON guardado).
 - El prompt activo se puede editar desde `/admin` → tab Configuración y se persiste en Neon (tabla `AdminConfig`).
 - El panel admin incluye la herramienta **"Exportar diff como few-shot"** que genera bloques de corrección para mejorar el prompt manualmente.
+- **v33–v37 probados y revertidos**: mejoras en correlativas parciales, agrupadores, I####, deduplicación y ejemplos de page break. El error de boundary cross-page (1142/1228 en Farmacia, 9100/9113 en Abogacía) no es resoluble con prompting — requiere post-proceso en el servidor.
 
 ### Scores Gemini v32 por carrera
 
@@ -172,6 +173,10 @@ Solo hay dos transformaciones que se aplican al output de Gemini en el servidor:
 | Ingenieria en Computacion | 93.6/100 |
 | Ingenieria Electronica | 97.8/100 |
 | Ingenieria Civil | 23.0/100 (fallo estructural: orientaciones multiples) |
+
+### Limitación conocida del prompting (boundary cross-page)
+
+El PDF de Farmacia termina la página con `1142 FISIOPATOLOGIA HUMANA ... 1149 Cursada Cursada` y la página siguiente abre con `1376 Aprobada Aprobada` (correlativa de continuación de 1142). Gemini interpreta el encabezado de tabla repetido al inicio de la nueva página como cierre de materia y asigna `1376` a la materia siguiente (1228). El mismo patrón ocurre en Abogacía (9100/9113). Solución: post-proceso en el servidor. Ver `issues/farmacia.md` e `issues/abogacia.md`.
 
 ## 8) Requisitos
 
