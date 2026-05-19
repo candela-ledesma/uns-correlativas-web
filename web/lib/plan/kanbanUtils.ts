@@ -37,9 +37,11 @@ export function normalizeCuatrimestre(c: string | null | undefined): CuatrSlot {
 
 export function buildInitialOrder(
   materias: Materia[],
-  idsAgrupadores: Set<string>
+  idsAgrupadores: Set<string>,
+  agrupadores: Agrupador[] = [],
 ): Record<string, string[]> {
   const porCol = new Map<string, string[]>();
+  const agregados = new Set<string>();
 
   for (const m of materias) {
     if (m.categoria === "optativa" && m.grupo_opcion && idsAgrupadores.has(String(m.grupo_opcion))) continue;
@@ -48,6 +50,17 @@ export function buildInitialOrder(
     const key  = `${anio}|${slot}`;
     if (!porCol.has(key)) porCol.set(key, []);
     porCol.get(key)!.push(String(m.id));
+    agregados.add(String(m.id));
+  }
+
+  // Agrupadores con ubicación que no aparecen en materias[] (solo POSITION B)
+  for (const ag of agrupadores) {
+    const id = String(ag.id);
+    if (agregados.has(id) || !ag.año) continue;
+    const slot = normalizeCuatrimestre(ag.cuatrimestre);
+    const key  = `${ag.año}|${slot}`;
+    if (!porCol.has(key)) porCol.set(key, []);
+    porCol.get(key)!.push(id);
   }
 
   // Garantizar que siempre existan slots 1 y 2 para cada año.

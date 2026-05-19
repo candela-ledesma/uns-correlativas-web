@@ -45,13 +45,31 @@ function getBadgeLabel(estado: EstadoMateria, puedeCursar: boolean): string {
 
 // ── Component ─────────────────────────────────────────────────────────────────
 export default function KanbanPlan({ materias, agrupadores, idsAgrupadores, estados }: Props) {
-  const materiaById = useMemo(
-    () => new Map(materias.map((m) => [String(m.id), m])),
-    [materias]
-  );
+  const materiaById = useMemo(() => {
+    const map = new Map(materias.map((m) => [String(m.id), m]));
+    // Agrupadores que solo están en agrupadores[] (POSITION B) — crear entrada sintética
+    for (const ag of agrupadores) {
+      const id = String(ag.id);
+      if (!map.has(id) && ag.año) {
+        map.set(id, {
+          id,
+          nombre: ag.nombre ?? id,
+          año: ag.año,
+          cuatrimestre: ag.cuatrimestre,
+          horas: "",
+          tipo: "agrupador_requisito",
+          categoria: "normal",
+          grupo_opcion: null,
+          subtipo: null,
+          correlativas: {},
+        } as Materia);
+      }
+    }
+    return map;
+  }, [materias, agrupadores]);
 
   const [localOrder, setLocalOrder] = useState<Record<string, string[]>>(() =>
-    buildInitialOrder(materias, idsAgrupadores)
+    buildInitialOrder(materias, idsAgrupadores, agrupadores)
   );
   const [dragOver,          setDragOver]          = useState<string | null>(null);
   const [touchDragId,       setTouchDragId]       = useState<string | null>(null);
@@ -68,7 +86,7 @@ export default function KanbanPlan({ materias, agrupadores, idsAgrupadores, esta
   const years = getYearsFromOrder(localOrder);
 
   const isModified =
-    JSON.stringify(localOrder) !== JSON.stringify(buildInitialOrder(materias, idsAgrupadores));
+    JSON.stringify(localOrder) !== JSON.stringify(buildInitialOrder(materias, idsAgrupadores, agrupadores));
 
   // Orientaciones disponibles en el plan (vacío = sin orientaciones)
   const orientaciones = useMemo(
@@ -146,7 +164,7 @@ export default function KanbanPlan({ materias, agrupadores, idsAgrupadores, esta
     return () => clearTimeout(timeout);
   }, [newlyAddedYear, years]);
 
-  function handleReset()    { setLocalOrder(buildInitialOrder(materias, idsAgrupadores)); }
+  function handleReset()    { setLocalOrder(buildInitialOrder(materias, idsAgrupadores, agrupadores)); }
   function handleAddYear()  {
     const newYear = getNextYearName(years);
     setLocalOrder((prev) => ({ ...prev, [`${newYear}|1`]: [], [`${newYear}|2`]: [] }));
