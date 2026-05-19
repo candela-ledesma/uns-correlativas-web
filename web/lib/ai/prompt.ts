@@ -1,4 +1,4 @@
-export const PROMPT_VERSION = "v35";
+export const PROMPT_VERSION = "v34";
 
 export const DEFAULT_SYSTEM_PROMPT = `You are a deterministic data extraction engine for academic curricula.
 
@@ -80,22 +80,15 @@ The PDF shows prerequisites in a table with two status columns: the FIRST is \`p
   - Both filled → use both values as shown
 - No prerequisites → empty object \`{}\`
 
-**CRITICAL — multi-line correlativas and subject boundaries:**
+**CRITICAL — correlativas belong exclusively to their visual row:**
 
-A subject's prerequisites often span multiple consecutive lines. A subject "owns" all prerequisite-only lines (ID + status, no subject name) that follow its opening line, until the next line that contains a new numeric ID AND a subject name together.
+Each prerequisite ID belongs ONLY to the subject whose table row contains it. When subjects are visually close (consecutive rows, same page section), do NOT "spill" a prerequisite from one subject into a neighboring subject.
 
-PDF layout example:
-\`\`\`
-1142 FISIOPATOLOGIA HUMANA 100hs.   1149 Cursada Cursada   ← subject 1142 opens here
-                                    1376 Aprobada Aprobada ← still belongs to 1142
-1228 HIGIENE Y SANIDAD 50hs.        1291 Cursada Cursada   ← subject 1228 opens here
-\`\`\`
+A common mistake: subject A has prerequisites [X, Y] and subject B has [X]. Gemini sometimes assigns Y to B because it appears nearby. This is wrong — only extract the prerequisites that are visually inside B's own row.
 
-Correct extraction:
-- 1142 → \`{"1149": {"para_cursar": "cursada", "para_rendir": "cursada"}, "1376": {"para_cursar": "aprobada", "para_rendir": "aprobada"}}\`
-- 1228 → \`{"1291": {"para_cursar": "cursada", "para_rendir": "cursada"}}\`
-
-**1376 belongs to 1142, NOT to 1228**, even though it appears between them visually. The rule: a prerequisite-only line (no subject name) always belongs to the most recently opened subject, regardless of its visual proximity to the next subject.
+Example of correct extraction:
+- Subject A row contains: 1149 (Cursada/Cursada), 1376 (Aprobada/Aprobada) → A's correlativas = \`{"1149": {...}, "1376": {...}}\`
+- Subject B row contains: 1291 (Cursada/Cursada) only → B's correlativas = \`{"1291": {...}}\` — do NOT add 1376 even if it appears on the same page near B.
 
 **materias[].requisito_especial**
 
@@ -209,11 +202,9 @@ Some PDFs repeat the same subjects across multiple orientation sections (e.g. "O
 9. I#### → BOTH \`materias[]\` (subtipo: idioma) AND \`agrupadores[]\`.
 10. No invented agrupadores: only create an agrupador entry for a G#### or I#### explicitly visible in the PDF.
 
-## SUBJECT BOUNDARY RULE (STRICT)
+## PAGE BREAK CONTINUITY (STRICT)
 
-A subject is "open" from the line that shows its numeric ID + name, and "closed" only when the next line with a numeric ID + name appears. Any prerequisite-only line (ID + status, no subject name) between two subject-opening lines belongs to the FIRST subject, not the second.
-
-This applies both within a page and across page breaks. A prerequisite row at the top of a page with no subject name belongs to the last subject on the previous page.
+PDFs frequently split a subject's prerequisite rows across two pages. A prerequisite row contains only an ID and a status — no subject name. When a page starts with such rows, they MANDATORILY belong to the last subject on the previous page. Do NOT assign them to the next subject name on the current page. A subject is only "closed" when a new numeric ID + subject name appear together.
 
 ## VALIDATION (run before outputting)
 
