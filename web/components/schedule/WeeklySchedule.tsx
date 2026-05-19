@@ -311,16 +311,23 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
           .ws-block-title { color: #111 !important; -webkit-text-fill-color: #111 !important; text-shadow: none !important; }
           .ws-block-meta  { color: #111 !important; -webkit-text-fill-color: #111 !important; }
         }
+        @media (max-width: 640px) {
+          .ws-block-title { font-size: 10px !important; }
+          .ws-block-meta  { font-size: 9px !important; }
+        }
       `}</style>
 
       {/* Toolbar */}
-      <div className="flex flex-wrap items-center gap-2" data-no-print>
-        <h2 className="flex-1 min-w-0" style={{ color: TEXT, fontSize: 16, fontWeight: 700, margin: 0 }}>
+      <div className="flex flex-col gap-1.5" data-no-print>
+        {/* Fila 1: título */}
+        <h2 style={{ color: TEXT, fontSize: 16, fontWeight: 700, margin: 0 }}>
           Planificador de cuatrimestre
         </h2>
-        <span className="hidden sm:inline" style={{ color: TEXT_SEC, fontSize: 12 }}>
-          Clic en celda · arrastrá para mover
-        </span>
+        {/* Fila 2: badge + botón */}
+        <div className="flex items-center gap-2" style={{ justifyContent: "space-between" }}>
+          <span className="hidden sm:inline" style={{ color: TEXT_SEC, fontSize: 12 }}>
+            Clic en celda · arrastrá para mover
+          </span>
 
         {/* Google Calendar badge */}
         {blocks.length > 0 && (
@@ -433,9 +440,14 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
           </div>
         )}
 
-        <button type="button" style={BTN_VIO} onClick={() => setPanel({ type: "create" })}>
-          + Agregar materia
-        </button>
+          <button
+            type="button"
+            style={{ ...BTN_VIO, padding: "6px 12px", fontSize: 12, whiteSpace: "nowrap", marginLeft: "auto" }}
+            onClick={() => setPanel({ type: "create" })}
+          >
+            + Agregar materia
+          </button>
+        </div>
       </div>
 
       {/* Error */}
@@ -446,7 +458,16 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
       )}
 
       {/* Grid */}
-      <div className="overflow-x-auto rounded-2xl ws-grid-wrap max-w-full" style={{ ...SURFACE }}>
+      <div
+        className="rounded-2xl ws-grid-wrap max-w-full"
+        style={{
+          ...SURFACE,
+          overflowX: "auto",
+          overflowY: "auto",
+          WebkitOverflowScrolling: "touch" as never,
+          maxHeight: "calc(100svh - 200px)",
+        }}
+      >
         {isLoading ? (
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: 160 }}>
             <span style={{ color: TEXT_SEC, fontSize: 14 }}>Cargando horario...</span>
@@ -454,7 +475,7 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
         ) : (
           <div
             ref={gridRef}
-            style={{ display: "flex", userSelect: "none", cursor: draggingId ? "grabbing" : "default", position: "relative" }}
+            style={{ display: "flex", userSelect: "none", cursor: draggingId ? "grabbing" : "default", position: "relative", minWidth: "max-content" }}
             onPointerMove={onGridPointerMove}
             onPointerUp={(e) => void onGridPointerUp(e)}
             onPointerCancel={onGridPointerCancel}
@@ -465,8 +486,8 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
               className="pointer-events-none"
               style={{ display: "none", position: "absolute", borderRadius: 6, border: "2px dashed", zIndex: 20 }}
             />
-            {/* Time axis */}
-            <div style={{ width: 40, flexShrink: 0, height: GRID_HEIGHT + SLOT_PX }}>
+            {/* Time axis — sticky en scroll horizontal */}
+            <div style={{ width: 40, flexShrink: 0, height: GRID_HEIGHT + SLOT_PX, position: "sticky", left: 0, zIndex: 2, background: "inherit" }}>
               <div style={{ height: SLOT_PX }} />
               <div style={{ position: "relative", height: GRID_HEIGHT }}>
                 {TIME_LABELS.map((label, i) => (
@@ -483,7 +504,7 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
               const diaBlocks = blocks.filter((b) => b.dia === diaNum);
 
               return (
-                <div key={diaLabel} className="ws-col" style={{ display: "flex", flex: 1, flexDirection: "column", borderLeft: COL_LINE }}>
+                <div key={diaLabel} className="ws-col" style={{ display: "flex", flex: 1, flexDirection: "column", borderLeft: COL_LINE, minWidth: 64 }}>
                   {/* Header */}
                   <div className="ws-col-header" style={{ display: "flex", alignItems: "center", justifyContent: "center", height: SLOT_PX, borderBottom: COL_LINE, fontSize: 11, fontWeight: 700, letterSpacing: "0.04em", color: TEXT_SEC, overflow: "hidden" }}>
                     {diaLabel.slice(0, 3)}

@@ -75,27 +75,30 @@ export default function PlanTabBar({ vistaActiva, onChange, onOpenHelp, backHref
       </div>
 
       {/* Fila 2: tabs */}
-      <div style={{ display: "inline-flex", background: "rgba(255,255,255,0.06)", borderRadius: 10, padding: 4 }}>
-        {(["plan", "Plan Vista", "Planificador", "Mapa"] as const).map((vista) => (
-          <button
-            key={vista}
-            type="button"
-            onClick={() => onChange(vista)}
-            style={{
-              ...(vistaActiva === vista ? tabActiveStyle : tabIdleStyle),
-              border: "none",
-              borderRadius: 8,
-              padding: "6px 14px",
-              fontSize: 13,
-              fontWeight: 600,
-              cursor: "pointer",
-              background: vistaActiva === vista ? "rgba(157,78,221,0.30)" : "transparent",
-              textTransform: "capitalize",
-            }}
-          >
-            {vista === "plan" ? "Plan" : vista}
-          </button>
-        ))}
+      <div style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" as never }}>
+        <div style={{ display: "inline-flex", background: "rgba(255,255,255,0.06)", borderRadius: 10, padding: 4, whiteSpace: "nowrap" }}>
+          {(["plan", "Plan Vista", "Planificador", "Mapa"] as const).map((vista) => (
+            <button
+              key={vista}
+              type="button"
+              onClick={() => onChange(vista)}
+              style={{
+                ...(vistaActiva === vista ? tabActiveStyle : tabIdleStyle),
+                border: "none",
+                borderRadius: 8,
+                padding: "6px 10px",
+                fontSize: "clamp(11px, 3vw, 13px)",
+                fontWeight: 600,
+                cursor: "pointer",
+                background: vistaActiva === vista ? "rgba(157,78,221,0.30)" : "transparent",
+                textTransform: "capitalize",
+                whiteSpace: "nowrap",
+              }}
+            >
+              {vista === "plan" ? "Plan" : vista}
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   );
