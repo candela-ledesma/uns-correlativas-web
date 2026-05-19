@@ -377,7 +377,15 @@ function MapaInner({ materias, agrupadores, idsAgrupadores, estados, carreraId, 
   }, []);
 
   const selectedMateria = selectedNodeId ? materiaById.get(selectedNodeId) : null;
-  const isMobile = typeof window !== "undefined" && window.innerWidth < 640;
+  const [windowWidth, setWindowWidth] = useState(() =>
+    typeof window !== "undefined" ? window.innerWidth : 1200,
+  );
+  useEffect(() => {
+    const handler = () => setWindowWidth(window.innerWidth);
+    window.addEventListener("resize", handler);
+    return () => window.removeEventListener("resize", handler);
+  }, []);
+  const isMobile = windowWidth < 640;
 
   return (
     <div style={{ position: "relative" }}>
@@ -415,10 +423,14 @@ function MapaInner({ materias, agrupadores, idsAgrupadores, estados, carreraId, 
       />
 
       <div style={{
-        width: "100%", height: "72vh", minHeight: 480, borderRadius: 14,
+        width: "100%",
+        height: isMobile ? "calc(100svh - 220px)" : "72vh",
+        minHeight: isMobile ? 380 : 480,
+        borderRadius: 14,
         overflow: "hidden", position: "relative",
         border: `1px solid ${caminoActivo ? AMBER.border : GLASS.raised}`,
         background: "rgba(15,20,50,0.55)", transition: "border-color 0.2s",
+        touchAction: "none",
       }}>
         {miVistaActiva && miVistaNodes.length === 0 && (
           <div style={{
@@ -446,6 +458,9 @@ function MapaInner({ materias, agrupadores, idsAgrupadores, estados, carreraId, 
           minZoom={0.35} maxZoom={2.5}
           proOptions={{ hideAttribution: true }}
           onInit={handleInit}
+          panOnScroll={false}
+          zoomOnPinch
+          panOnDrag
         >
           <HoverStyleInjector
             hoveredNodeId={hoveredNodeId} activeChain={activeChain}
@@ -464,7 +479,7 @@ function MapaInner({ materias, agrupadores, idsAgrupadores, estados, carreraId, 
             </ControlButton>
           </Controls>
 
-          {minimapVisible && (
+          {minimapVisible && !isMobile && (
             <MiniMap
               nodeColor={(node) => {
                 if (node.type === "agrupador") return ACCENT;
@@ -478,7 +493,7 @@ function MapaInner({ materias, agrupadores, idsAgrupadores, estados, carreraId, 
           )}
 
           {selectedMateria && selectedNodeId && !caminoActivo && (
-            <Panel position={panelSide === "left" ? "top-left" : "top-right"}>
+            <Panel position={isMobile ? "bottom-center" : (panelSide === "left" ? "top-left" : "top-right")}>
               <DetailPanel
                 nodeId={selectedNodeId} materias={materias}
                 idsAgrupadores={idsAgrupadores} vmById={vmById}
