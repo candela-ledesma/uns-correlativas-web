@@ -43,7 +43,7 @@ function SeccionLabel({ children }: { children: React.ReactNode }) {
   );
 }
 
-export default function PlanesTab() {
+export default function PlanesTab({ onDirtyChange }: { onDirtyChange?: (dirty: boolean) => void }) {
   const [planes, setPlanes] = useState<PlanPublicado[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -179,6 +179,7 @@ export default function PlanesTab() {
         saving={editor.type === "saving"}
         onGuardar={guardarEdicion}
         onCancelar={() => setEditor({ type: "idle" })}
+        onDirtyChange={onDirtyChange}
       />
     );
   }

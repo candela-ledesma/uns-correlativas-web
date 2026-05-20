@@ -43,6 +43,7 @@ type Props = {
   saving: boolean;
   onGuardar: (newJson: string, newNombre: string, newDepartamento: string) => void;
   onCancelar: () => void;
+  onDirtyChange?: (dirty: boolean) => void;
 };
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -285,6 +286,7 @@ export default function PlanEditorModal({
   saving,
   onGuardar,
   onCancelar,
+  onDirtyChange,
 }: Props) {
   const [mode, setMode] = useState<"form" | "json">("form");
 
@@ -320,6 +322,12 @@ export default function PlanEditorModal({
       return true;
     }
   }, [mode, jsonText, buildJson, jsonStr, nombre, initialNombre, departamento, initialDepartamento]);
+
+  // Notificar al padre cuando cambia el estado dirty
+  useEffect(() => { onDirtyChange?.(haycambios); }, [haycambios, onDirtyChange]);
+
+  // Al desmontar, notificar que ya no hay cambios pendientes
+  useEffect(() => { return () => onDirtyChange?.(false); }, [onDirtyChange]);
 
   // Interceptar cierre de pestaña / navegación del browser
   useEffect(() => {

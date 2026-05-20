@@ -31,6 +31,8 @@ export default function AdminPanel({ canPublish = true }: { canPublish?: boolean
   const [tab, setTab] = useState<Tab>(initialTab);
   // Rastrea qué tabs fueron visitados para montarlos solo cuando se necesitan
   const [mounted, setMounted] = useState<Set<Tab>>(new Set([initialTab]));
+  const [editorDirty, setEditorDirty] = useState(false);
+  const [confirmNav, setConfirmNav] = useState<string | null>(null); // href destino pendiente
 
   function cambiarTab(t: Tab) {
     setTab(t);
@@ -76,23 +78,8 @@ export default function AdminPanel({ canPublish = true }: { canPublish?: boolean
         {/* Fila 1: siempre visible */}
         <div className="ap-row1">
           <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
-            <Link href="/" style={{
-              fontSize: 12, color: TEXT_SEC, textDecoration: "none",
-              background: "rgba(255,255,255,0.05)",
-              border: `1px solid ${GLASS.border}`,
-              borderRadius: 8, padding: "4px 12px", whiteSpace: "nowrap",
-            }}>
-              ← Inicio
-            </Link>
-            <Link href="/perfil" className="ap-perfil-desktop" style={{
-              fontSize: 12, color: TEXT_SEC, textDecoration: "none",
-              background: "rgba(255,255,255,0.05)",
-              border: `1px solid ${GLASS.border}`,
-              borderRadius: 8, padding: "4px 12px", whiteSpace: "nowrap",
-              alignItems: "center",
-            }}>
-              Perfil
-            </Link>
+            <NavLink href="/" label="← Inicio" editorDirty={editorDirty} onConfirm={setConfirmNav} router={router} />
+            <NavLink href="/perfil" label="Perfil" editorDirty={editorDirty} onConfirm={setConfirmNav} router={router} className="ap-perfil-desktop" />
           </div>
 
           <span style={{ fontWeight: 700, fontSize: 14, color: TEXT, whiteSpace: "nowrap", marginLeft: 4 }}>
@@ -120,15 +107,7 @@ export default function AdminPanel({ canPublish = true }: { canPublish?: boolean
 
         {/* Fila 2: solo mobile — Perfil + RoleSwitcher + badge */}
         <div className="ap-row2">
-          <Link href="/perfil" style={{
-            fontSize: 11, color: TEXT_SEC, textDecoration: "none",
-            background: "rgba(255,255,255,0.05)",
-            border: `1px solid ${GLASS.border}`,
-            borderRadius: 6, padding: "3px 10px",
-            whiteSpace: "nowrap", flexShrink: 0,
-          }}>
-            Perfil
-          </Link>
+          <NavLink href="/perfil" label="Perfil" editorDirty={editorDirty} onConfirm={setConfirmNav} router={router} mobile />
           <div style={{ flexShrink: 0 }}><RoleSwitcher /></div>
           <span style={{
             background: "rgba(157,78,221,0.2)",
@@ -167,11 +146,73 @@ export default function AdminPanel({ canPublish = true }: { canPublish?: boolean
           </div>
         </nav>
 
+        {/* Banner de confirmación de navegación */}
+        {confirmNav && (
+          <div style={{
+            display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap",
+            padding: "12px 16px", borderRadius: 10, marginBottom: 16,
+            background: "rgba(248,113,113,0.08)", border: "1px solid rgba(248,113,113,0.35)",
+          }}>
+            <span style={{ fontSize: 13, color: "#fca5a5", flex: 1 }}>
+              ⚠ Tenés cambios sin guardar en el editor. ¿Seguro que querés salir?
+            </span>
+            <button className="btn-press"
+              onClick={() => setConfirmNav(null)}
+              style={{
+                background: "rgba(157,78,221,0.2)", border: "1px solid rgba(157,78,221,0.4)",
+                color: "#c084fc", borderRadius: 7, padding: "5px 14px", fontSize: 12, fontWeight: 600, cursor: "pointer",
+              }}
+            >
+              Seguir editando
+            </button>
+            <button className="btn-press"
+              onClick={() => { setEditorDirty(false); router.push(confirmNav); }}
+              style={{
+                background: "none", border: "1px solid rgba(248,113,113,0.4)",
+                color: "#f87171", borderRadius: 7, padding: "5px 14px", fontSize: 12, fontWeight: 600, cursor: "pointer",
+              }}
+            >
+              Salir sin guardar
+            </button>
+          </div>
+        )}
+
         {mounted.has("cargar")    && <div style={{ display: tab === "cargar"    ? undefined : "none" }}><CargarPlanTab canPublish={canPublish} /></div>}
-        {mounted.has("planes")    && <div style={{ display: tab === "planes"    ? undefined : "none" }}><PlanesTab /></div>}
+        {mounted.has("planes")    && <div style={{ display: tab === "planes"    ? undefined : "none" }}><PlanesTab onDirtyChange={setEditorDirty} /></div>}
         {mounted.has("historial") && <div style={{ display: tab === "historial" ? undefined : "none" }}><HistorialTab /></div>}
         {mounted.has("config")    && <div style={{ display: tab === "config"    ? undefined : "none" }}><ConfigTab canEdit={canPublish} /></div>}
       </main>
     </div>
+  );
+}
+
+// ── NavLink helper ────────────────────────────────────────────────────────────
+
+function NavLink({
+  href, label, editorDirty, onConfirm, router, className, mobile,
+}: {
+  href: string;
+  label: string;
+  editorDirty: boolean;
+  onConfirm: (href: string) => void;
+  router: ReturnType<typeof useRouter>;
+  className?: string;
+  mobile?: boolean;
+}) {
+  const baseStyle: React.CSSProperties = mobile
+    ? { fontSize: 11, color: TEXT_SEC, textDecoration: "none", background: "rgba(255,255,255,0.05)", border: `1px solid ${GLASS.border}`, borderRadius: 6, padding: "3px 10px", whiteSpace: "nowrap", flexShrink: 0, cursor: "pointer", fontFamily: "inherit" }
+    : { fontSize: 12, color: TEXT_SEC, textDecoration: "none", background: "rgba(255,255,255,0.05)", border: `1px solid ${GLASS.border}`, borderRadius: 8, padding: "4px 12px", whiteSpace: "nowrap", cursor: "pointer", fontFamily: "inherit", display: "inline-flex", alignItems: "center" };
+
+  function handleClick(e: React.MouseEvent) {
+    if (editorDirty) {
+      e.preventDefault();
+      onConfirm(href);
+    }
+  }
+
+  return (
+    <Link href={href} className={className} style={baseStyle} onClick={handleClick}>
+      {label}
+    </Link>
   );
 }
