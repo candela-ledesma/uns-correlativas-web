@@ -7,6 +7,7 @@ import {
   buildPlanHref,
   type UserProductContextResponse,
 } from "@/lib/db/userProductContextTypes";
+import RoleSwitcher from "@/components/admin/RoleSwitcher";
 import styles from "@/app/perfil/page.module.css";
 
 type Props = {
@@ -170,6 +171,18 @@ export default function ProfileWorkspace({
           )}
         </div>
       </section>
+
+      {role === "ADMIN" && (
+        <>
+          <div className={styles.divider} />
+          <section className={styles.section}>
+            <p className={styles.sectionLabel}>VER COMO</p>
+            <div style={{ paddingTop: 4 }}>
+              <RoleSwitcher />
+            </div>
+          </section>
+        </>
+      )}
     </article>
   );
 }

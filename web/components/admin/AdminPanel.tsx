@@ -9,7 +9,6 @@ import CargarPlanTab from "./tabs/CargarPlanTab";
 import HistorialTab from "./tabs/HistorialTab";
 import ConfigTab from "./tabs/ConfigTab";
 import PlanesTab from "./tabs/PlanesTab";
-import RoleSwitcher from "./RoleSwitcher";
 
 type Tab = "cargar" | "planes" | "historial" | "config";
 
@@ -87,7 +86,6 @@ export default function AdminPanel({ canPublish = true }: { canPublish?: boolean
           </span>
 
           <div className="ap-desktop-right">
-            <RoleSwitcher />
             <span style={{
               background: "rgba(157,78,221,0.2)",
               border: `1px solid rgba(157,78,221,0.4)`,
@@ -105,10 +103,9 @@ export default function AdminPanel({ canPublish = true }: { canPublish?: boolean
           </div>
         </div>
 
-        {/* Fila 2: solo mobile — Perfil + RoleSwitcher + badge */}
+        {/* Fila 2: solo mobile — Perfil + badge */}
         <div className="ap-row2">
           <NavLink href="/perfil" label="Perfil" editorDirty={editorDirty} onConfirm={setConfirmNav} router={router} mobile />
-          <div style={{ flexShrink: 0 }}><RoleSwitcher /></div>
           <span style={{
             background: "rgba(157,78,221,0.2)",
             border: `1px solid rgba(157,78,221,0.4)`,
