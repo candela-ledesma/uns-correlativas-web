@@ -57,7 +57,7 @@ export default function GuardarPlanDrawer({
   onClose,
 }: {
   data: ParseResult;
-  fuente: "gemini" | "parser";
+  fuente: "gemini" | "parser" | "merged";
   onClose: () => void;
 }) {
   const [saveState, setSaveState] = useState<SaveState>({ type: "confirming" });
@@ -108,7 +108,7 @@ export default function GuardarPlanDrawer({
     }
   }
 
-  const fuenteLabel = fuente === "gemini" ? "Gemini" : "Parser clásico";
+  const fuenteLabel = fuente === "gemini" ? "Gemini" : fuente === "merged" ? "Merge interactivo" : "Parser clásico";
   const isSaving = saveState.type === "saving";
 
   return (

@@ -2,7 +2,6 @@ import { BG_GRADIENT, HEADING_FONT } from "@/lib/ui/tokens";
 import { notFound } from "next/navigation";
 import PlanViewer from "@/components/plan/PlanViewer";
 import PlanStatus from "@/components/plan/PlanStatus";
-import { getCarreraById } from "@/lib/data/carreras";
 import {
     formatValidationIssues,
     loadPlanData,
@@ -16,17 +15,18 @@ export async function generateMetadata({
     params: Promise<{ carrera: string }>;
     }): Promise<Metadata> {
     const { carrera } = await params;
-    const carreraData = getCarreraById(carrera);
+    const result = await loadPlanData(carrera, null);
 
-    if (!carreraData) {
+    if (result.status === "not-found") {
     return {
         title: "Carrera no encontrada | Planes de estudio UNS",
     };
     }
 
+    const nombre = result.carrera.nombre;
     return {
-    title: `${carreraData.nombre} | Planes de estudio UNS`,
-    description: `Plan de estudios y correlativas de ${carreraData.nombre}.`,
+    title: `${nombre} | Planes de estudio UNS`,
+    description: `Plan de estudios y correlativas de ${nombre}.`,
     };
 }
 

@@ -5,6 +5,7 @@ import { ACCENT, GLASS, TEXT, TEXT_SEC, SURFACE, BTN, BTN_VIOLET, INPUT, STATUS_
 import { CARD, LABEL } from "./adminTabStyles";
 import DiffExportDrawer, { computeDiffs, type DiffItem } from "./DiffExportDrawer";
 import GuardarPlanDrawer from "./GuardarPlanDrawer";
+import MergeInteractivo from "./MergeInteractivo";
 import type { ParseResult } from "./DiffExportDrawer";
 import { GEMINI_MODELS, DEFAULT_GEMINI_MODEL, type GeminiModelValue, type ModelLimits } from "@/lib/ai/models";
 import JsonViewer from "../JsonViewer";
@@ -92,6 +93,7 @@ export default function CargarPlanTab({ canPublish = true }: { canPublish?: bool
   const [validationOpenGemini, setValidationOpenGemini] = useState(true);
   const [validationOpenLocal, setValidationOpenLocal]   = useState(true);
   const [showFewShot, setShowFewShot] = useState(false);
+  const [showMerge, setShowMerge] = useState(false);
   const [activeDiffIdx, setActiveDiffIdx] = useState(0);
   const [busquedaMateria, setBusquedaMateria] = useState("");
   const [confirmState, setConfirmState] = useState<ConfirmState | null>(null);
@@ -690,14 +692,32 @@ export default function CargarPlanTab({ canPublish = true }: { canPublish?: bool
             </div>
 
             {ambos && (
-              <div style={{ marginTop: 12, display: "flex", justifyContent: "flex-end" }}>
+              <div style={{ marginTop: 12, display: "flex", gap: 8, justifyContent: "flex-end", flexWrap: "wrap" }}>
                 <button className="btn-press"
-                  onClick={() => setShowFewShot(v => !v)}
-                  style={{ ...BTN, borderRadius: 8, padding: "8px 14px", fontSize: 12, fontWeight: 500 }}
+                  onClick={() => { setShowMerge(v => !v); setShowFewShot(false); }}
+                  style={{
+                    ...BTN, borderRadius: 8, padding: "8px 14px", fontSize: 12, fontWeight: 600,
+                    color: showMerge ? ACCENT : TEXT_SEC,
+                    borderColor: showMerge ? ACCENT : GLASS.strong,
+                  }}
+                >
+                  ⚡ {showMerge ? "Cerrar merge" : "Merge interactivo"}
+                </button>
+                <button className="btn-press"
+                  onClick={() => { setShowFewShot(v => !v); setShowMerge(false); }}
+                  style={{ ...BTN, borderRadius: 8, padding: "8px 14px", fontSize: 12, fontWeight: 500, color: TEXT_SEC, borderColor: GLASS.strong }}
                 >
                   🧪 {showFewShot ? "Cerrar few-shot" : "Exportar diff como few-shot"}
                 </button>
               </div>
+            )}
+
+            {showMerge && resultadoLocal && resultadoGemini && (
+              <MergeInteractivo
+                parser={resultadoLocal}
+                gemini={resultadoGemini}
+                onClose={() => setShowMerge(false)}
+              />
             )}
 
             {showFewShot && resultadoGemini && (

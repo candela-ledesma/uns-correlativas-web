@@ -56,7 +56,7 @@ function asStringOrNull(
   path: string,
   issues: PlanValidationIssue[]
 ): string | null {
-  if (value === null) return null;
+  if (value === null || value === undefined) return null;
 
   if (typeof value !== "string") {
     addIssue(issues, "shape", path, "Debe ser string o null");

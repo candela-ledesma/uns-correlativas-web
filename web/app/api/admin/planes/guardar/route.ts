@@ -55,7 +55,7 @@ export async function POST(request: Request) {
 
   let body: {
     plan: ParseResult;
-    fuente: "gemini" | "parser";
+    fuente: "gemini" | "parser" | "merged";
     publicar: boolean;
     resolucion: "reemplazar" | "conservar" | "nueva_version" | null;
     motivo?: string;
@@ -160,10 +160,8 @@ export async function POST(request: Request) {
     // Borrar pendiente si existe
     await prisma.planPendiente.delete({ where: { slug } }).catch(() => {});
 
-    // Registrar carrera si es nueva
-    if (!fuente || fuente === "parser") {
-      await registrarCarreraEnDB(slug, `${slug}.json`, plan.plan.carrera, departamento).catch(() => {});
-    }
+    // Registrar carrera si es nueva (independientemente de la fuente)
+    await registrarCarreraEnDB(slug, `${slug}.json`, plan.plan.carrera, departamento).catch(() => {});
 
     await createAuditEvent({
       actorUserId: session.user.id,

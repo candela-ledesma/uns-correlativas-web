@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import {
   GLASS, TEXT, TEXT_SEC, SURFACE, BTN, BTN_VIOLET, INPUT,
 } from "@/lib/ui/tokens";
@@ -43,6 +43,7 @@ type Props = {
   saving: boolean;
   onGuardar: (newJson: string, newNombre: string, newDepartamento: string) => void;
   onCancelar: () => void;
+  onDirtyChange?: (dirty: boolean) => void;
 };
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -285,6 +286,7 @@ export default function PlanEditorModal({
   saving,
   onGuardar,
   onCancelar,
+  onDirtyChange,
 }: Props) {
   const [mode, setMode] = useState<"form" | "json">("form");
 
@@ -298,6 +300,7 @@ export default function PlanEditorModal({
   const [departamento, setDepartamento] = useState(initialDepartamento);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [busqueda, setBusqueda] = useState("");
+  const [confirmSalir, setConfirmSalir] = useState(false);
 
   // JSON mode state — initialized from form on toggle
   const [jsonText, setJsonText] = useState(jsonStr);
@@ -308,6 +311,31 @@ export default function PlanEditorModal({
     if (!initialPlan) return jsonStr;
     return serializePlan({ ...initialPlan, plan: metadata, materias });
   }, [initialPlan, jsonStr, metadata, materias]);
+
+  // Detectar cambios sin guardar
+  const haycambios = useMemo(() => {
+    if (nombre !== initialNombre || departamento !== initialDepartamento) return true;
+    const current = mode === "json" ? jsonText : buildJson();
+    try {
+      return JSON.stringify(JSON.parse(current)) !== JSON.stringify(JSON.parse(jsonStr));
+    } catch {
+      return true;
+    }
+  }, [mode, jsonText, buildJson, jsonStr, nombre, initialNombre, departamento, initialDepartamento]);
+
+  // Notificar al padre cuando cambia el estado dirty
+  useEffect(() => { onDirtyChange?.(haycambios); }, [haycambios, onDirtyChange]);
+
+  // Al desmontar, notificar que ya no hay cambios pendientes
+  useEffect(() => { return () => onDirtyChange?.(false); }, [onDirtyChange]);
+
+  // Interceptar cierre de pestaña / navegación del browser
+  useEffect(() => {
+    if (!haycambios) return;
+    const handler = (e: BeforeUnloadEvent) => { e.preventDefault(); };
+    window.addEventListener("beforeunload", handler);
+    return () => window.removeEventListener("beforeunload", handler);
+  }, [haycambios]);
 
   // Toggle to JSON: sync form → JSON
   function goToJson() {
@@ -348,12 +376,41 @@ export default function PlanEditorModal({
     ? materias.filter(m => m.id.toLowerCase().includes(q) || m.nombre.toLowerCase().includes(q))
     : materias;
 
+  function handleCancelar() {
+    if (haycambios) { setConfirmSalir(true); } else { onCancelar(); }
+  }
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+      {/* ── Confirm salir ── */}
+      {confirmSalir && (
+        <div style={{
+          display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap",
+          padding: "12px 16px", borderRadius: 10,
+          background: "rgba(248,113,113,0.08)", border: "1px solid rgba(248,113,113,0.35)",
+        }}>
+          <span style={{ fontSize: 13, color: "#fca5a5", flex: 1 }}>
+            ⚠ Tenés cambios sin guardar. ¿Seguro que querés salir?
+          </span>
+          <button className="btn-press"
+            onClick={() => setConfirmSalir(false)}
+            style={{ ...BTN_VIOLET, borderRadius: 7, padding: "5px 14px", fontSize: 12 }}
+          >
+            Seguir editando
+          </button>
+          <button className="btn-press"
+            onClick={onCancelar}
+            style={{ ...BTN, borderRadius: 7, padding: "5px 14px", fontSize: 12, color: "#f87171", borderColor: "rgba(248,113,113,0.4)" }}
+          >
+            Salir sin guardar
+          </button>
+        </div>
+      )}
+
       {/* ── Toolbar ── */}
       <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
         <button className="btn-press"
-          onClick={onCancelar}
+          onClick={handleCancelar}
           style={{ ...BTN, borderRadius: 8, padding: "4px 14px", fontSize: 12 }}
         >
           ← Volver
