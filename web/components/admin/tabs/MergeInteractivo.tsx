@@ -17,21 +17,6 @@ type Resolucion = {
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
-function serializeCor(val: CorValue): string {
-  if (!val || typeof val !== "object") return String(val ?? "ninguna");
-  const v = val as { para_cursar?: string | null; para_rendir?: string | null };
-  return `cursar:${v.para_cursar ?? "—"} / rendir:${v.para_rendir ?? "—"}`;
-}
-
-function serializeCorMap(cors: Record<string, CorValue>): string {
-  return (
-    Object.entries(cors)
-      .sort(([a], [b]) => a.localeCompare(b))
-      .map(([k, v]) => `${k} (${serializeCor(v)})`)
-      .join("\n") || "ninguna"
-  );
-}
-
 function parseCorsManual(raw: string): Record<string, CorValue> {
   // Formato esperado de la serialización: "M001 (cursar:M000 / rendir:—)\n..."
   // Se acepta también JSON puro si el usuario lo pega directamente
@@ -207,11 +192,7 @@ export default function MergeInteractivo({
 
   function abrirEdicion(key: string, diff: DiffItem) {
     const res = resoluciones.get(key);
-    const valorActual =
-      res?.valorManual ??
-      (diff.tipo === "correlativa_distinta"
-        ? diff.groundTruth  // prefill con valor del parser
-        : diff.groundTruth);
+    const valorActual = res?.valorManual ?? diff.groundTruth;
     setEditingValue(valorActual);
     setEditingKey(key);
     setLado(key, "manual");

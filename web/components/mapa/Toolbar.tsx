@@ -80,7 +80,7 @@ export function Toolbar({
       </div>
 
       {/* Fila 2: botones de vista (scroll horizontal en mobile) */}
-      <div style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" as never }}>
+      <div style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
         <div style={{ display: "inline-flex", alignItems: "center", gap: 6, whiteSpace: "nowrap" }}>
           <div style={{ display: "flex", background: GLASS.elevated, border: `1px solid ${GLASS.border}`, borderRadius: 7, overflow: "hidden", flexShrink: 0 }}>
             {(["cuatrimestre", "topologico"] as LayoutMode[]).map((mode, i) => {

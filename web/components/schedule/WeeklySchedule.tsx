@@ -464,7 +464,7 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
           ...SURFACE,
           overflowX: "auto",
           overflowY: "auto",
-          WebkitOverflowScrolling: "touch" as never,
+          WebkitOverflowScrolling: "touch",
           maxHeight: "calc(100svh - 200px)",
         }}
       >

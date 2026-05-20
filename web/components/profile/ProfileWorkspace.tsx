@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import Link from "next/link";
 import { signOut } from "next-auth/react";
 import {
@@ -27,7 +27,7 @@ export default function ProfileWorkspace({
   iniciales,
   initialContext,
 }: Props) {
-  const [context] = useState<UserProductContextResponse>(initialContext);
+  const context = initialContext;
 
   const activeCareerId = context.activeCareerId ?? context.enrolledCareerIds[0] ?? null;
 

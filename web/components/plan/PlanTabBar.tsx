@@ -16,7 +16,7 @@ type Props = {
 };
 
 const tabActiveStyle = { background: "rgba(157,78,221,0.30)", color: "#e2d9f3", boxShadow: `0 1px 4px ${ACCENT}44` };
-const tabIdleStyle   = { color: TEXT_SEC };
+const tabIdleStyle   = { background: "transparent", color: TEXT_SEC };
 const iconBtnStyle   = { background: "transparent", border: `1px solid ${GLASS.strong}`, color: TEXT_SEC, cursor: "pointer", borderRadius: 8, width: 32, height: 32, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16 } as const;
 
 const syncStyles: Record<SyncStatus, CSSProperties> = {
@@ -75,7 +75,7 @@ export default function PlanTabBar({ vistaActiva, onChange, onOpenHelp, backHref
       </div>
 
       {/* Fila 2: tabs */}
-      <div style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" as never }}>
+      <div style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
         <div style={{ display: "inline-flex", background: "rgba(255,255,255,0.06)", borderRadius: 10, padding: 4, whiteSpace: "nowrap" }}>
           {(["plan", "Plan Vista", "Planificador", "Mapa"] as const).map((vista) => (
             <button
@@ -90,7 +90,6 @@ export default function PlanTabBar({ vistaActiva, onChange, onOpenHelp, backHref
                 fontSize: "clamp(11px, 3vw, 13px)",
                 fontWeight: 600,
                 cursor: "pointer",
-                background: vistaActiva === vista ? "rgba(157,78,221,0.30)" : "transparent",
                 textTransform: "capitalize",
                 whiteSpace: "nowrap",
               }}
