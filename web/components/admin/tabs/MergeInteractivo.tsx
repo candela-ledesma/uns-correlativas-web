@@ -476,7 +476,7 @@ export default function MergeInteractivo({
       {guardarAbierto && (
         <GuardarPlanDrawer
           data={mergedPlan}
-          fuente="gemini"
+          fuente="merged"
           onClose={() => setGuardarAbierto(false)}
         />
       )}

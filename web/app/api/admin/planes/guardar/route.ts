@@ -55,7 +55,7 @@ export async function POST(request: Request) {
 
   let body: {
     plan: ParseResult;
-    fuente: "gemini" | "parser";
+    fuente: "gemini" | "parser" | "merged";
     publicar: boolean;
     resolucion: "reemplazar" | "conservar" | "nueva_version" | null;
     motivo?: string;
