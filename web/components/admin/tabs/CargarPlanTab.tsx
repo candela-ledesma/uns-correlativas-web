@@ -697,15 +697,15 @@ export default function CargarPlanTab({ canPublish = true }: { canPublish?: bool
                   onClick={() => { setShowMerge(v => !v); setShowFewShot(false); }}
                   style={{
                     ...BTN, borderRadius: 8, padding: "8px 14px", fontSize: 12, fontWeight: 600,
-                    borderColor: showMerge ? ACCENT : undefined,
-                    color: showMerge ? ACCENT : undefined,
+                    color: showMerge ? ACCENT : TEXT_SEC,
+                    borderColor: showMerge ? ACCENT : GLASS.strong,
                   }}
                 >
                   ⚡ {showMerge ? "Cerrar merge" : "Merge interactivo"}
                 </button>
                 <button className="btn-press"
                   onClick={() => { setShowFewShot(v => !v); setShowMerge(false); }}
-                  style={{ ...BTN, borderRadius: 8, padding: "8px 14px", fontSize: 12, fontWeight: 500 }}
+                  style={{ ...BTN, borderRadius: 8, padding: "8px 14px", fontSize: 12, fontWeight: 500, color: TEXT_SEC, borderColor: GLASS.strong }}
                 >
                   🧪 {showFewShot ? "Cerrar few-shot" : "Exportar diff como few-shot"}
                 </button>

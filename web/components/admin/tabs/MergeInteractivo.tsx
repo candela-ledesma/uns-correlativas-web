@@ -370,8 +370,8 @@ export default function MergeInteractivo({
                   onClick={() => abrirEdicion(key, diff)}
                   style={{
                     ...BTN, borderRadius: 6, padding: "4px 12px", fontSize: 11,
-                    borderColor: res?.lado === "manual" ? ACCENT : undefined,
-                    color: res?.lado === "manual" ? ACCENT : undefined,
+                    color: res?.lado === "manual" ? ACCENT : TEXT_SEC,
+                    borderColor: res?.lado === "manual" ? ACCENT : GLASS.strong,
                   }}
                 >
                   {res?.lado === "manual"
