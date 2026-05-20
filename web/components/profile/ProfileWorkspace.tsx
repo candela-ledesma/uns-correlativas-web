@@ -74,6 +74,7 @@ export default function ProfileWorkspace({
           <div className={styles.pillRow}>
             <span className={styles.pillGreen}>Cuenta activa</span>
             <span className={styles.pillViolet}>{roleLabel}</span>
+            {role === "ADMIN" && <RoleSwitcher />}
           </div>
         </div>
 
@@ -172,17 +173,6 @@ export default function ProfileWorkspace({
         </div>
       </section>
 
-      {role === "ADMIN" && (
-        <>
-          <div className={styles.divider} />
-          <section className={styles.section}>
-            <p className={styles.sectionLabel}>VER COMO</p>
-            <div style={{ paddingTop: 4 }}>
-              <RoleSwitcher />
-            </div>
-          </section>
-        </>
-      )}
     </article>
   );
 }
