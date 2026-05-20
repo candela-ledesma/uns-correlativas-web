@@ -77,13 +77,16 @@ export default function AdminPanel({ canPublish = true }: { canPublish?: boolean
       }}>
         {/* Fila 1: siempre visible */}
         <div className="ap-row1">
-          <span style={{ fontWeight: 700, fontSize: 14, color: TEXT, whiteSpace: "nowrap" }}>
+          <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
+            <NavLink href="/" label="← Inicio" editorDirty={editorDirty} onConfirm={setConfirmNav} router={router} />
+            <NavLink href="/perfil" label="Perfil" editorDirty={editorDirty} onConfirm={setConfirmNav} router={router} className="ap-perfil-desktop" />
+          </div>
+
+          <span style={{ fontWeight: 700, fontSize: 14, color: TEXT, whiteSpace: "nowrap", marginLeft: 4 }}>
             Panel de administración
           </span>
 
           <div className="ap-desktop-right">
-            <NavLink href="/" label="← Inicio" editorDirty={editorDirty} onConfirm={setConfirmNav} router={router} />
-            <NavLink href="/perfil" label="Perfil" editorDirty={editorDirty} onConfirm={setConfirmNav} router={router} className="ap-perfil-desktop" />
             <RoleSwitcher />
             <span style={{
               background: "rgba(157,78,221,0.2)",
