@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { TEXT_SEC, BTN, BTN_VIOLET, INPUT } from "@/lib/ui/tokens";
-import { DEFAULT_SYSTEM_PROMPT, GENERIC_SYSTEM_PROMPT, PROMPT_VERSION } from "@/lib/ai/prompt";
+import { DEFAULT_SYSTEM_PROMPT, GENERIC_SYSTEM_PROMPT, PROMPT_VERSION, GENERIC_PROMPT_VERSION } from "@/lib/ai/prompt";
 
 import { CARD, LABEL } from "./adminTabStyles";
 
@@ -219,6 +219,17 @@ export default function ConfigTab({ canEdit = true }: { canEdit?: boolean }) {
               cursor: canEdit ? undefined : "default",
             }}
           />
+        </div>
+        <div style={{ display: "flex", gap: 12, marginTop: 10, alignItems: "center" }}>
+          <span style={{
+            fontSize: 11, color: TEXT_SEC,
+            background: "rgba(255,255,255,0.05)",
+            border: "1px solid rgba(255,255,255,0.08)",
+            borderRadius: 6, padding: "3px 8px",
+            fontFamily: "monospace",
+          }}>
+            {GENERIC_PROMPT_VERSION}
+          </span>
         </div>
         <div style={{ display: "flex", gap: 8, marginTop: 12, alignItems: "center" }}>
           {canEdit && (
