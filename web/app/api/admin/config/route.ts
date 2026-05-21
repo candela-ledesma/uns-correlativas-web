@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 
 export async function GET() {
   const session = await auth();
-  if (!session?.user?.id || session.user.role !== Role.ADMIN) {
+  if (!session?.user?.id || (session.user.role !== Role.ADMIN && session.user.realRole !== Role.ADMIN)) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
@@ -22,7 +22,7 @@ export async function GET() {
 
 export async function POST(request: Request) {
   const session = await auth();
-  if (!session?.user?.id || session.user.role !== Role.ADMIN) {
+  if (!session?.user?.id || (session.user.role !== Role.ADMIN && session.user.realRole !== Role.ADMIN)) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
@@ -57,7 +57,7 @@ export async function POST(request: Request) {
 
 export async function DELETE() {
   const session = await auth();
-  if (!session?.user?.id || session.user.role !== Role.ADMIN) {
+  if (!session?.user?.id || (session.user.role !== Role.ADMIN && session.user.realRole !== Role.ADMIN)) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 

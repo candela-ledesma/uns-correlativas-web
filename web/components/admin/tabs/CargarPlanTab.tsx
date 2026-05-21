@@ -109,11 +109,11 @@ export default function CargarPlanTab({ canPublish = true }: { canPublish?: bool
   const systemPromptRef = useRef<string>("");
   const genericPromptRef = useRef<string>(GENERIC_SYSTEM_PROMPT);
   useEffect(() => {
-    fetch("/api/admin/config")
+    fetch("/api/admin/planes/parsear")
       .then(r => r.ok ? r.json() : null)
-      .then((body: { config?: { systemPrompt?: string; genericPrompt?: string } } | null) => {
-        if (body?.config?.systemPrompt) systemPromptRef.current = body.config.systemPrompt;
-        if (body?.config?.genericPrompt) genericPromptRef.current = body.config.genericPrompt;
+      .then((body: { systemPrompt?: string; genericPrompt?: string } | null) => {
+        if (body?.systemPrompt) systemPromptRef.current = body.systemPrompt;
+        if (body?.genericPrompt) genericPromptRef.current = body.genericPrompt;
       })
       .catch(() => {});
   }, []);
