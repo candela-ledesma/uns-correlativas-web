@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { ACCENT, GLASS, TEXT, TEXT_SEC, SURFACE, BTN, BTN_VIOLET, INPUT, STATUS_COLORS, ERROR_PANEL } from "@/lib/ui/tokens";
 import { CARD, LABEL } from "./adminTabStyles";
 import DiffExportDrawer, { computeDiffs, type DiffItem } from "./DiffExportDrawer";
@@ -8,6 +9,7 @@ import GuardarPlanDrawer from "./GuardarPlanDrawer";
 import MergeInteractivo from "./MergeInteractivo";
 import type { ParseResult } from "./DiffExportDrawer";
 import { GEMINI_MODELS, DEFAULT_GEMINI_MODEL, type GeminiModelValue, type ModelLimits } from "@/lib/ai/models";
+import { GENERIC_SYSTEM_PROMPT } from "@/lib/ai/prompt";
 import JsonViewer from "../JsonViewer";
 
 type ProgressStep = "leyendo" | "enviando" | "generando" | "guardando" | "parseando";
@@ -105,11 +107,13 @@ export default function CargarPlanTab({ canPublish = true }: { canPublish?: bool
   const { usage: dailyUsage, refresh: refreshDailyUsage } = useDailyUsage();
 
   const systemPromptRef = useRef<string>("");
+  const genericPromptRef = useRef<string>(GENERIC_SYSTEM_PROMPT);
   useEffect(() => {
     fetch("/api/admin/planes/parsear")
       .then(r => r.ok ? r.json() : null)
-      .then((body: { systemPrompt?: string } | null) => {
+      .then((body: { systemPrompt?: string; genericPrompt?: string } | null) => {
         if (body?.systemPrompt) systemPromptRef.current = body.systemPrompt;
+        if (body?.genericPrompt) genericPromptRef.current = body.genericPrompt;
       })
       .catch(() => {});
   }, []);
@@ -278,7 +282,8 @@ export default function CargarPlanTab({ canPublish = true }: { canPublish?: bool
       const fd = new FormData();
       fd.append("file", file);
       fd.append("model", model);
-      if (systemPromptRef.current) fd.append("system_prompt", systemPromptRef.current);
+      const prompt = uniType === "otra" ? genericPromptRef.current : systemPromptRef.current;
+      if (prompt) fd.append("system_prompt", prompt);
       parsearSSE("/api/admin/planes/parsear", fd, "leyendo", setStatusGemini);
     }
     if (fuente === "parser" || fuente === "ambos") {
@@ -838,15 +843,113 @@ function ModelSelector({
   dailyUsage: DailyUsage;
 }) {
   const [open, setOpen] = useState(false);
+  const [rect, setRect] = useState<DOMRect | null>(null);
+  const btnRef = useRef<HTMLButtonElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const selected = GEMINI_MODELS.find(m => m.value === model)!;
+
+  function handleOpen() {
+    if (btnRef.current) setRect(btnRef.current.getBoundingClientRect());
+    setOpen(v => !v);
+  }
+
+  useEffect(() => {
+  if (!open) return;
+  
+  function handleClose(e: MouseEvent) {
+    const target = e.target as Node;
+    if (!btnRef.current?.contains(target) && !dropdownRef.current?.contains(target)) {
+      setOpen(false);
+    }
+  }
+  
+  // Actualizar posición en cada frame mientras está abierto
+  let rafId: number;
+  function updateRect() {
+    if (btnRef.current) setRect(btnRef.current.getBoundingClientRect());
+    rafId = requestAnimationFrame(updateRect);
+  }
+  rafId = requestAnimationFrame(updateRect);
+  
+  document.addEventListener("mousedown", handleClose);
+  return () => {
+    document.removeEventListener("mousedown", handleClose);
+    cancelAnimationFrame(rafId);
+  };
+}, [open]);
 
   const totalHoy = Object.values(dailyUsage.byModel).reduce((s, e) => s + e.total, 0);
   const totalReqs = Object.values(dailyUsage.byModel).reduce((s, e) => s + e.requests, 0);
 
+  const dropdown = open && rect && createPortal(
+    <div ref={dropdownRef} style={{
+      position: "fixed",
+      top: rect.bottom + 4,
+      left: rect.left,
+      width: rect.width,
+      maxHeight: `calc(100vh - ${rect.bottom + 12}px)`,
+      zIndex: 9999,
+      background: "#16213e",
+      borderRadius: 10,
+      overflow: "hidden auto",
+      boxShadow: "0 8px 30px rgba(0,0,0,0.6)",
+      border: `1px solid ${GLASS.raised}`,
+    }}>
+      {totalHoy > 0 && (
+        <div style={{ padding: "8px 14px", borderBottom: `1px solid rgba(255,255,255,0.1)`, fontSize: 10, color: TEXT_SEC, display: "flex", gap: 12 }}>
+          <span>Hoy ({dailyUsage.date})</span>
+          <span style={{ color: TEXT }}>{fmt(totalHoy)} tokens totales</span>
+          <span>{totalReqs} request{totalReqs !== 1 ? "s" : ""}</span>
+        </div>
+      )}
+      {GEMINI_MODELS.map(m => {
+        const isSelected = m.value === model;
+        const lastUsage = usageByModel[m.value] ?? null;
+        const dayEntry = dailyUsage.byModel[m.value] ?? null;
+        const { rpm, tpm, rpd } = m.limits as ModelLimits;
+        const used = dayEntry?.requests ?? 0;
+        const pct = Math.min(used / rpd, 1);
+        const barColor = pct >= 1 ? "#ef4444" : pct >= 0.8 ? "#f59e0b" : "#22c55e";
+        return (
+          <button className="btn-press"
+            key={m.value}
+            onClick={() => { onSelect(m.value as GeminiModelValue); setOpen(false); }}
+            style={{
+              display: "block", width: "100%", textAlign: "left",
+              padding: "10px 14px", background: isSelected ? "rgba(157,78,221,0.2)" : "transparent",
+              border: "none", borderBottom: `1px solid rgba(255,255,255,0.06)`,
+              cursor: "pointer", color: TEXT,
+            }}
+          >
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <span style={{ fontSize: 13, fontWeight: isSelected ? 600 : 400 }}>{m.label}</span>
+              {isSelected && <span style={{ fontSize: 10, color: ACCENT }}>✓</span>}
+            </div>
+            <div style={{ fontSize: 10, color: TEXT_SEC, marginTop: 4, display: "flex", gap: 10 }}>
+              <span title="Requests por minuto">{rpm} RPM</span>
+              <span title="Tokens por minuto">{fmt(tpm)} TPM</span>
+              <span title="Requests por día">{fmt(rpd)} RPD</span>
+            </div>
+            <div style={{ marginTop: 6 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: TEXT_SEC, marginBottom: 3 }}>
+                <span>{used} / {fmt(rpd)} req hoy</span>
+                {lastUsage?.totalTokens != null && <span>último: {fmt(lastUsage.totalTokens)} tokens</span>}
+              </div>
+              <div style={{ height: 3, borderRadius: 2, background: "rgba(255,255,255,0.08)", overflow: "hidden" }}>
+                <div style={{ height: "100%", borderRadius: 2, width: `${pct * 100}%`, background: barColor, transition: "width 0.3s" }} />
+              </div>
+            </div>
+          </button>
+        );
+      })}
+    </div>,
+    document.body,
+  );
+
   return (
-    <div style={{ position: "relative" }}>
-      <button className="btn-press"
-        onClick={() => setOpen(v => !v)}
+    <>
+      <button ref={btnRef} className="btn-press"
+        onClick={handleOpen}
         style={{
           ...INPUT, borderRadius: 8, padding: "8px 10px", fontSize: 13,
           width: "100%", textAlign: "left", cursor: "pointer",
@@ -855,87 +958,12 @@ function ModelSelector({
       >
         <span>{selected.label}</span>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          {totalHoy > 0 && (
-            <span style={{ fontSize: 10, color: TEXT_SEC }}>
-              {fmt(totalHoy)} tokens hoy
-            </span>
-          )}
+          {totalHoy > 0 && <span style={{ fontSize: 10, color: TEXT_SEC }}>{fmt(totalHoy)} tokens hoy</span>}
           <span style={{ fontSize: 10, color: TEXT_SEC }}>▼</span>
         </div>
       </button>
-
-      {open && (
-        <div style={{
-          position: "absolute", top: "calc(100% + 4px)", left: 0, right: 0, zIndex: 50,
-          background: "#16213e",
-          borderRadius: 10, overflow: "hidden",
-          boxShadow: "0 8px 30px rgba(0,0,0,0.6)",
-          border: `1px solid ${GLASS.border}`,
-        }}>
-          {totalHoy > 0 && (
-            <div style={{
-              padding: "8px 14px", borderBottom: `1px solid rgba(255,255,255,0.1)`,
-              fontSize: 10, color: TEXT_SEC, display: "flex", gap: 12,
-            }}>
-              <span>Hoy ({dailyUsage.date})</span>
-              <span style={{ color: TEXT }}>{fmt(totalHoy)} tokens totales</span>
-              <span>{totalReqs} request{totalReqs !== 1 ? "s" : ""}</span>
-            </div>
-          )}
-          {GEMINI_MODELS.map(m => {
-            const isSelected = m.value === model;
-            const lastUsage = usageByModel[m.value] ?? null;
-            const dayEntry = dailyUsage.byModel[m.value] ?? null;
-            const { rpm, tpm, rpd } = m.limits as ModelLimits;
-            return (
-              <button className="btn-press"
-                key={m.value}
-                onClick={() => { onSelect(m.value as GeminiModelValue); setOpen(false); }}
-                style={{
-                  display: "block", width: "100%", textAlign: "left",
-                  padding: "10px 14px", background: isSelected ? "rgba(157,78,221,0.2)" : "transparent",
-                  border: "none", borderBottom: `1px solid rgba(255,255,255,0.06)`,
-                  cursor: "pointer", color: TEXT,
-                }}
-              >
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <span style={{ fontSize: 13, fontWeight: isSelected ? 600 : 400 }}>{m.label}</span>
-                  {isSelected && <span style={{ fontSize: 10, color: ACCENT }}>✓</span>}
-                </div>
-                <div style={{ fontSize: 10, color: TEXT_SEC, marginTop: 4, display: "flex", gap: 10 }}>
-                  <span title="Requests por minuto">{rpm} RPM</span>
-                  <span title="Tokens por minuto">{fmt(tpm)} TPM</span>
-                  <span title="Requests por día">{fmt(rpd)} RPD</span>
-                </div>
-                {(() => {
-                  const used = dayEntry?.requests ?? 0;
-                  const pct = Math.min(used / rpd, 1);
-                  const barColor = pct >= 1 ? "#ef4444" : pct >= 0.8 ? "#f59e0b" : "#22c55e";
-                  return (
-                    <div style={{ marginTop: 6 }}>
-                      <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: TEXT_SEC, marginBottom: 3 }}>
-                        <span>{used} / {fmt(rpd)} req hoy</span>
-                        {lastUsage?.totalTokens != null && (
-                          <span>último: {fmt(lastUsage.totalTokens)} tokens</span>
-                        )}
-                      </div>
-                      <div style={{ height: 3, borderRadius: 2, background: "rgba(255,255,255,0.08)", overflow: "hidden" }}>
-                        <div style={{
-                          height: "100%", borderRadius: 2,
-                          width: `${pct * 100}%`,
-                          background: barColor,
-                          transition: "width 0.3s",
-                        }} />
-                      </div>
-                    </div>
-                  );
-                })()}
-              </button>
-            );
-          })}
-        </div>
-      )}
-    </div>
+      {dropdown}
+    </>
   );
 }
 

@@ -3,7 +3,7 @@ import { auth } from "@/auth";
 import { Role } from "@/lib/auth/roles";
 import { GoogleGenAI } from "@google/genai";
 import { DEFAULT_GEMINI_MODEL } from "@/lib/ai/models";
-import { DEFAULT_SYSTEM_PROMPT, PROMPT_VERSION } from "@/lib/ai/prompt";
+import { DEFAULT_SYSTEM_PROMPT, GENERIC_SYSTEM_PROMPT, PROMPT_VERSION } from "@/lib/ai/prompt";
 import { prisma } from "@/lib/db/prisma";
 
 export const dynamic = "force-dynamic";
@@ -17,15 +17,20 @@ export async function GET() {
   }
   const adminConfig = await readAdminConfig();
   const systemPrompt = adminConfig.systemPrompt ?? DEFAULT_SYSTEM_PROMPT;
-  return NextResponse.json({ systemPrompt, version: PROMPT_VERSION });
+  const genericPrompt = adminConfig.genericPrompt ?? GENERIC_SYSTEM_PROMPT;
+  return NextResponse.json({ systemPrompt, genericPrompt, version: PROMPT_VERSION });
 }
 
 const MAX_SIZE_MB = 20;
 
-async function readAdminConfig(): Promise<{ systemPrompt?: string }> {
+async function readAdminConfig(): Promise<{ systemPrompt?: string; genericPrompt?: string }> {
   try {
     const config = await prisma.adminConfig.findUnique({ where: { id: "singleton" } });
-    return config ?? {};
+    if (!config) return {};
+    return {
+      systemPrompt: config.systemPrompt,
+      genericPrompt: config.genericPrompt ?? undefined,
+    };
   } catch {
     return {};
   }

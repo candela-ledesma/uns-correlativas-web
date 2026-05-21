@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { TEXT_SEC, BTN, BTN_VIOLET, INPUT } from "@/lib/ui/tokens";
-import { DEFAULT_SYSTEM_PROMPT, PROMPT_VERSION } from "@/lib/ai/prompt";
+import { DEFAULT_SYSTEM_PROMPT, GENERIC_SYSTEM_PROMPT, PROMPT_VERSION, GENERIC_PROMPT_VERSION } from "@/lib/ai/prompt";
 
 import { CARD, LABEL } from "./adminTabStyles";
 
@@ -23,9 +23,12 @@ function formatDate(iso: string): string {
 
 export default function ConfigTab({ canEdit = true }: { canEdit?: boolean }) {
   const [prompt, setPrompt] = useState(DEFAULT_SYSTEM_PROMPT);
+  const [genericPrompt, setGenericPrompt] = useState(GENERIC_SYSTEM_PROMPT);
   const [saveState, setSaveState] = useState<SaveState>("idle");
+  const [genericSaveState, setGenericSaveState] = useState<SaveState>("idle");
   const [loadError, setLoadError] = useState<string | null>(null);
   const [promptCopied, setPromptCopied] = useState(false);
+  const [genericCopied, setGenericCopied] = useState(false);
   const [savedVersion, setSavedVersion] = useState<string | null>(null);
   const [savedAt, setSavedAt] = useState<string | null>(null);
 
@@ -35,6 +38,7 @@ export default function ConfigTab({ canEdit = true }: { canEdit?: boolean }) {
       .then(({ config }) => {
         if (!config) return;
         if (typeof config.systemPrompt === "string") setPrompt(config.systemPrompt);
+        if (typeof config.genericPrompt === "string") setGenericPrompt(config.genericPrompt);
         if (typeof config.version === "string") setSavedVersion(config.version);
         if (typeof config.updatedAt === "string") setSavedAt(config.updatedAt);
       })
@@ -63,14 +67,38 @@ export default function ConfigTab({ canEdit = true }: { canEdit?: boolean }) {
     setTimeout(() => setSaveState("idle"), 2500);
   }
 
-  function restaurar() {
-    setPrompt(DEFAULT_SYSTEM_PROMPT);
+  async function guardarGenerico() {
+    setGenericSaveState("saving");
+    try {
+      const res = await fetch("/api/admin/config", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ genericPrompt }),
+      });
+      if (res.ok) {
+        setGenericSaveState("saved");
+      } else {
+        setGenericSaveState("error");
+      }
+    } catch {
+      setGenericSaveState("error");
+    }
+    setTimeout(() => setGenericSaveState("idle"), 2500);
   }
+
+  function restaurar() { setPrompt(DEFAULT_SYSTEM_PROMPT); }
+  function restaurarGenerico() { setGenericPrompt(GENERIC_SYSTEM_PROMPT); }
 
   function copiarPrompt() {
     navigator.clipboard.writeText(prompt);
     setPromptCopied(true);
     setTimeout(() => setPromptCopied(false), 1500);
+  }
+
+  function copiarGenerico() {
+    navigator.clipboard.writeText(genericPrompt);
+    setGenericCopied(true);
+    setTimeout(() => setGenericCopied(false), 1500);
   }
 
   return (
@@ -99,7 +127,7 @@ export default function ConfigTab({ canEdit = true }: { canEdit?: boolean }) {
       </div>
 
       <div style={CARD}>
-        <div style={LABEL}>Prompt del parser</div>
+        <div style={LABEL}>Prompt UNS</div>
         <div>
           <label style={FIELD_LABEL}>System prompt</label>
           <textarea
@@ -162,13 +190,84 @@ export default function ConfigTab({ canEdit = true }: { canEdit?: boolean }) {
               onClick={restaurar}
               style={{ ...BTN, borderRadius: 8, padding: "8px 16px", fontSize: 13 }}
             >
-              ↩ Restaurar prompt
+              ↩ Restaurar
             </button>
           )}
           {saveState === "saved" && (
             <span style={{ fontSize: 11, color: "#22c55e" }}>Cambios aplicados al próximo parseo</span>
           )}
           {saveState === "error" && (
+            <span style={{ fontSize: 11, color: "#fca5a5" }}>No se pudo guardar</span>
+          )}
+        </div>
+      </div>
+
+      <div style={CARD}>
+        <div style={LABEL}>Prompt genérico (otras universidades)</div>
+        <div>
+          <label style={FIELD_LABEL}>System prompt</label>
+          <textarea
+            value={genericPrompt}
+            onChange={canEdit ? e => setGenericPrompt(e.target.value) : undefined}
+            readOnly={!canEdit}
+            rows={8}
+            style={{
+              ...INPUT, borderRadius: 8, padding: "10px 12px",
+              fontSize: 12, lineHeight: 1.6, resize: "vertical",
+              fontFamily: "monospace",
+              opacity: canEdit ? 1 : 0.6,
+              cursor: canEdit ? undefined : "default",
+            }}
+          />
+        </div>
+        <div style={{ display: "flex", gap: 12, marginTop: 10, alignItems: "center" }}>
+          <span style={{
+            fontSize: 11, color: TEXT_SEC,
+            background: "rgba(255,255,255,0.05)",
+            border: "1px solid rgba(255,255,255,0.08)",
+            borderRadius: 6, padding: "3px 8px",
+            fontFamily: "monospace",
+          }}>
+            {GENERIC_PROMPT_VERSION}
+          </span>
+        </div>
+        <div style={{ display: "flex", gap: 8, marginTop: 12, alignItems: "center" }}>
+          {canEdit && (
+            <button className="btn-press"
+              onClick={guardarGenerico}
+              disabled={genericSaveState === "saving"}
+              style={{
+                ...BTN_VIOLET, borderRadius: 8, padding: "8px 16px",
+                fontSize: 13, fontWeight: 600,
+                opacity: genericSaveState === "saving" ? 0.6 : 1,
+                cursor: genericSaveState === "saving" ? "not-allowed" : "pointer",
+              }}
+            >
+              {genericSaveState === "saving" ? "Guardando…" : genericSaveState === "saved" ? "✓ Guardado" : genericSaveState === "error" ? "⚠ Error" : "💾 Guardar"}
+            </button>
+          )}
+          <button className="btn-press"
+            onClick={copiarGenerico}
+            style={{
+              ...BTN, borderRadius: 8, padding: "8px 16px", fontSize: 13,
+              background: genericCopied ? "rgba(34,197,94,0.15)" : undefined,
+              transition: "background 0.2s",
+            }}
+          >
+            {genericCopied ? "✓ Copiado" : "📋 Copiar"}
+          </button>
+          {canEdit && (
+            <button className="btn-press"
+              onClick={restaurarGenerico}
+              style={{ ...BTN, borderRadius: 8, padding: "8px 16px", fontSize: 13 }}
+            >
+              ↩ Restaurar
+            </button>
+          )}
+          {genericSaveState === "saved" && (
+            <span style={{ fontSize: 11, color: "#22c55e" }}>Cambios aplicados al próximo parseo</span>
+          )}
+          {genericSaveState === "error" && (
             <span style={{ fontSize: 11, color: "#fca5a5" }}>No se pudo guardar</span>
           )}
         </div>
