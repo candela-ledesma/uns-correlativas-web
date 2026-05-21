@@ -181,11 +181,12 @@ model ProgressShare {
 }
 
 model AdminConfig {
-  id           String   @id @default("singleton")
-  systemPrompt String
-  version      String?
-  updatedAt    DateTime @updatedAt
-  createdAt    DateTime @default(now())
+  id            String   @id @default("singleton")
+  systemPrompt  String
+  genericPrompt String?
+  version       String?
+  updatedAt     DateTime @updatedAt
+  createdAt     DateTime @default(now())
 }
 
 model PlanPendiente {
