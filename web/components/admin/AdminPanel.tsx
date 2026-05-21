@@ -76,8 +76,8 @@ export default function AdminPanel({ canPublish = true }: { canPublish?: boolean
         {/* Fila 1: siempre visible */}
         <div className="ap-row1">
           <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
-            <NavLink href="/" label="← Inicio" editorDirty={editorDirty} onConfirm={setConfirmNav} router={router} />
-            <NavLink href="/perfil" label="Perfil" editorDirty={editorDirty} onConfirm={setConfirmNav} router={router} className="ap-perfil-desktop" />
+            <NavLink href="/" label="← Inicio" editorDirty={editorDirty} onConfirm={setConfirmNav} />
+            <NavLink href="/perfil" label="Perfil" editorDirty={editorDirty} onConfirm={setConfirmNav} className="ap-perfil-desktop" />
           </div>
 
           <span style={{ fontWeight: 700, fontSize: 14, color: TEXT, whiteSpace: "nowrap", marginLeft: 4 }}>
@@ -104,7 +104,7 @@ export default function AdminPanel({ canPublish = true }: { canPublish?: boolean
 
         {/* Fila 2: solo mobile — Perfil + badge */}
         <div className="ap-row2">
-          <NavLink href="/perfil" label="Perfil" editorDirty={editorDirty} onConfirm={setConfirmNav} router={router} mobile />
+          <NavLink href="/perfil" label="Perfil" editorDirty={editorDirty} onConfirm={setConfirmNav} mobile />
           <span style={{
             background: "rgba(157,78,221,0.2)",
             border: `1px solid rgba(157,78,221,0.4)`,
@@ -185,13 +185,12 @@ export default function AdminPanel({ canPublish = true }: { canPublish?: boolean
 // ── NavLink helper ────────────────────────────────────────────────────────────
 
 function NavLink({
-  href, label, editorDirty, onConfirm, router, className, mobile,
+  href, label, editorDirty, onConfirm, className, mobile,
 }: {
   href: string;
   label: string;
   editorDirty: boolean;
   onConfirm: (href: string) => void;
-  router: ReturnType<typeof useRouter>;
   className?: string;
   mobile?: boolean;
 }) {

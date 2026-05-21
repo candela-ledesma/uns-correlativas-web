@@ -59,7 +59,6 @@ export default function PlanViewer({
   carreraId,
   versionLabel,
   forceShowOnboarding = false,
-  defaultVersionId,
   versionOptions,
 }: Props) {
   const { status: sessionStatus } = useSession();

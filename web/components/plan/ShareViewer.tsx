@@ -14,7 +14,7 @@ import {
   construirPunterosGruposPorAnioYCuatrimestre,
   combinarSeccionesPorAnioYCuatrimestre,
 } from "@/lib/plan/planAgrupacion";
-import { TEXT, TEXT_SEC, SURFACE, GLASS, TITLE_SHADOW, BTN } from "@/lib/ui/tokens";
+import { TEXT, TEXT_SEC, SURFACE, TITLE_SHADOW, BTN } from "@/lib/ui/tokens";
 
 const NOOP = () => {};
 

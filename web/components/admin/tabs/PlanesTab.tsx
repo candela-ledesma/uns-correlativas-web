@@ -66,8 +66,8 @@ export default function PlanesTab({ onDirtyChange }: { onDirtyChange?: (dirty: b
       .finally(() => setLoading(false));
   }
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => { cargar(); }, []); // cargar es estable: no depende de props ni estado
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => { cargar(); }, []);
 
   async function toggleDisponible(p: PlanPublicado) {
     setToggling(p.id);

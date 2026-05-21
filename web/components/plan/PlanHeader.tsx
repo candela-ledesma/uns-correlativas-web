@@ -69,6 +69,7 @@ export default function PlanHeader({
     }, [confirmingReset]);
 
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         if (!shareLink) { setCopiedInModal(false); return; }
         const handler = (e: KeyboardEvent) => { if (e.key === "Escape") onClearShareLink?.(); };
         document.addEventListener("keydown", handler);
