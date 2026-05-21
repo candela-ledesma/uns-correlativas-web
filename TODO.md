@@ -70,7 +70,7 @@ Opciones para resolverlo a futuro:
 - `alta` [x] **ConfigTab — versión y fecha del prompt** — muestra versión (ej. v25) y timestamp de última modificación debajo del textarea
 - `media` [ ] **Validación de schema completo** — validar el JSON contra el schema completo de PlanData, no solo IDs/años/correlativas
 - `media` [ ] **Prompt genérico para otras universidades** — crear un segundo prompt (`GENERIC_SYSTEM_PROMPT`) sin supuestos específicos de UNS (sin reglas de I####, G####, CGCB, ni estructura de tabla UNS). En `CargarPlanTab`, cuando el admin selecciona "Otra universidad" como origen del PDF, el cliente usa el prompt genérico en vez del prompt UNS. El prompt genérico debe ser capaz de extraer el mismo schema JSON de cualquier plan de estudios en PDF, con instrucciones más declarativas y ejemplos menos específicos.
-- `media` [ ] **Merge interactivo de diferencias (estilo GitHub)** — al comparar parser vs Gemini, el admin puede resolver diferencia por diferencia eligiendo qué bloque conservar (parser, Gemini, o edición manual). El resultado es un JSON merged que se puede publicar directamente. Aplica a: correlativas extra/faltantes, requisito_especial distinto, campos de metadata distintos. Ejemplo: Gemini genera 8 correlativas para una materia y el parser genera 3 — el admin ve ambos bloques side-by-side y elige cuál es correcto antes de publicar.
+- `media` [x] **Merge interactivo de diferencias (estilo GitHub)** — al comparar parser vs Gemini, el admin puede resolver diferencia por diferencia eligiendo qué bloque conservar (parser, Gemini, o edición manual). El resultado es un JSON merged que se puede publicar directamente. Aplica a: correlativas extra/faltantes, requisito_especial distinto, campos de metadata distintos. Ejemplo: Gemini genera 8 correlativas para una materia y el parser genera 3 — el admin ve ambos bloques side-by-side y elige cuál es correcto antes de publicar.
 - `media` [x] **Navegación entre tabs sin perder estado de generación** — `CargarPlanTab` se mantiene montado con `display:none` al cambiar de tab; los demás tabs se montan en su primera visita (lazy mount) para no disparar fetches innecesarios al cargar el panel.
 - `media` [x] **Editor estructurado de planes publicados** — reemplaza el textarea JSON crudo por formulario con campos para nombre (CarreraConfig), departamento, carrera/universidad/código_plan (JSON), y tabla editable de materias con correlativas. Toggle formulario ↔ JSON sincronizado.
 - `baja` [x] **Simulación temporal de rol para admin** — desde el topbar del panel admin, el admin puede ver la app como USER o MODERADOR sin tocar la DB. El JWT guarda `effectiveRole`; al volver a loguear recupera ADMIN automáticamente.
@@ -85,7 +85,7 @@ Opciones para resolverlo a futuro:
 
 - `media` [x] **Persistir tab activo al hacer refresh en plan** — `?tab=vista|planificador|mapa` en la URL; `plan` es el default y no aparece. Implementado en `PlanViewer.tsx`.
 - `media` [x] **Persistir tab activo al hacer refresh en panel admin** — `?tab=planes|historial|config` en la URL; `cargar` es el default. Implementado en `AdminPanel.tsx`.
-- `media` [ ] **Persistir tab activo al hacer refresh en panel de usuario** — mismo comportamiento que el plan: al recargar el perfil, volver al tab que estaba activo. Implementar via query param.
+- `media` [x] **Persistir tab activo al hacer refresh en panel de usuario** — mismo comportamiento que el plan: al recargar el perfil, volver al tab que estaba activo. Implementar via query param.
 
 ---
 
