@@ -75,7 +75,7 @@ Opciones para resolverlo a futuro:
 - `media` [x] **Editor estructurado de planes publicados** — reemplaza el textarea JSON crudo por formulario con campos para nombre (CarreraConfig), departamento, carrera/universidad/código_plan (JSON), y tabla editable de materias con correlativas. Toggle formulario ↔ JSON sincronizado.
 - `baja` [x] **Simulación temporal de rol para admin** — desde el topbar del panel admin, el admin puede ver la app como USER o MODERADOR sin tocar la DB. El JWT guarda `effectiveRole`; al volver a loguear recupera ADMIN automáticamente.
 - `media` [x] **Selector de modelo con rate limits** — barra de progreso de RPD por modelo en el dropdown; verde/amarillo/rojo según consumo diario
-- `baja` [x] **Botones ConfigTab sin handler** — "Guardar" persiste prompt en `data/admin-config.json`; "Restaurar" vuelve al prompt default; temperatura eliminada
+- `baja` [x] **Botones ConfigTab sin handler** — "Guardar" persiste prompt en `AdminConfig` (Neon); "Restaurar" vuelve al prompt default; temperatura eliminada
 - `baja` [x] **Temperatura en ConfigTab** — eliminada; `temperature: 0` hardcodeado en el route de parsear
 - `baja` [x] **Prompt en ConfigTab** — lee y escribe el prompt real desde `lib/ai/prompt.ts`; el route lo carga en cada request con fallback al default
 
@@ -164,7 +164,7 @@ El planificador actual (`WeeklySchedule`, `useSchedule`, `/api/planificador`) ma
 | ingenieria_en_computacion | 93.6/100 | `I0022 → 10022` corregido por post-proceso; 9 parciales, 5 distintas en optativas |
 | ingenieria_civil | 23.0/100 | Fallo estructural: orientaciones múltiples con IDs repetidos; Gemini no deduplica |
 
-**Prompt actual**: v32 — `web/lib/ai/prompt.ts` / `web/data/admin-config.json`
+**Prompt actual**: v33 — `web/lib/ai/prompt.ts` (fuente canónica) + override opcional en `AdminConfig` (Neon)
 
 **Cambios v32**: nuevo tipo `minimo_examenes_finales` para requisitos del estilo "haber aprobado N exámenes finales de las materias disciplinares" (detectado en Profesorado en Filosofía, materia 4844). Agregado en schema, tabla de tipos, ejemplo concreto, `planValidation.ts`, `requisitoEspecial.ts` y `correlativa_prosa.py`.
 
@@ -172,7 +172,7 @@ El planificador actual (`WeeklySchedule`, `useSchedule`, `/api/planificador`) ma
 
 **Cambios v30**: `requisito_especial` migrado a array; nuevos tipos `cuatrimestre_cursado` y `anio_y_anio_cursado`; la versión del prompt siempre se lee desde el código (no del JSON guardado).
 
-**Post-proceso automático**: `corregirIdsIdioma()` en `parsear/route.ts` corrige `1XXXX → IXXXX` en tiempo real al parsear con Gemini.
+**Server path**: parseo estructural (`extraerJSON`) + metadata (`_llm_prompt_version`, `_llm_mode`), sin fixups de IDs.
 
 **Few-shot**: herramienta de exportación manual en el panel admin (botón "Exportar diff como few-shot") que genera bloques de correcciones para pegar en el prompt.
 
