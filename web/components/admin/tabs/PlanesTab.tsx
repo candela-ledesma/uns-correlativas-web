@@ -253,18 +253,18 @@ export default function PlanesTab({ onDirtyChange }: { onDirtyChange?: (dirty: b
                     </button>
                   </div>
                 ) : (
-                  <div style={{ fontSize: 11, color: TEXT_SEC, marginTop: 3, display: "flex", alignItems: "center", gap: 6 }}>
+                  <div style={{ fontSize: 11, color: TEXT_SEC, marginTop: 3, display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap", minWidth: 0 }}>
                     <span
                       onClick={() => { setEditingDepto(p.id); setDeptoValue(p.departamento ?? ""); setMsg(null); }}
                       title="Editar departamento"
-                      style={{ cursor: "pointer", borderBottom: "1px dashed", borderColor: "rgba(168,155,201,0.4)" }}
+                      style={{ cursor: "pointer", borderBottom: "1px dashed", borderColor: "rgba(168,155,201,0.4)", flexShrink: 0 }}
                     >
                       {p.departamento ?? "Sin departamento"}
                     </span>
                     {p.materias != null ? ` · ${p.materias} materias` : ""}
                     {p.fuente ? ` · ${p.fuente}` : ""}
                     {p.savedAt ? ` · ${tiempoRelativo(p.savedAt)}` : ""}
-                    {" · "}<span style={{ opacity: 0.7 }}>{p.jsonFile}</span>
+                    {" · "}<span style={{ opacity: 0.7, wordBreak: "break-all", minWidth: 0 }}>{p.jsonFile}</span>
                   </div>
                 )}
                 {msg?.slug === p.id && (
