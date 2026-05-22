@@ -8,8 +8,6 @@ services:
     envVars:
       - key: PARSER_API_URL
         sync: false
-      - key: PARSER_API_SECRET
-        sync: false
       - key: AUTH_SECRET
         sync: false
       - key: DATABASE_URL
@@ -23,8 +21,6 @@ services:
     buildCommand: pip install -r parser_api/requirements.txt
     startCommand: python -m uvicorn parser_api.main:app --host 0.0.0.0 --port $PORT
     envVars:
-      - key: PARSER_API_SECRET
-        sync: false
       - key: GEMINI_API_KEY
         sync: false
     plan: free
