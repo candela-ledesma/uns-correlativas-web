@@ -53,7 +53,8 @@ export default function AdminPanel({ canPublish = true }: { canPublish?: boolean
         .ap-desktop-right { display: flex; margin-left: auto; align-items: center; gap: 10px; }
         .ap-perfil-desktop { display: inline-flex; }
         .ap-row2 { display: none; }
-        .ap-tabs-nav { overflow: hidden; border-bottom: 1px solid ${GLASS.border}; margin-bottom: 28px; }
+        .ap-tabs-nav { overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; border-bottom: 1px solid ${GLASS.border}; margin-bottom: 28px; }
+        .ap-tabs-nav::-webkit-scrollbar { display: none; }
         .ap-tabs-inner { display: flex; gap: 4px; white-space: nowrap; min-width: max-content; }
         @media (max-width: 640px) {
           .ap-header { padding: 0 14px; }
