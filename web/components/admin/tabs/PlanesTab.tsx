@@ -201,8 +201,8 @@ export default function PlanesTab({ onDirtyChange }: { onDirtyChange?: (dirty: b
           {planes.map((p, i) => (
             <div
               key={p.id}
+              className="plan-row"
               style={{
-                display: "flex", alignItems: "flex-start", gap: 12,
                 padding: "14px 6px",
                 borderBottom: i < planes.length - 1 ? `1px solid ${GLASS.border}` : "none",
                 opacity: p.disponible ? 1 : 0.55,
@@ -276,7 +276,7 @@ export default function PlanesTab({ onDirtyChange }: { onDirtyChange?: (dirty: b
 
               {/* Acciones */}
               {confirmDelete === p.id ? (
-                <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 4, flexShrink: 0 }}>
+                <div className="plan-row-acciones" style={{ flexDirection: "column", alignItems: "flex-start", gap: 4 }}>
                   <span style={{ fontSize: 11, color: "#f87171", fontWeight: 500 }}>¿Eliminar permanentemente?</span>
                   <div style={{ display: "flex", gap: 6 }}>
                     <button className="btn-press" onClick={() => setConfirmDelete(null)} style={{ ...BTN, borderRadius: 6, padding: "4px 10px", fontSize: 11 }}>
@@ -296,7 +296,7 @@ export default function PlanesTab({ onDirtyChange }: { onDirtyChange?: (dirty: b
                   </div>
                 </div>
               ) : (
-                <div style={{ display: "flex", gap: 6, flexShrink: 0, flexWrap: "wrap", justifyContent: "flex-end" }}>
+                <div className="plan-row-acciones">
                   <button className="btn-press"
                     onClick={() => toggleDisponible(p)}
                     disabled={toggling === p.id}
