@@ -144,21 +144,24 @@ export const authOptions: NextAuthOptions = {
         }
         // Al hacer login nuevo, limpiar cualquier simulación previa
         token.effectiveRole = undefined;
+        if (user.image) token.picture = user.image;
       }
 
       if (account?.provider === "google" && account.access_token) {
         token.googleAccessToken = account.access_token;
         token.googleRefreshToken = account.refresh_token;
         token.googleTokenExpiresAt = account.expires_at;
+        if (!token.picture && user?.image) token.picture = user.image;
       }
 
       if (token.sub && !token.role) {
         const dbUser = await prisma.user.findUnique({
           where: { id: token.sub },
-          select: { role: true },
+          select: { role: true, image: true },
         });
 
         token.role = dbUser?.role ?? Role.USER;
+        if (!token.picture && dbUser?.image) token.picture = dbUser.image;
       }
 
       return token;
@@ -166,6 +169,7 @@ export const authOptions: NextAuthOptions = {
     session: async ({ session, token }) => {
       if (session.user) {
         session.user.id = token.sub ?? "";
+        if (token.picture) session.user.image = token.picture as string;
         const realRole =
           token.role === Role.ADMIN
             ? Role.ADMIN
@@ -187,6 +191,13 @@ export const authOptions: NextAuthOptions = {
   },
   events: {
     signIn: async ({ user, account, isNewUser }) => {
+      if (account?.provider === "google" && user.image && user.id) {
+        await prisma.user.update({
+          where: { id: user.id },
+          data: { image: user.image },
+        });
+      }
+
       await createAuditEvent({
         actorUserId: user.id,
         actorEmail: user.email,
