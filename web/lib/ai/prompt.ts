@@ -1,4 +1,5 @@
 export const PROMPT_VERSION = "v33";
+export const GENERIC_PROMPT_VERSION = "v1";
 
 export const DEFAULT_SYSTEM_PROMPT = `You are a deterministic data extraction engine for academic curricula.
 
