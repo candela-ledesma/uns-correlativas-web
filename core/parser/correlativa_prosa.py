@@ -146,6 +146,14 @@ def _limpiar_descripcion(texto: str) -> str:
         texto_limpio,
         flags=re.IGNORECASE,
     )
+    # Restaurar "materias del plan" cuando las horas del PDF partieron la frase
+    # Ejemplo: "...aprobada todas las 600hs. 1002 Aprobada" → limpieza deja "...aprobada todas"
+    texto_limpio = re.sub(
+        r"\s+todas(?:\s+las)?\s*$",
+        " todas las materias del plan",
+        texto_limpio,
+        flags=re.IGNORECASE,
+    )
     return texto_limpio.rstrip(".")
 
 
