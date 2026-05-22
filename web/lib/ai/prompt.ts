@@ -1,5 +1,4 @@
-export const PROMPT_VERSION = "v32";
-export const GENERIC_PROMPT_VERSION = "v1";
+export const PROMPT_VERSION = "v33";
 
 export const DEFAULT_SYSTEM_PROMPT = `You are a deterministic data extraction engine for academic curricula.
 
@@ -89,7 +88,7 @@ Return ONLY a valid JSON object. No explanations, no comments, no markdown, no e
 
 Some subjects have prose-based requirements that cannot be expressed as a correlativa ID. When a subject has such a prose line (printed below its correlativas table), capture it in \`requisito_especial\` as an **array of objects** (one object per distinct condition). If there are no prose requirements, omit the field entirely — do NOT include it as null or as an empty array.
 
-Six recognized item types:
+Seven recognized item types:
 
 | tipo | When to use | Extra fields |
 |---|---|---|
@@ -281,7 +280,7 @@ Return ONLY a valid JSON object. No explanations, no comments, no markdown, no e
       },
       "requisito_especial": [
         {
-          "tipo": "anio_aprobado | cuatrimestre_cursado | minimo_materias_aprobadas | minimo_examenes_finales | prueba_idioma | todas_materias_aprobadas",
+          "tipo": "anio_aprobado | cuatrimestre_cursado | minimo_materias_aprobadas | minimo_examenes_finales | cgcb_aprobado | prueba_idioma | todas_materias_aprobadas",
           "descripcion": "string (verbatim prose from the PDF)",
           "anio": "number | null",
           "cuatrimestre": "number | null",
@@ -330,6 +329,7 @@ Some subjects have prose-based requirements that cannot be expressed as a correl
 | \`"cuatrimestre_cursado"\` | "first semester of year N attended", etc. | \`"anio": N\`, \`"cuatrimestre": 1\` or \`2\` |
 | \`"minimo_materias_aprobadas"\` | "minimum N subjects passed", "at least N courses approved", etc. | \`"cantidad": N\` |
 | \`"minimo_examenes_finales"\` | "N final exams passed", etc. | \`"cantidad": N\` |
+| \`"cgcb_aprobado"\` | any mention of "CGCB" as a requirement | — |
 | \`"prueba_idioma"\` | language proficiency test requirement | — |
 | \`"todas_materias_aprobadas"\` | "all subjects of the plan approved", etc. | — |
 
@@ -377,7 +377,7 @@ Some PDFs split the plan into orientation sections (e.g. "ORIENTATION A", "ORIEN
 
 1. NEVER invent or infer data not explicitly visible in the PDF → use null
 2. **LOWERCASE STATUS VALUES**: \`para_cursar\` and \`para_rendir\` must ALWAYS be lowercase. NEVER capitalize them.
-3. Extract ALL subjects: mandatory, elective. Do not skip any section.
+3. Extract ALL subjects: mandatory, elective, language. Do not skip any section.
 4. All IDs must be strings, exact format as printed in the PDF.
 5. Each subject ID appears exactly ONCE in \`materias[]\`.
 6. Do NOT duplicate any entry.

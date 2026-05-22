@@ -18,8 +18,7 @@ flowchart LR
   I -->|GET /api/admin/planes/parsear| VP[Vercel: obtiene prompt activo]
   VP -->|POST /parse-gemini directo| B2[Render: FastAPI + Gemini]
   I -->|POST /api/admin/planes/parsear-local SSE| B1[Render: Parser Python]
-  B2 --> PP[corregirIdsIdioma]
-  PP --> BD[(Neon: PlanBorrador fuente=gemini)]
+  B2 --> BD[(Neon: PlanBorrador fuente=gemini)]
   B1 --> BD2[(Neon: PlanBorrador fuente=parser)]
   BD --> D[Validador planValidation.ts]
   BD2 --> D
@@ -45,7 +44,7 @@ flowchart LR
 `-- web/
     |-- app/
     |   |-- api/admin/planes/
-    |   |   |-- parsear/      # Gemini: PDF → JSON + corregirIdsIdioma + autoguarda en PlanBorrador
+    |   |   |-- parsear/      # Gemini: PDF → JSON + autoguarda en PlanBorrador
     |   |   |-- parsear-local/# Parser Python (SSE) + autoguarda en PlanBorrador
     |   |   |-- guardar/      # Borrador → PlanBorrador / Publicar → PlanPublicado
     |   |   |-- existe/       # Chequea borradores en PlanBorrador por fuente
@@ -64,7 +63,7 @@ flowchart LR
     |-- scripts/
     |   `-- migrate-jsons-to-db.ts  # Migracion inicial: data/local + data/gemini → Neon
     `-- lib/
-        |-- ai/prompt.ts  # DEFAULT_SYSTEM_PROMPT + PROMPT_VERSION (v32)
+        |-- ai/prompt.ts  # DEFAULT_SYSTEM_PROMPT + PROMPT_VERSION (v33)
         |-- plan/
         |   |-- evaluarCorrelativas.ts
         |   `-- requisitoEspecial.ts  # Tipos y evaluacion de requisito_especial[]
@@ -88,8 +87,8 @@ Usuario sube PDF en /admin (Vercel)
     3. extraerJSON() → parsea la respuesta como JSON
     4. Devuelve { type: "done", data, model, usage }
         │
-        ▼ (Vercel aplica post-proceso al resultado)
-    corregirIdsIdioma() → corrige 1XXXX → IXXXX
+        ▼ (Vercel procesa respuesta)
+    extraerJSON() → parsea respuesta texto a JSON
     Anota _llm_prompt_version y _llm_mode
     Autoguarda en Neon: PlanBorrador(fuente="gemini")
 
@@ -142,20 +141,20 @@ Usuario sube PDF en /admin (Vercel)
 
 `requisito_especial` es un **array** (puede tener 0, 1 o más entradas por materia). Tipos soportados: `anio_aprobado`, `cuatrimestre_cursado`, `minimo_materias_aprobadas`, `minimo_examenes_finales`, `cgcb_aprobado`, `prueba_idioma`, `todas_materias_aprobadas`.
 
-## 6) Post-procesamiento automático de Gemini
+## 6) Procesamiento del output de Gemini en servidor
 
-Solo hay dos transformaciones que se aplican al output de Gemini en el servidor:
+El servidor aplica únicamente parseo/validación estructural y metadata:
 
 1. **`extraerJSON()`** — parsea el texto como JSON tolerando bloques markdown.
-2. **`corregirIdsIdioma()`** — reemplaza `1XXXX` → `IXXXX` en `materias[].id`, `materias[].correlativas` y `agrupadores[].opciones`. Heurística: un ID de 5 dígitos empezando con `1` nunca es una materia real en los planes UNS.
+2. **Metadata de ejecución** — agrega `_llm_prompt_version` y `_llm_mode`.
 
 ## 7) Prompt Gemini
 
-- Versión actual: **v32** — `web/lib/ai/prompt.ts`
+- Versión actual: **v33** — `web/lib/ai/prompt.ts`
 - La versión siempre se lee del código fuente (no del JSON guardado).
 - El prompt activo se puede editar desde `/admin` → tab Configuración y se persiste en Neon (tabla `AdminConfig`).
 - El panel admin incluye la herramienta **"Exportar diff como few-shot"** que genera bloques de corrección para mejorar el prompt manualmente.
-- **v33–v37 probados y revertidos**: mejoras en correlativas parciales, agrupadores, I####, deduplicación y ejemplos de page break. El error de boundary cross-page (1142/1228 en Farmacia, 9100/9113 en Abogacía) no es resoluble con prompting — requiere post-proceso en el servidor.
+- **v33+**: limpieza del pipeline para visión nativa, reglas de schema/grupos consolidadas y eliminación de fixups server-side sobre IDs.
 
 ### Scores Gemini v32 por carrera
 
@@ -176,7 +175,7 @@ Solo hay dos transformaciones que se aplican al output de Gemini en el servidor:
 
 ### Limitación conocida del prompting (boundary cross-page)
 
-El PDF de Farmacia termina la página con `1142 FISIOPATOLOGIA HUMANA ... 1149 Cursada Cursada` y la página siguiente abre con `1376 Aprobada Aprobada` (correlativa de continuación de 1142). Gemini interpreta el encabezado de tabla repetido al inicio de la nueva página como cierre de materia y asigna `1376` a la materia siguiente (1228). El mismo patrón ocurre en Abogacía (9100/9113). Solución: post-proceso en el servidor. Ver `issues/farmacia.md` e `issues/abogacia.md`.
+El PDF de Farmacia termina la página con `1142 FISIOPATOLOGIA HUMANA ... 1149 Cursada Cursada` y la página siguiente abre con `1376 Aprobada Aprobada` (correlativa de continuación de 1142). Gemini interpreta el encabezado de tabla repetido al inicio de la nueva página como cierre de materia y asigna `1376` a la materia siguiente (1228). El mismo patrón ocurre en Abogacía (9100/9113). Se sigue monitoreando con `scripts/comparar_json.py` y ajustes de prompting. Ver `issues/farmacia.md` e `issues/abogacia.md`.
 
 ## 8) Requisitos
 
@@ -302,7 +301,7 @@ Cuando el PDF tiene texto en prosa como condicion adicional (no expresable como 
 
 ### IDs de idioma (I####)
 
-Los IDs de grupos de idioma empiezan con la letra `I` (no el digito `1`). Gemini frecuentemente los confunde. El post-proceso `corregirIdsIdioma()` los corrige automaticamente.
+Los IDs de grupos de idioma empiezan con la letra `I` (no el dígito `1`). El prompt exige preservarlos exactamente y el output se evalúa contra ground truth.
 
 ### Roles
 

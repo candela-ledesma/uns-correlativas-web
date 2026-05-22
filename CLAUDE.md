@@ -83,23 +83,22 @@ NO: `PDF → extracción de texto → LLM → adapter → fixups`
 
 ## Estado actual (mayo 2026)
 
-- **Modelo principal**: `gemini-2.5-flash` (prompt v15, temperatura 0)
+- **Modelo principal**: `gemini-2.5-flash` (prompt v33, temperatura 0)
 - **Input**: PDF directo como `inlineData` (visión nativa, sin extracción de texto previa)
 - **Modelos alternativos disponibles**: `gemini-2.5-flash-lite`, `gemini-2.5-pro`, `gemma-4-26b-a4b-it`
 - **Script de evaluación**: `python -m scripts.comparar_json <ref.json> <candidato.json>`
 - **Panel admin**: `localhost:3000/admin` — sube PDF, corre parser local y/o Gemini en paralelo, compara side by side, publica
 
-## Prompt actual (v15)
+## Prompt actual (v33)
 
-Ubicación: `web/app/api/admin/planes/parsear/route.ts` — constante `SYSTEM_PROMPT`.
+Ubicación canónica: `web/lib/ai/prompt.ts` — `DEFAULT_SYSTEM_PROMPT` y `GENERIC_SYSTEM_PROMPT`.
 
-El prompt v15 fue diseñado originalmente para RAW_TEXT y tiene instrucciones de parseo de texto que ya no aplican con visión nativa. **Necesita ser reescrito** para aprovechar que Gemini ve el PDF visualmente:
+Override runtime: tabla `AdminConfig` en Neon (si existe), con fallback a las constantes del código.
 
-- Eliminar referencias a `RAW_TEXT`, `OCR issues`, `broken formatting`
-- Eliminar la sección `RAW_TEXT correlativas format` (formato `<id> Cursada Aprobada`)
-- Reemplazar por instrucciones visuales: "en la tabla de correlativas, la primera columna es para_cursar y la segunda es para_rendir"
-- Mantener todas las reglas de agrupadores (POSITION A/B, idioma_grupo) — siguen siendo válidas
-- Mantener el schema de salida exacto
+El prompt ya está adaptado a visión nativa (sin instrucciones RAW_TEXT/OCR) y mantiene:
+- schema de salida exacto
+- reglas de agrupadores (POSITION A/B, idioma_grupo, agrupador_requisito)
+- instrucción estricta de salida JSON válido
 
 ## Problema pendiente conocido
 
@@ -107,7 +106,7 @@ El prompt v15 fue diseñado originalmente para RAW_TEXT y tiene instrucciones de
 
 ## Prioridad actual
 
-Prioridad máxima: reescribir el prompt para visión nativa y medir el impacto en los scores.
+Prioridad máxima: mejorar robustez del prompting visión nativa y medir impacto en scores con comparación automática contra ground truth.
 NO optimizar parsers ni adapters.
 
 ## Idea futura
