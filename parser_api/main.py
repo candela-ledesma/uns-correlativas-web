@@ -21,7 +21,6 @@ except Exception as _e:
 
 app = FastAPI(title="UNS Parser API")
 
-API_SECRET = os.environ.get("PARSER_API_SECRET")
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 ALLOWED_ORIGIN = os.environ.get("ALLOWED_ORIGIN", "https://uns-correlativas.vercel.app")
 MAX_SIZE_BYTES = 20 * 1024 * 1024
@@ -30,15 +29,8 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[ALLOWED_ORIGIN],
     allow_methods=["POST", "GET"],
-    allow_headers=["Authorization", "Content-Type"],
+    allow_headers=["Content-Type"],
 )
-
-
-def _check_auth(authorization: str | None) -> None:
-    if not API_SECRET:
-        return
-    if authorization != f"Bearer {API_SECRET}":
-        raise HTTPException(status_code=401, detail="No autorizado")
 
 
 @app.get("/health")

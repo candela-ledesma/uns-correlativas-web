@@ -232,7 +232,6 @@ Variables de entorno clave:
 | Variable | Descripcion |
 |---|---|
 | `GEMINI_API_KEY` | Requerida para parsear con Gemini |
-| `PARSER_API_SECRET` | Secret compartido con Vercel (opcional) |
 
 ## 10) Testing
 

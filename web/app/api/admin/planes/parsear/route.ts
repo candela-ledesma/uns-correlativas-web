@@ -95,7 +95,6 @@ export async function POST(request: Request) {
   const model = (formData.get("model") as string) || DEFAULT_GEMINI_MODEL;
 
   const parserApiUrl = process.env.PARSER_API_URL;
-  const parserApiSecret = process.env.PARSER_API_SECRET;
 
   // En prod (PARSER_API_URL definida) delegar a Render — sin límite de tiempo de Vercel
   if (parserApiUrl) {
@@ -107,11 +106,8 @@ export async function POST(request: Request) {
     fd.append("model", model);
     fd.append("system_prompt", systemPrompt);
 
-    const headers: Record<string, string> = {};
-    if (parserApiSecret) headers["Authorization"] = `Bearer ${parserApiSecret}`;
-
     try {
-      const res = await fetch(`${parserApiUrl}/parse-gemini`, { method: "POST", headers, body: fd });
+      const res = await fetch(`${parserApiUrl}/parse-gemini`, { method: "POST", body: fd });
       if (!res.ok) {
         const err = await res.text().catch(() => res.statusText);
         return NextResponse.json({ type: "error", message: `Parser API error ${res.status}: ${err}` }, { status: 502 });
