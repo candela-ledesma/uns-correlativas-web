@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { TEXT_SEC, BTN, BTN_VIOLET, INPUT } from "@/lib/ui/tokens";
-import { DEFAULT_SYSTEM_PROMPT, GENERIC_SYSTEM_PROMPT, PROMPT_VERSION, GENERIC_PROMPT_VERSION } from "@/lib/ai/prompt";
+import { DEFAULT_SYSTEM_PROMPT, GENERIC_SYSTEM_PROMPT, PROMPT_VERSION } from "@/lib/ai/prompt";
 
 import { CARD, LABEL } from "./adminTabStyles";
 
@@ -228,7 +228,7 @@ export default function ConfigTab({ canEdit = true }: { canEdit?: boolean }) {
             borderRadius: 6, padding: "3px 8px",
             fontFamily: "monospace",
           }}>
-            {GENERIC_PROMPT_VERSION}
+            {PROMPT_VERSION}
           </span>
         </div>
         <div style={{ display: "flex", gap: 8, marginTop: 12, alignItems: "center" }}>
