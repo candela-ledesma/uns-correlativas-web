@@ -6,6 +6,11 @@ const nextConfig: NextConfig = {
     "/api/**": ["./data/**/*"],
     "/admin/**": ["./data/**/*"],
   },
+  images: {
+    remotePatterns: [
+      { protocol: "https", hostname: "lh3.googleusercontent.com" },
+    ],
+  },
 };
 
 export default nextConfig;

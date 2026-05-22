@@ -16,6 +16,7 @@ export default async function PerfilPage() {
   const nombreVisible = session.user.name ?? email.split("@")[0];
   const rol = session.user.role ?? "USER";
   const iniciales = nombreVisible.slice(0, 2).toUpperCase();
+  const image = session.user.image ?? null;
   const rolLabel =
     rol === "ADMIN"
       ? "Administrador"
@@ -41,6 +42,7 @@ export default async function PerfilPage() {
           email={email}
           nombreVisible={nombreVisible}
           iniciales={iniciales}
+          image={image}
           initialContext={context}
         />
       </section>
