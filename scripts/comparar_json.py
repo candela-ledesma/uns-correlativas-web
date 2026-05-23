@@ -122,30 +122,45 @@ def comparar_campos(ref_map: dict, cand_map: dict, comunes: set) -> dict:
                 cors_detalle.append(msg)
 
         # requisito_especial (puede ser lista o None)
-        def _req_tipos(r):
+        def _req_items(r):
             if r is None:
                 return []
             if isinstance(r, list):
-                return sorted(x.get("tipo", "") for x in r)
-            return [r.get("tipo", "")]
+                return sorted(
+                    (x.get("tipo", ""), (x.get("descripcion") or "").strip())
+                    for x in r
+                )
+            return [(r.get("tipo", ""), (r.get("descripcion") or "").strip())]
 
         rr = rm.get("requisito_especial")
         cr = cm.get("requisito_especial")
-        rr_tipos = _req_tipos(rr)
-        cr_tipos = _req_tipos(cr)
-        if not rr_tipos and not cr_tipos:
+        rr_items = _req_items(rr)
+        cr_items = _req_items(cr)
+        rr_tipos = [t for t, _ in rr_items]
+        cr_tipos = [t for t, _ in cr_items]
+        if not rr_items and not cr_items:
             req_ok += 1
-        elif rr_tipos and not cr_tipos:
+        elif rr_items and not cr_items:
             req_solo_ref += 1
             req_detalle.append(f"    [{mid}] solo en ref — tipos={rr_tipos}")
-        elif not rr_tipos and cr_tipos:
+        elif not rr_items and cr_items:
             req_solo_cand += 1
             req_detalle.append(f"    [{mid}] solo en cand — tipos={cr_tipos}")
-        elif rr_tipos == cr_tipos:
-            req_ok += 1
-        else:
+        elif rr_tipos != cr_tipos:
             req_diff += 1
             req_detalle.append(f"    [{mid}] tipos difieren — ref={rr_tipos} cand={cr_tipos}")
+        elif rr_items == cr_items:
+            req_ok += 1
+        else:
+            # mismos tipos pero descripción distinta
+            req_diff += 1
+            for (rt, rd), (ct, cd) in zip(rr_items, cr_items):
+                if rd != cd:
+                    req_detalle.append(
+                        f"    [{mid}] descripción difiere ({rt})\n"
+                        f"      ref : {rd!r}\n"
+                        f"      cand: {cd!r}"
+                    )
 
     return {
         "nombre_ok": nombre_ok,
@@ -172,13 +187,25 @@ def calcular_score(stats_cob: dict, stats_campos: dict) -> float:
     if total_ref == 0:
         return 0.0
 
-    cobertura = comunes / total_ref                                        # 30%
-    nombres = stats_campos["nombre_ok"] / max(comunes, 1)                  # 25%
-    anios = stats_campos["anio_ok"] / max(comunes, 1)                      # 20%
-    cors_total = comunes
-    cors_ok = stats_campos["cors_perfectas"] / max(cors_total, 1)          # 25%
+    cobertura = comunes / total_ref                                        # 28%
+    nombres = stats_campos["nombre_ok"] / max(comunes, 1)                  # 24%
+    anios = stats_campos["anio_ok"] / max(comunes, 1)                      # 18%
+    cors_ok = stats_campos["cors_perfectas"] / max(comunes, 1)             # 24%
+    req_total = (
+        stats_campos["req_ok"]
+        + stats_campos["req_diff"]
+        + stats_campos["req_solo_ref"]
+        + stats_campos["req_solo_cand"]
+    )
+    req_ok_ratio = stats_campos["req_ok"] / max(req_total, 1) if req_total else 1.0  # 6%
 
-    score = (cobertura * 30 + nombres * 25 + anios * 20 + cors_ok * 25)
+    score = (
+        cobertura * 28
+        + nombres * 24
+        + anios * 18
+        + cors_ok * 24
+        + req_ok_ratio * 6
+    )
     return round(score, 1)
 
 

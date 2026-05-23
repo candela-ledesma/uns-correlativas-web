@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import dynamic from "next/dynamic";
 import { useSession } from "next-auth/react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { PlanData, Materia } from "@/app/types/plan";
@@ -9,9 +10,10 @@ import PlanFilters from "@/components/plan/PlanFilters";
 import AnioSection from "@/components/materias/AnioSection";
 import GrupoMaterias from "@/components/materias/GrupoMaterias";
 import PlanOnboarding from "@/components/onboarding/PlanOnboarding";
-import KanbanPlan from "@/components/kanban/KanbanPlan";
-import WeeklySchedule from "@/components/schedule/WeeklySchedule";
-import MapaPlan from "@/components/mapa/MapaPlan";
+
+const KanbanPlan = dynamic(() => import("@/components/kanban/KanbanPlan"), { ssr: false });
+const WeeklySchedule = dynamic(() => import("@/components/schedule/WeeklySchedule"), { ssr: false });
+const MapaPlan = dynamic(() => import("@/components/mapa/MapaPlan"), { ssr: false });
 import { usePlanState } from "@/hooks/usePlanState";
 import { usePlanStructure } from "@/hooks/usePlanStructure";
 import { useOnboarding } from "@/hooks/useOnboarding";

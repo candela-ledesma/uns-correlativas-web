@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { signOut } from "next-auth/react";
 import {
@@ -16,6 +17,7 @@ type Props = {
   email: string;
   nombreVisible: string;
   iniciales: string;
+  image: string | null;
   initialContext: UserProductContextResponse;
 };
 
@@ -25,6 +27,7 @@ export default function ProfileWorkspace({
   email,
   nombreVisible,
   iniciales,
+  image,
   initialContext,
 }: Props) {
   const context = initialContext;
@@ -66,7 +69,17 @@ export default function ProfileWorkspace({
 
       {/* ── SECCIÓN 1: HERO ─────────────────────────────────────────────── */}
       <div className={styles.hero}>
-        <div className={styles.avatar} aria-hidden="true">{iniciales}</div>
+        {image ? (
+          <Image
+            src={image}
+            alt={nombreVisible}
+            width={56}
+            height={56}
+            className={styles.avatarImg}
+          />
+        ) : (
+          <div className={styles.avatar} aria-hidden="true">{iniciales}</div>
+        )}
 
         <div className={styles.identity}>
           <p className={styles.name}>{nombreVisible}</p>

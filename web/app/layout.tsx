@@ -6,11 +6,14 @@ import Providers from "@/app/providers";
 const manrope = Manrope({
   subsets: ["latin"],
   variable: "--font-body",
+  display: "swap",
 });
 
 const sora = Sora({
   subsets: ["latin"],
   variable: "--font-heading",
+  display: "swap",
+  preload: true,
 });
 
 export const metadata: Metadata = {
