@@ -64,7 +64,13 @@ export async function GET(
 
     return NextResponse.json(result.data);
   } catch (error: unknown) {
-    console.error("[api/materias]", req.url, error);
+    // Sanitize error logging - don't log full URL or sensitive stack traces
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error("[api/materias] Error loading plan data", { 
+      errorType: error instanceof Error ? error.constructor.name : typeof error,
+      // Only log in development to avoid info disclosure
+      ...(process.env.NODE_ENV === "development" && { errorMessage })
+    });
     return NextResponse.json(
       { error: "No se pudieron cargar las materias" },
       { status: 500 }

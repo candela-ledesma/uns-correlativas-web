@@ -1,7 +1,16 @@
 import { PrismaClient } from "@prisma/client";
 
-if (!process.env.DATABASE_URL) {
-  throw new Error("Falta DATABASE_URL para inicializar Prisma (PostgreSQL)");
+const databaseUrl = process.env.DATABASE_URL;
+
+if (!databaseUrl) {
+  throw new Error("DATABASE_URL environment variable is required to initialize Prisma");
+}
+
+// Validate it looks like a PostgreSQL connection string
+if (!databaseUrl.startsWith("postgresql://") && !databaseUrl.startsWith("postgres://")) {
+  throw new Error(
+    "DATABASE_URL must be a valid PostgreSQL connection string (starting with postgresql:// or postgres://)"
+  );
 }
 
 const globalForPrisma = globalThis as unknown as {

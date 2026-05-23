@@ -2,6 +2,14 @@
 
 import { defineConfig, devices } from "@playwright/test";
 
+// AUTH_SECRET is required for tests to work properly
+const authSecret = process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET;
+if (!authSecret) {
+  throw new Error(
+    "AUTH_SECRET or NEXTAUTH_SECRET environment variable is required for E2E tests"
+  );
+}
+
 export default defineConfig({
   testDir: "./tests/e2e",
   use: {
@@ -18,7 +26,8 @@ export default defineConfig({
         process.env.DATABASE_URL_E2E ??
         process.env.DATABASE_URL ??
         "postgresql://postgres:postgres@localhost:5432/uns_correlativas_e2e?schema=public",
-      AUTH_SECRET: process.env.AUTH_SECRET ?? "playwright-dev-secret",
+      AUTH_SECRET: authSecret,
+      NEXTAUTH_SECRET: authSecret,
       AUTH_ENABLE_DEV_LOGIN: "true",
       NEXT_PUBLIC_ENABLE_DEV_LOGIN: "true",
     },

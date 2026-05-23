@@ -19,9 +19,10 @@ if (!process.env.NEXTAUTH_SECRET && process.env.AUTH_SECRET) {
 
 const { hasGoogleProvider, allowDevLogin, isProduction } = getAuthProviderFlags();
 
+// Only allow role override if explicitly enabled and NOT in production
 const allowDevRoleOverride =
-  process.env.AUTH_ALLOW_DEV_ROLE_OVERRIDE === "true" ||
-  (!isProduction && process.env.AUTH_ALLOW_DEV_ROLE_OVERRIDE !== "false");
+  process.env.NODE_ENV !== "production" &&
+  process.env.AUTH_ALLOW_DEV_ROLE_OVERRIDE === "true";
 
 const devLoginAllowlist = new Set(
   (process.env.AUTH_DEV_LOGIN_EMAIL_ALLOWLIST ?? "")
@@ -31,7 +32,15 @@ const devLoginAllowlist = new Set(
 );
 
 function isAllowedDevEmail(email: string) {
-  if (devLoginAllowlist.size === 0) return true;
+  // If dev login is enabled, allowlist should be explicitly configured
+  if (devLoginAllowlist.size === 0 && allowDevLogin) {
+    console.warn(
+      "Development login enabled but AUTH_DEV_LOGIN_EMAIL_ALLOWLIST is empty. " +
+      "Dev login is DISABLED for security. Configure AUTH_DEV_LOGIN_EMAIL_ALLOWLIST to allow specific emails."
+    );
+    // For extra safety, deny by default if list is empty
+    return false;
+  }
   return devLoginAllowlist.has(email);
 }
 
