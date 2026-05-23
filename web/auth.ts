@@ -36,7 +36,7 @@ function isAllowedDevEmail(email: string) {
   if (devLoginAllowlist.size === 0 && allowDevLogin) {
     console.warn(
       "Development login enabled but AUTH_DEV_LOGIN_EMAIL_ALLOWLIST is empty. " +
-      "Dev login is accessible to any email. Configure AUTH_DEV_LOGIN_EMAIL_ALLOWLIST for security."
+      "Dev login is DISABLED for security. Configure AUTH_DEV_LOGIN_EMAIL_ALLOWLIST to allow specific emails."
     );
     // For extra safety, deny by default if list is empty
     return false;
