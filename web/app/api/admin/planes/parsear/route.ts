@@ -138,7 +138,10 @@ export async function POST(request: Request) {
   // Local: llamar a Gemini directo desde Next.js
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
-    return NextResponse.json({ error: "GEMINI_API_KEY no configurada" }, { status: 500 });
+    return NextResponse.json(
+      { error: "AI service configuration error: PDF processing temporarily unavailable" },
+      { status: 500 }
+    );
   }
 
   try {
