@@ -214,8 +214,12 @@ export async function POST(request: Request) {
       results.push({ id: block.id, gcalEventId: data.id });
     } else {
       const errBody = await gcalRes.text().catch(() => "");
-      console.error("[exportar-gcal] Google API error", gcalRes.status, errBody);
-      results.push({ id: block.id, error: `Google Calendar error ${gcalRes.status}: ${errBody}` });
+      // Log without exposing full error body in production
+      console.error("[exportar-gcal] Google API error", { 
+        status: gcalRes.status,
+        ...(process.env.NODE_ENV === "development" && { body: errBody })
+      });
+      results.push({ id: block.id, error: `Google Calendar error ${gcalRes.status}` });
     }
   }
 
@@ -276,7 +280,10 @@ export async function DELETE(request: Request) {
     if (res.ok || res.status === 404) {
       deleted++;
     } else {
-      console.error("[exportar-gcal] DELETE error", res.status, eventId);
+      console.error("[exportar-gcal] Event deletion failed", { 
+        status: res.status,
+        ...(process.env.NODE_ENV === "development" && { eventId })
+      });
       failedCount++;
     }
   }
