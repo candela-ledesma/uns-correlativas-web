@@ -1,12 +1,26 @@
 # Dependency Upgrade Strategy
 
+# Dependency Upgrade Strategy
+
+## ⚠️ CRITICAL LESSON LEARNED
+
+**DO NOT** use `npm audit fix --force` without careful review. This command can:
+- Downgrade packages to older versions with MORE vulnerabilities
+- Break peer dependencies
+- Introduce breaking changes
+
+In our audit, `npm audit fix --force` downgraded Next.js from 16.2.4 to 9.3.3, introducing these CRITICAL vulnerabilities:
+- Authorization bypass vulnerability (GHSA-...)
+- Unexpected server crash in Next.js (multiple CVEs)
+
+**Always review changes before committing.**
+
 ## Current Status (2026-05-23)
 
-The application has the following known vulnerabilities that require attention:
-- 4 Critical (mostly in build tools: webpack, loader-utils, shell-quote)
-- 20 High (Next.js, Prisma, PostCSS and transitive dependencies)
-- 19 Moderate
-- Total: 43 vulnerabilities
+The application now has:
+- **10 vulnerabilities** after restoring Next.js to 16.2.4 (down from 49)
+- **3 high, 7 moderate** (down from 4 critical, 20 high, 19 moderate)
+- All critical authorization/crash issues resolved
 
 ## Why Upgrades Are Challenging
 
