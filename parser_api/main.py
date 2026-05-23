@@ -22,15 +22,32 @@ except Exception as _e:
 app = FastAPI(title="UNS Parser API")
 
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
-ALLOWED_ORIGIN = os.environ.get("ALLOWED_ORIGIN", "https://uns-correlativas.vercel.app")
+ALLOWED_ORIGIN = os.environ.get("ALLOWED_ORIGIN", "").strip()
+
+# CORS must be explicitly configured - no default hardcoded origins
+if not ALLOWED_ORIGIN:
+    # Support comma-separated origins for flexibility
+    print(
+        "WARNING: ALLOWED_ORIGIN not set. CORS is not configured. "
+        "Set ALLOWED_ORIGIN environment variable (comma-separated if multiple).",
+        flush=True
+    )
+    ALLOWED_ORIGINS = []
+else:
+    # Support multiple origins separated by commas
+    ALLOWED_ORIGINS = [o.strip() for o in ALLOWED_ORIGIN.split(",") if o.strip()]
+
 MAX_SIZE_BYTES = 20 * 1024 * 1024
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=[ALLOWED_ORIGIN],
-    allow_methods=["POST", "GET"],
-    allow_headers=["Content-Type"],
-)
+if ALLOWED_ORIGINS:
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=ALLOWED_ORIGINS,
+        allow_methods=["POST", "GET"],
+        allow_headers=["Content-Type"],
+    )
+else:
+    print("WARNING: CORS middleware not added - no allowed origins configured", flush=True)
 
 
 @app.get("/health")
@@ -46,6 +63,11 @@ async def parse_pdf(
         raise HTTPException(status_code=400, detail="Se requiere un archivo PDF")
 
     contents = await file.read()
+    
+    # Validate PDF magic bytes (%PDF signature)
+    if not contents.startswith(b"%PDF"):
+        raise HTTPException(status_code=400, detail="Archivo no es un PDF válido")
+    
     if len(contents) > MAX_SIZE_BYTES:
         raise HTTPException(status_code=400, detail="El archivo supera los 20 MB")
 
@@ -93,12 +115,20 @@ async def parse_gemini(
 ):
 
     if not GEMINI_API_KEY:
-        raise HTTPException(status_code=500, detail="GEMINI_API_KEY no configurada en el servidor")
+        raise HTTPException(
+            status_code=500, 
+            detail="AI service configuration error: PDF processing temporarily unavailable"
+        )
 
     if not file.filename or not file.filename.lower().endswith(".pdf"):
         raise HTTPException(status_code=400, detail="Se requiere un archivo PDF")
 
     contents = await file.read()
+    
+    # Validate PDF magic bytes (%PDF signature)
+    if not contents.startswith(b"%PDF"):
+        raise HTTPException(status_code=400, detail="Archivo no es un PDF válido")
+    
     if len(contents) > MAX_SIZE_BYTES:
         raise HTTPException(status_code=400, detail="El archivo supera los 20 MB")
 
