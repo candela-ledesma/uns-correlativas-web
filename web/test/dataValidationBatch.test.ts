@@ -87,7 +87,7 @@ describe("validateConfiguredPlanData", () => {
           disponible: true,
         },
         {
-          id: "lic_computacion",
+          id: "lic_computacion" as import("@/lib/data/carreras").CarreraId,
           nombre: "Lic. Computacion",
           descripcion: "",
           defaultVersionId: "v1",
