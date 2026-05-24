@@ -102,10 +102,10 @@ export async function POST(request: Request) {
           // Autoguardar borrador parser en BD
           const slug = slugFromData(data);
           if (slug) {
-            await prisma.planBorrador.upsert({
-              where: { slug_fuente: { slug, fuente: "parser" } },
+            await prisma.plan.upsert({
+              where: { slug_fuente_estado: { slug, fuente: "PARSER", estado: "BORRADOR" } },
               update: { planJson: JSON.stringify(data), updatedAt: new Date() },
-              create: { slug, fuente: "parser", planJson: JSON.stringify(data) },
+              create: { slug, fuente: "PARSER", estado: "BORRADOR", planJson: JSON.stringify(data) },
             }).catch(() => {});
           }
           send("done", { data });
@@ -129,10 +129,10 @@ export async function POST(request: Request) {
             // Autoguardar borrador parser en BD
             const slug = slugFromData(data);
             if (slug) {
-              await prisma.planBorrador.upsert({
-                where: { slug_fuente: { slug, fuente: "parser" } },
+              await prisma.plan.upsert({
+                where: { slug_fuente_estado: { slug, fuente: "PARSER", estado: "BORRADOR" } },
                 update: { planJson: JSON.stringify(data), updatedAt: new Date() },
-                create: { slug, fuente: "parser", planJson: JSON.stringify(data) },
+                create: { slug, fuente: "PARSER", estado: "BORRADOR", planJson: JSON.stringify(data) },
               }).catch(() => {});
             }
 

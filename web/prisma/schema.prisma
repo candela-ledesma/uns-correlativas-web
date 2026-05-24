@@ -8,6 +8,19 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
+// Estado del ciclo de vida de un plan. Reemplaza las tres tablas PlanBorrador/PlanPendiente/PlanPublicado.
+enum PlanEstado {
+  BORRADOR   // generado al parsear un PDF, pendiente de revisión
+  PENDIENTE  // enviado por un moderador, esperando aprobación de admin
+  PUBLICADO  // visible para los usuarios
+}
+
+// Origen del JSON de un plan.
+enum PlanFuente {
+  PARSER  // generado por el parser local Python
+  GEMINI  // generado por Gemini con visión nativa
+}
+
 // Rol de un usuario en el sistema. Controla acceso a rutas /admin y acciones de moderación.
 enum Role {
   USER
@@ -79,20 +92,23 @@ model UserPreference {
 // Último plan que cada usuario abrió por carrera. Una fila por (usuario, carrera);
 // se hace upsert cada vez que el usuario navega a un plan. Se usa para mostrar
 // "continuar donde lo dejaste" en el dashboard.
-//
-// DEUDA: versionId y careerId son strings sueltos sin FK. Ver NORMALIZATION.md §1 y §4.
+// planVersionId es la FK normalizada a PlanVersion; planId y versionId se mantienen
+// durante la transición.
 model UserRecentPlan {
-  id        String   @id @default(cuid())
-  userId    String
-  careerId  String
-  planId    String
-  versionId String
-  openedAt  DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id            String       @id @default(cuid())
+  userId        String
+  careerId      String
+  planId        String
+  versionId     String
+  planVersionId String?
+  openedAt      DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  planVersion   PlanVersion? @relation(fields: [planVersionId], references: [id], onDelete: SetNull)
 
   @@unique([userId, careerId])
   @@index([userId, openedAt])
+  @@index([planVersionId])
 }
 
 // Log append-only de acciones del usuario. Se inserta un registro por cada evento relevante
@@ -162,34 +178,38 @@ model VerificationToken {
 // stateJson es un objeto { [materiaId]: "aprobada" | "cursada" | "no_cursada" } que se
 // sobreescribe completo en cada sync. Se hace upsert desde el cliente cada vez que el
 // usuario cambia el estado de una materia.
-//
-// DEUDA: versionId es un string sin FK — no existe tabla PlanVersion. Ver NORMALIZATION.md §1.
+// planVersionId es la FK normalizada a PlanVersion; planId y versionId se mantienen
+// durante la transición y se eliminarán una vez que todo el código use planVersionId.
 model UserPlanProgress {
-  id        String   @id @default(cuid())
-  userId    String
-  planId    String
-  versionId String
-  stateJson String
-  updatedAt DateTime @default(now())
-  createdAt DateTime @default(now())
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id            String       @id @default(cuid())
+  userId        String
+  planId        String
+  versionId     String
+  planVersionId String?
+  stateJson     String
+  updatedAt     DateTime     @default(now())
+  createdAt     DateTime     @default(now())
+  user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  planVersion   PlanVersion? @relation(fields: [planVersionId], references: [id], onDelete: SetNull)
 
   @@unique([userId, planId, versionId])
   @@index([userId, updatedAt])
+  @@index([planVersionId])
 }
 
 // Bloque de horario en el planificador semanal de cuatrimestre. Cada fila representa
 // una materia ubicada en un día y rango horario de la grilla. dia va de 0 (lunes) a 6 (domingo).
 // horaInicio y horaFin son enteros en formato HHMM (ej: 830, 1000).
 // materiaId es opcional porque el usuario puede agregar bloques libres sin materia asociada.
-//
-// DEUDA: versionId es un string sin FK. Ver NORMALIZATION.md §1.
+// planVersionId es la FK normalizada a PlanVersion; planId y versionId se mantienen
+// durante la transición.
 model ScheduleBlock {
-  id            String   @id @default(cuid())
+  id            String       @id @default(cuid())
   userId        String
   careerId      String
   planId        String
   versionId     String
+  planVersionId String?
   materiaNombre String
   materiaId     String?
   dia           Int
@@ -197,33 +217,36 @@ model ScheduleBlock {
   horaFin       Int
   comision      String?
   notas         String?
-  color         String?  // color hex elegido por el usuario para el bloque
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  color         String?      // color hex elegido por el usuario para el bloque
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  planVersion   PlanVersion? @relation(fields: [planVersionId], references: [id], onDelete: SetNull)
 
   @@index([userId, careerId, planId, versionId])
+  @@index([planVersionId])
 }
 
 // Snapshot de progreso compartible. Cuando un usuario genera un link para compartir
 // su avance, se crea una copia inmutable de su stateJson en ese momento. El token
 // es el identificador público de la URL (/progreso/share/[token]).
 // No se actualiza si el usuario modifica su progreso después de compartir.
-//
-// DEUDA: stateJson se copia desde el cliente (no desde UserPlanProgress en DB), lo que
-// permite inconsistencias. Corrección: leer desde DB al crear el share. Ver NORMALIZATION.md §3.
-// DEUDA: versionId es un string sin FK. Ver NORMALIZATION.md §1.
+// planVersionId es la FK normalizada a PlanVersion; planId y versionId se mantienen
+// durante la transición.
 model ProgressShare {
-  id        String   @id @default(cuid())
-  token     String   @unique @default(cuid())
-  planId    String
-  versionId String
-  stateJson String
-  createdBy String?
-  createdAt DateTime @default(now())
+  id            String       @id @default(cuid())
+  token         String       @unique @default(cuid())
+  planId        String
+  versionId     String
+  planVersionId String?
+  stateJson     String
+  createdBy     String?
+  createdAt     DateTime     @default(now())
+  planVersion   PlanVersion? @relation(fields: [planVersionId], references: [id], onDelete: SetNull)
 
   @@index([token])
   @@index([createdBy])
+  @@index([planVersionId])
 }
 
 // Configuración global editable por admin. Singleton (siempre id = "singleton").
@@ -239,64 +262,47 @@ model AdminConfig {
   createdAt     DateTime @default(now())
 }
 
-// Cola de planes enviados por moderadores esperando aprobación de un admin.
-// Un plan entra acá desde el panel admin al hacer "enviar a revisión".
-// El admin puede aprobar (pasa a PlanPublicado) o rechazar (se elimina).
-// Solo puede haber un pendiente por slug a la vez.
-//
-// DEUDA: esta tabla comparte estructura con PlanBorrador y PlanPublicado. Son el mismo
-// objeto en distintos estados. Candidata a unificarse en tabla Plan con estado enum.
-// Además, fuente no es columna acá — se guarda dentro de planJson como _fuente (inconsistente).
-// Ver NORMALIZATION.md §2.
-model PlanPendiente {
-  id          String   @id @default(cuid())
-  slug        String   @unique
-  planJson    String
-  submittedBy String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-}
-
-// Plan de estudios publicado y visible para los usuarios. Una fila por carrera (slug único).
-// planJson contiene el JSON completo del plan (materias, correlativas, agrupadores).
-// fuente indica si fue generado por el parser local ("parser") o por Gemini ("gemini").
-// publicado=false oculta el plan sin eliminarlo (soft delete temporal).
-// Al actualizar un plan publicado, el anterior se guarda como backup con slug "{slug}_v1_backup".
-//
-// DEUDA: comparte estructura con PlanBorrador y PlanPendiente — candidata a unificarse.
-// El backup como "{slug}_v1_backup" es un hack dentro de esta misma tabla (no hay versionado real).
-// fuente debería ser un enum, no un string. Ver NORMALIZATION.md §2.
-model PlanPublicado {
-  id        String   @id @default(cuid())
-  slug      String   @unique
-  fuente    String   // "parser" | "gemini"
-  planJson  String
-  publicado Boolean  @default(true)
-  savedBy   String?
-  savedAt   DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([slug])
-}
-
-// Borrador de un plan en proceso de edición. Hay hasta dos borradores por carrera:
-// uno de fuente "parser" y otro de fuente "gemini", para comparar ambos outputs side-by-side
-// en el panel admin antes de decidir cuál publicar. Se crea al parsear un PDF y se elimina
-// al publicar o descartar.
-//
-// DEUDA: comparte estructura con PlanPublicado y PlanPendiente — candidata a unificarse.
-// fuente debería ser un enum, no un string. Ver NORMALIZATION.md §2.
-model PlanBorrador {
-  id        String   @id @default(cuid())
+// Tabla unificada de planes. Reemplaza PlanBorrador, PlanPendiente y PlanPublicado.
+// estado determina en qué fase del ciclo de vida está el plan.
+// Puede haber hasta dos BORRADOR por carrera: uno PARSER y uno GEMINI (para comparar side-by-side).
+// Solo puede haber un PENDIENTE y un PUBLICADO por slug.
+// esBackup reemplaza el hack de guardar backups con slug "{slug}_v1_backup".
+// autorId unifica createdBy/submittedBy/savedBy de las tres tablas anteriores.
+model Plan {
+  id        String     @id @default(cuid())
   slug      String
-  fuente    String   // "parser" | "gemini"
+  estado    PlanEstado
+  fuente    PlanFuente
   planJson  String
-  createdBy String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  publicado Boolean    @default(true)  // solo relevante cuando estado=PUBLICADO; false = soft delete
+  esBackup  Boolean    @default(false) // true = copia de seguridad del plan anterior al publicar
+  autorId   String?
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
 
-  @@unique([slug, fuente])
-  @@index([slug])
+  @@unique([slug, fuente, estado])
+  @@index([slug, estado])
+  @@index([slug, esBackup])
+}
+
+
+// Versión de un plan de estudios. Ancla los versionId que antes flotaban como strings
+// en UserPlanProgress, UserRecentPlan, ScheduleBlock y ProgressShare.
+// planSlug es el slug de la carrera (ej: "ingenieria_civil").
+// versionId es el string de versión tal como se usa en el código (ej: "v1", "v2").
+model PlanVersion {
+  id        String   @id @default(cuid())
+  planSlug  String
+  versionId String
+  createdAt DateTime @default(now())
+
+  progresses     UserPlanProgress[]
+  recentPlans    UserRecentPlan[]
+  scheduleBlocks ScheduleBlock[]
+  shares         ProgressShare[]
+
+  @@unique([planSlug, versionId])
+  @@index([planSlug])
 }
 
 // Metadata de carreras agregadas dinámicamente (no hardcodeadas en carreras.ts).

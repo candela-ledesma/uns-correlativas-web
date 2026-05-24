@@ -382,7 +382,6 @@ export default function PlanViewer({
         body: JSON.stringify({
           planId: data.plan.plan_id,
           versionId: data.plan.version_id,
-          state: estados,
         }),
       });
       if (!res.ok) throw new Error("share-failed");

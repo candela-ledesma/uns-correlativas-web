@@ -78,7 +78,7 @@ async function readPlanJson(slug: string, jsonFile: string): Promise<string | nu
   const fromFile = await fs.readFile(filePath, "utf8").catch(() => null);
   if (fromFile !== null) return fromFile;
 
-  const row = await prisma.planPublicado.findUnique({ where: { slug } }).catch(() => null);
+  const row = await prisma.plan.findFirst({ where: { slug, estado: "PUBLICADO", esBackup: false } }).catch(() => null);
   return row?.planJson ?? null;
 }
 

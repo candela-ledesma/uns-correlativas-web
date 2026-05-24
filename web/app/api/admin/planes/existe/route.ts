@@ -62,8 +62,8 @@ export async function GET(request: Request) {
   const slug = slugFromFilename(filename);
 
   const [borradorParser, borradorGemini] = await Promise.all([
-    prisma.planBorrador.findUnique({ where: { slug_fuente: { slug, fuente: "parser" } } }),
-    prisma.planBorrador.findUnique({ where: { slug_fuente: { slug, fuente: "gemini" } } }),
+    prisma.plan.findUnique({ where: { slug_fuente_estado: { slug, fuente: "PARSER", estado: "BORRADOR" } } }),
+    prisma.plan.findUnique({ where: { slug_fuente_estado: { slug, fuente: "GEMINI", estado: "BORRADOR" } } }),
   ]);
 
   const parserInfo: ExistingInfo = borradorParser
