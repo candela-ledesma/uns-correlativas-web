@@ -34,7 +34,7 @@ export async function POST(request: Request) {
     const context = await recordPlanOpened({
       userId: session.user.id,
       careerId: parsed.data.careerId,
-      planId: parsed.data.planId,
+      planSlug: parsed.data.planId,
       versionId: parsed.data.versionId,
     });
 

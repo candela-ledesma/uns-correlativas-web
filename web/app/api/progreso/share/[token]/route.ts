@@ -9,7 +9,10 @@ type Params = { params: Promise<{ token: string }> };
 export async function GET(_req: Request, { params }: Params) {
   const { token } = await params;
 
-  const share = await prisma.progressShare.findUnique({ where: { token } });
+  const share = await prisma.progressShare.findUnique({
+    where: { token },
+    include: { planVersion: { select: { planSlug: true, versionId: true } } },
+  });
 
   if (!share) {
     return NextResponse.json({ error: "Link no encontrado o expirado" }, { status: 404 });
@@ -23,8 +26,8 @@ export async function GET(_req: Request, { params }: Params) {
   }
 
   return NextResponse.json({
-    planId: share.planId,
-    versionId: share.versionId,
+    planId: share.planVersion.planSlug,
+    versionId: share.planVersion.versionId,
     state,
     createdAt: share.createdAt,
   });

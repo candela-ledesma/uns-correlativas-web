@@ -43,7 +43,7 @@ export async function POST(request: Request) {
 
   const remoteSnapshot = await getProgressSnapshot({
     userId: session.user.id,
-    planId,
+    planSlug: planId,
     versionId,
   });
 
@@ -57,7 +57,7 @@ export async function POST(request: Request) {
 
     await upsertProgressSnapshot({
       userId: session.user.id,
-      planId,
+      planSlug: planId,
       versionId,
       state: resolution.snapshot.state,
       updatedAt: resolvedUpdatedAt,

@@ -14,7 +14,10 @@ type Props = {
 export default async function Page({ params }: Props) {
   const { carrera: carreraId, token } = await params;
 
-  const share = await prisma.progressShare.findUnique({ where: { token } });
+  const share = await prisma.progressShare.findUnique({
+    where: { token },
+    include: { planVersion: { select: { versionId: true } } },
+  });
   if (!share) notFound();
 
   let sharedState: Record<string, EstadoMateria>;
@@ -25,7 +28,7 @@ export default async function Page({ params }: Props) {
   }
 
   const carrera = getCarreraById(carreraId);
-  const result = await loadPlanData(carreraId, share.versionId);
+  const result = await loadPlanData(carreraId, share.planVersion.versionId);
 
   if (result.status === "not-found") notFound();
 

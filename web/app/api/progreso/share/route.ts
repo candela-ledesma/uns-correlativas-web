@@ -27,14 +27,17 @@ export async function POST(request: Request) {
 
   const { planId, versionId } = parsed.data;
 
+  const planVersion = await prisma.planVersion.findUnique({
+    where: { planSlug_versionId: { planSlug: planId, versionId } },
+    select: { id: true },
+  });
+
+  if (!planVersion) {
+    return NextResponse.json({ error: "Plan no encontrado" }, { status: 404 });
+  }
+
   const progress = await prisma.userPlanProgress.findUnique({
-    where: {
-      userId_planId_versionId: {
-        userId: session.user.id,
-        planId,
-        versionId,
-      },
-    },
+    where: { userId_planVersionId: { userId: session.user.id, planVersionId: planVersion.id } },
     select: { stateJson: true },
   });
 
@@ -44,8 +47,7 @@ export async function POST(request: Request) {
 
   const share = await prisma.progressShare.create({
     data: {
-      planId,
-      versionId,
+      planVersionId: planVersion.id,
       stateJson: progress.stateJson,
       createdBy: session.user.id,
     },
