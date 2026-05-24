@@ -13,6 +13,7 @@ enum PlanEstado {
   BORRADOR   // generado al parsear un PDF, pendiente de revisión
   PENDIENTE  // enviado por un moderador, esperando aprobación de admin
   PUBLICADO  // visible para los usuarios
+  INACTIVO   // publicado pero desactivado temporalmente sin perder el historial
 }
 
 // Origen del JSON de un plan.
@@ -92,19 +93,15 @@ model UserPreference {
 // Último plan que cada usuario abrió por carrera. Una fila por (usuario, carrera);
 // se hace upsert cada vez que el usuario navega a un plan. Se usa para mostrar
 // "continuar donde lo dejaste" en el dashboard.
-// planVersionId es la FK normalizada a PlanVersion; planId y versionId se mantienen
-// durante la transición.
 model UserRecentPlan {
-  id            String       @id @default(cuid())
+  id            String      @id @default(cuid())
   userId        String
   careerId      String
-  planId        String
-  versionId     String
-  planVersionId String?
-  openedAt      DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
-  user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  planVersion   PlanVersion? @relation(fields: [planVersionId], references: [id], onDelete: SetNull)
+  planVersionId String
+  openedAt      DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  planVersion   PlanVersion @relation(fields: [planVersionId], references: [id], onDelete: Cascade)
 
   @@unique([userId, careerId])
   @@index([userId, openedAt])
@@ -174,42 +171,33 @@ model VerificationToken {
   @@id([identifier, token])
 }
 
-// Estado del progreso de un usuario en un plan específico. Una fila por (usuario, plan, versión).
+// Estado del progreso de un usuario en un plan específico. Una fila por (usuario, planVersion).
 // stateJson es un objeto { [materiaId]: "aprobada" | "cursada" | "no_cursada" } que se
 // sobreescribe completo en cada sync. Se hace upsert desde el cliente cada vez que el
 // usuario cambia el estado de una materia.
-// planVersionId es la FK normalizada a PlanVersion; planId y versionId se mantienen
-// durante la transición y se eliminarán una vez que todo el código use planVersionId.
 model UserPlanProgress {
-  id            String       @id @default(cuid())
+  id            String      @id @default(cuid())
   userId        String
-  planId        String
-  versionId     String
-  planVersionId String?
+  planVersionId String
   stateJson     String
-  updatedAt     DateTime     @default(now())
-  createdAt     DateTime     @default(now())
-  user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  planVersion   PlanVersion? @relation(fields: [planVersionId], references: [id], onDelete: SetNull)
+  updatedAt     DateTime    @default(now())
+  createdAt     DateTime    @default(now())
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  planVersion   PlanVersion @relation(fields: [planVersionId], references: [id], onDelete: Cascade)
 
-  @@unique([userId, planId, versionId])
+  @@unique([userId, planVersionId])
   @@index([userId, updatedAt])
-  @@index([planVersionId])
 }
 
 // Bloque de horario en el planificador semanal de cuatrimestre. Cada fila representa
 // una materia ubicada en un día y rango horario de la grilla. dia va de 0 (lunes) a 6 (domingo).
 // horaInicio y horaFin son enteros en formato HHMM (ej: 830, 1000).
 // materiaId es opcional porque el usuario puede agregar bloques libres sin materia asociada.
-// planVersionId es la FK normalizada a PlanVersion; planId y versionId se mantienen
-// durante la transición.
 model ScheduleBlock {
-  id            String       @id @default(cuid())
+  id            String      @id @default(cuid())
   userId        String
   careerId      String
-  planId        String
-  versionId     String
-  planVersionId String?
+  planVersionId String
   materiaNombre String
   materiaId     String?
   dia           Int
@@ -217,13 +205,13 @@ model ScheduleBlock {
   horaFin       Int
   comision      String?
   notas         String?
-  color         String?      // color hex elegido por el usuario para el bloque
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
-  user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  planVersion   PlanVersion? @relation(fields: [planVersionId], references: [id], onDelete: SetNull)
+  color         String?     // color hex elegido por el usuario para el bloque
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  planVersion   PlanVersion @relation(fields: [planVersionId], references: [id], onDelete: Cascade)
 
-  @@index([userId, careerId, planId, versionId])
+  @@index([userId, careerId, planVersionId])
   @@index([planVersionId])
 }
 
@@ -231,18 +219,16 @@ model ScheduleBlock {
 // su avance, se crea una copia inmutable de su stateJson en ese momento. El token
 // es el identificador público de la URL (/progreso/share/[token]).
 // No se actualiza si el usuario modifica su progreso después de compartir.
-// planVersionId es la FK normalizada a PlanVersion; planId y versionId se mantienen
-// durante la transición.
+// stateJson se copia en el momento de crear el share — no se actualiza si el usuario
+// modifica su progreso después.
 model ProgressShare {
-  id            String       @id @default(cuid())
-  token         String       @unique @default(cuid())
-  planId        String
-  versionId     String
-  planVersionId String?
+  id            String      @id @default(cuid())
+  token         String      @unique @default(cuid())
+  planVersionId String
   stateJson     String
   createdBy     String?
-  createdAt     DateTime     @default(now())
-  planVersion   PlanVersion? @relation(fields: [planVersionId], references: [id], onDelete: SetNull)
+  createdAt     DateTime    @default(now())
+  planVersion   PlanVersion @relation(fields: [planVersionId], references: [id], onDelete: Cascade)
 
   @@index([token])
   @@index([createdBy])
@@ -274,7 +260,6 @@ model Plan {
   estado    PlanEstado
   fuente    PlanFuente
   planJson  String
-  publicado Boolean    @default(true)  // solo relevante cuando estado=PUBLICADO; false = soft delete
   esBackup  Boolean    @default(false) // true = copia de seguridad del plan anterior al publicar
   autorId   String?
   createdAt DateTime   @default(now())

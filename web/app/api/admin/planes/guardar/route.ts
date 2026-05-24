@@ -81,7 +81,7 @@ export async function POST(request: Request) {
       _saved_at: new Date().toISOString(),
       _saved_by: session.user.id,
       _saved_fuente: fuente,
-      _publicado: publicar,
+      _publicado: publicar, // campo informativo dentro del JSON, no columna DB
       ...(motivo ? { _motivo_cambio: motivo } : {}),
       ...(resolucion === "nueva_version" ? { _version: "v2" } : {}),
     };
@@ -162,11 +162,11 @@ export async function POST(request: Request) {
     if (existing) {
       await prisma.plan.update({
         where: { id: existing.id },
-        data: { planJson: planJsonStr, fuente: fuenteEnum, publicado: true, autorId: session.user.id },
+        data: { planJson: planJsonStr, fuente: fuenteEnum, autorId: session.user.id },
       });
     } else {
       await prisma.plan.create({
-        data: { slug, estado: "PUBLICADO", fuente: fuenteEnum, planJson: planJsonStr, publicado: true, autorId: session.user.id },
+        data: { slug, estado: "PUBLICADO", fuente: fuenteEnum, planJson: planJsonStr, autorId: session.user.id },
       });
     }
 
