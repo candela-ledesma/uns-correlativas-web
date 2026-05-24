@@ -1,15 +1,16 @@
 import { afterEach, describe, expect, it } from "vitest";
 import { GET } from "../app/api/materias/[carrera]/route";
 
-const originalNodeEnv = process.env.NODE_ENV;
+const env = process.env as Record<string, string | undefined>;
+const originalNodeEnv = env.NODE_ENV;
 
 afterEach(() => {
-  process.env.NODE_ENV = originalNodeEnv;
+  env.NODE_ENV = originalNodeEnv;
 });
 
 describe("GET /api/materias/[carrera]", () => {
   it("mantiene contrato para un plan valido", async () => {
-    process.env.NODE_ENV = "test";
+    env.NODE_ENV = "test";
 
     const response = await GET(
       new Request("http://localhost/api/materias/arquitectura?v=v2"),
@@ -33,7 +34,7 @@ describe("GET /api/materias/[carrera]", () => {
   });
 
   it("responde 422 y detalle tecnico en desarrollo para plan invalido", async () => {
-    process.env.NODE_ENV = "development";
+    env.NODE_ENV = "development";
 
     const response = await GET(
       new Request("http://localhost/api/materias/arquitectura?v=v_invalid_shape"),
@@ -52,7 +53,7 @@ describe("GET /api/materias/[carrera]", () => {
   });
 
   it("oculta detalles internos en produccion", async () => {
-    process.env.NODE_ENV = "production";
+    env.NODE_ENV = "production";
 
     const response = await GET(
       new Request("http://localhost/api/materias/arquitectura?v=v_invalid_shape"),

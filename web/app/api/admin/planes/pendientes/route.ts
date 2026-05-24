@@ -11,7 +11,7 @@ export async function GET() {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
-  const rows = await prisma.planPendiente.findMany({ orderBy: { createdAt: "desc" } });
+  const rows = await prisma.plan.findMany({ where: { estado: "PENDIENTE" }, orderBy: { createdAt: "desc" } });
 
   const planes = rows.map((row) => {
     let plan: unknown = null;

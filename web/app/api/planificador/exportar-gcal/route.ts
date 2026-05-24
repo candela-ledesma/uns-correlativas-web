@@ -165,8 +165,17 @@ export async function POST(request: Request) {
   }
 
   const { careerId, planId, versionId } = queryParsed.data;
+
+  const planVersion = await prisma.planVersion.findUnique({
+    where: { planSlug_versionId: { planSlug: planId, versionId } },
+    select: { id: true },
+  });
+  if (!planVersion) {
+    return NextResponse.json({ error: "Plan no encontrado" }, { status: 404 });
+  }
+
   const blocks = await prisma.scheduleBlock.findMany({
-    where: { userId: auth.userId, careerId, planId, versionId },
+    where: { userId: auth.userId, careerId, planVersionId: planVersion.id },
   });
 
   if (blocks.length === 0) {

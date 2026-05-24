@@ -8,21 +8,41 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
+// Estado del ciclo de vida de un plan. Reemplaza las tres tablas PlanBorrador/PlanPendiente/PlanPublicado.
+enum PlanEstado {
+  BORRADOR   // generado al parsear un PDF, pendiente de revisión
+  PENDIENTE  // enviado por un moderador, esperando aprobación de admin
+  PUBLICADO  // visible para los usuarios
+  INACTIVO   // publicado pero desactivado temporalmente sin perder el historial
+}
+
+// Origen del JSON de un plan.
+enum PlanFuente {
+  PARSER  // generado por el parser local Python
+  GEMINI  // generado por Gemini con visión nativa
+}
+
+// Rol de un usuario en el sistema. Controla acceso a rutas /admin y acciones de moderación.
 enum Role {
   USER
   MODERATOR
   ADMIN
 }
 
+// Tipos de eventos que se registran en UserActivity.
+// Permiten filtrar el historial de acciones de un usuario por categoría.
 enum UserActivityType {
-  MATERIA_STATUS_CHANGED
-  ACTIVE_CAREER_CHANGED
-  PLAN_OPENED
-  ONBOARDING_COMPLETED
-  ONBOARDING_DISMISSED
-  ONBOARDING_RESET
+  MATERIA_STATUS_CHANGED  // el usuario marcó/desmarcó una materia
+  ACTIVE_CAREER_CHANGED   // cambió la carrera activa en preferencias
+  PLAN_OPENED             // abrió un plan de estudios
+  ONBOARDING_COMPLETED    // completó el flujo de onboarding
+  ONBOARDING_DISMISSED    // cerró el onboarding sin completarlo
+  ONBOARDING_RESET        // el admin reseteó su onboarding
 }
 
+// Usuario autenticado. Creado automáticamente por NextAuth al primer login con Google.
+// El campo role determina qué puede hacer: USER solo usa la app, MODERATOR puede enviar planes,
+// ADMIN puede publicar, editar configuración y gestionar usuarios.
 model User {
   id            String             @id @default(cuid())
   name          String?
@@ -43,6 +63,9 @@ model User {
   scheduleBlocks ScheduleBlock[]
 }
 
+// Carreras en las que un usuario está inscripto. Una fila por (usuario, carrera).
+// careerId es el slug de la carrera (ej: "ingenieria_civil"). No tiene FK a CarreraConfig
+// porque las carreras estáticas no están en la base de datos.
 model UserCareerEnrollment {
   id        String   @id @default(cuid())
   userId    String
@@ -54,6 +77,9 @@ model UserCareerEnrollment {
   @@index([userId, createdAt])
 }
 
+// Preferencias globales del usuario. Una fila por usuario (1-a-1 con User).
+// activeCareerId indica la carrera seleccionada actualmente en el dashboard.
+// Los timestamps de onboarding controlan si se muestra el wizard de bienvenida.
 model UserPreference {
   userId                String    @id
   activeCareerId        String?
@@ -64,38 +90,50 @@ model UserPreference {
   user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
+// Último plan que cada usuario abrió por carrera. Una fila por (usuario, carrera);
+// se hace upsert cada vez que el usuario navega a un plan. Se usa para mostrar
+// "continuar donde lo dejaste" en el dashboard.
 model UserRecentPlan {
-  id        String   @id @default(cuid())
-  userId    String
-  careerId  String
-  planId    String
-  versionId String
-  openedAt  DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id            String      @id @default(cuid())
+  userId        String
+  careerId      String
+  planVersionId String
+  openedAt      DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  planVersion   PlanVersion @relation(fields: [planVersionId], references: [id], onDelete: Cascade)
 
   @@unique([userId, careerId])
   @@index([userId, openedAt])
+  @@index([planVersionId])
 }
 
+// Log append-only de acciones del usuario. Se inserta un registro por cada evento relevante
+// (marcar materia, abrir plan, etc.) y nunca se modifica. Se usa en el perfil para mostrar
+// actividad reciente. Los campos opcionales se llenan según el tipo de evento.
+// planSlug y versionId son strings libres (no FK) — el log debe preservar el contexto
+// aunque el plan sea eliminado en el futuro.
 model UserActivity {
-  id          String           @id @default(cuid())
-  userId      String
-  type        UserActivityType
-  careerId    String?
-  planId      String?
-  versionId   String?
-  materiaKey  String?
-  fromState   String?
-  toState     String?
-  metadataJson String?
-  createdAt   DateTime         @default(now())
-  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id           String           @id @default(cuid())
+  userId       String
+  type         UserActivityType
+  careerId     String?
+  planSlug     String?          // slug de la carrera, ej: "arquitectura" (no es FK a Plan)
+  versionId    String?
+  materiaKey   String?          // solo para MATERIA_STATUS_CHANGED
+  fromState    String?          // estado anterior de la materia
+  toState      String?          // estado nuevo de la materia
+  metadataJson String?          // datos extra según el tipo de evento
+  createdAt    DateTime         @default(now())
+  user         User             @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, createdAt])
   @@index([userId, type, createdAt])
 }
 
+// Cuenta OAuth vinculada a un usuario. Generada y gestionada por NextAuth.
+// Un usuario puede tener múltiples cuentas (ej: Google + GitHub). En la práctica
+// solo usamos Google como provider.
 model Account {
   userId            String
   type              String
@@ -115,6 +153,8 @@ model Account {
   @@id([provider, providerAccountId])
 }
 
+// Sesión activa de un usuario. Generada y gestionada por NextAuth.
+// Se destruye al hacer logout o cuando expira.
 model Session {
   sessionToken String   @unique
   userId       String
@@ -124,6 +164,7 @@ model Session {
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
+// Token temporal para verificar email o magic link. Generado y consumido por NextAuth.
 model VerificationToken {
   identifier String
   token      String   @unique
@@ -132,26 +173,33 @@ model VerificationToken {
   @@id([identifier, token])
 }
 
+// Estado del progreso de un usuario en un plan específico. Una fila por (usuario, planVersion).
+// stateJson es un objeto { [materiaId]: "aprobada" | "cursada" | "no_cursada" } que se
+// sobreescribe completo en cada sync. Se hace upsert desde el cliente cada vez que el
+// usuario cambia el estado de una materia.
 model UserPlanProgress {
-  id        String   @id @default(cuid())
-  userId    String
-  planId    String
-  versionId String
-  stateJson String
-  updatedAt DateTime @default(now())
-  createdAt DateTime @default(now())
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id            String      @id @default(cuid())
+  userId        String
+  planVersionId String
+  stateJson     String
+  updatedAt     DateTime    @default(now())
+  createdAt     DateTime    @default(now())
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  planVersion   PlanVersion @relation(fields: [planVersionId], references: [id], onDelete: Cascade)
 
-  @@unique([userId, planId, versionId])
+  @@unique([userId, planVersionId])
   @@index([userId, updatedAt])
 }
 
+// Bloque de horario en el planificador semanal de cuatrimestre. Cada fila representa
+// una materia ubicada en un día y rango horario de la grilla. dia va de 0 (lunes) a 6 (domingo).
+// horaInicio y horaFin son enteros en formato HHMM (ej: 830, 1000).
+// materiaId es opcional porque el usuario puede agregar bloques libres sin materia asociada.
 model ScheduleBlock {
-  id            String   @id @default(cuid())
+  id            String      @id @default(cuid())
   userId        String
   careerId      String
-  planId        String
-  versionId     String
+  planVersionId String
   materiaNombre String
   materiaId     String?
   dia           Int
@@ -159,27 +207,40 @@ model ScheduleBlock {
   horaFin       Int
   comision      String?
   notas         String?
-  color         String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  color         String?     // color hex elegido por el usuario para el bloque
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  planVersion   PlanVersion @relation(fields: [planVersionId], references: [id], onDelete: Cascade)
 
-  @@index([userId, careerId, planId, versionId])
+  @@index([userId, careerId, planVersionId])
+  @@index([planVersionId])
 }
 
+// Snapshot de progreso compartible. Cuando un usuario genera un link para compartir
+// su avance, se crea una copia inmutable de su stateJson en ese momento. El token
+// es el identificador público de la URL (/progreso/share/[token]).
+// No se actualiza si el usuario modifica su progreso después de compartir.
+// stateJson se copia en el momento de crear el share — no se actualiza si el usuario
+// modifica su progreso después.
 model ProgressShare {
-  id        String   @id @default(cuid())
-  token     String   @unique @default(cuid())
-  planId    String
-  versionId String
-  stateJson String
-  createdBy String?
-  createdAt DateTime @default(now())
+  id            String      @id @default(cuid())
+  token         String      @unique @default(cuid())
+  planVersionId String
+  stateJson     String
+  createdBy     String?
+  createdAt     DateTime    @default(now())
+  planVersion   PlanVersion @relation(fields: [planVersionId], references: [id], onDelete: Cascade)
 
   @@index([token])
   @@index([createdBy])
+  @@index([planVersionId])
 }
 
+// Configuración global editable por admin. Singleton (siempre id = "singleton").
+// systemPrompt es el prompt principal que se envía a Gemini para parsear PDFs.
+// genericPrompt es una variante alternativa para planes de universidades genéricas.
+// version es un string libre para identificar la versión del prompt (ej: "v33").
 model AdminConfig {
   id            String   @id @default("singleton")
   systemPrompt  String
@@ -189,43 +250,55 @@ model AdminConfig {
   createdAt     DateTime @default(now())
 }
 
-model PlanPendiente {
-  id        String   @id @default(cuid())
-  slug      String   @unique
+// Tabla unificada de planes. Reemplaza PlanBorrador, PlanPendiente y PlanPublicado.
+// estado determina en qué fase del ciclo de vida está el plan.
+// Puede haber hasta dos BORRADOR por carrera: uno PARSER y uno GEMINI (para comparar side-by-side).
+// Solo puede haber un PENDIENTE y un PUBLICADO por slug.
+// esBackup reemplaza el hack de guardar backups con slug "{slug}_v1_backup".
+// autorId unifica createdBy/submittedBy/savedBy de las tres tablas anteriores.
+model Plan {
+  id        String     @id @default(cuid())
+  slug      String
+  estado    PlanEstado
+  fuente    PlanFuente
   planJson  String
-  submittedBy String?
+  esBackup  Boolean    @default(false) // true = copia de seguridad del plan anterior al publicar
+  autorId   String?
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  @@unique([slug, fuente, estado])
+  @@index([slug, estado])
+  @@index([slug, esBackup])
+}
+
+
+// Versión de un plan de estudios. Ancla los versionId que antes flotaban como strings
+// en UserPlanProgress, UserRecentPlan, ScheduleBlock y ProgressShare.
+// planSlug es el slug de la carrera (ej: "ingenieria_civil").
+// versionId es el string de versión tal como se usa en el código (ej: "v1", "v2").
+model PlanVersion {
+  id        String   @id @default(cuid())
+  planSlug  String
+  versionId String
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+
+  progresses     UserPlanProgress[]
+  recentPlans    UserRecentPlan[]
+  scheduleBlocks ScheduleBlock[]
+  shares         ProgressShare[]
+
+  @@unique([planSlug, versionId])
+  @@index([planSlug])
 }
 
-model PlanPublicado {
-  id          String   @id @default(cuid())
-  slug        String   @unique
-  fuente      String   // "parser" | "gemini"
-  planJson    String
-  publicado   Boolean  @default(true)
-  savedBy     String?
-  savedAt     DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  @@index([slug])
-}
-
-model PlanBorrador {
-  id          String   @id @default(cuid())
-  slug        String
-  fuente      String   // "parser" | "gemini"
-  planJson    String
-  createdBy   String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  @@unique([slug, fuente])
-  @@index([slug])
-}
-
+// Metadata de carreras agregadas dinámicamente (no hardcodeadas en carreras.ts).
+// Se crea automáticamente al publicar un plan nuevo desde el panel admin.
+// Las carreras estáticas del array CARRERAS en carreras.ts NO tienen fila acá.
+// La API /api/planes mezcla ambas fuentes para devolver la lista completa.
+// jsonFile guarda la ruta original del JSON (ej: "ingenieria_civil.json").
 model CarreraConfig {
-  id           String   @id // el slug mismo
+  id           String   @id // slug de la carrera, ej: "ingenieria_civil"
   nombre       String
   descripcion  String   @default("Plan de estudios y correlativas.")
   departamento String?
@@ -237,14 +310,22 @@ model CarreraConfig {
   @@index([disponible])
 }
 
+// Log de auditoría append-only. Se inserta un registro por cada acción administrativa
+// relevante (publicar plan, cambiar rol, editar config, etc.). Nunca se modifica ni elimina.
+// actorEmail y actorRole se copian en el momento del evento aunque el usuario luego sea
+// eliminado (por eso la FK es SET NULL y los campos se duplican intencionalmente).
+// beforeJson/afterJson guardan el estado anterior y posterior de la entidad modificada.
+//
+// DECISIÓN: actorEmail y actorRole desnormalizados son correctos para auditoría — deben
+// reflejar el estado en el momento del evento, no el actual. No requieren cambio. Ver NORMALIZATION.md §5.
 model AuditLog {
   id           String   @id @default(cuid())
   actorUserId  String?
-  actorEmail   String?
-  actorRole    Role?
+  actorEmail   String?  // desnormalizado a propósito: preserva la identidad aunque se borre el usuario
+  actorRole    Role?    // idem
   authProvider String   @default("unknown")
-  action       String
-  entityType   String
+  action       String   // ej: "PLAN_PUBLISHED", "USER_ROLE_CHANGED", "CONFIG_UPDATED"
+  entityType   String   // ej: "plan", "user", "config"
   entityId     String
   beforeJson   String?
   afterJson    String?

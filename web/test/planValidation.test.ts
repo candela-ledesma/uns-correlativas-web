@@ -127,7 +127,7 @@ describe("validatePlanData", () => {
 
   it("detecta correlativas que apuntan a IDs inexistentes", () => {
     const raw = buildValidPlanFixture();
-    raw.materias[1].correlativas = {
+    (raw.materias[1] as { correlativas: Record<string, unknown> }).correlativas = {
       M999: {
         para_cursar: "cursada",
         para_rendir: "aprobada",

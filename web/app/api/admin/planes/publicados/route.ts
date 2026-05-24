@@ -16,7 +16,7 @@ export async function GET() {
   // Combina carreras estáticas (carreras.ts) + carreras dinámicas (DB)
   const [dbCarreras, dbPlanes] = await Promise.all([
     prisma.carreraConfig.findMany(),
-    prisma.planPublicado.findMany({ select: { slug: true, fuente: true, savedAt: true, planJson: true } }),
+    prisma.plan.findMany({ where: { estado: "PUBLICADO", esBackup: false }, select: { slug: true, fuente: true, createdAt: true, planJson: true } }),
   ]);
 
   const deptosMap = new Map(dbCarreras.map((c) => [c.id, c.departamento ?? null]));
@@ -38,7 +38,7 @@ export async function GET() {
         const data = JSON.parse(planRow.planJson);
         materias = (data.materias ?? []).length;
         fuente = planRow.fuente;
-        savedAt = planRow.savedAt.toISOString();
+        savedAt = planRow.createdAt.toISOString();
       } catch { /* skip */ }
     }
 
@@ -48,8 +48,8 @@ export async function GET() {
       departamento: deptosMap.get(slug) ?? null,
       disponible: carrera.disponible ?? true,
       jsonFile: version?.jsonFile ?? `${slug}.json`,
-      tieneLocal: !!planRow && planRow.fuente === "parser",
-      tieneGemini: !!planRow && planRow.fuente === "gemini",
+      tieneLocal: !!planRow && planRow.fuente === "PARSER",
+      tieneGemini: !!planRow && planRow.fuente === "GEMINI",
       materias,
       fuente,
       savedAt,
@@ -72,7 +72,7 @@ export async function GET() {
           const data = JSON.parse(planRow.planJson);
           materias = (data.materias ?? []).length;
           fuente = planRow.fuente;
-          savedAt = planRow.savedAt.toISOString();
+          savedAt = planRow.createdAt.toISOString();
         } catch { /* skip */ }
       }
 
@@ -82,8 +82,8 @@ export async function GET() {
         departamento: carrera.departamento ?? null,
         disponible: carrera.disponible,
         jsonFile: carrera.jsonFile,
-        tieneLocal: !!planRow && planRow.fuente === "parser",
-        tieneGemini: !!planRow && planRow.fuente === "gemini",
+        tieneLocal: !!planRow && planRow.fuente === "PARSER",
+        tieneGemini: !!planRow && planRow.fuente === "GEMINI",
         materias,
         fuente,
         savedAt,

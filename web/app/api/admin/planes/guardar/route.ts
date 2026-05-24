@@ -81,16 +81,18 @@ export async function POST(request: Request) {
       _saved_at: new Date().toISOString(),
       _saved_by: session.user.id,
       _saved_fuente: fuente,
-      _publicado: publicar,
+      _publicado: publicar, // campo informativo dentro del JSON, no columna DB
       ...(motivo ? { _motivo_cambio: motivo } : {}),
       ...(resolucion === "nueva_version" ? { _version: "v2" } : {}),
     };
     const planJsonStr = JSON.stringify(dataToSave, null, 2);
 
+    const fuenteEnum = fuente === "parser" ? "PARSER" : fuente === "gemini" ? "GEMINI" : "PARSER";
+
     // Guardar borrador (sin publicar)
     if (!publicar) {
-      const existingBorrador = await prisma.planBorrador.findUnique({
-        where: { slug_fuente: { slug, fuente } },
+      const existingBorrador = await prisma.plan.findUnique({
+        where: { slug_fuente_estado: { slug, fuente: fuenteEnum, estado: "BORRADOR" } },
       });
 
       if (existingBorrador && !resolucion) {
@@ -103,7 +105,7 @@ export async function POST(request: Request) {
           existing: {
             materias: (existingPlan.materias ?? []).length,
             fechaCarga: fechaLabel,
-            fuente: existingBorrador.fuente,
+            fuente: existingBorrador.fuente.toLowerCase(),
           },
         });
       }
@@ -112,20 +114,20 @@ export async function POST(request: Request) {
         return NextResponse.json({ ok: true, slug, action: "conserved" });
       }
 
-      await prisma.planBorrador.upsert({
-        where: { slug_fuente: { slug, fuente } },
+      await prisma.plan.upsert({
+        where: { slug_fuente_estado: { slug, fuente: fuenteEnum, estado: "BORRADOR" } },
         update: { planJson: planJsonStr, updatedAt: new Date() },
-        create: { slug, fuente, planJson: planJsonStr, createdBy: session.user.id },
+        create: { slug, fuente: fuenteEnum, estado: "BORRADOR", planJson: planJsonStr, autorId: session.user.id },
       });
 
       return NextResponse.json({ ok: true, slug });
     }
 
-    // Publicar: verificar conflicto con PlanPublicado
-    const existing = await prisma.planPublicado.findUnique({ where: { slug } });
+    // Publicar: verificar conflicto con Plan publicado existente
+    const existing = await prisma.plan.findFirst({ where: { slug, estado: "PUBLICADO", esBackup: false } });
 
     if (existing && !resolucion) {
-      const diffMs = Date.now() - existing.savedAt.getTime();
+      const diffMs = Date.now() - existing.createdAt.getTime();
       const diffDays = Math.floor(diffMs / 86400000);
       const fechaLabel = diffDays === 0 ? "hoy" : diffDays === 1 ? "hace 1 día" : `hace ${diffDays} días`;
       const existingPlan = JSON.parse(existing.planJson) as ParseResult;
@@ -134,7 +136,7 @@ export async function POST(request: Request) {
         existing: {
           materias: (existingPlan.materias ?? []).length,
           fechaCarga: fechaLabel,
-          fuente: existing.fuente,
+          fuente: existing.fuente.toLowerCase(),
         },
       });
     }
@@ -144,21 +146,32 @@ export async function POST(request: Request) {
     }
 
     if (resolucion === "nueva_version" && existing) {
-      await prisma.planPublicado.upsert({
-        where: { slug: `${slug}_v1_backup` },
-        update: { planJson: existing.planJson, fuente: existing.fuente },
-        create: { slug: `${slug}_v1_backup`, planJson: existing.planJson, fuente: existing.fuente },
+      // Guardar copia de seguridad del plan anterior
+      await prisma.plan.create({
+        data: {
+          slug,
+          estado: "PUBLICADO",
+          fuente: existing.fuente,
+          planJson: existing.planJson,
+          esBackup: true,
+          autorId: existing.autorId,
+        },
+      }).catch(() => {});
+    }
+
+    if (existing) {
+      await prisma.plan.update({
+        where: { id: existing.id },
+        data: { planJson: planJsonStr, fuente: fuenteEnum, autorId: session.user.id },
+      });
+    } else {
+      await prisma.plan.create({
+        data: { slug, estado: "PUBLICADO", fuente: fuenteEnum, planJson: planJsonStr, autorId: session.user.id },
       });
     }
 
-    await prisma.planPublicado.upsert({
-      where: { slug },
-      update: { planJson: planJsonStr, fuente, publicado: true, savedBy: session.user.id },
-      create: { slug, planJson: planJsonStr, fuente, publicado: true, savedBy: session.user.id },
-    });
-
     // Borrar pendiente si existe
-    await prisma.planPendiente.delete({ where: { slug } }).catch(() => {});
+    await prisma.plan.deleteMany({ where: { slug, estado: "PENDIENTE" } }).catch(() => {});
 
     // Registrar carrera si es nueva (independientemente de la fuente)
     await registrarCarreraEnDB(slug, `${slug}.json`, plan.plan.carrera, departamento).catch(() => {});

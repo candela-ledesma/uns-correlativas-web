@@ -121,10 +121,10 @@ export async function POST(request: Request) {
         // Autoguardar borrador Gemini en BD
         const slug = slugFromData(data);
         if (slug) {
-          await prisma.planBorrador.upsert({
-            where: { slug_fuente: { slug, fuente: "gemini" } },
+          await prisma.plan.upsert({
+            where: { slug_fuente_estado: { slug, fuente: "GEMINI", estado: "BORRADOR" } },
             update: { planJson: JSON.stringify(data), updatedAt: new Date() },
-            create: { slug, fuente: "gemini", planJson: JSON.stringify(data) },
+            create: { slug, fuente: "GEMINI", estado: "BORRADOR", planJson: JSON.stringify(data) },
           }).catch(() => {});
         }
       }
@@ -171,10 +171,10 @@ export async function POST(request: Request) {
     // Autoguardar borrador Gemini en BD
     const slug = slugFromData(data);
     if (slug) {
-      await prisma.planBorrador.upsert({
-        where: { slug_fuente: { slug, fuente: "gemini" } },
+      await prisma.plan.upsert({
+        where: { slug_fuente_estado: { slug, fuente: "GEMINI", estado: "BORRADOR" } },
         update: { planJson: JSON.stringify(data), updatedAt: new Date() },
-        create: { slug, fuente: "gemini", planJson: JSON.stringify(data) },
+        create: { slug, fuente: "GEMINI", estado: "BORRADOR", planJson: JSON.stringify(data) },
       }).catch(() => {});
     }
 

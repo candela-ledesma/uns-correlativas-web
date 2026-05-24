@@ -21,7 +21,7 @@ export async function GET(_req: Request, { params }: Params) {
   if (!session) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const { slug } = await params;
-  const row = await prisma.planPublicado.findUnique({ where: { slug } });
+  const row = await prisma.plan.findFirst({ where: { slug, estado: "PUBLICADO", esBackup: false } });
   if (!row) return NextResponse.json({ error: "No encontrado" }, { status: 404 });
 
   return new Response(row.planJson, { headers: { "Content-Type": "application/json; charset=utf-8" } });
@@ -43,12 +43,12 @@ export async function PUT(req: Request, { params }: Params) {
     return NextResponse.json({ error: "JSON inválido" }, { status: 400 });
   }
 
-  const existing = await prisma.planPublicado.findUnique({ where: { slug } });
+  const existing = await prisma.plan.findFirst({ where: { slug, estado: "PUBLICADO", esBackup: false } });
   if (!existing) return NextResponse.json({ error: "No encontrado" }, { status: 404 });
 
-  await prisma.planPublicado.update({
-    where: { slug },
-    data: { planJson: newJson, savedBy: session.user.id },
+  await prisma.plan.update({
+    where: { id: existing.id },
+    data: { planJson: newJson, autorId: session.user.id },
   });
 
   await createAuditEvent({
@@ -120,8 +120,7 @@ export async function DELETE(_req: Request, { params }: Params) {
   const { slug } = await params;
 
   await Promise.all([
-    prisma.planPublicado.delete({ where: { slug } }).catch(() => {}),
-    prisma.planPublicado.delete({ where: { slug: `${slug}_v1_backup` } }).catch(() => {}),
+    prisma.plan.deleteMany({ where: { slug, estado: "PUBLICADO" } }).catch(() => {}),
     prisma.carreraConfig.delete({ where: { id: slug } }).catch(() => {}),
   ]);
 

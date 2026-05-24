@@ -16,7 +16,7 @@ export async function GET(
   }
 
   const { slug } = await params;
-  const row = await prisma.planPendiente.findUnique({ where: { slug } });
+  const row = await prisma.plan.findFirst({ where: { slug, estado: "PENDIENTE" } });
   if (!row) return NextResponse.json({ error: "No encontrado" }, { status: 404 });
 
   return new Response(row.planJson, {
@@ -36,7 +36,7 @@ export async function DELETE(
   const { slug } = await params;
   const { motivo } = await req.json().catch(() => ({ motivo: undefined })) as { motivo?: string };
 
-  const deleted = await prisma.planPendiente.deleteMany({ where: { slug } });
+  const deleted = await prisma.plan.deleteMany({ where: { slug, estado: "PENDIENTE" } });
   if (deleted.count === 0) return NextResponse.json({ error: "No encontrado" }, { status: 404 });
 
   await createAuditEvent({

@@ -5,7 +5,7 @@ export type UserCareerSummary = {
 };
 
 export type UserLastPlan = {
-  planId: string;
+  planSlug: string;
   versionId: string;
   openedAt: string;
 };
@@ -20,7 +20,7 @@ export type UserActivityItem = {
     | "ONBOARDING_DISMISSED"
     | "ONBOARDING_RESET";
   careerId: string | null;
-  planId: string | null;
+  planSlug: string | null;
   versionId: string | null;
   materiaKey: string | null;
   fromState: string | null;
@@ -55,5 +55,5 @@ export function buildPlanHref(careerId: string, plan?: UserLastPlan) {
   const params = new URLSearchParams();
   params.set("v", plan.versionId);
 
-  return `/planes/${careerId}?${params.toString()}`;
+  return `/planes/${plan.planSlug}?${params.toString()}`;
 }

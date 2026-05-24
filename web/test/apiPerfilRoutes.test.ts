@@ -139,7 +139,7 @@ describe("/api/perfil routes", () => {
     expect(recordPlanOpened).toHaveBeenCalledWith({
       userId: "user-1",
       careerId: "arquitectura",
-      planId: "arquitectura",
+      planSlug: "arquitectura",
       versionId: "v2",
     });
   });
