@@ -25,7 +25,6 @@ function isAvailableCarreraId(carreraId: string): carreraId is CarreraId {
 
 function parseMetadata(raw: string | null) {
   if (!raw) return null;
-
   try {
     return JSON.parse(raw) as unknown;
   } catch {
@@ -35,7 +34,6 @@ function parseMetadata(raw: string | null) {
 
 function sanitizeCarreraIds(carreraIds: string[]): CarreraId[] {
   const unique = Array.from(new Set(carreraIds));
-
   return unique
     .filter(isAvailableCarreraId)
     .sort((a, b) => (CARRERA_ORDER.get(a) ?? Number.MAX_SAFE_INTEGER) - (CARRERA_ORDER.get(b) ?? Number.MAX_SAFE_INTEGER));
@@ -51,13 +49,14 @@ async function ensureEnrollmentBootstrap(userId: string) {
     return sanitizeCarreraIds(existing.map((item) => item.careerId));
   }
 
+  // Primer login: inferir carreras desde el progreso existente usando planVersion.planSlug
   const userProgressCareers = await prisma.userPlanProgress.findMany({
     where: { userId },
-    select: { planId: true },
-    distinct: ["planId"],
+    select: { planVersion: { select: { planSlug: true } } },
+    distinct: ["planVersionId"],
   });
 
-  const fromProgress = sanitizeCarreraIds(userProgressCareers.map((item) => item.planId));
+  const fromProgress = sanitizeCarreraIds(userProgressCareers.map((item) => item.planVersion.planSlug));
   const fallbackCareer = AVAILABLE_CARRERA_IDS[0];
   const initialCareers = fromProgress.length > 0
     ? fromProgress
@@ -65,15 +64,10 @@ async function ensureEnrollmentBootstrap(userId: string) {
       ? [fallbackCareer]
       : [];
 
-  if (initialCareers.length === 0) {
-    return [];
-  }
+  if (initialCareers.length === 0) return [];
 
   await prisma.userCareerEnrollment.createMany({
-    data: initialCareers.map((careerId) => ({
-      userId,
-      careerId,
-    })),
+    data: initialCareers.map((careerId) => ({ userId, careerId })),
     skipDuplicates: true,
   });
 
@@ -83,17 +77,12 @@ async function ensureEnrollmentBootstrap(userId: string) {
 async function ensurePreferenceRow(userId: string, enrolledCareerIds: string[]) {
   const defaultActiveCareerId = enrolledCareerIds[0] ?? null;
 
-  let preference = await prisma.userPreference.findUnique({
-    where: { userId },
-  });
+  let preference = await prisma.userPreference.findUnique({ where: { userId } });
 
   if (!preference) {
     try {
       preference = await prisma.userPreference.create({
-        data: {
-          userId,
-          activeCareerId: defaultActiveCareerId,
-        },
+        data: { userId, activeCareerId: defaultActiveCareerId },
       });
     } catch (error) {
       const isUniqueRace =
@@ -102,19 +91,13 @@ async function ensurePreferenceRow(userId: string, enrolledCareerIds: string[]) 
         "code" in error &&
         error.code === "P2002";
 
-      if (!isUniqueRace) {
-        throw error;
-      }
+      if (!isUniqueRace) throw error;
 
-      preference = await prisma.userPreference.findUnique({
-        where: { userId },
-      });
+      preference = await prisma.userPreference.findUnique({ where: { userId } });
     }
   }
 
-  if (!preference) {
-    throw new Error("No se pudo inicializar preferencias de usuario");
-  }
+  if (!preference) throw new Error("No se pudo inicializar preferencias de usuario");
 
   const validActiveCareerId = preference?.activeCareerId
     ? sanitizeCarreraIds([preference.activeCareerId])[0] ?? null
@@ -123,15 +106,11 @@ async function ensurePreferenceRow(userId: string, enrolledCareerIds: string[]) 
   const activeExistsInEnrollments =
     validActiveCareerId !== null && enrolledCareerIds.includes(validActiveCareerId);
 
-  if (activeExistsInEnrollments || enrolledCareerIds.length === 0) {
-    return preference;
-  }
+  if (activeExistsInEnrollments || enrolledCareerIds.length === 0) return preference;
 
   return prisma.userPreference.update({
     where: { userId },
-    data: {
-      activeCareerId: enrolledCareerIds[0] ?? null,
-    },
+    data: { activeCareerId: enrolledCareerIds[0] ?? null },
   });
 }
 
@@ -145,43 +124,47 @@ export async function getUserProductContext(
 
   const lastPlans = await prisma.userRecentPlan.findMany({
     where: { userId },
-    orderBy: {
-      openedAt: "desc",
-    },
+    orderBy: { openedAt: "desc" },
+    include: { planVersion: { select: { planSlug: true, versionId: true } } },
   });
 
   const progressRows = await prisma.userPlanProgress.findMany({
     where: { userId },
-    select: { planId: true, stateJson: true },
+    select: {
+      stateJson: true,
+      planVersion: { select: { planSlug: true } },
+    },
   });
-  const careerIdsWithProgress = Array.from(
-    new Set(
-      progressRows
-        .filter((r) => { try { const s = JSON.parse(r.stateJson); return typeof s === "object" && s !== null && Object.keys(s).length > 0; } catch { return false; } })
-        .map((r) => r.planId)
-    )
-  );
+
+  const careerIdsWithProgress = Array.from(new Set(
+    progressRows
+      .filter((r) => {
+        try {
+          const s = JSON.parse(r.stateJson);
+          return typeof s === "object" && s !== null && Object.keys(s).length > 0;
+        } catch { return false; }
+      })
+      .map((r) => r.planVersion.planSlug)
+  ));
 
   const activities = includeActivity
     ? await prisma.userActivity.findMany({
-      where: { userId },
-      orderBy: {
-        createdAt: "desc",
-      },
-      take: Math.max(1, options?.activityLimit ?? DEFAULT_ACTIVITY_LIMIT),
-    })
+        where: { userId },
+        orderBy: { createdAt: "desc" },
+        take: Math.max(1, options?.activityLimit ?? DEFAULT_ACTIVITY_LIMIT),
+      })
     : [];
 
   const lastPlanByCareer = Object.fromEntries(
     lastPlans.map((row) => [
       row.careerId,
       {
-        planId: row.planId,
-        versionId: row.versionId,
+        planSlug: row.planVersion.planSlug,
+        versionId: row.planVersion.versionId,
         openedAt: row.openedAt.toISOString(),
       },
     ])
-  ) as Record<string, { planId: string; versionId: string; openedAt: string }>;
+  ) as Record<string, { planSlug: string; versionId: string; openedAt: string }>;
 
   return {
     careers: CARRERAS.filter((carrera) => carrera.disponible !== false).map((carrera) => ({
@@ -193,31 +176,28 @@ export async function getUserProductContext(
     activeCareerId: preference.activeCareerId,
     onboardingCompletedAt: preference.onboardingCompletedAt?.toISOString() ?? null,
     onboardingDismissedAt: preference.onboardingDismissedAt?.toISOString() ?? null,
-    shouldAutoShowOnboarding:
-      !preference.onboardingCompletedAt && !preference.onboardingDismissedAt,
+    shouldAutoShowOnboarding: !preference.onboardingCompletedAt && !preference.onboardingDismissedAt,
     lastPlanByCareer,
     recentActivity: includeActivity
       ? activities.map((item) => ({
-      id: item.id,
-      type: item.type,
-      careerId: item.careerId,
-      planId: item.planId,
-      versionId: item.versionId,
-      materiaKey: item.materiaKey,
-      fromState: item.fromState,
-      toState: item.toState,
-      metadata: parseMetadata(item.metadataJson),
-      createdAt: item.createdAt.toISOString(),
-      }))
+          id: item.id,
+          type: item.type,
+          careerId: item.careerId,
+          planSlug: item.planSlug,
+          versionId: item.versionId,
+          materiaKey: item.materiaKey,
+          fromState: item.fromState,
+          toState: item.toState,
+          metadata: parseMetadata(item.metadataJson),
+          createdAt: item.createdAt.toISOString(),
+        }))
       : [],
     careerIdsWithProgress,
   };
 }
 
 export async function getUserSessionSummary(userId: string): Promise<UserSessionSummaryResponse> {
-  const context = await getUserProductContext(userId, {
-    includeActivity: false,
-  });
+  const context = await getUserProductContext(userId, { includeActivity: false });
 
   const activeCareer = context.activeCareerId
     ? context.careers.find((career) => career.id === context.activeCareerId) ?? null
@@ -251,33 +231,18 @@ export async function updateUserCareerContext(input: {
 
   await prisma.$transaction(async (tx) => {
     await tx.userCareerEnrollment.deleteMany({
-      where: {
-        userId: input.userId,
-        careerId: {
-          notIn: nextEnrolledCareerIds,
-        },
-      },
+      where: { userId: input.userId, careerId: { notIn: nextEnrolledCareerIds } },
     });
 
     await tx.userCareerEnrollment.createMany({
-      data: nextEnrolledCareerIds.map((careerId) => ({
-        userId: input.userId,
-        careerId,
-      })),
+      data: nextEnrolledCareerIds.map((careerId) => ({ userId: input.userId, careerId })),
       skipDuplicates: true,
     });
 
     await tx.userPreference.upsert({
-      where: {
-        userId: input.userId,
-      },
-      update: {
-        activeCareerId,
-      },
-      create: {
-        userId: input.userId,
-        activeCareerId,
-      },
+      where: { userId: input.userId },
+      update: { activeCareerId },
+      create: { userId: input.userId, activeCareerId },
     });
   });
 
@@ -300,7 +265,7 @@ export async function updateUserCareerContext(input: {
 export async function recordPlanOpened(input: {
   userId: string;
   careerId: string;
-  planId: string;
+  planSlug: string;
   versionId: string;
 }) {
   const resolvedCareerId = sanitizeCarreraIds([input.careerId])[0];
@@ -309,55 +274,35 @@ export async function recordPlanOpened(input: {
     throw new Error("Carrera invalida");
   }
 
+  const planVersion = await prisma.planVersion.findUnique({
+    where: { planSlug_versionId: { planSlug: input.planSlug, versionId: input.versionId } },
+    select: { id: true },
+  });
+
+  if (!planVersion) {
+    throw new Error(`Plan no encontrado: ${input.planSlug}@${input.versionId}`);
+  }
+
   const currentContext = await getUserProductContext(input.userId, { activityLimit: 1 });
   const previousActiveCareerId = currentContext.activeCareerId;
 
   await prisma.$transaction(async (tx) => {
     await tx.userCareerEnrollment.upsert({
-      where: {
-        userId_careerId: {
-          userId: input.userId,
-          careerId: resolvedCareerId,
-        },
-      },
+      where: { userId_careerId: { userId: input.userId, careerId: resolvedCareerId } },
       update: {},
-      create: {
-        userId: input.userId,
-        careerId: resolvedCareerId,
-      },
+      create: { userId: input.userId, careerId: resolvedCareerId },
     });
 
     await tx.userRecentPlan.upsert({
-      where: {
-        userId_careerId: {
-          userId: input.userId,
-          careerId: resolvedCareerId,
-        },
-      },
-      update: {
-        planId: input.planId,
-        versionId: input.versionId,
-        openedAt: new Date(),
-      },
-      create: {
-        userId: input.userId,
-        careerId: resolvedCareerId,
-        planId: input.planId,
-        versionId: input.versionId,
-      },
+      where: { userId_careerId: { userId: input.userId, careerId: resolvedCareerId } },
+      update: { planVersionId: planVersion.id, openedAt: new Date() },
+      create: { userId: input.userId, careerId: resolvedCareerId, planVersionId: planVersion.id },
     });
 
     await tx.userPreference.upsert({
-      where: {
-        userId: input.userId,
-      },
-      update: {
-        activeCareerId: resolvedCareerId,
-      },
-      create: {
-        userId: input.userId,
-        activeCareerId: resolvedCareerId,
-      },
+      where: { userId: input.userId },
+      update: { activeCareerId: resolvedCareerId },
+      create: { userId: input.userId, activeCareerId: resolvedCareerId },
     });
   });
 
@@ -365,7 +310,7 @@ export async function recordPlanOpened(input: {
     userId: input.userId,
     type: "PLAN_OPENED",
     careerId: resolvedCareerId,
-    planId: input.planId,
+    planSlug: input.planSlug,
     versionId: input.versionId,
   });
 
@@ -394,11 +339,8 @@ export async function updateOnboardingState(input: {
   if (input.action === "dismiss") {
     await prisma.userPreference.update({
       where: { userId: input.userId },
-      data: {
-        onboardingDismissedAt: new Date(),
-      },
+      data: { onboardingDismissedAt: new Date() },
     });
-
     await createUserActivity({
       userId: input.userId,
       type: "ONBOARDING_DISMISSED",
@@ -409,12 +351,8 @@ export async function updateOnboardingState(input: {
   if (input.action === "complete") {
     await prisma.userPreference.update({
       where: { userId: input.userId },
-      data: {
-        onboardingCompletedAt: new Date(),
-        onboardingDismissedAt: null,
-      },
+      data: { onboardingCompletedAt: new Date(), onboardingDismissedAt: null },
     });
-
     await createUserActivity({
       userId: input.userId,
       type: "ONBOARDING_COMPLETED",
@@ -425,12 +363,8 @@ export async function updateOnboardingState(input: {
   if (input.action === "reset") {
     await prisma.userPreference.update({
       where: { userId: input.userId },
-      data: {
-        onboardingCompletedAt: null,
-        onboardingDismissedAt: null,
-      },
+      data: { onboardingCompletedAt: null, onboardingDismissedAt: null },
     });
-
     await createUserActivity({
       userId: input.userId,
       type: "ONBOARDING_RESET",

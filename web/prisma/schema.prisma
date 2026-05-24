@@ -111,12 +111,14 @@ model UserRecentPlan {
 // Log append-only de acciones del usuario. Se inserta un registro por cada evento relevante
 // (marcar materia, abrir plan, etc.) y nunca se modifica. Se usa en el perfil para mostrar
 // actividad reciente. Los campos opcionales se llenan según el tipo de evento.
+// planSlug y versionId son strings libres (no FK) — el log debe preservar el contexto
+// aunque el plan sea eliminado en el futuro.
 model UserActivity {
   id           String           @id @default(cuid())
   userId       String
   type         UserActivityType
   careerId     String?
-  planId       String?
+  planSlug     String?          // slug de la carrera, ej: "arquitectura" (no es FK a Plan)
   versionId    String?
   materiaKey   String?          // solo para MATERIA_STATUS_CHANGED
   fromState    String?          // estado anterior de la materia

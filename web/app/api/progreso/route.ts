@@ -77,7 +77,7 @@ export async function GET(request: Request) {
 
   const snapshot = await getProgressSnapshot({
     userId: session.user.id,
-    planId,
+    planSlug: planId,
     versionId,
   });
 
@@ -111,7 +111,7 @@ export async function PUT(request: Request) {
 
   const remoteSnapshot = await getProgressSnapshot({
     userId: session.user.id,
-    planId,
+    planSlug: planId,
     versionId,
   });
 
@@ -123,7 +123,7 @@ export async function PUT(request: Request) {
   if (resolution.source === "local") {
     await upsertProgressSnapshot({
       userId: session.user.id,
-      planId,
+      planSlug: planId,
       versionId,
       state: resolution.snapshot.state,
       updatedAt: resolution.snapshot.updatedAt ?? new Date().toISOString(),
@@ -152,7 +152,7 @@ export async function PUT(request: Request) {
             userId: session.user.id,
             type: "MATERIA_STATUS_CHANGED",
             careerId,
-            planId,
+            planSlug: planId,
             versionId,
             materiaKey: change.materiaKey,
             fromState: change.fromState,
@@ -187,7 +187,7 @@ export async function DELETE(request: Request) {
   const { planId, versionId, reason } = parsed.data;
   const previous = await getProgressSnapshot({
     userId: session.user.id,
-    planId,
+    planSlug: planId,
     versionId,
   });
 
@@ -195,7 +195,7 @@ export async function DELETE(request: Request) {
 
   await upsertProgressSnapshot({
     userId: session.user.id,
-    planId,
+    planSlug: planId,
     versionId,
     state: {},
     updatedAt,
@@ -224,7 +224,7 @@ export async function DELETE(request: Request) {
           userId: session.user.id,
           type: "MATERIA_STATUS_CHANGED",
           careerId,
-          planId,
+          planSlug: planId,
           versionId,
           materiaKey: change.materiaKey,
           fromState: change.fromState,

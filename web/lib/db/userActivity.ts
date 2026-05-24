@@ -19,7 +19,7 @@ export async function createUserActivity(input: {
     | "ONBOARDING_DISMISSED"
     | "ONBOARDING_RESET";
   careerId?: string | null;
-  planId?: string | null;
+  planSlug?: string | null;
   versionId?: string | null;
   materiaKey?: string | null;
   fromState?: string | null;
@@ -28,14 +28,14 @@ export async function createUserActivity(input: {
 }) {
   await prisma.userActivity.create({
     data: {
-      userId:      input.userId,
-      type:        input.type,
-      careerId:    input.careerId    ?? null,
-      planId:      input.planId      ?? null,
-      versionId:   input.versionId   ?? null,
-      materiaKey:  input.materiaKey  ?? null,
-      fromState:   input.fromState   ?? null,
-      toState:     input.toState     ?? null,
+      userId:       input.userId,
+      type:         input.type,
+      careerId:     input.careerId  ?? null,
+      planSlug:     input.planSlug  ?? null,
+      versionId:    input.versionId ?? null,
+      materiaKey:   input.materiaKey  ?? null,
+      fromState:    input.fromState   ?? null,
+      toState:      input.toState     ?? null,
       metadataJson: safeJsonStringify(input.metadata),
     },
   });
