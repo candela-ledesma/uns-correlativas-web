@@ -1,6 +1,5 @@
 import { notFound } from "next/navigation";
 import { BG_GRADIENT, HEADING_FONT } from "@/lib/ui/tokens";
-import { getCarreraById } from "@/lib/data/carreras";
 import { loadPlanData, formatValidationIssues } from "@/lib/data/planDataLoader";
 import PlanStatus from "@/components/plan/PlanStatus";
 import ShareViewer from "@/components/plan/ShareViewer";
@@ -16,7 +15,7 @@ export default async function Page({ params }: Props) {
 
   const share = await prisma.progressShare.findUnique({
     where: { token },
-    include: { planVersion: { select: { versionId: true } } },
+    include: { carreraVersion: { select: { versionId: true } } },
   });
   if (!share) notFound();
 
@@ -27,15 +26,14 @@ export default async function Page({ params }: Props) {
     notFound();
   }
 
-  const carrera = getCarreraById(carreraId);
-  const result = await loadPlanData(carreraId, share.planVersion.versionId);
+  const result = await loadPlanData(carreraId, share.carreraVersion.versionId);
 
   if (result.status === "not-found") notFound();
 
   if (result.status === "unavailable") {
     return (
       <PlanStatus
-        titulo={carrera?.nombre ?? carreraId}
+        titulo={"carrera" in result ? result.carrera.nombre : carreraId}
         mensaje="Este plan todavía no está disponible."
       />
     );
@@ -48,7 +46,7 @@ export default async function Page({ params }: Props) {
         : "Los datos de este plan contienen inconsistencias internas.";
     return (
       <PlanStatus
-        titulo={carrera?.nombre ?? carreraId}
+        titulo={"carrera" in result ? result.carrera.nombre : carreraId}
         mensaje={mensaje}
         detallesTecnicos={formatValidationIssues(result.issues)}
         variant="error"
@@ -59,7 +57,7 @@ export default async function Page({ params }: Props) {
   if (result.status === "error") {
     return (
       <PlanStatus
-        titulo={carrera?.nombre ?? carreraId}
+        titulo={"carrera" in result ? result.carrera.nombre : carreraId}
         mensaje="Hubo un problema inesperado al cargar este plan."
         variant="error"
       />

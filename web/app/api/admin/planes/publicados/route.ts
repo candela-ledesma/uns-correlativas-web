@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { Role } from "@/lib/auth/roles";
 import { prisma } from "@/lib/db/prisma";
-import { CARRERAS } from "@/lib/data/carreras";
+import { getCarreras } from "@/lib/db/carreraRepository";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -13,21 +13,20 @@ export async function GET() {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
-  // Combina carreras estáticas (carreras.ts) + carreras dinámicas (DB)
-  const [dbCarreras, dbPlanes] = await Promise.all([
-    prisma.carreraConfig.findMany(),
-    prisma.plan.findMany({ where: { estado: "PUBLICADO", esBackup: false }, select: { slug: true, fuente: true, createdAt: true, planJson: true } }),
+  const [carreras, dbPlanes] = await Promise.all([
+    getCarreras({ soloDisponibles: false }),
+    prisma.plan.findMany({
+      where: { estado: "PUBLICADO", esBackup: false },
+      select: { slug: true, fuente: true, createdAt: true, planJson: true },
+    }),
   ]);
-
-  const deptosMap = new Map(dbCarreras.map((c) => [c.id, c.departamento ?? null]));
 
   const planesMap = new Map(dbPlanes.map((p) => [p.slug, p]));
 
-  // Carreras estáticas
-  const staticPlanes = CARRERAS.map((carrera) => {
-    const version = carrera.versions.find((v) => v.versionId === carrera.defaultVersionId) ?? carrera.versions[0];
-    const slug = carrera.id as string;
-    const planRow = planesMap.get(slug);
+  const planes = carreras.map((carrera) => {
+    const version = carrera.versions.find((v) => v.versionId === carrera.defaultVersionId)
+      ?? carrera.versions[0];
+    const planRow = planesMap.get(carrera.id);
 
     let materias: number | null = null;
     let fuente: string | null = null;
@@ -43,53 +42,18 @@ export async function GET() {
     }
 
     return {
-      id: slug,
+      id: carrera.id,
       nombre: carrera.nombre,
-      departamento: deptosMap.get(slug) ?? null,
-      disponible: carrera.disponible ?? true,
-      jsonFile: version?.jsonFile ?? `${slug}.json`,
+      departamento: carrera.departamento ?? null,
+      disponible: carrera.disponible,
+      jsonFile: version?.jsonFile ?? `${carrera.id}.json`,
       tieneLocal: !!planRow && planRow.fuente === "PARSER",
       tieneGemini: !!planRow && planRow.fuente === "GEMINI",
       materias,
       fuente,
       savedAt,
-      _source: "static" as const,
     };
   });
 
-  // Carreras dinámicas (solo las que no están en estáticas)
-  const staticIds = new Set(CARRERAS.map((c) => c.id as string));
-  const dynamicPlanes = dbCarreras
-    .filter((c) => !staticIds.has(c.id))
-    .map((carrera) => {
-      const planRow = planesMap.get(carrera.id);
-      let materias: number | null = null;
-      let fuente: string | null = null;
-      let savedAt: string | null = null;
-
-      if (planRow) {
-        try {
-          const data = JSON.parse(planRow.planJson);
-          materias = (data.materias ?? []).length;
-          fuente = planRow.fuente;
-          savedAt = planRow.createdAt.toISOString();
-        } catch { /* skip */ }
-      }
-
-      return {
-        id: carrera.id,
-        nombre: carrera.nombre,
-        departamento: carrera.departamento ?? null,
-        disponible: carrera.disponible,
-        jsonFile: carrera.jsonFile,
-        tieneLocal: !!planRow && planRow.fuente === "PARSER",
-        tieneGemini: !!planRow && planRow.fuente === "GEMINI",
-        materias,
-        fuente,
-        savedAt,
-        _source: "dynamic" as const,
-      };
-    });
-
-  return NextResponse.json({ planes: [...staticPlanes, ...dynamicPlanes] });
+  return NextResponse.json({ planes });
 }

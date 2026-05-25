@@ -12,7 +12,7 @@ export async function GET() {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
-  const carreras = await prisma.carreraConfig.findMany({ select: { id: true, departamento: true } });
+  const carreras = await prisma.carrera.findMany({ select: { id: true, departamento: true } });
   const result: Record<string, string> = {};
   for (const c of carreras) {
     if (c.departamento) result[c.id] = c.departamento;
@@ -32,13 +32,12 @@ export async function PUT(req: Request) {
 
   const value = departamento?.trim() || null;
 
-  await prisma.carreraConfig.upsert({
+  await prisma.carrera.upsert({
     where: { id: slug },
     update: { departamento: value },
     create: {
       id: slug,
       nombre: slug,
-      jsonFile: `${slug}.json`,
       departamento: value,
       disponible: true,
     },

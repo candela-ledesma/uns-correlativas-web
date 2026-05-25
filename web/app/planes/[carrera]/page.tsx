@@ -96,7 +96,7 @@ export async function generateMetadata({
             versionLabel={result.version.label}
             forceShowOnboarding={forceShowOnboarding}
             versionOptions={result.carrera.versions}
-            defaultVersionId={result.carrera.defaultVersionId}
+            defaultVersionId={result.carrera.defaultVersionId ?? result.carrera.versions[0]?.versionId ?? "v1"}
         />
         </div>
     </main>

@@ -1,5 +1,4 @@
 import { EstadoMateria } from "@/lib/plan/evaluarCorrelativas";
-import { getDefaultVersionForCarrera } from "@/lib/data/carreras";
 
 const STORAGE_KEY_PREFIX = "estadoMaterias";
 const LEGACY_STORAGE_KEY = "estadoMaterias";
@@ -56,9 +55,8 @@ export function loadPlanState(
     const saved = localStorage.getItem(key);
 
     if (!saved) {
-        const defaultVersion = getDefaultVersionForCarrera(carreraSlug)?.versionId ?? null;
-
-        if (defaultVersion && defaultVersion === versionId) {
+        // Migra datos de localStorage legacy solo para la versión "v1" (default histórico).
+        if (versionId === "v1") {
             const legacy = localStorage.getItem(LEGACY_STORAGE_KEY);
             if (legacy) {
                 try {

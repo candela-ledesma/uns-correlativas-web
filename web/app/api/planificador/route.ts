@@ -3,6 +3,7 @@ import { z } from "zod";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db/prisma";
 import { validateScheduleBlock, findOverlaps } from "@/lib/schedule/scheduleValidation";
+import { resolveCarreraVersionId } from "@/lib/db/carreraRepository";
 
 function unauthorized() {
   return NextResponse.json({ error: "No autenticado" }, { status: 401 });
@@ -22,14 +23,6 @@ const createSchema = z.object({
   color: z.string().max(20).nullish(),
 });
 
-async function resolvePlanVersionId(planSlug: string, versionId: string): Promise<string | null> {
-  const pv = await prisma.planVersion.findUnique({
-    where: { planSlug_versionId: { planSlug, versionId } },
-    select: { id: true },
-  });
-  return pv?.id ?? null;
-}
-
 export async function GET(request: Request) {
   const session = await auth();
   if (!session?.user?.id) return unauthorized();
@@ -46,13 +39,15 @@ export async function GET(request: Request) {
     );
   }
 
-  const planVersionId = await resolvePlanVersionId(planId, versionId);
-  if (!planVersionId) {
+  let carreraVersionId: string;
+  try {
+    carreraVersionId = await resolveCarreraVersionId(planId, versionId);
+  } catch {
     return NextResponse.json({ error: "Plan no encontrado" }, { status: 404 });
   }
 
   const blocks = await prisma.scheduleBlock.findMany({
-    where: { userId: session.user.id, careerId, planVersionId },
+    where: { userId: session.user.id, careerId, carreraVersionId },
     orderBy: [{ dia: "asc" }, { horaInicio: "asc" }],
   });
 
@@ -79,13 +74,15 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: validationError }, { status: 422 });
   }
 
-  const planVersionId = await resolvePlanVersionId(data.planId, data.versionId);
-  if (!planVersionId) {
+  let carreraVersionId: string;
+  try {
+    carreraVersionId = await resolveCarreraVersionId(data.planId, data.versionId);
+  } catch {
     return NextResponse.json({ error: "Plan no encontrado" }, { status: 404 });
   }
 
   const existing = await prisma.scheduleBlock.findMany({
-    where: { userId: session.user.id, careerId: data.careerId, planVersionId },
+    where: { userId: session.user.id, careerId: data.careerId, carreraVersionId },
     select: { id: true, dia: true, horaInicio: true, horaFin: true },
   });
 
@@ -101,7 +98,7 @@ export async function POST(request: Request) {
     data: {
       userId: session.user.id,
       careerId: data.careerId,
-      planVersionId,
+      carreraVersionId,
       materiaNombre: data.materiaNombre,
       materiaId: data.materiaId ?? null,
       dia: data.dia,

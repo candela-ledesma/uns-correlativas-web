@@ -2,7 +2,14 @@ import { describe, expect, it } from "vitest";
 import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import type { CarreraConfig } from "@/lib/data/carreras";
+type TestCarrera = {
+  id: string;
+  nombre: string;
+  descripcion?: string;
+  defaultVersionId?: string;
+  disponible?: boolean;
+  versions: { versionId: string; label: string; jsonFile: string; disponible: boolean; hidden?: boolean }[];
+};
 import {
   formatBatchValidationReport,
   validateConfiguredPlanData,
@@ -64,7 +71,7 @@ describe("validateConfiguredPlanData", () => {
         "utf8"
       );
 
-      const carreras: CarreraConfig[] = [
+      const carreras: TestCarrera[] = [
         {
           id: "arquitectura",
           nombre: "Arquitectura",
@@ -87,7 +94,7 @@ describe("validateConfiguredPlanData", () => {
           disponible: true,
         },
         {
-          id: "lic_computacion" as import("@/lib/data/carreras").CarreraId,
+          id: "lic_computacion",
           nombre: "Lic. Computacion",
           descripcion: "",
           defaultVersionId: "v1",
@@ -138,7 +145,7 @@ describe("validateConfiguredPlanData", () => {
         "utf8"
       );
 
-      const carreras: CarreraConfig[] = [
+      const carreras: TestCarrera[] = [
         {
           id: "arquitectura",
           nombre: "Arquitectura",
@@ -179,7 +186,7 @@ describe("validateConfiguredPlanData", () => {
         "utf8"
       );
 
-      const carreras: CarreraConfig[] = [
+      const carreras: TestCarrera[] = [
         {
           id: "arquitectura",
           nombre: "Arquitectura",
@@ -229,7 +236,7 @@ describe("validateConfiguredPlanData", () => {
         "utf8"
       );
 
-      const carreras: CarreraConfig[] = [
+      const carreras: TestCarrera[] = [
         {
           id: "arquitectura",
           nombre: "Arquitectura",

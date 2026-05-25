@@ -61,7 +61,7 @@ export async function PUT(
     where: {
       userId: session.user.id,
       careerId: existing.careerId,
-      planVersionId: existing.planVersionId,
+      carreraVersionId: existing.carreraVersionId,
     },
     select: { id: true, dia: true, horaInicio: true, horaFin: true },
   });
