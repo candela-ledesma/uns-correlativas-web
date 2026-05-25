@@ -15,7 +15,6 @@ type CliOptions = {
   includeUnavailable: boolean;
   format: OutputFormat;
   jsonOut: string | null;
-  dataDir: string | null;
 };
 
 function parseArgs(args: string[]): CliOptions {
@@ -25,7 +24,6 @@ function parseArgs(args: string[]): CliOptions {
     includeUnavailable: false,
     format: "human",
     jsonOut: null,
-    dataDir: null,
   };
 
   for (const arg of args) {
@@ -64,11 +62,6 @@ function parseArgs(args: string[]): CliOptions {
       continue;
     }
 
-    if (arg.startsWith("--data-dir=")) {
-      options.dataDir = arg.slice("--data-dir=".length);
-      continue;
-    }
-
     throw new Error(`Argumento desconocido: ${arg}`);
   }
 
@@ -84,7 +77,6 @@ function printHelp() {
   console.log("  --include-unavailable   Incluye versiones no disponibles");
   console.log("  --format=human|json|both");
   console.log("  --json-out=<ruta>       Escribe reporte JSON en un archivo");
-  console.log("  --data-dir=<ruta>       Directorio de datos alternativo");
   console.log("  --help                  Muestra esta ayuda");
 }
 
@@ -96,7 +88,6 @@ async function main() {
       strictWarnings: options.strictWarnings,
       includeHidden: options.includeHidden,
       includeUnavailable: options.includeUnavailable,
-      dataDir: options.dataDir ? path.resolve(options.dataDir) : undefined,
     });
 
     if (options.format === "human" || options.format === "both") {

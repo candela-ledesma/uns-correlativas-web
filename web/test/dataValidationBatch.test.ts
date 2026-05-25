@@ -1,34 +1,32 @@
-import { describe, expect, it } from "vitest";
-import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
-import path from "node:path";
-type TestCarrera = {
-  id: string;
-  nombre: string;
-  descripcion?: string;
-  defaultVersionId?: string;
-  disponible?: boolean;
-  versions: { versionId: string; label: string; jsonFile: string; disponible: boolean; hidden?: boolean }[];
-};
+import { describe, expect, it, vi, beforeEach } from "vitest";
 import {
   formatBatchValidationReport,
   validateConfiguredPlanData,
 } from "@/lib/data/dataValidationBatch";
 
-function createTmpDataDir() {
-  const root = mkdtempSync(path.join(tmpdir(), "uns-planes-"));
-  const dataDir = path.join(root, "data");
-  mkdirSync(dataDir, { recursive: true });
+vi.mock("@/lib/db/prisma", () => ({
+  prisma: {
+    plan: {
+      findFirst: vi.fn(),
+    },
+  },
+}));
 
-  return {
-    root,
-    dataDir,
-    cleanup: () => rmSync(root, { recursive: true, force: true }),
-  };
-}
+vi.mock("@/lib/db/carreraRepository", () => ({
+  getCarreras: vi.fn(),
+}));
 
-function buildValidPlan(options?: { horas?: string }) {
-  return {
+import { prisma } from "@/lib/db/prisma";
+const mockFindFirst = vi.mocked(prisma.plan.findFirst);
+
+type TestCarrera = {
+  id: string;
+  nombre: string;
+  versions: { versionId: string; label: string; disponible: boolean; hidden?: boolean }[];
+};
+
+function buildValidPlanJson(options?: { horas?: string }) {
+  return JSON.stringify({
     plan: {
       carrera: "Arquitectura",
       universidad: "Universidad Nacional del Sur",
@@ -49,220 +47,148 @@ function buildValidPlan(options?: { horas?: string }) {
       },
     ],
     agrupadores: [],
-  };
+  });
 }
 
+function buildDuplicatedPlanJson() {
+  return JSON.stringify({
+    plan: {
+      carrera: "Arquitectura",
+      universidad: "Universidad Nacional del Sur",
+      codigo_plan: "Plan Test",
+    },
+    materias: [
+      {
+        id: "M1",
+        nombre: "Materia 1",
+        año: "Primer Año",
+        cuatrimestre: "Primer Cuatrimestre",
+        horas: "64",
+        tipo: "materia",
+        categoria: "normal",
+        grupo_opcion: null,
+        subtipo: null,
+        correlativas: {},
+      },
+      {
+        id: "M1",
+        nombre: "Materia 1 dup",
+        año: "Primer Año",
+        cuatrimestre: "Primer Cuatrimestre",
+        horas: "64",
+        tipo: "materia",
+        categoria: "normal",
+        grupo_opcion: null,
+        subtipo: null,
+        correlativas: {},
+      },
+    ],
+    agrupadores: [],
+  });
+}
+
+beforeEach(() => {
+  vi.clearAllMocks();
+});
+
 describe("validateConfiguredPlanData", () => {
-  it("procesa multiples archivos y reporta por carrera/version", async () => {
-    const { dataDir, cleanup } = createTmpDataDir();
+  it("procesa multiples carreras y reporta por carrera/version", async () => {
+    const carreras: TestCarrera[] = [
+      {
+        id: "arquitectura",
+        nombre: "Arquitectura",
+        versions: [
+          { versionId: "v1", label: "OK", disponible: true },
+          { versionId: "v2", label: "Duplicado", disponible: true },
+        ],
+      },
+      {
+        id: "lic_computacion",
+        nombre: "Lic. Computacion",
+        versions: [{ versionId: "v1", label: "Sin plan", disponible: true }],
+      },
+    ];
 
-    try {
-      writeFileSync(
-        path.join(dataDir, "ok.json"),
-        JSON.stringify(buildValidPlan()),
-        "utf8"
-      );
+    mockFindFirst
+      .mockResolvedValueOnce({ planJson: buildValidPlanJson() } as never)
+      .mockResolvedValueOnce({ planJson: buildDuplicatedPlanJson() } as never)
+      .mockResolvedValueOnce(null);
 
-      const duplicated = buildValidPlan();
-      duplicated.materias.push({ ...duplicated.materias[0] });
-      writeFileSync(
-        path.join(dataDir, "dup.json"),
-        JSON.stringify(duplicated),
-        "utf8"
-      );
+    const report = await validateConfiguredPlanData({ carreras });
 
-      const carreras: TestCarrera[] = [
-        {
-          id: "arquitectura",
-          nombre: "Arquitectura",
-          descripcion: "",
-          defaultVersionId: "v1",
-          versions: [
-            {
-              versionId: "v1",
-              label: "OK",
-              jsonFile: "ok.json",
-              disponible: true,
-            },
-            {
-              versionId: "v2",
-              label: "Duplicado",
-              jsonFile: "dup.json",
-              disponible: true,
-            },
-          ],
-          disponible: true,
-        },
-        {
-          id: "lic_computacion",
-          nombre: "Lic. Computacion",
-          descripcion: "",
-          defaultVersionId: "v1",
-          versions: [
-            {
-              versionId: "v1",
-              label: "Faltante",
-              jsonFile: "missing.json",
-              disponible: true,
-            },
-          ],
-          disponible: true,
-        },
-      ];
+    expect(report.summary.versionsChecked).toBe(3);
+    expect(report.summary.versionsWithBlockingIssues).toBe(2);
+    expect(report.summary.issuesByCode.DUPLICATE_MATERIA_ID).toBe(1);
+    expect(report.summary.issuesByCode.PLAN_NOT_FOUND).toBe(1);
 
-      const report = await validateConfiguredPlanData({
-        dataDir,
-        carreras,
-      });
+    const okVersion = report.versions.find((v) => v.versionId === "v1" && v.carreraId === "arquitectura");
+    expect(okVersion?.status).toBe("ok");
 
-      expect(report.summary.versionsChecked).toBe(3);
-      expect(report.summary.versionsWithBlockingIssues).toBe(2);
-      expect(report.summary.issuesByCode.DUPLICATE_MATERIA_ID).toBe(1);
-      expect(report.summary.issuesByCode.FILE_NOT_FOUND).toBe(1);
+    const duplicatedVersion = report.versions.find((v) => v.versionId === "v2");
+    expect(duplicatedVersion?.status).toBe("invalid");
 
-      const okVersion = report.versions.find((item) => item.versionId === "v1" && item.carreraId === "arquitectura");
-      expect(okVersion?.status).toBe("ok");
-
-      const duplicatedVersion = report.versions.find((item) => item.versionId === "v2");
-      expect(duplicatedVersion?.status).toBe("invalid");
-
-      const missingVersion = report.versions.find((item) => item.carreraId === "lic_computacion");
-      expect(missingVersion?.status).toBe("file-not-found");
-    } finally {
-      cleanup();
-    }
+    const missingVersion = report.versions.find((v) => v.carreraId === "lic_computacion");
+    expect(missingVersion?.status).toBe("plan-not-found");
   });
 
   it("clasifica duplicados como severidad critical", async () => {
-    const { dataDir, cleanup } = createTmpDataDir();
+    const carreras: TestCarrera[] = [
+      {
+        id: "arquitectura",
+        nombre: "Arquitectura",
+        versions: [{ versionId: "v1", label: "Duplicado", disponible: true }],
+      },
+    ];
 
-    try {
-      const duplicated = buildValidPlan();
-      duplicated.materias.push({ ...duplicated.materias[0] });
-      writeFileSync(
-        path.join(dataDir, "dup.json"),
-        JSON.stringify(duplicated),
-        "utf8"
-      );
+    mockFindFirst.mockResolvedValueOnce({ planJson: buildDuplicatedPlanJson() } as never);
 
-      const carreras: TestCarrera[] = [
-        {
-          id: "arquitectura",
-          nombre: "Arquitectura",
-          descripcion: "",
-          defaultVersionId: "v1",
-          versions: [
-            {
-              versionId: "v1",
-              label: "Duplicado",
-              jsonFile: "dup.json",
-              disponible: true,
-            },
-          ],
-          disponible: true,
-        },
-      ];
+    const report = await validateConfiguredPlanData({ carreras });
+    const duplicatedIssue = report.versions[0].issues.find(
+      (issue) => issue.code === "DUPLICATE_MATERIA_ID"
+    );
 
-      const report = await validateConfiguredPlanData({ dataDir, carreras });
-      const duplicatedIssue = report.versions[0].issues.find(
-        (issue) => issue.code === "DUPLICATE_MATERIA_ID"
-      );
-
-      expect(duplicatedIssue).toBeDefined();
-      expect(duplicatedIssue?.severity).toBe("critical");
-      expect(duplicatedIssue?.blocking).toBe(true);
-    } finally {
-      cleanup();
-    }
+    expect(duplicatedIssue).toBeDefined();
+    expect(duplicatedIssue?.severity).toBe("critical");
+    expect(duplicatedIssue?.blocking).toBe(true);
   });
 
   it("respeta salida segun modo estricto para warnings", async () => {
-    const { dataDir, cleanup } = createTmpDataDir();
+    const carreras: TestCarrera[] = [
+      {
+        id: "arquitectura",
+        nombre: "Arquitectura",
+        versions: [{ versionId: "v1", label: "Warning", disponible: true }],
+      },
+    ];
 
-    try {
-      writeFileSync(
-        path.join(dataDir, "warn.json"),
-        JSON.stringify(buildValidPlan({ horas: "" })),
-        "utf8"
-      );
+    mockFindFirst.mockResolvedValue({ planJson: buildValidPlanJson({ horas: "" }) } as never);
 
-      const carreras: TestCarrera[] = [
-        {
-          id: "arquitectura",
-          nombre: "Arquitectura",
-          descripcion: "",
-          defaultVersionId: "v1",
-          versions: [
-            {
-              versionId: "v1",
-              label: "Warning",
-              jsonFile: "warn.json",
-              disponible: true,
-            },
-          ],
-          disponible: true,
-        },
-      ];
+    const nonStrict = await validateConfiguredPlanData({ carreras, strictWarnings: false });
+    expect(nonStrict.summary.issuesBySeverity.low).toBeGreaterThan(0);
+    expect(nonStrict.shouldFail).toBe(false);
 
-      const nonStrict = await validateConfiguredPlanData({
-        dataDir,
-        carreras,
-        strictWarnings: false,
-      });
-
-      expect(nonStrict.summary.issuesBySeverity.low).toBeGreaterThan(0);
-      expect(nonStrict.shouldFail).toBe(false);
-
-      const strict = await validateConfiguredPlanData({
-        dataDir,
-        carreras,
-        strictWarnings: true,
-      });
-
-      expect(strict.summary.issuesBySeverity.low).toBeGreaterThan(0);
-      expect(strict.shouldFail).toBe(true);
-    } finally {
-      cleanup();
-    }
+    const strict = await validateConfiguredPlanData({ carreras, strictWarnings: true });
+    expect(strict.summary.issuesBySeverity.low).toBeGreaterThan(0);
+    expect(strict.shouldFail).toBe(true);
   });
 
   it("genera salida human-readable estable", async () => {
-    const { dataDir, cleanup } = createTmpDataDir();
+    const carreras: TestCarrera[] = [
+      {
+        id: "arquitectura",
+        nombre: "Arquitectura",
+        versions: [{ versionId: "v1", label: "OK", disponible: true }],
+      },
+    ];
 
-    try {
-      writeFileSync(
-        path.join(dataDir, "ok.json"),
-        JSON.stringify(buildValidPlan()),
-        "utf8"
-      );
+    mockFindFirst.mockResolvedValueOnce({ planJson: buildValidPlanJson() } as never);
 
-      const carreras: TestCarrera[] = [
-        {
-          id: "arquitectura",
-          nombre: "Arquitectura",
-          descripcion: "",
-          defaultVersionId: "v1",
-          versions: [
-            {
-              versionId: "v1",
-              label: "OK",
-              jsonFile: "ok.json",
-              disponible: true,
-            },
-          ],
-          disponible: true,
-        },
-      ];
+    const report = await validateConfiguredPlanData({ carreras });
+    const output = formatBatchValidationReport(report);
 
-      const report = await validateConfiguredPlanData({ dataDir, carreras });
-      const output = formatBatchValidationReport(report);
-
-      expect(output).toContain("Reporte de validacion de datos");
-      expect(output).toContain("Resumen");
-      expect(output).toContain("arquitectura@v1");
-      expect(output).toContain("Resultado:");
-    } finally {
-      cleanup();
-    }
+    expect(output).toContain("Reporte de validacion de datos");
+    expect(output).toContain("Resumen");
+    expect(output).toContain("arquitectura@v1");
+    expect(output).toContain("Resultado:");
   });
 });

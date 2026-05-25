@@ -1,5 +1,3 @@
-import { promises as fs } from "fs";
-import path from "path";
 import {
   validatePlanData,
   type PlanValidationIssue,
@@ -7,11 +5,11 @@ import {
 } from "@/lib/data/planValidation";
 import type { PlanData } from "@/app/types/plan";
 import { getCarreras } from "@/lib/db/carreraRepository";
+import { prisma } from "@/lib/db/prisma";
 
 type CarreraVersionConfig = {
   versionId: string;
   label: string;
-  jsonFile: string;
   disponible: boolean;
   hidden?: boolean;
 };
@@ -40,9 +38,8 @@ export type DataIssueCode =
   | "EMPTY_HOURS"
   | "MISSING_SCHEDULE_SLOT"
   | "OPTIONAL_SUBTYPE_MISSING"
-  | "FILE_NOT_FOUND"
+  | "PLAN_NOT_FOUND"
   | "JSON_PARSE_ERROR"
-  | "IO_ERROR"
   | "UNKNOWN";
 
 export type DataValidationIssue = {
@@ -58,9 +55,8 @@ export type DataValidationIssue = {
 export type VersionValidationStatus =
   | "ok"
   | "invalid"
-  | "file-not-found"
+  | "plan-not-found"
   | "json-parse-error"
-  | "io-error"
   | "skipped";
 
 export type VersionValidationReport = {
@@ -68,7 +64,6 @@ export type VersionValidationReport = {
   carreraNombre: string;
   versionId: string;
   versionLabel: string;
-  jsonFile: string;
   disponible: boolean;
   hidden: boolean;
   status: VersionValidationStatus;
@@ -92,14 +87,12 @@ export type BatchValidationReport = {
   strictWarnings: boolean;
   includeHidden: boolean;
   includeUnavailable: boolean;
-  dataDir: string;
   summary: BatchValidationSummary;
   versions: VersionValidationReport[];
   shouldFail: boolean;
 };
 
 export type ValidateBatchOptions = {
-  dataDir?: string;
   includeHidden?: boolean;
   includeUnavailable?: boolean;
   strictWarnings?: boolean;
@@ -338,36 +331,22 @@ function shouldSkipVersion(
 
 async function validateSingleVersion(
   carrera: CarreraConfig,
-  version: CarreraVersionConfig,
-  dataDir: string
+  version: CarreraVersionConfig
 ): Promise<{ status: VersionValidationStatus; issues: DataValidationIssue[] }> {
-  const filePath = path.join(dataDir, version.jsonFile);
+  const plan = await prisma.plan
+    .findFirst({ where: { slug: carrera.id, estado: "PUBLICADO", esBackup: false } })
+    .catch(() => null);
 
-  let rawFile: string;
-  try {
-    rawFile = await fs.readFile(filePath, "utf8");
-  } catch (error: unknown) {
-    if (
-      typeof error === "object" &&
-      error !== null &&
-      "code" in error &&
-      error.code === "ENOENT"
-    ) {
-      return {
-        status: "file-not-found",
-        issues: [buildFileErrorIssue("FILE_NOT_FOUND", "Archivo de plan no encontrado")],
-      };
-    }
-
+  if (!plan) {
     return {
-      status: "io-error",
-      issues: [buildFileErrorIssue("IO_ERROR", "No se pudo leer el archivo de plan")],
+      status: "plan-not-found",
+      issues: [buildFileErrorIssue("PLAN_NOT_FOUND", "Plan no encontrado en la base de datos")],
     };
   }
 
   let raw: unknown;
   try {
-    raw = JSON.parse(rawFile);
+    raw = JSON.parse(plan.planJson);
   } catch {
     return {
       status: "json-parse-error",
@@ -404,7 +383,6 @@ export async function validateConfiguredPlanData(
   const includeHidden = options.includeHidden ?? false;
   const includeUnavailable = options.includeUnavailable ?? false;
   const strictWarnings = options.strictWarnings ?? false;
-  const dataDir = options.dataDir ?? path.join(process.cwd(), "data", "local");
   const carreras = options.carreras ?? await getCarreras({ soloDisponibles: false });
 
   const summary = initialSummary();
@@ -424,7 +402,6 @@ export async function validateConfiguredPlanData(
           carreraNombre: carrera.nombre,
           versionId: version.versionId,
           versionLabel: version.label,
-          jsonFile: version.jsonFile,
           disponible: version.disponible !== false,
           hidden: version.hidden === true,
           status: "skipped",
@@ -438,7 +415,7 @@ export async function validateConfiguredPlanData(
 
       summary.versionsChecked += 1;
 
-      const validation = await validateSingleVersion(carrera, version, dataDir);
+      const validation = await validateSingleVersion(carrera, version);
       const issues = validation.issues;
       const blockingIssueCount = issues.filter((issue) => issue.blocking).length;
       const warningIssueCount = issues.length - blockingIssueCount;
@@ -458,7 +435,6 @@ export async function validateConfiguredPlanData(
         carreraNombre: carrera.nombre,
         versionId: version.versionId,
         versionLabel: version.label,
-        jsonFile: version.jsonFile,
         disponible: version.disponible !== false,
         hidden: version.hidden === true,
         status: validation.status,
@@ -477,7 +453,6 @@ export async function validateConfiguredPlanData(
     strictWarnings,
     includeHidden,
     includeUnavailable,
-    dataDir,
     summary,
     versions,
     shouldFail,
@@ -489,7 +464,6 @@ export function formatBatchValidationReport(report: BatchValidationReport): stri
 
   lines.push("Reporte de validacion de datos");
   lines.push(`Generado: ${report.generatedAt}`);
-  lines.push(`Data dir: ${report.dataDir}`);
   lines.push(`Opciones: strictWarnings=${report.strictWarnings}, includeHidden=${report.includeHidden}, includeUnavailable=${report.includeUnavailable}`);
   lines.push("");
 

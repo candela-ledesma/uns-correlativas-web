@@ -14,7 +14,7 @@ describe("GET /api/materias/[carrera]", () => {
     env.NODE_ENV = "test";
 
     const response = await GET(
-      new Request("http://localhost/api/materias/arquitectura?v=v2"),
+      new Request("http://localhost/api/materias/arquitectura?v=v1"),
       {
         params: Promise.resolve({ carrera: "arquitectura" }),
       }
@@ -29,7 +29,7 @@ describe("GET /api/materias/[carrera]", () => {
     };
 
     expect(body.plan.plan_id).toBe("arquitectura");
-    expect(body.plan.version_id).toBe("v2");
+    expect(body.plan.version_id).toBe("v1");
     expect(Array.isArray(body.materias)).toBe(true);
     expect(Array.isArray(body.agrupadores)).toBe(true);
   });
