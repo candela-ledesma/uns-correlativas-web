@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { GET } from "../app/api/materias/[carrera]/route";
 
 const env = process.env as Record<string, string | undefined>;
@@ -6,6 +6,7 @@ const originalNodeEnv = env.NODE_ENV;
 
 afterEach(() => {
   env.NODE_ENV = originalNodeEnv;
+  vi.restoreAllMocks();
 });
 
 describe("GET /api/materias/[carrera]", () => {
@@ -36,6 +37,14 @@ describe("GET /api/materias/[carrera]", () => {
   it("responde 422 y detalle tecnico en desarrollo para plan invalido", async () => {
     env.NODE_ENV = "development";
 
+    const planDataLoader = await import("@/lib/data/planDataLoader");
+    vi.spyOn(planDataLoader, "loadPlanData").mockResolvedValueOnce({
+      status: "invalid",
+      carrera: { id: "arquitectura", nombre: "Arquitectura" },
+      errorKind: "shape",
+      issues: [{ kind: "shape", path: "$", message: "JSON inválido" }],
+    });
+
     const response = await GET(
       new Request("http://localhost/api/materias/arquitectura?v=v_invalid_shape"),
       {
@@ -54,6 +63,14 @@ describe("GET /api/materias/[carrera]", () => {
 
   it("oculta detalles internos en produccion", async () => {
     env.NODE_ENV = "production";
+
+    const planDataLoader = await import("@/lib/data/planDataLoader");
+    vi.spyOn(planDataLoader, "loadPlanData").mockResolvedValueOnce({
+      status: "invalid",
+      carrera: { id: "arquitectura", nombre: "Arquitectura" },
+      errorKind: "shape",
+      issues: [{ kind: "shape", path: "$", message: "JSON inválido" }],
+    });
 
     const response = await GET(
       new Request("http://localhost/api/materias/arquitectura?v=v_invalid_shape"),
