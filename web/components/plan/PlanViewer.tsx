@@ -121,7 +121,7 @@ export default function PlanViewer({
     isHydrated,
     syncStatus,
   } =
-    usePlanState(data.plan.plan_id, data.plan.version_id, data.materias, agrupadores);
+    usePlanState(carreraId, data.plan.version_id, data.materias, agrupadores);
 
   const titulo = data.plan.carrera;
   const subtitulo = `Plan ${data.plan.universidad} ${data.plan.codigo_plan} · ${versionLabel} (${data.plan.version_id})`;
@@ -366,7 +366,7 @@ export default function PlanViewer({
       },
       body: JSON.stringify({
         careerId: carreraId,
-        planId: data.plan.plan_id,
+        planId: carreraId,
         versionId: data.plan.version_id,
       }),
     }).catch(() => undefined);
@@ -380,7 +380,7 @@ export default function PlanViewer({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          planId: data.plan.plan_id,
+          planId: carreraId,
           versionId: data.plan.version_id,
         }),
       });
@@ -429,7 +429,7 @@ export default function PlanViewer({
       {vistaActiva === "Planificador" && (
         <WeeklySchedule
           careerId={carreraId}
-          planId={data.plan.plan_id}
+          carreraSlug={carreraId}
           versionId={data.plan.version_id}
           materias={data.materias}
         />
