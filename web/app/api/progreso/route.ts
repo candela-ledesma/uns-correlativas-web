@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { auth } from "@/auth";
 import { createAuditEvent } from "@/lib/db/audit";
-import { getCarreraById } from "@/lib/data/carreras";
 import { getProgressSnapshot, upsertProgressSnapshot } from "@/lib/db/progressRepository";
 import { createUserActivity } from "@/lib/db/userActivity";
 import {
@@ -143,7 +142,7 @@ export async function PUT(request: Request) {
     });
 
     const changes = collectStateChanges(remoteSnapshot.state, resolution.snapshot.state);
-    const careerId = getCarreraById(planId) ? planId : null;
+    const careerId = planId;
 
     if (changes.length > 0) {
       await Promise.all(
@@ -214,7 +213,7 @@ export async function DELETE(request: Request) {
     reason: reason ?? "Reinicio de progreso",
   });
 
-  const careerId = getCarreraById(planId) ? planId : null;
+  const careerId = planId;
   const changes = collectStateChanges(previous.state, {});
 
   if (changes.length > 0) {

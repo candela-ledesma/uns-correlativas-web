@@ -2,16 +2,12 @@ import { promises as fs } from "fs";
 import path from "path";
 import type { PlanData } from "@/app/types/plan";
 import {
-  getCarreraById,
-  getVersionForCarrera,
-  type CarreraVersionConfig,
-} from "@/lib/data/carreras";
-import {
   validatePlanData,
   type PlanValidationIssue,
   type PlanValidationIssueKind,
 } from "@/lib/data/planValidation";
 import { prisma } from "@/lib/db/prisma";
+import { getCarreraById, getVersionForCarrera } from "@/lib/db/carreraRepository";
 
 type CarreraInfo = {
   id: string;
@@ -19,11 +15,13 @@ type CarreraInfo = {
 };
 
 type CarreraInfoWithVersions = CarreraInfo & {
-  defaultVersionId: string;
-  versions: Pick<
-    CarreraVersionConfig,
-    "versionId" | "label" | "disponible" | "hidden"
-  >[];
+  defaultVersionId: string | null;
+  versions: {
+    versionId: string;
+    label: string;
+    disponible: boolean;
+    hidden: boolean;
+  }[];
 };
 
 type VersionInfo = {
@@ -82,91 +80,25 @@ async function readPlanJson(slug: string, jsonFile: string): Promise<string | nu
   return row?.planJson ?? null;
 }
 
-async function loadPlanDataFromFile(
-  carreraId: string,
-  jsonFile: string,
-  carreraInfo: CarreraInfo,
-  version: VersionInfo
-): Promise<PlanLoadResult> {
-  const fileContents = await readPlanJson(carreraId, jsonFile);
-  if (fileContents === null) {
-    return { status: "unavailable", carrera: carreraInfo, reason: "file-not-found" };
-  }
-
-  let raw: unknown;
-  try {
-    raw = JSON.parse(fileContents);
-  } catch {
-    return {
-      status: "invalid",
-      carrera: carreraInfo,
-      errorKind: "shape",
-      issues: [{ kind: "shape", path: "$", message: "El archivo no contiene JSON válido" }],
-    };
-  }
-
-  const validation = validatePlanData(raw, { carreraId, versionId: version.versionId });
-
-  if (!validation.ok) {
-    return { status: "invalid", carrera: carreraInfo, errorKind: validation.kind, issues: validation.issues };
-  }
-
-  return {
-    status: "ok",
-    carrera: {
-      ...carreraInfo,
-      defaultVersionId: version.versionId,
-      versions: [{ versionId: version.versionId, label: version.label, disponible: true, hidden: false }],
-    },
-    version,
-    data: validation.data,
-    warnings: validation.warnings,
-  };
-}
-
 export async function loadPlanData(
   carreraId: string,
   requestedVersionId: string | null
 ): Promise<PlanLoadResult> {
-  const carrera = getCarreraById(carreraId);
+  const carrera = await getCarreraById(carreraId);
 
-  // Fallback: si la carrera no está registrada estáticamente, buscar en DB o data/local/
   if (!carrera) {
-    const jsonFile = `${carreraId}.json`;
-    const contents = await readPlanJson(carreraId, jsonFile);
-    if (!contents) return { status: "not-found", carreraId };
-
-    const dbCarrera = await prisma.carreraConfig.findUnique({ where: { id: carreraId } }).catch(() => null);
-    const nombre = dbCarrera?.nombre ?? carreraId.replace(/_/g, " ");
-    const carreraInfo: CarreraInfo = { id: carreraId, nombre };
-    const version: VersionInfo = { versionId: "v1", label: "Plan actual", jsonFile, disponible: true };
-    try {
-      return await loadPlanDataFromFile(carreraId, jsonFile, carreraInfo, version);
-    } catch {
-      return { status: "not-found", carreraId };
-    }
+    return { status: "not-found", carreraId };
   }
 
-  const carreraInfo: CarreraInfo = {
-    id: carrera.id,
-    nombre: carrera.nombre,
-  };
+  const carreraInfo: CarreraInfo = { id: carrera.id, nombre: carrera.nombre };
 
-  const version = getVersionForCarrera(carreraId, requestedVersionId);
+  const version = await getVersionForCarrera(carreraId, requestedVersionId);
   if (!version) {
-    return {
-      status: "unavailable",
-      carrera: carreraInfo,
-      reason: "version-not-found",
-    };
+    return { status: "unavailable", carrera: carreraInfo, reason: "version-not-found" };
   }
 
-  if (version.disponible === false) {
-    return {
-      status: "unavailable",
-      carrera: carreraInfo,
-      reason: "version-disabled",
-    };
+  if (!version.disponible) {
+    return { status: "unavailable", carrera: carreraInfo, reason: "version-disabled" };
   }
 
   try {
@@ -183,28 +115,14 @@ export async function loadPlanData(
         status: "invalid",
         carrera: carreraInfo,
         errorKind: "shape",
-        issues: [
-          {
-            kind: "shape",
-            path: "$",
-            message: "El archivo no contiene JSON válido",
-          },
-        ],
+        issues: [{ kind: "shape", path: "$", message: "El archivo no contiene JSON válido" }],
       };
     }
 
-    const validation = validatePlanData(raw, {
-      carreraId,
-      versionId: version.versionId,
-    });
+    const validation = validatePlanData(raw, { carreraId, versionId: version.versionId });
 
     if (!validation.ok) {
-      return {
-        status: "invalid",
-        carrera: carreraInfo,
-        errorKind: validation.kind,
-        issues: validation.issues,
-      };
+      return { status: "invalid", carrera: carreraInfo, errorKind: validation.kind, issues: validation.issues };
     }
 
     if (validation.warnings.length > 0 && process.env.NODE_ENV !== "production") {
@@ -219,11 +137,11 @@ export async function loadPlanData(
       carrera: {
         ...carreraInfo,
         defaultVersionId: carrera.defaultVersionId,
-        versions: carrera.versions.map((item) => ({
-          versionId: item.versionId,
-          label: item.label,
-          disponible: item.disponible,
-          hidden: item.hidden,
+        versions: carrera.versions.map((v) => ({
+          versionId: v.versionId,
+          label: v.label,
+          disponible: v.disponible,
+          hidden: v.hidden,
         })),
       },
       version: {
@@ -237,10 +155,6 @@ export async function loadPlanData(
       warnings: validation.warnings,
     };
   } catch {
-    return {
-      status: "error",
-      carrera: carreraInfo,
-      message: "No se pudo cargar el plan",
-    };
+    return { status: "error", carrera: carreraInfo, message: "No se pudo cargar el plan" };
   }
 }

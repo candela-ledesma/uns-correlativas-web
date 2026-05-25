@@ -11,7 +11,7 @@ export async function GET(_req: Request, { params }: Params) {
 
   const share = await prisma.progressShare.findUnique({
     where: { token },
-    include: { planVersion: { select: { planSlug: true, versionId: true } } },
+    include: { carreraVersion: { select: { carreraId: true, versionId: true } } },
   });
 
   if (!share) {
@@ -26,8 +26,8 @@ export async function GET(_req: Request, { params }: Params) {
   }
 
   return NextResponse.json({
-    planId: share.planVersion.planSlug,
-    versionId: share.planVersion.versionId,
+    planId: share.carreraVersion.carreraId,
+    versionId: share.carreraVersion.versionId,
     state,
     createdAt: share.createdAt,
   });

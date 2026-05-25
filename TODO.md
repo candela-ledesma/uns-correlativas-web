@@ -20,6 +20,19 @@
   `CarreraVersion` reemplaza tanto `PlanVersion` como `CarreraVersionConfig` de `carreras.ts`.
   `UserPlanProgress`, `ScheduleBlock`, `UserRecentPlan`, `ProgressShare` pasan a apuntar a `CarreraVersion.id`.
 
+- `media` [ ] **Crear tabla `Departamento` y normalizar `CarreraConfig.departamento`**
+
+  Hoy `departamento` es un `String?` libre en `CarreraConfig` — sin integridad referencial, propenso a inconsistencias de escritura. La relación es 1-a-muchos: un departamento tiene muchas carreras.
+
+  **Schema objetivo:**
+  ```
+  Departamento  { id (slug, ej: "deie"), nombre }
+  CarreraConfig { ..., departamentoId? → Departamento.id }
+  ```
+
+  Permite listar carreras por departamento de forma confiable y editar el nombre desde un solo lugar.
+  Si se implementa la normalización BD completa (tarea anterior), `departamentoId` va en `Carrera` en lugar de `CarreraConfig`.
+
   **Impacto:**
   - Migración de datos: seed inicial con todas las carreras de `carreras.ts`
   - Eliminar `CarreraConfig` y `PlanVersion` del schema

@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/db/prisma";
-import { CARRERAS, getCarreraById } from "@/lib/data/carreras";
+import { getCarreras, getCarreraById, resolveCarreraVersionId } from "@/lib/db/carreraRepository";
 import type {
   UserProductContextResponse,
   UserSessionSummaryResponse,
@@ -7,21 +7,6 @@ import type {
 import { createUserActivity } from "@/lib/db/userActivity";
 
 const DEFAULT_ACTIVITY_LIMIT = 25;
-
-const AVAILABLE_CARRERA_IDS = CARRERAS
-  .filter((carrera) => carrera.disponible !== false)
-  .map((carrera) => carrera.id);
-
-type CarreraId = (typeof AVAILABLE_CARRERA_IDS)[number];
-
-const CARRERA_ORDER = new Map<CarreraId, number>(
-  AVAILABLE_CARRERA_IDS.map((id, index) => [id, index])
-);
-const AVAILABLE_CARRERA_SET = new Set<CarreraId>(AVAILABLE_CARRERA_IDS);
-
-function isAvailableCarreraId(carreraId: string): carreraId is CarreraId {
-  return AVAILABLE_CARRERA_SET.has(carreraId as CarreraId);
-}
 
 function parseMetadata(raw: string | null) {
   if (!raw) return null;
@@ -32,11 +17,16 @@ function parseMetadata(raw: string | null) {
   }
 }
 
-function sanitizeCarreraIds(carreraIds: string[]): CarreraId[] {
+async function getAvailableCarreraIds(): Promise<string[]> {
+  const carreras = await getCarreras({ soloDisponibles: true });
+  return carreras.map((c) => c.id);
+}
+
+async function sanitizeCarreraIds(carreraIds: string[]): Promise<string[]> {
+  const available = await getAvailableCarreraIds();
+  const availableSet = new Set(available);
   const unique = Array.from(new Set(carreraIds));
-  return unique
-    .filter(isAvailableCarreraId)
-    .sort((a, b) => (CARRERA_ORDER.get(a) ?? Number.MAX_SAFE_INTEGER) - (CARRERA_ORDER.get(b) ?? Number.MAX_SAFE_INTEGER));
+  return unique.filter((id) => availableSet.has(id));
 }
 
 async function ensureEnrollmentBootstrap(userId: string) {
@@ -49,15 +39,19 @@ async function ensureEnrollmentBootstrap(userId: string) {
     return sanitizeCarreraIds(existing.map((item) => item.careerId));
   }
 
-  // Primer login: inferir carreras desde el progreso existente usando planVersion.planSlug
+  // Primer login: inferir carreras desde el progreso existente usando carreraVersion.carreraId
   const userProgressCareers = await prisma.userPlanProgress.findMany({
     where: { userId },
-    select: { planVersion: { select: { planSlug: true } } },
-    distinct: ["planVersionId"],
+    select: { carreraVersion: { select: { carreraId: true } } },
+    distinct: ["carreraVersionId"],
   });
 
-  const fromProgress = sanitizeCarreraIds(userProgressCareers.map((item) => item.planVersion.planSlug));
-  const fallbackCareer = AVAILABLE_CARRERA_IDS[0];
+  const fromProgress = await sanitizeCarreraIds(
+    userProgressCareers.map((item) => item.carreraVersion.carreraId)
+  );
+
+  const availableIds = await getAvailableCarreraIds();
+  const fallbackCareer = availableIds[0];
   const initialCareers = fromProgress.length > 0
     ? fromProgress
     : fallbackCareer
@@ -99,8 +93,8 @@ async function ensurePreferenceRow(userId: string, enrolledCareerIds: string[]) 
 
   if (!preference) throw new Error("No se pudo inicializar preferencias de usuario");
 
-  const validActiveCareerId = preference?.activeCareerId
-    ? sanitizeCarreraIds([preference.activeCareerId])[0] ?? null
+  const validActiveCareerId = preference.activeCareerId
+    ? (await sanitizeCarreraIds([preference.activeCareerId]))[0] ?? null
     : null;
 
   const activeExistsInEnrollments =
@@ -122,19 +116,28 @@ export async function getUserProductContext(
   const preference = await ensurePreferenceRow(userId, enrolledCareerIds);
   const includeActivity = options?.includeActivity !== false;
 
-  const lastPlans = await prisma.userRecentPlan.findMany({
-    where: { userId },
-    orderBy: { openedAt: "desc" },
-    include: { planVersion: { select: { planSlug: true, versionId: true } } },
-  });
-
-  const progressRows = await prisma.userPlanProgress.findMany({
-    where: { userId },
-    select: {
-      stateJson: true,
-      planVersion: { select: { planSlug: true } },
-    },
-  });
+  const [carreras, lastPlans, progressRows, activities] = await Promise.all([
+    getCarreras({ soloDisponibles: true }),
+    prisma.userRecentPlan.findMany({
+      where: { userId },
+      orderBy: { openedAt: "desc" },
+      include: { carreraVersion: { select: { carreraId: true, versionId: true } } },
+    }),
+    prisma.userPlanProgress.findMany({
+      where: { userId },
+      select: {
+        stateJson: true,
+        carreraVersion: { select: { carreraId: true } },
+      },
+    }),
+    includeActivity
+      ? prisma.userActivity.findMany({
+          where: { userId },
+          orderBy: { createdAt: "desc" },
+          take: Math.max(1, options?.activityLimit ?? DEFAULT_ACTIVITY_LIMIT),
+        })
+      : Promise.resolve([]),
+  ]);
 
   const careerIdsWithProgress = Array.from(new Set(
     progressRows
@@ -144,33 +147,25 @@ export async function getUserProductContext(
           return typeof s === "object" && s !== null && Object.keys(s).length > 0;
         } catch { return false; }
       })
-      .map((r) => r.planVersion.planSlug)
+      .map((r) => r.carreraVersion.carreraId)
   ));
-
-  const activities = includeActivity
-    ? await prisma.userActivity.findMany({
-        where: { userId },
-        orderBy: { createdAt: "desc" },
-        take: Math.max(1, options?.activityLimit ?? DEFAULT_ACTIVITY_LIMIT),
-      })
-    : [];
 
   const lastPlanByCareer = Object.fromEntries(
     lastPlans.map((row) => [
       row.careerId,
       {
-        planSlug: row.planVersion.planSlug,
-        versionId: row.planVersion.versionId,
+        planSlug: row.carreraVersion.carreraId,
+        versionId: row.carreraVersion.versionId,
         openedAt: row.openedAt.toISOString(),
       },
     ])
   ) as Record<string, { planSlug: string; versionId: string; openedAt: string }>;
 
   return {
-    careers: CARRERAS.filter((carrera) => carrera.disponible !== false).map((carrera) => ({
-      id: carrera.id,
-      nombre: carrera.nombre,
-      descripcion: carrera.descripcion,
+    careers: carreras.map((c) => ({
+      id: c.id,
+      nombre: c.nombre,
+      descripcion: c.descripcion,
     })),
     enrolledCareerIds,
     activeCareerId: preference.activeCareerId,
@@ -215,8 +210,9 @@ export async function updateUserCareerContext(input: {
   enrolledCareerIds: string[];
   activeCareerId: string;
 }) {
-  const nextEnrolledCareerIds = sanitizeCarreraIds(input.enrolledCareerIds);
-  const activeCareerId = sanitizeCarreraIds([input.activeCareerId])[0] ?? null;
+  const nextEnrolledCareerIds = await sanitizeCarreraIds(input.enrolledCareerIds);
+  const sanitizedActive = await sanitizeCarreraIds([input.activeCareerId]);
+  const activeCareerId = sanitizedActive[0] ?? null;
 
   if (nextEnrolledCareerIds.length === 0) {
     throw new Error("Debe haber al menos una carrera inscripta");
@@ -268,20 +264,14 @@ export async function recordPlanOpened(input: {
   planSlug: string;
   versionId: string;
 }) {
-  const resolvedCareerId = sanitizeCarreraIds([input.careerId])[0];
+  const sanitized = await sanitizeCarreraIds([input.careerId]);
+  const resolvedCareerId = sanitized[0];
 
-  if (!resolvedCareerId || !getCarreraById(resolvedCareerId)) {
+  if (!resolvedCareerId || !(await getCarreraById(resolvedCareerId))) {
     throw new Error("Carrera invalida");
   }
 
-  const planVersion = await prisma.planVersion.findUnique({
-    where: { planSlug_versionId: { planSlug: input.planSlug, versionId: input.versionId } },
-    select: { id: true },
-  });
-
-  if (!planVersion) {
-    throw new Error(`Plan no encontrado: ${input.planSlug}@${input.versionId}`);
-  }
+  const carreraVersionId = await resolveCarreraVersionId(input.planSlug, input.versionId);
 
   const currentContext = await getUserProductContext(input.userId, { activityLimit: 1 });
   const previousActiveCareerId = currentContext.activeCareerId;
@@ -295,8 +285,8 @@ export async function recordPlanOpened(input: {
 
     await tx.userRecentPlan.upsert({
       where: { userId_careerId: { userId: input.userId, careerId: resolvedCareerId } },
-      update: { planVersionId: planVersion.id, openedAt: new Date() },
-      create: { userId: input.userId, careerId: resolvedCareerId, planVersionId: planVersion.id },
+      update: { carreraVersionId, openedAt: new Date() },
+      create: { userId: input.userId, careerId: resolvedCareerId, carreraVersionId },
     });
 
     await tx.userPreference.upsert({
@@ -323,7 +313,7 @@ export async function recordPlanOpened(input: {
         previousActiveCareerId,
         nextActiveCareerId: resolvedCareerId,
         source: "plan-open",
-      },
+        },
     });
   }
 

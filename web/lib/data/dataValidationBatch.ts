@@ -1,16 +1,26 @@
 import { promises as fs } from "fs";
 import path from "path";
 import {
-  CARRERAS,
-  type CarreraConfig,
-  type CarreraVersionConfig,
-} from "@/lib/data/carreras";
-import {
   validatePlanData,
   type PlanValidationIssue,
   type PlanValidationIssueKind,
 } from "@/lib/data/planValidation";
 import type { PlanData } from "@/app/types/plan";
+import { getCarreras } from "@/lib/db/carreraRepository";
+
+type CarreraVersionConfig = {
+  versionId: string;
+  label: string;
+  jsonFile: string;
+  disponible: boolean;
+  hidden?: boolean;
+};
+
+type CarreraConfig = {
+  id: string;
+  nombre: string;
+  versions: CarreraVersionConfig[];
+};
 
 export type DataIssueSeverity = "critical" | "medium" | "low";
 
@@ -395,7 +405,7 @@ export async function validateConfiguredPlanData(
   const includeUnavailable = options.includeUnavailable ?? false;
   const strictWarnings = options.strictWarnings ?? false;
   const dataDir = options.dataDir ?? path.join(process.cwd(), "data", "local");
-  const carreras = options.carreras ?? CARRERAS;
+  const carreras = options.carreras ?? await getCarreras({ soloDisponibles: false });
 
   const summary = initialSummary();
   const versions: VersionValidationReport[] = [];

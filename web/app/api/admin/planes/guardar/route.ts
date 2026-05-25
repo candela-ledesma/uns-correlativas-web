@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { Role } from "@/lib/auth/roles";
 import { prisma } from "@/lib/db/prisma";
-import { CARRERAS } from "@/lib/data/carreras";
+import { upsertCarrera, upsertCarreraVersion } from "@/lib/db/carreraRepository";
 import { createAuditEvent } from "@/lib/db/audit";
 
 export const dynamic = "force-dynamic";
@@ -30,21 +30,8 @@ async function registrarCarreraEnDB(
   nombre: string,
   departamento?: string | null,
 ): Promise<void> {
-  const staticEntry = CARRERAS.some((c) => c.id === slug);
-  if (staticEntry) return; // ya existe en el código estático
-
-  await prisma.carreraConfig.upsert({
-    where: { id: slug },
-    update: { nombre, jsonFile, ...(departamento != null ? { departamento } : {}) },
-    create: {
-      id: slug,
-      nombre,
-      jsonFile,
-      descripcion: "Plan de estudios y correlativas.",
-      departamento: departamento ?? null,
-      disponible: true,
-    },
-  });
+  await upsertCarrera({ id: slug, nombre, departamento });
+  await upsertCarreraVersion({ carreraId: slug, versionId: "v1", jsonFile });
 }
 
 export async function POST(request: Request) {
