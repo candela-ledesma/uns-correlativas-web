@@ -55,8 +55,7 @@ export function loadPlanState(
     const saved = localStorage.getItem(key);
 
     if (!saved) {
-        // Migra datos de localStorage legacy solo para la versión "v1" (default histórico).
-        if (versionId === "v1") {
+        {
             const legacy = localStorage.getItem(LEGACY_STORAGE_KEY);
             if (legacy) {
                 try {
