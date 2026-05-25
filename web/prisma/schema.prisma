@@ -287,6 +287,13 @@ model PlanVersion {
   @@index([planSlug])
 }
 
+model Departamento {
+  id     String   @id // slug, ej: "ingenieria"
+  nombre String
+
+  carreras Carrera[]
+}
+
 // Tabla unificada de carreras. Reemplaza CarreraConfig (carreras dinámicas) y el array
 // CARRERAS de carreras.ts (carreras estáticas). Única fuente de verdad.
 // id es el slug de la carrera (ej: "ingenieria_civil").
@@ -295,18 +302,20 @@ model Carrera {
   id               String   @id // slug, ej: "ingenieria_civil"
   nombre           String
   descripcion      String   @default("Plan de estudios y correlativas.")
-  departamento     String?
+  departamentoId   String?
   defaultVersionId String?  // versionId string, ej: "v1"
   disponible       Boolean  @default(true)
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
-  versions    CarreraVersion[]
-  enrollments UserCareerEnrollment[]
-  recentPlans UserRecentPlan[]
+  departamento   Departamento?          @relation(fields: [departamentoId], references: [id])
+  versions       CarreraVersion[]
+  enrollments    UserCareerEnrollment[]
+  recentPlans    UserRecentPlan[]
   scheduleBlocks ScheduleBlock[]
 
   @@index([disponible])
+  @@index([departamentoId])
 }
 
 // Versión de un plan de estudios dentro de una carrera. Reemplaza PlanVersion.

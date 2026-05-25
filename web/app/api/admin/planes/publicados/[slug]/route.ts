@@ -65,33 +65,30 @@ export async function PUT(req: Request, { params }: Params) {
   return NextResponse.json({ ok: true, slug });
 }
 
-// ── PATCH: cambia disponible, nombre, o departamento ─────────────────────────
+// ── PATCH: cambia disponible, nombre, o departamentoId ───────────────────────
 export async function PATCH(req: Request, { params }: Params) {
   const session = await requireAdmin();
   if (!session) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const { slug } = await params;
-  const body: { disponible?: boolean; nombre?: string; departamento?: string } = await req.json();
+  const body: { disponible?: boolean; nombre?: string; departamentoId?: string | null } = await req.json();
 
   const configData: Record<string, unknown> = {};
   if (body.disponible !== undefined) configData.disponible = body.disponible;
   if (body.nombre !== undefined) configData.nombre = body.nombre;
-  if (body.departamento !== undefined) configData.departamento = body.departamento;
+  if (body.departamentoId !== undefined) configData.departamentoId = body.departamentoId;
 
   if (Object.keys(configData).length === 0) {
     return NextResponse.json({ error: "Sin campos para actualizar" }, { status: 400 });
   }
 
-  const updated = await prisma.carreraConfig.updateMany({
+  const updated = await prisma.carrera.updateMany({
     where: { id: slug },
     data: configData,
   });
 
   if (updated.count === 0) {
-    return NextResponse.json({
-      ok: true, slug, ...body,
-      warning: "La carrera es estática. El cambio no persiste hasta el próximo deploy.",
-    });
+    return NextResponse.json({ error: "Carrera no encontrada" }, { status: 404 });
   }
 
   const action = body.disponible !== undefined
@@ -119,10 +116,7 @@ export async function DELETE(_req: Request, { params }: Params) {
 
   const { slug } = await params;
 
-  await Promise.all([
-    prisma.plan.deleteMany({ where: { slug, estado: "PUBLICADO" } }).catch(() => {}),
-    prisma.carreraConfig.delete({ where: { id: slug } }).catch(() => {}),
-  ]);
+  await prisma.plan.deleteMany({ where: { slug, estado: "PUBLICADO" } }).catch(() => {});
 
   await createAuditEvent({
     actorUserId: session.user.id,
