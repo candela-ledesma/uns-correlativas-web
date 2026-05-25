@@ -4,6 +4,31 @@
 
 ---
 
+## Normalización BD — unificar fuentes de carreras
+
+- `alta` [ ] **Fusionar `carreras.ts` + `CarreraConfig` (DB) + `PlanVersion` en dos tablas `Carrera` y `CarreraVersion`**
+
+  Hoy las carreras viven en dos mundos: las estáticas están hardcodeadas en `carreras.ts` (con versiones, jsonFile, label, hidden), y las dinámicas (agregadas desde el admin) están en `CarreraConfig` en DB. `PlanVersion` es un tercer nodo que existe solo para FK de integridad. Los tres representan el mismo concepto.
+
+  **Objetivo:** una sola fuente de verdad en DB. El admin puede crear carreras y versiones sin deploys. FKs reales desde `UserCareerEnrollment`, `UserRecentPlan` y todos los modelos de progreso.
+
+  **Schema objetivo:**
+  ```
+  Carrera          { id (slug), nombre, descripcion, departamento?, defaultVersionId? → CarreraVersion.id, disponible }
+  CarreraVersion   { id (cuid), carreraId → Carrera.id, versionId, label, jsonFile, disponible, hidden }
+  ```
+  `CarreraVersion` reemplaza tanto `PlanVersion` como `CarreraVersionConfig` de `carreras.ts`.
+  `UserPlanProgress`, `ScheduleBlock`, `UserRecentPlan`, `ProgressShare` pasan a apuntar a `CarreraVersion.id`.
+
+  **Impacto:**
+  - Migración de datos: seed inicial con todas las carreras de `carreras.ts`
+  - Eliminar `CarreraConfig` y `PlanVersion` del schema
+  - Eliminar `carreras.ts` y reemplazar sus consumidores por queries a DB
+  - `CarreraId` union type de TypeScript desaparece → pasa a ser `string`
+  - Panel admin: CRUD de carreras y versiones
+
+---
+
 ## Panel admin
 
 - `media` [ ] **Validación de schema completo** — validar contra el schema completo de `PlanData` además de chequeos estructurales básicos.
@@ -20,7 +45,7 @@
 
 ## Google Calendar
 
-- `baja` [ ] **Variables de entorno** — documentar `GOOGLE_CLIENT_ID` y `GOOGLE_CLIENT_SECRET` en `web/.env.example`.
+- `baja` [x] **Variables de entorno** — documentar `GOOGLE_CLIENT_ID` y `GOOGLE_CLIENT_SECRET` en `web/.env.example`.
 
 ---
 
