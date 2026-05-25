@@ -24,7 +24,7 @@ type SyncStatus = "guest" | "syncing" | "synced" | "error";
 const REMOTE_SYNC_DEBOUNCE_MS = 450;
 
 export function usePlanState(
-  planId: string,
+  carreraSlug: string,
   versionId: string,
   materias: Materia[],
   agrupadores: Agrupador[]
@@ -38,17 +38,17 @@ export function usePlanState(
 
   useEffect(() => {
     setIsHydrated(false);
-    const snapshot = loadPlanStateSnapshot(planId, versionId);
+    const snapshot = loadPlanStateSnapshot(carreraSlug, versionId);
     setEstados(snapshot.estados);
     lastSyncedSerializedRef.current = null;
     remoteBaselineReadyRef.current = false;
     setIsHydrated(true);
-  }, [planId, versionId]);
+  }, [carreraSlug, versionId]);
 
   useEffect(() => {
     if (!isHydrated) return;
-    savePlanState(planId, versionId, estados);
-  }, [estados, isHydrated, planId, versionId]);
+    savePlanState(carreraSlug, versionId, estados);
+  }, [estados, isHydrated, carreraSlug, versionId]);
 
   useEffect(() => {
     if (!isHydrated) return;
@@ -67,10 +67,10 @@ export function usePlanState(
     async function syncInitialSnapshot() {
       setSyncStatus("syncing");
 
-      const localSnapshot = loadPlanStateSnapshot(planId, versionId);
+      const localSnapshot = loadPlanStateSnapshot(carreraSlug, versionId);
       const migrated = hasMigratedPlanState(
         authenticatedUserId,
-        planId,
+        carreraSlug,
         versionId
       );
 
@@ -80,7 +80,7 @@ export function usePlanState(
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          planId,
+          planId: carreraSlug,
           versionId,
           localState: localSnapshot.estados,
           localUpdatedAt: localSnapshot.updatedAt,
@@ -107,9 +107,9 @@ export function usePlanState(
       remoteBaselineReadyRef.current = true;
       lastSyncedSerializedRef.current = JSON.stringify(mergedState);
 
-      savePlanState(planId, versionId, mergedState, mergedUpdatedAt);
+      savePlanState(carreraSlug, versionId, mergedState, mergedUpdatedAt);
       setEstados(mergedState);
-      markPlanStateMigrated(authenticatedUserId, planId, versionId);
+      markPlanStateMigrated(authenticatedUserId, carreraSlug, versionId);
       setSyncStatus("synced");
     }
 
@@ -121,7 +121,7 @@ export function usePlanState(
     return () => {
       cancelled = true;
     };
-  }, [isHydrated, planId, versionId, session?.user?.id, sessionStatus]);
+  }, [isHydrated, carreraSlug, versionId, session?.user?.id, sessionStatus]);
 
   useEffect(() => {
     if (!isHydrated) return;
@@ -143,7 +143,7 @@ export function usePlanState(
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            planId,
+            planId: carreraSlug,
             versionId,
             state: estados,
             clientUpdatedAt,
@@ -164,7 +164,7 @@ export function usePlanState(
         const nextSerialized = JSON.stringify(nextState);
 
         lastSyncedSerializedRef.current = nextSerialized;
-        savePlanState(planId, versionId, nextState, payload.updatedAt ?? clientUpdatedAt);
+        savePlanState(carreraSlug, versionId, nextState, payload.updatedAt ?? clientUpdatedAt);
 
         if (nextSerialized !== serialized) {
           setEstados(nextState);
@@ -179,7 +179,7 @@ export function usePlanState(
     return () => {
       window.clearTimeout(timeout);
     };
-  }, [estados, isHydrated, planId, versionId, session?.user?.id, sessionStatus]);
+  }, [estados, isHydrated, carreraSlug, versionId, session?.user?.id, sessionStatus]);
 
   function getMateriaContextFromKey(estadoKey: string) {
     if (estadoKey.includes("::")) {
@@ -324,7 +324,7 @@ export function usePlanState(
 
   function resetMaterias() {
     setEstados({});
-    clearPlanState(planId, versionId);
+    clearPlanState(carreraSlug, versionId);
 
     if (sessionStatus === "authenticated") {
       fetch("/api/progreso", {
@@ -333,7 +333,7 @@ export function usePlanState(
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          planId,
+          planId: carreraSlug,
           versionId,
           reason: "Reinicio de progreso desde UI",
         }),

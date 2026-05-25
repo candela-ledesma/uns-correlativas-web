@@ -67,12 +67,12 @@ type DragState = {
 // Ghost is computed imperatively during drag and only stored in state at drop time
 type Ghost = { dia: number; horaInicio: number; horaFin: number; hasConflict: boolean; color: string };
 
-type Props = { careerId: string; planId: string; versionId: string; materias: Materia[] };
+type Props = { careerId: string; carreraSlug: string; versionId: string; materias: Materia[] };
 
 // ── Component ──────────────────────────────────────────────────────────────
-export default function WeeklySchedule({ careerId, planId, versionId, materias }: Props) {
+export default function WeeklySchedule({ careerId, carreraSlug, versionId, materias }: Props) {
   const { status: sessionStatus } = useSession();
-  const { blocks, isLoading, error, createBlock, updateBlock, deleteBlock } = useSchedule({ careerId, planId, versionId });
+  const { blocks, isLoading, error, createBlock, updateBlock, deleteBlock } = useSchedule({ careerId, carreraSlug, versionId });
 
   const [panel,      setPanel]      = useState<Panel | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -254,7 +254,7 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
     if (gcalState === "loading" || gcalState === "deleting") return;
     setGcalState("loading");
     setGcalMsg(null);
-    const params = new URLSearchParams({ careerId, planId, versionId });
+    const params = new URLSearchParams({ careerId, planId: carreraSlug, versionId });
     const res = await fetch(`/api/planificador/exportar-gcal?${params}`, { method: "POST" }).catch(() => null);
     if (!res) { setGcalState("error"); setGcalMsg("Error de red"); return; }
     const json = await res.json().catch(() => ({})) as { created?: number; failed?: number; error?: string };
@@ -274,7 +274,7 @@ export default function WeeklySchedule({ careerId, planId, versionId, materias }
   async function handleUnlinkGCal() {
     setGcalState("deleting");
     setGcalMsg(null);
-    const params = new URLSearchParams({ careerId, planId, versionId });
+    const params = new URLSearchParams({ careerId, planId: carreraSlug, versionId });
     const res = await fetch(`/api/planificador/exportar-gcal?${params}`, { method: "DELETE" }).catch(() => null);
     if (!res) { setGcalState("error"); setGcalMsg("Error de red"); return; }
     const json = await res.json().catch(() => ({})) as { deleted?: number; failed?: number; error?: string };

@@ -25,16 +25,16 @@ type State =
 
 type PlanKey = {
   careerId: string;
-  planId: string;
+  carreraSlug: string;
   versionId: string;
 };
 
-export function useSchedule({ careerId, planId, versionId }: PlanKey) {
+export function useSchedule({ careerId, carreraSlug, versionId }: PlanKey) {
   const [state, setState] = useState<State>({ status: "idle" });
 
   const load = useCallback(async () => {
     setState({ status: "loading" });
-    const url = `/api/planificador?careerId=${encodeURIComponent(careerId)}&planId=${encodeURIComponent(planId)}&versionId=${encodeURIComponent(versionId)}`;
+    const url = `/api/planificador?careerId=${encodeURIComponent(careerId)}&planId=${encodeURIComponent(carreraSlug)}&versionId=${encodeURIComponent(versionId)}`;
     const res = await fetch(url).catch(() => null);
 
     if (!res?.ok) {
@@ -47,7 +47,7 @@ export function useSchedule({ careerId, planId, versionId }: PlanKey) {
 
     const json = (await res.json()) as { blocks: ScheduleBlock[] };
     setState({ status: "ready", blocks: json.blocks });
-  }, [careerId, planId, versionId]);
+  }, [careerId, carreraSlug, versionId]);
 
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { void load(); }, [load]);
@@ -56,7 +56,7 @@ export function useSchedule({ careerId, planId, versionId }: PlanKey) {
     const res = await fetch("/api/planificador", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ careerId, planId, versionId, ...input }),
+      body: JSON.stringify({ careerId, planId: carreraSlug, versionId, ...input }),
     }).catch(() => null);
 
     if (!res) return { error: "Error de red" };

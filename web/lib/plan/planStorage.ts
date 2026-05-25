@@ -6,16 +6,16 @@ const LEGACY_STORAGE_KEY = "estadoMaterias";
 const STORAGE_META_KEY_PREFIX = "estadoMateriasMeta";
 const STORAGE_MIGRATION_KEY_PREFIX = "estadoMateriasMigrado";
 
-function getStorageKey(planId: string, versionId: string) {
-    return `${STORAGE_KEY_PREFIX}::${planId}::${versionId}`;
+function getStorageKey(carreraSlug: string, versionId: string) {
+    return `${STORAGE_KEY_PREFIX}::${carreraSlug}::${versionId}`;
 }
 
-function getMetaStorageKey(planId: string, versionId: string) {
-    return `${STORAGE_META_KEY_PREFIX}::${planId}::${versionId}`;
+function getMetaStorageKey(carreraSlug: string, versionId: string) {
+    return `${STORAGE_META_KEY_PREFIX}::${carreraSlug}::${versionId}`;
 }
 
-function getMigrationKey(userId: string, planId: string, versionId: string) {
-    return `${STORAGE_MIGRATION_KEY_PREFIX}::${userId}::${planId}::${versionId}`;
+function getMigrationKey(userId: string, carreraSlug: string, versionId: string) {
+    return `${STORAGE_MIGRATION_KEY_PREFIX}::${userId}::${carreraSlug}::${versionId}`;
 }
 
 export type LocalPlanSnapshot = {
@@ -23,40 +23,40 @@ export type LocalPlanSnapshot = {
     updatedAt: string | null;
 };
 
-function loadSnapshotUpdatedAt(planId: string, versionId: string) {
+function loadSnapshotUpdatedAt(carreraSlug: string, versionId: string) {
     if (typeof window === "undefined") return null;
 
-    const raw = localStorage.getItem(getMetaStorageKey(planId, versionId));
+    const raw = localStorage.getItem(getMetaStorageKey(carreraSlug, versionId));
     if (!raw) return null;
 
     const parsed = Date.parse(raw);
     return Number.isFinite(parsed) ? new Date(parsed).toISOString() : null;
 }
 
-function saveSnapshotUpdatedAt(planId: string, versionId: string, updatedAtIso?: string) {
+function saveSnapshotUpdatedAt(carreraSlug: string, versionId: string, updatedAtIso?: string) {
     if (typeof window === "undefined") return;
 
     const value = updatedAtIso ?? new Date().toISOString();
-    localStorage.setItem(getMetaStorageKey(planId, versionId), value);
+    localStorage.setItem(getMetaStorageKey(carreraSlug, versionId), value);
 }
 
-function clearSnapshotUpdatedAt(planId: string, versionId: string) {
+function clearSnapshotUpdatedAt(carreraSlug: string, versionId: string) {
     if (typeof window === "undefined") return;
 
-    localStorage.removeItem(getMetaStorageKey(planId, versionId));
+    localStorage.removeItem(getMetaStorageKey(carreraSlug, versionId));
 }
 
 export function loadPlanState(
-    planId: string,
+    carreraSlug: string,
     versionId: string
 ): Record<string, EstadoMateria> {
     if (typeof window === "undefined") return {};
 
-    const key = getStorageKey(planId, versionId);
+    const key = getStorageKey(carreraSlug, versionId);
     const saved = localStorage.getItem(key);
 
     if (!saved) {
-        const defaultVersion = getDefaultVersionForCarrera(planId)?.versionId ?? null;
+        const defaultVersion = getDefaultVersionForCarrera(carreraSlug)?.versionId ?? null;
 
         if (defaultVersion && defaultVersion === versionId) {
             const legacy = localStorage.getItem(LEGACY_STORAGE_KEY);
@@ -83,50 +83,50 @@ export function loadPlanState(
 }
 
 export function loadPlanStateSnapshot(
-    planId: string,
+    carreraSlug: string,
     versionId: string
 ): LocalPlanSnapshot {
     return {
-        estados: loadPlanState(planId, versionId),
-        updatedAt: loadSnapshotUpdatedAt(planId, versionId),
+        estados: loadPlanState(carreraSlug, versionId),
+        updatedAt: loadSnapshotUpdatedAt(carreraSlug, versionId),
     };
 }
 
 export function savePlanState(
-    planId: string,
+    carreraSlug: string,
     versionId: string,
     estados: Record<string, EstadoMateria>,
     updatedAtIso?: string
 ) {
     if (typeof window === "undefined") return;
 
-    localStorage.setItem(getStorageKey(planId, versionId), JSON.stringify(estados));
-    saveSnapshotUpdatedAt(planId, versionId, updatedAtIso);
+    localStorage.setItem(getStorageKey(carreraSlug, versionId), JSON.stringify(estados));
+    saveSnapshotUpdatedAt(carreraSlug, versionId, updatedAtIso);
 }
 
-export function clearPlanState(planId: string, versionId: string) {
+export function clearPlanState(carreraSlug: string, versionId: string) {
     if (typeof window === "undefined") return;
 
-    localStorage.removeItem(getStorageKey(planId, versionId));
-    clearSnapshotUpdatedAt(planId, versionId);
+    localStorage.removeItem(getStorageKey(carreraSlug, versionId));
+    clearSnapshotUpdatedAt(carreraSlug, versionId);
 }
 
 export function hasMigratedPlanState(
     userId: string,
-    planId: string,
+    carreraSlug: string,
     versionId: string
 ) {
     if (typeof window === "undefined") return false;
 
-    return localStorage.getItem(getMigrationKey(userId, planId, versionId)) === "1";
+    return localStorage.getItem(getMigrationKey(userId, carreraSlug, versionId)) === "1";
 }
 
 export function markPlanStateMigrated(
     userId: string,
-    planId: string,
+    carreraSlug: string,
     versionId: string
 ) {
     if (typeof window === "undefined") return;
 
-    localStorage.setItem(getMigrationKey(userId, planId, versionId), "1");
+    localStorage.setItem(getMigrationKey(userId, carreraSlug, versionId), "1");
 }
