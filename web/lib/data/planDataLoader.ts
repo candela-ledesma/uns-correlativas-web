@@ -1,5 +1,3 @@
-import { promises as fs } from "fs";
-import path from "path";
 import type { PlanData } from "@/app/types/plan";
 import {
   validatePlanData,
@@ -27,7 +25,6 @@ type CarreraInfoWithVersions = CarreraInfo & {
 type VersionInfo = {
   versionId: string;
   label: string;
-  jsonFile: string;
   disponible?: boolean;
   hidden?: boolean;
 };
@@ -71,11 +68,7 @@ export function formatValidationIssues(
   return issues.slice(0, max).map((issue) => `${issue.path}: ${issue.message}`);
 }
 
-async function readPlanJson(slug: string, jsonFile: string): Promise<string | null> {
-  const filePath = path.join(process.cwd(), "data", "local", jsonFile);
-  const fromFile = await fs.readFile(filePath, "utf8").catch(() => null);
-  if (fromFile !== null) return fromFile;
-
+async function readPlanJson(slug: string): Promise<string | null> {
   const row = await prisma.plan.findFirst({ where: { slug, estado: "PUBLICADO", esBackup: false } }).catch(() => null);
   return row?.planJson ?? null;
 }
@@ -102,7 +95,7 @@ export async function loadPlanData(
   }
 
   try {
-    const fileContents = await readPlanJson(carreraId, version.jsonFile);
+    const fileContents = await readPlanJson(carreraId);
     if (fileContents === null) {
       return { status: "unavailable", carrera: carreraInfo, reason: "file-not-found" };
     }
@@ -147,7 +140,6 @@ export async function loadPlanData(
       version: {
         versionId: version.versionId,
         label: version.label,
-        jsonFile: version.jsonFile,
         disponible: version.disponible,
         hidden: version.hidden,
       },
