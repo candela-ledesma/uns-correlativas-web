@@ -28,9 +28,9 @@ async function registrarCarreraEnDB(
   slug: string,
   jsonFile: string,
   nombre: string,
-  departamento?: string | null,
+  departamentoId?: string | null,
 ): Promise<void> {
-  await upsertCarrera({ id: slug, nombre, departamento });
+  await upsertCarrera({ id: slug, nombre, departamentoId });
   await upsertCarreraVersion({ carreraId: slug, versionId: "v1", jsonFile });
 }
 
@@ -46,7 +46,7 @@ export async function POST(request: Request) {
     publicar: boolean;
     resolucion: "reemplazar" | "conservar" | "nueva_version" | null;
     motivo?: string;
-    departamento?: string | null;
+    departamentoId?: string | null;
   };
 
   try {
@@ -55,7 +55,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Body inválido" }, { status: 400 });
   }
 
-  const { plan, fuente, publicar, resolucion, motivo, departamento } = body;
+  const { plan, fuente, publicar, resolucion, motivo, departamentoId } = body;
   if (!plan?.plan?.carrera) {
     return NextResponse.json({ error: "Datos del plan inválidos" }, { status: 400 });
   }
@@ -161,7 +161,7 @@ export async function POST(request: Request) {
     await prisma.plan.deleteMany({ where: { slug, estado: "PENDIENTE" } }).catch(() => {});
 
     // Registrar carrera si es nueva (independientemente de la fuente)
-    await registrarCarreraEnDB(slug, `${slug}.json`, plan.plan.carrera, departamento).catch(() => {});
+    await registrarCarreraEnDB(slug, `${slug}.json`, plan.plan.carrera, departamentoId).catch(() => {});
 
     await createAuditEvent({
       actorUserId: session.user.id,

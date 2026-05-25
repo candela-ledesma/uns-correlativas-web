@@ -1,12 +1,17 @@
 import { prisma } from "@/lib/db/prisma";
-import type { Carrera, CarreraVersion } from "@prisma/client";
+import type { Carrera, CarreraVersion, Departamento } from "@prisma/client";
 
-export type CarreraWithVersions = Carrera & { versions: CarreraVersion[] };
+export type CarreraWithVersions = Carrera & { versions: CarreraVersion[]; departamento: Departamento | null };
+
+const carreraInclude = {
+  versions: { orderBy: { createdAt: "asc" as const } },
+  departamento: true,
+};
 
 export async function getCarreras(opts?: { soloDisponibles?: boolean }): Promise<CarreraWithVersions[]> {
   return prisma.carrera.findMany({
     where: opts?.soloDisponibles !== false ? { disponible: true } : undefined,
-    include: { versions: { orderBy: { createdAt: "asc" } } },
+    include: carreraInclude,
     orderBy: { nombre: "asc" },
   });
 }
@@ -14,7 +19,7 @@ export async function getCarreras(opts?: { soloDisponibles?: boolean }): Promise
 export async function getCarreraById(id: string): Promise<CarreraWithVersions | null> {
   return prisma.carrera.findUnique({
     where: { id },
-    include: { versions: { orderBy: { createdAt: "asc" } } },
+    include: carreraInclude,
   });
 }
 
@@ -50,7 +55,7 @@ export async function upsertCarrera(data: {
   id: string;
   nombre: string;
   descripcion?: string;
-  departamento?: string | null;
+  departamentoId?: string | null;
   disponible?: boolean;
 }): Promise<Carrera> {
   return prisma.carrera.upsert({
@@ -58,14 +63,14 @@ export async function upsertCarrera(data: {
     update: {
       nombre: data.nombre,
       ...(data.descripcion != null ? { descripcion: data.descripcion } : {}),
-      ...(data.departamento !== undefined ? { departamento: data.departamento } : {}),
+      ...(data.departamentoId !== undefined ? { departamentoId: data.departamentoId } : {}),
       ...(data.disponible != null ? { disponible: data.disponible } : {}),
     },
     create: {
       id: data.id,
       nombre: data.nombre,
       descripcion: data.descripcion ?? "Plan de estudios y correlativas.",
-      departamento: data.departamento ?? null,
+      departamentoId: data.departamentoId ?? null,
       disponible: data.disponible ?? true,
     },
   });

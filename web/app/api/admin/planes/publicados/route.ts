@@ -44,7 +44,7 @@ export async function GET() {
     return {
       id: carrera.id,
       nombre: carrera.nombre,
-      departamento: carrera.departamento ?? null,
+      departamento: carrera.departamento?.nombre ?? null,
       disponible: carrera.disponible,
       jsonFile: version?.jsonFile ?? `${carrera.id}.json`,
       tieneLocal: !!planRow && planRow.fuente === "PARSER",

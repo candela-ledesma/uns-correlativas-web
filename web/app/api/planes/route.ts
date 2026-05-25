@@ -12,7 +12,7 @@ export async function GET() {
       id: c.id,
       nombre: c.nombre,
       descripcion: c.descripcion,
-      departamento: c.departamento ?? null,
+      departamento: c.departamento?.nombre ?? null,
       disponible: c.disponible,
     })),
   });
