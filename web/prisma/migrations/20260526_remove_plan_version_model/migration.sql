@@ -1,0 +1,3 @@
+-- La tabla PlanVersion fue eliminada de la BD en 20260525_normalize_carreras.
+-- Esta migración solo elimina el modelo del schema para sincronizar el historial de Prisma.
+-- No hay cambios DDL.
