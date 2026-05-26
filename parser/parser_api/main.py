@@ -14,7 +14,7 @@ _root = str(Path(__file__).parent.parent)
 sys.path.insert(0, _root)
 
 try:
-    from core.parser.cli import parsear_plan_pdf
+    from core.cli import parsear_plan_pdf
 except Exception as _e:
     print(f"[parser_api] ERROR importando core: {_e}", flush=True)
     raise

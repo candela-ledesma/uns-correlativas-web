@@ -1,7 +1,7 @@
 import unittest
 
-from core.parser.parser_plan import detectar_materias_generico
-from core.parser.contract_validator import validate_plan_contract
+from core.parser_plan import detectar_materias_generico
+from core.contract_validator import validate_plan_contract
 
 # Texto que simula un PDF donde G5001 aparece como materia en el plan normal
 # (porque el PDF lo imprime en la tabla de materias) y luego como agrupador

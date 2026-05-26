@@ -1,6 +1,6 @@
 import unittest
 
-from core.parser.cleaner import recomponer_lineas_partidas
+from core.cleaner import recomponer_lineas_partidas
 
 
 class RecomponerLineasPartidasTests(unittest.TestCase):

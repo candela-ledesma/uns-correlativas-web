@@ -17,7 +17,7 @@ import json
 import unittest
 from pathlib import Path
 
-from core.parser.parser_plan import detectar_materias_generico
+from core.parser_plan import detectar_materias_generico
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 

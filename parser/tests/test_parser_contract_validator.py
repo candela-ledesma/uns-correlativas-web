@@ -1,6 +1,6 @@
 import unittest
 
-from core.parser.contract_validator import validate_plan_contract
+from core.contract_validator import validate_plan_contract
 
 
 class ParserContractValidatorTests(unittest.TestCase):
