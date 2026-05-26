@@ -45,10 +45,10 @@ const DEPARTAMENTOS_UNS = [
   "Química",
 ] as const;
 
-const RESOLUCION_OPTIONS: { value: ResolucionConflicto; label: string; desc: string; recommended?: boolean }[] = [
-  { value: "reemplazar",     label: "Reemplazar completamente", desc: "La versión nueva reemplaza todo el plan actual." },
+const RESOLUCION_OPTIONS: { value: ResolucionConflicto; label: string; desc: string; recommended?: boolean; disabled?: boolean }[] = [
+  { value: "reemplazar",     label: "Reemplazar completamente",  desc: "La versión nueva reemplaza todo el plan actual." },
   { value: "conservar",      label: "Conservar la actual",       desc: "Descartá la nueva versión. No se guarda nada." },
-  { value: "nueva_version",  label: "Guardar como nueva versión", desc: "Mantiene ambas versiones. La nueva queda como v2.", recommended: true },
+  { value: "nueva_version",  label: "Guardar como nueva versión", desc: "Próximamente. Por ahora usá Reemplazar.", disabled: true },
 ];
 
 export default function GuardarPlanDrawer({
@@ -271,10 +271,12 @@ export default function GuardarPlanDrawer({
                 <label
                   key={opt.value}
                   style={{
-                    display: "flex", alignItems: "flex-start", gap: 10, cursor: "pointer",
+                    display: "flex", alignItems: "flex-start", gap: 10,
+                    cursor: opt.disabled ? "not-allowed" : "pointer",
                     padding: "10px 12px", borderRadius: 9,
                     border: `1px solid ${resolucion === opt.value ? ACCENT : GLASS.border}`,
-                    background: resolucion === opt.value ? "rgba(157,78,221,0.1)" : GLASS.faint,
+                    background: opt.disabled ? "transparent" : resolucion === opt.value ? "rgba(157,78,221,0.1)" : GLASS.faint,
+                    opacity: opt.disabled ? 0.4 : 1,
                     transition: "all 0.15s",
                   }}
                 >
@@ -283,7 +285,8 @@ export default function GuardarPlanDrawer({
                     name="resolucion"
                     value={opt.value}
                     checked={resolucion === opt.value}
-                    onChange={() => setResolucion(opt.value)}
+                    onChange={() => { if (!opt.disabled) setResolucion(opt.value); }}
+                    disabled={opt.disabled}
                     style={{ accentColor: ACCENT, marginTop: 2, flexShrink: 0 }}
                   />
                   <div style={{ flex: 1 }}>

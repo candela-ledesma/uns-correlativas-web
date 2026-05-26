@@ -6,39 +6,29 @@
 
 ## Normalización BD — unificar fuentes de carreras
 
-- `alta` [ ] **Fusionar `carreras.ts` + `CarreraConfig` (DB) + `PlanVersion` en dos tablas `Carrera` y `CarreraVersion`**
+- `alta` [x] **Fusionar `carreras.ts` + `CarreraConfig` (DB) + `PlanVersion` en dos tablas `Carrera` y `CarreraVersion`** — completado. Ver `web/prisma/PLAN_CARRERVERSION_MIGRATION.md`.
 
-  Hoy las carreras viven en dos mundos: las estáticas están hardcodeadas en `carreras.ts` (con versiones, jsonFile, label, hidden), y las dinámicas (agregadas desde el admin) están en `CarreraConfig` en DB. `PlanVersion` es un tercer nodo que existe solo para FK de integridad. Los tres representan el mismo concepto.
+- `media` [x] **Crear tabla `Departamento` y normalizar `CarreraConfig.departamento`** — completado. Migración `20260525_add_departamento`.
 
-  **Objetivo:** una sola fuente de verdad en DB. El admin puede crear carreras y versiones sin deploys. FKs reales desde `UserCareerEnrollment`, `UserRecentPlan` y todos los modelos de progreso.
+## Versionado de planes — panel admin
 
-  **Schema objetivo:**
-  ```
-  Carrera          { id (slug), nombre, descripcion, departamento?, defaultVersionId? → CarreraVersion.id, disponible }
-  CarreraVersion   { id (cuid), carreraId → Carrera.id, versionId, label, jsonFile, disponible, hidden }
-  ```
-  `CarreraVersion` reemplaza tanto `PlanVersion` como `CarreraVersionConfig` de `carreras.ts`.
-  `UserPlanProgress`, `ScheduleBlock`, `UserRecentPlan`, `ProgressShare` pasan a apuntar a `CarreraVersion.id`.
+- `media` [ ] **Implementar "Guardar como nueva versión" en el flujo de publicación**
 
-- `media` [ ] **Crear tabla `Departamento` y normalizar `CarreraConfig.departamento`**
+  Hoy la opción existe en la UI pero está deshabilitada: el backend siempre muta el `Plan` existente y hace upsert sobre `CarreraVersion v1`, sin crear una segunda versión real. Ver diagnóstico completo en `web/prisma/PLAN_CARRERVERSION_MIGRATION.md §7.3 punto 4`.
 
-  Hoy `departamento` es un `String?` libre en `CarreraConfig` — sin integridad referencial, propenso a inconsistencias de escritura. La relación es 1-a-muchos: un departamento tiene muchas carreras.
+  **Lo que debe hacer el flujo cuando `resolucion === "nueva_version"`:**
+  1. Dejar `CarreraVersion v1` y su `Plan` intactos
+  2. Crear un `Plan` nuevo con `estado: PUBLICADO`
+  3. Crear una `CarreraVersion` nueva con `versionId: "v2"` apuntando al nuevo `Plan`
+  4. Actualizar `Carrera.defaultVersionId` a `"v2"` para que la app sirva la nueva versión por defecto
+  5. El progreso de usuarios en `v1` no se rompe — siguen anclados a su `CarreraVersion`
 
-  **Schema objetivo:**
-  ```
-  Departamento  { id (slug, ej: "deie"), nombre }
-  CarreraConfig { ..., departamentoId? → Departamento.id }
-  ```
+  **Archivos a modificar:**
+  - `web/app/api/admin/planes/guardar/route.ts` — lógica de publicación
+  - `web/lib/db/carreraRepository.ts` — nueva función para crear versión sin upsert
+  - `web/components/admin/tabs/GuardarPlanDrawer.tsx` — rehabilitar la opción (quitar `disabled: true`)
 
-  Permite listar carreras por departamento de forma confiable y editar el nombre desde un solo lugar.
-  Si se implementa la normalización BD completa (tarea anterior), `departamentoId` va en `Carrera` en lugar de `CarreraConfig`.
-
-  **Impacto:**
-  - Migración de datos: seed inicial con todas las carreras de `carreras.ts`
-  - Eliminar `CarreraConfig` y `PlanVersion` del schema
-  - Eliminar `carreras.ts` y reemplazar sus consumidores por queries a DB
-  - `CarreraId` union type de TypeScript desaparece → pasa a ser `string`
-  - Panel admin: CRUD de carreras y versiones
+  **Prerequisito:** definir cómo se expone el selector de versiones en la web pública (`/planes/[carrera]`). Hoy `PlanViewer` recibe `versionOptions` pero la UX de selección no está diseñada para versiones coexistentes.
 
 ---
 
