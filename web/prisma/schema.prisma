@@ -56,7 +56,7 @@ model User {
   accounts      Account[]
   sessions      Session[]
   progresses    UserPlanProgress[]
-  careerEnrollments UserCareerEnrollment[]
+  carrerasSeleccionadas CarreraSeleccionada[]
   preference    UserPreference?
   recentPlans   UserRecentPlan[]
   activities    UserActivity[]
@@ -64,9 +64,10 @@ model User {
   scheduleBlocks ScheduleBlock[]
 }
 
-// Carreras en las que un usuario está inscripto. Una fila por (usuario, carrera).
+// Carreras que un usuario seleccionó para hacer seguimiento dentro de la app.
+// No representa inscripción académica formal — es la lista de carreras visibles en su panel.
 // careerId es el slug de la carrera (ej: "ingenieria_civil"). FK a Carrera.
-model UserCareerEnrollment {
+model CarreraSeleccionada {
   id        String   @id @default(cuid())
   userId    String
   careerId  String
@@ -298,11 +299,11 @@ model Carrera {
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
-  departamento   Departamento?          @relation(fields: [departamentoId], references: [id])
-  versions       CarreraVersion[]
-  enrollments    UserCareerEnrollment[]
-  recentPlans    UserRecentPlan[]
-  scheduleBlocks ScheduleBlock[]
+  departamento          Departamento?          @relation(fields: [departamentoId], references: [id])
+  versions              CarreraVersion[]
+  carrerasSeleccionadas CarreraSeleccionada[]
+  recentPlans           UserRecentPlan[]
+  scheduleBlocks        ScheduleBlock[]
 
   @@index([disponible])
   @@index([departamentoId])
