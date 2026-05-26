@@ -33,6 +33,13 @@ web/prisma/*.db
 web/prisma/*.db-journal
 web/prisma/prisma/*.db
 web/prisma/prisma/*.db-journal
+frontend/prisma/*.db
+frontend/prisma/*.db-journal
+frontend/prisma/prisma/*.db
+frontend/prisma/prisma/*.db-journal
+
+# Prisma ERD generated file
+frontend/prisma/ERD.svg
 
 # Playwright
 /test-results/
