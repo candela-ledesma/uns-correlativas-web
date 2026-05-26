@@ -28,10 +28,11 @@ async function registrarCarreraEnDB(
   slug: string,
   jsonFile: string,
   nombre: string,
+  planId: string,
   departamentoId?: string | null,
 ): Promise<void> {
   await upsertCarrera({ id: slug, nombre, departamentoId });
-  await upsertCarreraVersion({ carreraId: slug, versionId: "v1", jsonFile });
+  await upsertCarreraVersion({ carreraId: slug, versionId: "v1", jsonFile, planId });
 }
 
 export async function POST(request: Request) {
@@ -146,22 +147,25 @@ export async function POST(request: Request) {
       }).catch(() => {});
     }
 
+    let publishedPlanId: string;
     if (existing) {
-      await prisma.plan.update({
+      const updated = await prisma.plan.update({
         where: { id: existing.id },
         data: { planJson: planJsonStr, fuente: fuenteEnum, autorId: session.user.id },
       });
+      publishedPlanId = updated.id;
     } else {
-      await prisma.plan.create({
+      const created = await prisma.plan.create({
         data: { slug, estado: "PUBLICADO", fuente: fuenteEnum, planJson: planJsonStr, autorId: session.user.id },
       });
+      publishedPlanId = created.id;
     }
 
     // Borrar pendiente si existe
     await prisma.plan.deleteMany({ where: { slug, estado: "PENDIENTE" } }).catch(() => {});
 
-    // Registrar carrera si es nueva (independientemente de la fuente)
-    await registrarCarreraEnDB(slug, `${slug}.json`, plan.plan.carrera, departamentoId).catch(() => {});
+    // Registrar carrera si es nueva y vincular CarreraVersion al Plan publicado
+    await registrarCarreraEnDB(slug, `${slug}.json`, plan.plan.carrera, publishedPlanId, departamentoId).catch(() => {});
 
     await createAuditEvent({
       actorUserId: session.user.id,

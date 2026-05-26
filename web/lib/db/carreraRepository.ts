@@ -81,6 +81,7 @@ export async function upsertCarreraVersion(data: {
   versionId: string;
   label?: string;
   jsonFile: string;
+  planId?: string | null;
   disponible?: boolean;
 }): Promise<CarreraVersion> {
   return prisma.carreraVersion.upsert({
@@ -88,6 +89,7 @@ export async function upsertCarreraVersion(data: {
     update: {
       jsonFile: data.jsonFile,
       ...(data.label != null ? { label: data.label } : {}),
+      ...(data.planId !== undefined ? { planId: data.planId } : {}),
       ...(data.disponible != null ? { disponible: data.disponible } : {}),
     },
     create: {
@@ -95,6 +97,7 @@ export async function upsertCarreraVersion(data: {
       versionId: data.versionId,
       label: data.label ?? "Plan actual",
       jsonFile: data.jsonFile,
+      planId: data.planId ?? null,
       disponible: data.disponible ?? true,
     },
   });

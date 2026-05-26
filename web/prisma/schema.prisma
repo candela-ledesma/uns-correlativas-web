@@ -269,6 +269,8 @@ model Plan {
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
 
+  carreraVersions CarreraVersion[]
+
   @@unique([slug, fuente, estado])
   @@index([slug, estado])
   @@index([slug, esBackup])
@@ -330,11 +332,13 @@ model CarreraVersion {
   versionId  String   // ej: "v1", "v2"
   label      String   // ej: "Plan actual"
   jsonFile   String   // ej: "ingenieria_civil.json"
+  planId     String?  // FK al Plan publicado que respalda esta versión (nullable: versiones previas a la migración)
   disponible Boolean  @default(true)
   hidden     Boolean  @default(false)
   createdAt  DateTime @default(now())
 
   carrera        Carrera            @relation(fields: [carreraId], references: [id], onDelete: Cascade)
+  plan           Plan?              @relation(fields: [planId], references: [id], onDelete: SetNull)
   progresses     UserPlanProgress[]
   recentPlans    UserRecentPlan[]
   scheduleBlocks ScheduleBlock[]
@@ -342,6 +346,7 @@ model CarreraVersion {
 
   @@unique([carreraId, versionId])
   @@index([carreraId])
+  @@index([planId])
 }
 
 
