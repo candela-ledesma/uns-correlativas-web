@@ -277,19 +277,6 @@ model Plan {
 }
 
 
-// DEPRECATED — se mantiene durante la migración. Se eliminará una vez migrados los datos.
-// Era el ancla de FK para UserPlanProgress, UserRecentPlan, ScheduleBlock y ProgressShare.
-// Reemplazada por CarreraVersion.
-model PlanVersion {
-  id        String   @id @default(cuid())
-  planSlug  String
-  versionId String
-  createdAt DateTime @default(now())
-
-  @@unique([planSlug, versionId])
-  @@index([planSlug])
-}
-
 model Departamento {
   id     String   @id // slug, ej: "ingenieria"
   nombre String
