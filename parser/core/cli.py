@@ -9,7 +9,6 @@ from .cleaner import limpiar_texto
 from .contract_validator import format_contract_issues, validate_plan_contract
 from .extractor import extraer_texto
 from .parser_plan import detectar_materias_generico
-from .orientation_grouper import agrupar_materias_por_orientacion
 
 
 def parsear_plan_pdf(pdf_path: Path) -> dict[str, Any]:
@@ -18,8 +17,7 @@ def parsear_plan_pdf(pdf_path: Path) -> dict[str, Any]:
 
     texto = extraer_texto(pdf_path)
     texto_limpio = limpiar_texto(texto)
-    resultado_parser = detectar_materias_generico(texto_limpio)
-    return agrupar_materias_por_orientacion(resultado_parser)
+    return detectar_materias_generico(texto_limpio)
 
 
 def guardar_json_plan(
