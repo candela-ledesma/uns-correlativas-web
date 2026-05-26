@@ -16,7 +16,7 @@ El contenido de un plan de estudios existe simultáneamente en tres lugares:
 |---|---|---|
 | `Plan.planJson` | BD (tabla `Plan`) | Durante el ciclo editorial (borrador → publicado) |
 | `CarreraVersion.jsonFile` | BD (string con nombre de archivo) | Referencia al archivo en disco |
-| Archivo físico en disco | `web/data/local/*.json` | En producción — lo que la app sirve al usuario |
+| Archivo físico en disco | `frontend/data/local/*.json` | En producción — lo que la app sirve al usuario |
 
 El flujo de publicación escribe el JSON en disco y crea la `CarreraVersion`. Después de publicar, `Plan.planJson` queda como registro histórico sin rol activo: la app lee el archivo, no la BD.
 
@@ -107,7 +107,7 @@ loadPlanData(carreraId, versionId)
 **Objetivo:** poblar la BD con todas las carreras que hoy solo existen en el array estático.
 
 **Archivos:**
-- `web/prisma/seed.ts` — agregar bloque que lea `CARRERAS` y haga upsert en `Carrera` + `CarreraVersion`
+- `frontend/prisma/seed.ts` — agregar bloque que lea `CARRERAS` y haga upsert en `Carrera` + `CarreraVersion`
 
 **Lógica del seed:**
 - Para cada entrada en `CARRERAS`: upsert en `Carrera` (id, nombre, descripcion, departamentoId, disponible)
@@ -144,7 +144,7 @@ model Carrera {
 
 **Objetivo:** eliminar la dependencia de `getCarreraById()` (que lee `carreras.ts`).
 
-**Archivo:** `web/lib/data/planDataLoader.ts`
+**Archivo:** `frontend/lib/data/planDataLoader.ts`
 
 **Cambio central:** reemplazar el bloque que llama a `getCarreraById()` por una query a Prisma:
 
@@ -184,7 +184,7 @@ const carreras = await prisma.carrera.findMany({
 
 **Objetivo:** al publicar una carrera nueva, registrarla en `Carrera` + `CarreraVersion` en lugar de `CarreraConfig`.
 
-**Archivo:** `web/app/api/admin/planes/guardar/route.ts`
+**Archivo:** `frontend/app/api/admin/planes/guardar/route.ts`
 
 **Función a reemplazar:** `registrarCarreraEnDB()` — actualmente hace upsert en `carreraConfig`. Cambiar por upsert en `Carrera` + `CarreraVersion`.
 
@@ -195,7 +195,7 @@ const carreras = await prisma.carrera.findMany({
 **Prerequisito:** Pasos A–E completos y verificados en staging.
 
 **Acciones:**
-1. Confirmar que no hay referencias a `prisma.carreraConfig` en el código (`grep -r "carreraConfig" web/`)
+1. Confirmar que no hay referencias a `prisma.carreraConfig` en el código (`grep -r "carreraConfig" frontend/`)
 2. Eliminar el modelo `CarreraConfig` del schema
 3. Generar migración: `prisma migrate dev --name remove-carrera-config`
 4. Eliminar `carreras.ts` o moverlo a `scripts/` como referencia histórica del seed
