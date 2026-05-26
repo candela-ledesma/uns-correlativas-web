@@ -5,10 +5,10 @@
     "vitest": "^4.1.2"
   },
   "scripts": {
-    "build": "npm install --prefix web && npm run build --prefix web",
-    "dev": "npm run dev --prefix web",
-    "start": "npm run start --prefix web",
-    "test:e2e": "npm run test:e2e --prefix web",
-    "check:prod": "npm run check:prod --prefix web"
+    "build": "npm install --prefix frontend && npm run build --prefix frontend",
+    "dev": "npm run dev --prefix frontend",
+    "start": "npm run start --prefix frontend",
+    "test:e2e": "npm run test:e2e --prefix frontend",
+    "check:prod": "npm run check:prod --prefix frontend"
   }
 }
