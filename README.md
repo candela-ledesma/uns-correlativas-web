@@ -18,8 +18,8 @@ flowchart LR
   I -->|GET /api/admin/planes/parsear| VP[Vercel: obtiene prompt activo]
   VP -->|POST /parse-gemini directo| B2[Render: FastAPI + Gemini]
   I -->|POST /api/admin/planes/parsear-local SSE| B1[Render: Parser Python]
-  B2 --> BD[(Neon: PlanBorrador fuente=gemini)]
-  B1 --> BD2[(Neon: PlanBorrador fuente=parser)]
+  B2 --> BD[(Neon: Plan estado=BORRADOR fuente=GEMINI)]
+  B1 --> BD2[(Neon: Plan estado=BORRADOR fuente=PARSER)]
   BD --> D[Validador planValidation.ts]
   BD2 --> D
   D --> E[App Next.js - Vercel]
@@ -44,29 +44,25 @@ flowchart LR
 `-- web/
     |-- app/
     |   |-- api/admin/planes/
-    |   |   |-- parsear/      # Gemini: PDF → JSON + autoguarda en PlanBorrador
-    |   |   |-- parsear-local/# Parser Python (SSE) + autoguarda en PlanBorrador
-    |   |   |-- guardar/      # Borrador → PlanBorrador / Publicar → PlanPublicado
-    |   |   |-- existe/       # Chequea borradores en PlanBorrador por fuente
-    |   |   |-- validar/      # Compara con ground truth via comparar_json.py
-    |   |   `-- enviar-revision/ # Envio a revisión (MODERATOR → ADMIN)
-    |   `-- admin/revisiones/ # Vista de revisión de planes pendientes
+    |   |   |-- parsear/         # Gemini: PDF → JSON + autoguarda en Plan (BORRADOR)
+    |   |   |-- parsear-local/   # Parser Python (SSE) + autoguarda en Plan (BORRADOR)
+    |   |   |-- guardar/         # Plan BORRADOR → PUBLICADO + crea/actualiza CarreraVersion
+    |   |   |-- existe/          # Chequea borradores en Plan por fuente
+    |   |   |-- validar/         # Compara con ground truth via comparar_json.py
+    |   |   `-- enviar-revision/ # Envio a revision (MODERATOR → ADMIN)
+    |   `-- admin/               # Panel de administracion
     |-- components/
     |   |-- admin/
     |   |   |-- tabs/CargarPlanTab.tsx    # Flujo subida PDF + comparacion
     |   |   |-- tabs/DiffExportDrawer.tsx # Exportacion few-shot
     |   |   `-- tabs/ConfigTab.tsx        # Prompt, version, modelo
     |   `-- materias/MateriaCard.tsx      # Muestra requisito_especial[]
-    |-- data/
-    |   |-- local/        # JSONs del parser Python (backup en disco; fuente de verdad: Neon)
-    |   `-- gemini/       # JSONs de Gemini (backup en disco; fuente de verdad: Neon)
-    |-- scripts/
-    |   `-- migrate-jsons-to-db.ts  # Migracion inicial: data/local + data/gemini → Neon
     `-- lib/
-        |-- ai/prompt.ts  # DEFAULT_SYSTEM_PROMPT + PROMPT_VERSION (v33)
+        |-- ai/prompt.ts          # DEFAULT_SYSTEM_PROMPT + PROMPT_VERSION (v33)
         |-- plan/
         |   |-- evaluarCorrelativas.ts
         |   `-- requisitoEspecial.ts  # Tipos y evaluacion de requisito_especial[]
+        |-- db/carreraRepository.ts   # CRUD de Carrera y CarreraVersion
         `-- data/planValidation.ts    # Parseo y validacion del schema PlanData
 ```
 
@@ -83,14 +79,13 @@ Usuario sube PDF en /admin (Vercel)
         ▼
 [2] POST <RENDER_URL>/parse-gemini  (browser → Render directo, sin pasar por Vercel)
     1. Recibe PDF + model + system_prompt
-    2. Llama a Gemini con visión nativa (temperature=0)
+    2. Llama a Gemini con vision nativa (temperature=0)
     3. extraerJSON() → parsea la respuesta como JSON
     4. Devuelve { type: "done", data, model, usage }
         │
         ▼ (Vercel procesa respuesta)
-    extraerJSON() → parsea respuesta texto a JSON
     Anota _llm_prompt_version y _llm_mode
-    Autoguarda en Neon: PlanBorrador(fuente="gemini")
+    Autoguarda en Neon: Plan(estado=BORRADOR, fuente=GEMINI)
 
         │  (en paralelo, opcional)
         ▼
@@ -98,20 +93,22 @@ Usuario sube PDF en /admin (Vercel)
     1. Render guarda PDF en /tmp
     2. Ejecuta: python3 -m core.parser <pdf>
     3. Devuelve JSON via SSE
-    Autoguarda en Neon: PlanBorrador(fuente="parser")
+    Autoguarda en Neon: Plan(estado=BORRADOR, fuente=PARSER)
         │
         ▼
 [3] Panel muestra ambos side-by-side con diff
         │
-        ├── "Guardar borrador" → PlanBorrador (no publica)
+        ├── "Guardar borrador" → Plan permanece en estado BORRADOR
         │
         ▼
-[4] "Usar Gemini / Usar parser local" → /api/admin/planes/guardar
-    Persiste en Neon: PlanPublicado (publicado=true)
+[4] "Publicar" → /api/admin/planes/guardar
+    - Plan pasa a estado=PUBLICADO
+    - Crea o actualiza Carrera + CarreraVersion en Neon
+    - CarreraVersion.planId apunta al Plan publicado
         │
         ▼
 [5] (Opcional) /api/admin/planes/enviar-revision
-    MODERATOR envía para aprobación → ADMIN revisa en /admin/revisiones/[slug]
+    MODERATOR envia para aprobacion → ADMIN revisa y publica
 ```
 
 ## 5) Schema JSON (PlanData)
@@ -139,22 +136,21 @@ Usuario sube PDF en /admin (Vercel)
 }
 ```
 
-`requisito_especial` es un **array** (puede tener 0, 1 o más entradas por materia). Tipos soportados: `anio_aprobado`, `cuatrimestre_cursado`, `minimo_materias_aprobadas`, `minimo_examenes_finales`, `cgcb_aprobado`, `prueba_idioma`, `todas_materias_aprobadas`.
+`requisito_especial` es un **array** (puede tener 0, 1 o mas entradas por materia). Tipos soportados: `anio_aprobado`, `cuatrimestre_cursado`, `minimo_materias_aprobadas`, `minimo_examenes_finales`, `cgcb_aprobado`, `prueba_idioma`, `todas_materias_aprobadas`.
 
 ## 6) Procesamiento del output de Gemini en servidor
 
-El servidor aplica únicamente parseo/validación estructural y metadata:
+El servidor aplica unicamente parseo/validacion estructural y metadata:
 
 1. **`extraerJSON()`** — parsea el texto como JSON tolerando bloques markdown.
-2. **Metadata de ejecución** — agrega `_llm_prompt_version` y `_llm_mode`.
+2. **Metadata de ejecucion** — agrega `_llm_prompt_version` y `_llm_mode`.
 
 ## 7) Prompt Gemini
 
-- Versión actual: **v33** — `web/lib/ai/prompt.ts`
-- La versión siempre se lee del código fuente (no del JSON guardado).
-- El prompt activo se puede editar desde `/admin` → tab Configuración y se persiste en Neon (tabla `AdminConfig`).
-- El panel admin incluye la herramienta **"Exportar diff como few-shot"** que genera bloques de corrección para mejorar el prompt manualmente.
-- **v33+**: limpieza del pipeline para visión nativa, reglas de schema/grupos consolidadas y eliminación de fixups server-side sobre IDs.
+- Version actual: **v33** — `web/lib/ai/prompt.ts`
+- El prompt activo se puede editar desde `/admin` → tab Configuracion y se persiste en Neon (tabla `AdminConfig`). Si no hay override en DB, se usa la constante del codigo.
+- El panel admin incluye la herramienta **"Exportar diff como few-shot"** que genera bloques de correccion para mejorar el prompt manualmente.
+- **v33+**: limpieza del pipeline para vision nativa, reglas de schema/grupos consolidadas y eliminacion de fixups server-side sobre IDs.
 
 ### Scores Gemini v32 por carrera
 
@@ -173,15 +169,15 @@ El servidor aplica únicamente parseo/validación estructural y metadata:
 | Ingenieria Electronica | 97.8/100 |
 | Ingenieria Civil | 23.0/100 (fallo estructural: orientaciones multiples) |
 
-### Limitación conocida del prompting (boundary cross-page)
+### Limitacion conocida del prompting (boundary cross-page)
 
-El PDF de Farmacia termina la página con `1142 FISIOPATOLOGIA HUMANA ... 1149 Cursada Cursada` y la página siguiente abre con `1376 Aprobada Aprobada` (correlativa de continuación de 1142). Gemini interpreta el encabezado de tabla repetido al inicio de la nueva página como cierre de materia y asigna `1376` a la materia siguiente (1228). El mismo patrón ocurre en Abogacía (9100/9113). Se sigue monitoreando con `scripts/comparar_json.py` y ajustes de prompting. Ver `issues/farmacia.md` e `issues/abogacia.md`.
+El PDF de Farmacia termina la pagina con `1142 FISIOPATOLOGIA HUMANA ... 1149 Cursada Cursada` y la pagina siguiente abre con `1376 Aprobada Aprobada` (correlativa de continuacion de 1142). Gemini interpreta el encabezado de tabla repetido al inicio de la nueva pagina como cierre de materia y asigna `1376` a la materia siguiente (1228). El mismo patron ocurre en Abogacia (9100/9113). Se sigue monitoreando con `scripts/comparar_json.py` y ajustes de prompting. Ver `issues/farmacia.md` e `issues/abogacia.md`.
 
 ## 8) Requisitos
 
 - Node.js 20+
 - Python 3.11+
-- PostgreSQL
+- PostgreSQL (Neon en produccion)
 
 ## 9) Setup rapido
 
@@ -196,13 +192,13 @@ pip install -r requirements.txt
 Generar JSON desde PDF:
 
 ```bash
-python3 -m core.parser pdf/arquitectura.pdf web/data/local/arquitectura.json
+python3 -m core.parser pdf/arquitectura.pdf output.json
 ```
 
-Comparar dos JSONs:
+Comparar dos JSONs (score /100):
 
 ```bash
-python3 -m scripts.comparar_json web/data/local/carrera.json web/data/gemini/carrera.json
+python3 -m scripts.comparar_json ref.json candidato.json
 ```
 
 ### Web (Next.js)
@@ -211,6 +207,8 @@ python3 -m scripts.comparar_json web/data/local/carrera.json web/data/gemini/car
 cd web
 npm install
 cp .env.example .env.local
+# completar variables en .env.local (ver web/README.md)
+npm run db:prepare   # migraciones + seed
 npm run dev
 ```
 
@@ -220,10 +218,9 @@ Variables de entorno clave:
 
 | Variable | Descripcion |
 |---|---|
-| `DATABASE_URL` | PostgreSQL (Neon) |
+| `DATABASE_URL` | PostgreSQL pooled (Neon/Supabase: usar pgBouncer) |
+| `DIRECT_URL` | PostgreSQL directo (requerido por Prisma para migraciones) |
 | `AUTH_SECRET` | NextAuth secret |
-| `RESEND_API_KEY` | Notificaciones email al admin |
-| `ADMIN_NOTIFY_EMAIL` | Email del admin para notificaciones |
 | `PARSER_API_URL` | URL interna de Render (server-side, para parsear-local) |
 | `NEXT_PUBLIC_PARSER_API_URL` | URL publica de Render (client-side, para Gemini directo) |
 
@@ -232,6 +229,8 @@ Variables de entorno clave:
 | Variable | Descripcion |
 |---|---|
 | `GEMINI_API_KEY` | Requerida para parsear con Gemini |
+
+Ver `web/README.md` para la lista completa de variables y opciones de configuracion.
 
 ## 10) Testing
 
@@ -264,18 +263,16 @@ cd web && npm run validate:data
 | Endpoint | Descripcion |
 |---|---|
 | `GET /api/admin/planes/parsear` | Devuelve prompt activo + version (ADMIN/MODERATOR) |
-| `POST /api/admin/planes/parsear` | Gemini: JSON directo (usado como fallback sin Render) |
-| `POST /api/admin/planes/parsear-local` | Parser Python (SSE stream via Render) |
-| `POST /api/admin/planes/guardar` | Persiste JSON en Neon |
-| `GET /api/admin/planes/existe` | Chequea borrador existente |
-| `POST /api/admin/planes/validar` | Compara con ground truth |
-| `POST /api/admin/planes/enviar-revision` | Envio a revision |
+| `POST /api/admin/planes/parsear-local` | Parser Python via Render (SSE stream) |
+| `POST /api/admin/planes/guardar` | Publica Plan en Neon y vincula CarreraVersion |
+| `GET /api/admin/planes/existe` | Chequea borrador existente por fuente |
+| `POST /api/admin/planes/validar` | Compara con ground truth via comparar_json.py |
+| `POST /api/admin/planes/enviar-revision` | Envio a revision (MODERATOR) |
 | `GET /api/admin/config` | Lee prompt activo + version (solo ADMIN) |
-| `POST /api/admin/config` | Guarda prompt customizado |
-| `GET /api/materias/[carrera]` | Materias de una carrera |
-| `GET|PUT /api/progreso` | Progreso del usuario |
+| `POST /api/admin/config` | Guarda prompt customizado en AdminConfig |
+| `GET\|PUT /api/progreso` | Progreso del usuario |
 | `POST /api/progreso/share` | Genera token de snapshot compartible |
-| `GET /api/progreso/share/[token]` | Devuelve snapshot para vista pública |
+| `GET /api/progreso/share/[token]` | Devuelve snapshot para vista publica |
 | `PATCH /api/admin/planes/publicados/[slug]` | Actualiza nombre/departamento/disponible |
 | `PUT /api/admin/planes/publicados/[slug]` | Reemplaza JSON del plan publicado |
 
@@ -300,7 +297,7 @@ Cuando el PDF tiene texto en prosa como condicion adicional (no expresable como 
 
 ### IDs de idioma (I####)
 
-Los IDs de grupos de idioma empiezan con la letra `I` (no el dígito `1`). El prompt exige preservarlos exactamente y el output se evalúa contra ground truth.
+Los IDs de grupos de idioma empiezan con la letra `I` (no el digito `1`). El prompt exige preservarlos exactamente y el output se evalua contra ground truth.
 
 ### Roles
 
@@ -317,26 +314,31 @@ Los IDs de grupos de idioma empiezan con la letra `I` (no el dígito `1`). El pr
 3. Comparar side-by-side, validar, guardar borrador.
 4. Publicar (ADMIN) o enviar a revision (MODERATOR).
 
-### Via CLI
+Al publicar, el JSON queda en `Plan.planJson` con `estado=PUBLICADO` y se crea o actualiza la `CarreraVersion` correspondiente. La app sirve el contenido directamente desde la BD.
+
+### Via CLI (solo para generar/comparar JSONs localmente)
 
 ```bash
-python3 -m core.parser pdf/carrera.pdf web/data/local/carrera.json
-cd web && npm run validate:data
+python3 -m core.parser pdf/carrera.pdf output.json
+python3 -m scripts.comparar_json web/data/local/carrera.json output.json
 ```
+
+Para publicar, usar el panel admin.
 
 ## 14) Documentacion complementaria
 
 - Contrato parser: `core/parser/contract_validator.py`
 - Tipos de datos web: `web/app/types/plan.ts`
 - Validacion schema: `web/lib/data/planValidation.ts`
-- Schema DB: `web/prisma/schema.prisma`
+- Schema BD: `web/prisma/schema.prisma`
+- Decisiones de normalizacion BD: `web/prisma/NORMALIZATION.md`, `web/prisma/PLAN_CARRERVERSION_MIGRATION.md`
 - Issues por carrera: `issues/*.md`
 
 ## 15) Features de la web
 
 - **Vista "Plan"**: materias por año/cuatrimestre, click para marcar cursada/aprobada, filtros, buscador, mapa de correlativas, planificador horario semanal, vista Kanban.
-- **Progreso sincronizado**: almacenado en `localStorage` + Neon (`UserPlanProgress`) con LWW sync al iniciar sesión.
-- **Compartir progreso**: botón en el header del plan genera un link `/planes/[carrera]/share/[token]` con vista de solo lectura del progreso del usuario. Persiste en tabla `ProgressShare`.
-- **Editor estructurado de planes**: desde Planes en el panel admin, formulario con campos de metadata + tabla editable de materias con correlativas. Toggle formulario ↔ JSON crudo sincronizado.
-- **Simulación de rol**: el ADMIN puede ver la app como USER o MODERADOR temporalmente desde el topbar del panel admin (el JWT guarda `effectiveRole`, el rol real en DB no cambia).
+- **Progreso sincronizado**: almacenado en `localStorage` + Neon (`UserPlanProgress`) con LWW sync al iniciar sesion.
+- **Compartir progreso**: boton en el header del plan genera un link `/planes/[carrera]/share/[token]` con vista de solo lectura. Persiste en tabla `ProgressShare`.
+- **Editor estructurado de planes**: desde el panel admin, formulario con campos de metadata + tabla editable de materias con correlativas. Toggle formulario ↔ JSON crudo sincronizado.
+- **Simulacion de rol**: el ADMIN puede ver la app como USER o MODERADOR temporalmente desde el topbar del panel admin (el JWT guarda `effectiveRole`, el rol real en DB no cambia).
 - **Google Calendar**: exporta el horario semanal del planificador como eventos recurrentes a Google Calendar via OAuth.
