@@ -20,6 +20,7 @@ enum PlanEstado {
 enum PlanFuente {
   PARSER  // generado por el parser local Python
   GEMINI  // generado por Gemini con visión nativa
+  MERGED  // resultado de mergear PARSER y GEMINI manualmente en el panel admin
 }
 
 // Rol de un usuario en el sistema. Controla acceso a rutas /admin y acciones de moderación.
@@ -343,20 +344,6 @@ model CarreraVersion {
   @@index([carreraId])
 }
 
-// DEPRECATED — se mantiene durante la migración. Se eliminará una vez migrados los datos.
-// Era la tabla de carreras dinámicas (no hardcodeadas). Reemplazada por Carrera.
-model CarreraConfig {
-  id           String   @id // slug de la carrera, ej: "ingenieria_civil"
-  nombre       String
-  descripcion  String   @default("Plan de estudios y correlativas.")
-  departamento String?
-  jsonFile     String
-  disponible   Boolean  @default(true)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-
-  @@index([disponible])
-}
 
 // Log de auditoría append-only. Se inserta un registro por cada acción administrativa
 // relevante (publicar plan, cambiar rol, editar config, etc.). Nunca se modifica ni elimina.
