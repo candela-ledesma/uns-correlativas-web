@@ -70,3 +70,6 @@ pdf/
 # Google Cloud SDK (not used in this project)
 google-cloud-sdk/
 google-cloud-cli-*.tar.gz
+
+# Tesis (borrador personal)
+tesis.md
