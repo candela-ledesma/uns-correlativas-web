@@ -17,10 +17,12 @@ type PlanPublicado = {
   savedAt: string | null;
 };
 
+type Departamento = { id: string; nombre: string };
+
 type EditorState =
   | { type: "idle" }
   | { type: "loading" }
-  | { type: "open"; slug: string; nombre: string; departamento: string; originalJson: string }
+  | { type: "open"; slug: string; nombre: string; departamentoId: string; originalJson: string }
   | { type: "saving" };
 
 function tiempoRelativo(iso: string): string {
@@ -45,6 +47,7 @@ function SeccionLabel({ children }: { children: React.ReactNode }) {
 
 export default function PlanesTab({ onDirtyChange }: { onDirtyChange?: (dirty: boolean) => void }) {
   const [planes, setPlanes] = useState<PlanPublicado[]>([]);
+  const [departamentos, setDepartamentos] = useState<Departamento[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [toggling, setToggling] = useState<string | null>(null);
@@ -59,9 +62,14 @@ export default function PlanesTab({ onDirtyChange }: { onDirtyChange?: (dirty: b
   function cargar() {
     setLoading(true);
     setError(null);
-    fetch("/api/admin/planes/publicados")
-      .then(r => r.json())
-      .then(d => setPlanes(d.planes ?? []))
+    Promise.all([
+      fetch("/api/admin/planes/publicados").then(r => r.json()),
+      fetch("/api/admin/departamentos").then(r => r.json()),
+    ])
+      .then(([planesData, deptos]) => {
+        setPlanes(planesData.planes ?? []);
+        setDepartamentos(Array.isArray(deptos) ? deptos : []);
+      })
       .catch(() => setError("No se pudieron cargar los planes"))
       .finally(() => setLoading(false));
   }
@@ -103,14 +111,16 @@ export default function PlanesTab({ onDirtyChange }: { onDirtyChange?: (dirty: b
 
   async function guardarDepto(slug: string) {
     setSavingDepto(slug);
-    const res = await fetch("/api/admin/departamentos", {
-      method: "PUT",
+    const departamentoId = deptoValue || null;
+    const res = await fetch(`/api/admin/planes/publicados/${slug}`, {
+      method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ slug, departamento: deptoValue }),
+      body: JSON.stringify({ departamentoId }),
     });
     const data = await res.json();
     if (data.ok) {
-      setPlanes(prev => prev.map(x => x.id === slug ? { ...x, departamento: data.departamento } : x));
+      const nombreDepto = departamentos.find(d => d.id === departamentoId)?.nombre ?? null;
+      setPlanes(prev => prev.map(x => x.id === slug ? { ...x, departamento: nombreDepto } : x));
       setMsg({ slug, ok: true, text: "Departamento actualizado." });
     } else {
       setMsg({ slug, ok: false, text: data.error ?? "Error al guardar departamento." });
@@ -128,21 +138,22 @@ export default function PlanesTab({ onDirtyChange }: { onDirtyChange?: (dirty: b
     }
     const raw = await res.text();
     const pretty = JSON.stringify(JSON.parse(raw), null, 2);
-    setEditor({ type: "open", slug: p.id, nombre: p.nombre, departamento: p.departamento ?? "", originalJson: pretty });
+    // Buscar el departamentoId a partir del nombre que devuelve la API
+    const departamentoId = departamentos.find(d => d.nombre === p.departamento)?.id ?? "";
+    setEditor({ type: "open", slug: p.id, nombre: p.nombre, departamentoId, originalJson: pretty });
   }
 
-  async function guardarEdicion(newJson: string, newNombre: string, newDepartamento: string) {
+  async function guardarEdicion(newJson: string, newNombre: string, newDepartamentoId: string) {
     if (editor.type !== "open") return;
     const { slug } = editor;
     setEditor({ type: "saving" });
 
-    // Guardar JSON y metadata en paralelo
     const [resJson, resMeta] = await Promise.all([
       fetch(`/api/admin/planes/publicados/${slug}`, { method: "PUT", body: newJson }),
       fetch(`/api/admin/planes/publicados/${slug}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ nombre: newNombre, departamento: newDepartamento }),
+        body: JSON.stringify({ nombre: newNombre, departamentoId: newDepartamentoId || null }),
       }),
     ]);
 
@@ -174,7 +185,8 @@ export default function PlanesTab({ onDirtyChange }: { onDirtyChange?: (dirty: b
       <PlanEditorModal
         slug={e.slug}
         nombre={e.nombre}
-        departamento={e.departamento}
+        departamentoId={e.departamentoId}
+        departamentos={departamentos}
         jsonStr={e.originalJson}
         saving={editor.type === "saving"}
         onGuardar={guardarEdicion}
@@ -224,7 +236,7 @@ export default function PlanesTab({ onDirtyChange }: { onDirtyChange?: (dirty: b
                 </div>
                 {editingDepto === p.id ? (
                   <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 4 }}>
-                    <input
+                    <select
                       autoFocus
                       value={deptoValue}
                       onChange={e => setDeptoValue(e.target.value)}
@@ -232,12 +244,16 @@ export default function PlanesTab({ onDirtyChange }: { onDirtyChange?: (dirty: b
                         if (e.key === "Enter") guardarDepto(p.id);
                         if (e.key === "Escape") setEditingDepto(null);
                       }}
-                      placeholder="Departamento"
                       style={{
                         ...INPUT, borderRadius: 6, padding: "3px 8px",
-                        fontSize: 11, width: 240,
+                        fontSize: 11, width: 240, cursor: "pointer",
                       }}
-                    />
+                    >
+                      <option value="">Sin departamento</option>
+                      {departamentos.map(d => (
+                        <option key={d.id} value={d.id}>{d.nombre}</option>
+                      ))}
+                    </select>
                     <button className="btn-press"
                       onClick={() => guardarDepto(p.id)}
                       disabled={savingDepto === p.id}
@@ -255,7 +271,7 @@ export default function PlanesTab({ onDirtyChange }: { onDirtyChange?: (dirty: b
                 ) : (
                   <div style={{ fontSize: 11, color: TEXT_SEC, marginTop: 3, display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap", minWidth: 0 }}>
                     <span
-                      onClick={() => { setEditingDepto(p.id); setDeptoValue(p.departamento ?? ""); setMsg(null); }}
+                      onClick={() => { setEditingDepto(p.id); setDeptoValue(departamentos.find(d => d.nombre === p.departamento)?.id ?? ""); setMsg(null); }}
                       title="Editar departamento"
                       style={{ cursor: "pointer", borderBottom: "1px dashed", borderColor: "rgba(168,155,201,0.4)", flexShrink: 0 }}
                     >

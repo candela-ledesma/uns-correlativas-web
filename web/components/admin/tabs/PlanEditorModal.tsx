@@ -35,13 +35,16 @@ type PlanJson = {
   [key: string]: unknown;
 };
 
+type Departamento = { id: string; nombre: string };
+
 type Props = {
   slug: string;
   nombre: string;
-  departamento: string;
+  departamentoId: string;
+  departamentos: Departamento[];
   jsonStr: string;
   saving: boolean;
-  onGuardar: (newJson: string, newNombre: string, newDepartamento: string) => void;
+  onGuardar: (newJson: string, newNombre: string, newDepartamentoId: string) => void;
   onCancelar: () => void;
   onDirtyChange?: (dirty: boolean) => void;
 };
@@ -281,7 +284,8 @@ function MateriaRow({
 export default function PlanEditorModal({
   slug,
   nombre: initialNombre,
-  departamento: initialDepartamento,
+  departamentoId: initialDepartamentoId,
+  departamentos,
   jsonStr,
   saving,
   onGuardar,
@@ -297,7 +301,7 @@ export default function PlanEditorModal({
   );
   const [materias, setMaterias] = useState<Materia[]>(initialPlan?.materias ?? []);
   const [nombre, setNombre] = useState(initialNombre);
-  const [departamento, setDepartamento] = useState(initialDepartamento);
+  const [departamentoId, setDepartamentoId] = useState(initialDepartamentoId);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [busqueda, setBusqueda] = useState("");
   const [confirmSalir, setConfirmSalir] = useState(false);
@@ -314,14 +318,14 @@ export default function PlanEditorModal({
 
   // Detectar cambios sin guardar
   const haycambios = useMemo(() => {
-    if (nombre !== initialNombre || departamento !== initialDepartamento) return true;
+    if (nombre !== initialNombre || departamentoId !== initialDepartamentoId) return true;
     const current = mode === "json" ? jsonText : buildJson();
     try {
       return JSON.stringify(JSON.parse(current)) !== JSON.stringify(JSON.parse(jsonStr));
     } catch {
       return true;
     }
-  }, [mode, jsonText, buildJson, jsonStr, nombre, initialNombre, departamento, initialDepartamento]);
+  }, [mode, jsonText, buildJson, jsonStr, nombre, initialNombre, departamentoId, initialDepartamentoId]);
 
   // Notificar al padre cuando cambia el estado dirty
   useEffect(() => { onDirtyChange?.(haycambios); }, [haycambios, onDirtyChange]);
@@ -359,7 +363,7 @@ export default function PlanEditorModal({
 
   function handleGuardar() {
     if (mode === "form") {
-      onGuardar(buildJson(), nombre, departamento);
+      onGuardar(buildJson(), nombre, departamentoId);
     } else {
       try {
         JSON.parse(jsonText);
@@ -367,7 +371,7 @@ export default function PlanEditorModal({
         setJsonError("JSON inválido — revisá la sintaxis antes de guardar.");
         return;
       }
-      onGuardar(jsonText, nombre, departamento);
+      onGuardar(jsonText, nombre, departamentoId);
     }
   }
 
@@ -471,12 +475,24 @@ export default function PlanEditorModal({
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
               <div>
-                <FieldLabel>Nombre (CarreraConfig)</FieldLabel>
+                <FieldLabel>Nombre</FieldLabel>
                 <TextInput value={nombre} onChange={setNombre} placeholder="Nombre visible" />
               </div>
               <div>
-                <FieldLabel>Departamento (CarreraConfig)</FieldLabel>
-                <TextInput value={departamento} onChange={setDepartamento} placeholder="Departamento" />
+                <FieldLabel>Departamento</FieldLabel>
+                <select
+                  value={departamentoId}
+                  onChange={e => setDepartamentoId(e.target.value)}
+                  style={{
+                    ...INPUT, borderRadius: 7, padding: "6px 10px",
+                    fontSize: 12, cursor: "pointer",
+                  }}
+                >
+                  <option value="">Sin departamento</option>
+                  {departamentos.map(d => (
+                    <option key={d.id} value={d.id}>{d.nombre}</option>
+                  ))}
+                </select>
               </div>
               <div>
                 <FieldLabel>Carrera (JSON › plan.carrera)</FieldLabel>
