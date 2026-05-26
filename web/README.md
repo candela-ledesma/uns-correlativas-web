@@ -1,237 +1,160 @@
-# Web
+# UNS Correlativas — Web
 
-Aplicacion Next.js para visualizar planes de estudio y correlativas.
+Aplicación Next.js que permite a los estudiantes de la Universidad Nacional del Sur visualizar planes de estudio, registrar su progreso académico y explorar las correlativas entre materias.
+
+## Qué hace el sistema
+
+- **Planes de estudio**: visualización de materias por año y cuatrimestre, con sus correlativas.
+- **Progreso personal**: cada usuario puede marcar materias como aprobadas o cursadas. El progreso se sincroniza con la base de datos y persiste entre sesiones.
+- **Mapa de correlativas**: grafo interactivo que muestra dependencias entre materias y calcula el mejor camino de cursado.
+- **Planificador semanal**: armado de horarios por cuatrimestre.
+- **Panel admin**: subida de PDFs, procesamiento con IA (Gemini), revisión y publicación de planes de estudio.
+
+## Stack
+
+- **Framework**: Next.js 16 (App Router)
+- **Base de datos**: PostgreSQL en [Neon](https://neon.tech), accedida con Prisma
+- **Autenticación**: NextAuth v4 (Google OAuth + login de desarrollo)
+- **IA**: Gemini (visión nativa sobre PDFs) para generar JSONs de planes de estudio
+- **Tests**: Vitest (unitarios) + Playwright (E2E)
+
+## Levantar en desarrollo
+
+### 1. Variables de entorno
+
+```bash
+cp .env.example .env.local
+```
+
+Completar en `.env.local`:
+
+| Variable | Descripción |
+|---|---|
+| `DATABASE_URL` | URL pooled de PostgreSQL (Neon/Supabase: usar pgBouncer) |
+| `DIRECT_URL` | URL directa de PostgreSQL (requerida por Prisma para migraciones) |
+| `AUTH_SECRET` | Secreto de NextAuth (cualquier string largo aleatorio) |
+| `AUTH_URL` | URL base de la app (`http://localhost:3000` en desarrollo) |
+| `ADMIN_SEED_EMAIL` | Email del primer usuario admin (se crea con `db:seed`) |
+| `GEMINI_API_KEY` | API key de Google AI Studio (requerida para el panel admin) |
+
+Variables opcionales para Google OAuth y login de desarrollo: ver `.env.example`.
+
+### 2. Base de datos
+
+```bash
+# Aplicar migraciones y crear tablas
+npm run db:prepare
+```
+
+`db:prepare` corre `prisma migrate deploy` + `db:seed`. El seed crea el usuario admin con el email de `ADMIN_SEED_EMAIL`.
+
+> **Nota sobre Prisma CLI**: el CLI toma variables desde `.env`, no desde `.env.local`. Usar `npm run prisma:migrate:env` para correr migraciones en desarrollo local respetando `.env.local`.
+
+### 3. Servidor de desarrollo
+
+```bash
+npm run dev
+```
+
+La app queda en `http://localhost:3000`.
 
 ## Comandos principales
 
 ```bash
-npm run dev
-npm run build
-npm run start
-npm run lint
-npm test -- --run
-npm run test:e2e
-npm run check:prod:env
-npm run check:prod
+npm run dev              # servidor de desarrollo
+npm run build            # build de producción (incluye prisma generate)
+npm run lint             # eslint
+npm test -- --run        # tests unitarios (Vitest)
+npm run test:e2e         # tests E2E (Playwright)
+npm run check:premerge   # validación completa antes de mergear
+npm run check:prod       # preflight de producción
 ```
 
 ## Estructura del proyecto
 
-```text
+```
 web/
-|-- app/                   # Next.js App Router — paginas y API routes
-|-- components/
-|   |-- plan/              # PlanViewer, PlanHeader, PlanFilters, PlanTabBar, OrientationSelector, PlanStatus
-|   |-- materias/          # MateriaCard, MateriasGrid, AnioSection, GrupoMaterias
-|   |-- kanban/            # KanbanPlan
-|   |-- mapa/              # MapaPlan, Toolbar, nodeTypes
-|   |   `-- panels/        # DetailPanel, EditorPanel, BestPathPanel
-|   |-- schedule/          # WeeklySchedule, ScheduleBlockForm
-|   |-- auth/              # LoginActions, HomeSessionPanel
-|   |-- profile/           # ProfileWorkspace, AdminRoleManager
-|   `-- onboarding/        # PlanOnboarding
-|-- hooks/                 # usePlanState, useSchedule, useOnboarding
-|-- lib/
-|   |-- plan/              # Logica de dominio: correlativas, estados, filtros, progreso
-|   |-- mapa/              # Logica pura del grafo: graphUtils, bestPath
-|   |-- data/              # Carga y validacion: carreras, planDataLoader, planValidation
-|   |-- db/                # DB layer: prisma, audit, progreso, userProductContext, actividad
-|   |-- auth/              # Permisos: roles, authz, authProviders
-|   |-- schedule/          # Validacion de horarios
-|   `-- ui/                # Tokens de diseno, cardStyles
-|-- data/                  # JSON de planes publicados
-`-- prisma/                # Schema y migraciones
+├── app/                        # Next.js App Router — páginas y API routes
+│   ├── api/
+│   │   ├── admin/planes/       # Ciclo editorial: parsear, guardar, publicar
+│   │   ├── progreso/           # Sync de progreso del usuario
+│   │   └── planificador/       # Horarios semanales
+│   └── planes/[carrera]/       # Página pública del plan de estudios
+├── components/
+│   ├── plan/                   # PlanViewer, PlanHeader, PlanFilters, PlanTabBar
+│   ├── materias/               # MateriaCard, MateriasGrid, AnioSection
+│   ├── kanban/                 # Vista kanban del plan
+│   ├── mapa/                   # Grafo de correlativas (React Flow)
+│   ├── schedule/               # Planificador semanal
+│   └── admin/                  # Panel de administración
+├── lib/
+│   ├── plan/                   # Lógica de dominio: correlativas, estados, filtros
+│   ├── mapa/                   # Lógica del grafo: graphUtils, bestPath
+│   ├── data/                   # Carga y validación de planes
+│   ├── db/                     # Capa de datos: prisma, audit, progreso, carreras
+│   └── auth/                   # Permisos: roles, authz
+├── hooks/                      # usePlanState, useSchedule, useOnboarding
+└── prisma/                     # Schema, migraciones y documentación de BD
 ```
 
-## Autenticacion y sincronizacion multiusuario
+## Arquitectura de datos
 
-Este incremento agrega:
+Los planes de estudio pasan por un ciclo editorial antes de ser visibles:
 
-- login por credenciales de desarrollo,
-- sesiones seguras con NextAuth,
-- sincronizacion de progreso por usuario en base de datos,
-- roles (`USER`, `MODERATOR`, `ADMIN`) en backend,
-- auditoria inmutable de cambios.
+```
+PDF → Gemini (visión nativa) → Plan.planJson (BORRADOR)
+                                      ↓
+                              revisión en panel admin
+                                      ↓
+                              Plan.planJson (PUBLICADO)
+                                      ↓
+                              CarreraVersion (ancla de progreso)
+```
 
-### Variables de entorno
+- `Plan` — tabla que contiene el JSON del plan durante todo el ciclo editorial. Una fila por estado (`BORRADOR`, `PENDIENTE`, `PUBLICADO`).
+- `Carrera` + `CarreraVersion` — metadatos de la carrera y sus versiones de plan. `CarreraVersion` es el ancla estable a la que se conecta el progreso del usuario.
+- `UserPlanProgress` — estado de cada materia por usuario, anclado a una `CarreraVersion` específica. Si se publica una nueva versión del plan, el progreso en la versión anterior no se pierde.
 
-Copiá `.env.example` a `.env.local` y completá:
+Documentación detallada del schema: `prisma/NORMALIZATION.md` y `prisma/PLAN_CARRERVERSION_MIGRATION.md`.
+
+## Roles y permisos
+
+| Rol | Capacidades |
+|---|---|
+| `USER` | Ver planes, registrar progreso propio, planificador |
+| `MODERATOR` | Todo lo de USER + enviar planes a revisión |
+| `ADMIN` | Todo lo de MODERATOR + panel admin, publicar planes, gestionar usuarios |
+
+## Panel admin
+
+Accesible en `/admin` para usuarios con rol `ADMIN`. Permite:
+
+1. Subir un PDF de plan de estudios
+2. Procesarlo con el parser local (Python) y/o con Gemini
+3. Comparar ambos resultados side-by-side
+4. Publicar el plan elegido
+
+El JSON publicado queda en `Plan.planJson` con `estado = PUBLICADO` y se crea o actualiza la `CarreraVersion` correspondiente.
+
+## Validación de datos
 
 ```bash
-DATABASE_URL="postgresql://usuario:password@host:5432/uns_correlativas?schema=public"
-DATABASE_URL_E2E="postgresql://usuario:password@host:5432/uns_correlativas_e2e?schema=public"
-NEXTAUTH_SECRET="un-secreto-largo"
-NEXTAUTH_URL="http://localhost:3000"
-AUTH_SECRET="un-secreto-largo"
-AUTH_URL="http://localhost:3000"
-
-ADMIN_SEED_EMAIL="admin@uns.local"
-
-# Solo desarrollo/tests
-AUTH_ENABLE_DEV_LOGIN="true"
-NEXT_PUBLIC_ENABLE_DEV_LOGIN="true"
-AUTH_ALLOW_DEV_ROLE_OVERRIDE="true"
-NEXT_PUBLIC_ALLOW_DEV_ROLE_OVERRIDE="true"
-AUTH_DEV_LOGIN_EMAIL_ALLOWLIST=""
+npm run validate:data            # reporte legible
+npm run validate:data:strict     # falla también en warnings
+npm run validate:data:json       # salida JSON para scripts
 ```
 
-Para produccion, usar como base `web/.env.production.example`.
+Severidades:
 
-En produccion, el login de desarrollo queda deshabilitado por defecto salvo habilitacion explicita.
+- `critical` — shape inválido, IDs duplicados, referencias rotas. Bloquea el build.
+- `medium` / `low` — inconsistencias toleradas. Bloquean solo en modo `--strict`.
 
-Para endurecer al maximo en produccion:
+## Deploy
 
-```bash
-AUTH_ENABLE_DEV_LOGIN="false"
-NEXT_PUBLIC_ENABLE_DEV_LOGIN="false"
-AUTH_ALLOW_DEV_ROLE_OVERRIDE="false"
-NEXT_PUBLIC_ALLOW_DEV_ROLE_OVERRIDE="false"
-```
-
-Si por soporte temporal necesitás habilitar dev-login en produccion, recomendacion minima:
-
-```bash
-AUTH_ENABLE_DEV_LOGIN="true"
-NEXT_PUBLIC_ENABLE_DEV_LOGIN="true"
-AUTH_ALLOW_DEV_ROLE_OVERRIDE="false"
-NEXT_PUBLIC_ALLOW_DEV_ROLE_OVERRIDE="false"
-AUTH_DEV_LOGIN_EMAIL_ALLOWLIST="admin@uns.local"
-```
-
-### Preflight de produccion
-
-Antes del deploy ejecutar:
+Antes de cada deploy:
 
 ```bash
 npm run check:prod
 ```
 
-Incluye:
-
-- validacion de variables criticas (`DATABASE_URL`, `NEXTAUTH_URL`, secretos, flags),
-- verificacion de provider de autenticacion habilitado,
-- validacion de datos (`validate:data`, bloquea solo issues criticos),
-- lint, tests unitarios y build.
-
-Si queres bloquear tambien warnings de datos, ejecutar adicionalmente:
-
-```bash
-npm run validate:data:strict
-```
-
-### Base de datos, migraciones y seed
-
-Importante: Prisma CLI toma variables desde `.env`, no desde `.env.local`.
-Creá `web/.env` con al menos `DATABASE_URL` para poder ejecutar migraciones y seed local.
-
-```bash
-npm run prisma:generate
-npm run prisma:deploy
-npm run db:seed
-```
-
-Para desarrollo local con historial de migraciones:
-
-```bash
-npm run prisma:migrate
-```
-
-### Matriz de permisos
-
-- `USER`:
-	- login/logout,
-	- ver planes,
-	- modificar solo su propio progreso,
-	- sincronizar progreso con DB.
-- `MODERATOR`:
-	- todo lo de `USER`,
-	- acceso a vista de moderacion,
-	- consulta de auditoria de eventos operativos (sin cambios de rol).
-- `ADMIN`:
-	- todo lo de `MODERATOR`,
-	- panel de administracion,
-	- cambio de roles (motivo obligatorio),
-	- acceso a auditoria global.
-
-### Auditoria
-
-Cada cambio relevante genera evento con:
-
-- actor (`actorUserId`, `actorEmail`, `actorRole`),
-- accion,
-- entidad (`entityType`, `entityId`),
-- `before` y `after`,
-- `reason`,
-- `createdAt`,
-- `authProvider`.
-
-Consulta por API:
-
-```bash
-GET /api/admin/auditoria?limit=50
-```
-
-### Sincronizacion y conflictos
-
-Estrategia: **last-write-wins por timestamp**.
-
-- En el primer login, se intenta migrar snapshot local a DB.
-- Si hay conflicto entre local y remoto, gana el snapshot con timestamp mas nuevo.
-- Se guarda una marca local para no repetir migracion inicial en cada sesión.
-
-## Validacion de datos
-
-El proyecto incluye un validador batch para todos los JSON de `data/` configurados en el manifest de carreras.
-
-### Scripts
-
-```bash
-# reporte human-readable
-npm run validate:data
-
-# reporte machine-readable por stdout
-npm run validate:data:json
-
-# modo estricto (warnings tambien fallan)
-npm run validate:data:strict
-
-# flujo sugerido para pre-merge local
-npm run check:premerge
-```
-
-### CLI avanzada
-
-```bash
-npm run validate:data -- --format=both --json-out=./tmp/data-validation.json
-npm run validate:data -- --strict --include-hidden
-npm run validate:data -- --data-dir=./data
-```
-
-Opciones disponibles:
-
-- `--strict`: trata warnings como fallo.
-- `--include-hidden`: incluye versiones ocultas del manifest.
-- `--include-unavailable`: incluye versiones marcadas no disponibles.
-- `--format=human|json|both`: formato de salida.
-- `--json-out=<ruta>`: escribe reporte JSON a archivo.
-- `--data-dir=<ruta>`: directorio de datos alternativo.
-
-## Politica de severidades
-
-- `critical` (bloqueante): shape invalido, IDs duplicados, referencias esenciales rotas.
-- `medium` (warning): inconsistencias toleradas de legado o referencias cruzadas no bloqueantes.
-- `low` (warning): calidad de datos no critica (por ejemplo carga horaria vacia).
-
-Regla de exit code:
-
-- Falla (`exit 1`) si hay issues `critical`.
-- En modo `--strict`, tambien falla si hay `medium` o `low`.
-
-## Reporte
-
-El reporte incluye:
-
-- resumen global por severidad
-- conteo por tipo de issue
-- detalle por carrera/version
-- estado final (`PASS` o `FAIL`)
+Verifica variables de entorno críticas, genera el cliente Prisma, corre lint, tests unitarios y build. Para producción, usar `.env.production.example` como base y asegurarse de que `AUTH_ENABLE_DEV_LOGIN=false`.
