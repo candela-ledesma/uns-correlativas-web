@@ -41,6 +41,12 @@ frontend/prisma/prisma/*.db-journal
 # Prisma ERD generated file
 frontend/prisma/ERD.svg
 
+# TypeScript build info
+frontend/tsconfig.tsbuildinfo
+
+# pytest cache (pertenece al parser, no al frontend)
+frontend/.pytest_cache/
+
 # Playwright
 /test-results/
 /playwright-report/
