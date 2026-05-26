@@ -2,8 +2,8 @@ import json
 import unittest
 from pathlib import Path
 
-from core.parser.cli import parsear_plan_pdf
-from core.parser.contract_validator import format_contract_issues, validate_plan_contract
+from core.cli import parsear_plan_pdf
+from core.contract_validator import format_contract_issues, validate_plan_contract
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 PDF_DIR = BASE_DIR / "pdf"

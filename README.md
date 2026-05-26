@@ -93,7 +93,7 @@ Usuario sube PDF en /admin (Vercel)
         ▼
    POST /api/admin/planes/parsear-local  (SSE, Vercel → Render)
     1. Render guarda PDF en /tmp
-    2. Ejecuta: python3 -m core.parser <pdf>
+    2. Ejecuta: python3 -m core <pdf>
     3. Devuelve JSON via SSE
     Autoguarda en Neon: Plan(estado=BORRADOR, fuente=PARSER)
         │
@@ -195,7 +195,7 @@ pip install -r requirements.txt
 Generar JSON desde PDF:
 
 ```bash
-python3 -m core.parser ../pdf/arquitectura.pdf output.json
+python3 -m core ../pdf/arquitectura.pdf output.json
 ```
 
 Comparar dos JSONs (score /100):
@@ -324,7 +324,7 @@ Al publicar, el JSON queda en `Plan.planJson` con `estado=PUBLICADO` y se crea o
 
 ```bash
 cd parser
-python3 -m core.parser ../pdf/carrera.pdf output.json
+python3 -m core ../pdf/carrera.pdf output.json
 python3 -m scripts.comparar_json ref.json output.json
 ```
 

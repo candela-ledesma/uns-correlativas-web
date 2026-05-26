@@ -4,7 +4,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from core.parser import cli
+from core import cli
 
 
 class ParserCliTests(unittest.TestCase):
@@ -25,7 +25,7 @@ class ParserCliTests(unittest.TestCase):
                 "agrupadores": [],
             }
 
-            with patch("core.parser.cli.parsear_plan_pdf", return_value=payload):
+            with patch("core.cli.parsear_plan_pdf", return_value=payload):
                 exit_code = cli.main([str(pdf_path), str(output_path)])
 
             self.assertEqual(exit_code, 0)

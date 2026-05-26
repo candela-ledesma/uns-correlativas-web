@@ -1,6 +1,6 @@
 import unittest
 
-from core.parser.correlativa_prosa import inferir_correlativa_en_prosa, inferir_requisito_especial
+from core.correlativa_prosa import inferir_correlativa_en_prosa, inferir_requisito_especial
 
 
 class InferirCorrelativaEnProsa(unittest.TestCase):

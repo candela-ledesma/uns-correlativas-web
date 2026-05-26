@@ -6,42 +6,17 @@
 
 ## Reorganización de directorios
 
-- `alta` [ ] **Reorganizar el repositorio en 3 directorios por sistema + tests/ raíz**
+- `alta` [x] **Reorganizar el repositorio en 3 directorios** — completado en rama `refactor/estructura-directorios`.
 
-  Hoy la raíz mezcla frontend, backend y parser sin separación. El objetivo es:
-
+  Estructura final:
   ```
   .
-  ├── frontend/    # web/ renombrado
-  ├── backend/     # parser_api/ + core/ + requirements.txt
-  ├── parser/      # scripts/ + pdf/ + tests/ (unitarios del parser)
-  └── tests/       # reservado para tests de integración cross-sistema (vacío por ahora, no vale la pena crearlo si esta vacio)
+  ├── frontend/    # Next.js completo (antes web/)
+  ├── parser/      # core/ + parser_api/ + scripts/ + tests/
+  └── docs/        # documentación interna e issues por carrera
   ```
 
-  **Pasos en orden:**
-
-  1. Crear rama `refactor/reorganizar-directorios`
-  2. `mv web frontend`
-  3. `mkdir backend && mv core parser_api requirements.txt backend/`
-  4. `mkdir parser && mv scripts pdf parser/ && mv tests parser/tests`
-  5. Crear `parser/conftest.py` que agrega `../backend` al `sys.path` (para que `from core.parser.X import Y` siga funcionando sin tocar los tests)
-  6. `mkdir tests && echo` + crear `tests/README.md` que explique que es el directorio reservado para integración cross-sistema
-  7. Actualizar `render.yaml`:
-     - `uns-correlativas-web`: `rootDir: web` → `rootDir: frontend`
-     - `uns-parser-api`: `rootDir: .` → `rootDir: backend`, `buildCommand: pip install -r parser_api/requirements.txt` → `pip install -r requirements.txt`
-  8. Actualizar `package.json` raíz: `--prefix web` → `--prefix frontend`
-  9. Eliminar `sys.path.insert(0, _root)` en `backend/parser_api/main.py` (ya no es necesario — `core/` queda en el mismo directorio)
-  10. Verificar: `pytest parser/tests/` pasa, `cd frontend && npm run build` compila
-  11. Actualizar READMEs (paths en ejemplos de comandos)
-
-  **Decisiones tomadas:**
-  - `core/` vive en `backend/` porque el consumidor de producción es dueño del módulo
-  - `conftest.py` con `sys.path` es más robusto que `PYTHONPATH` porque no depende del entorno del dev/CI
-  - `tests/` raíz se crea vacío con README para dejar clara la intención arquitectural
-
-  **Verificado antes de arrancar:**
-  - `tests/conftest.py` no existe → paso 4 es seguro, no hay nada que fusionar
-  - `render.yaml` tiene exactamente 2 servicios, ambos identificados y con sus cambios documentados arriba
+- `baja` [x] **Eliminar doble nesting `parser/core/parser/`** — completado. Archivos movidos a `parser/core/` directamente, imports actualizados, comando ahora es `python3 -m core`.
 
 ---
 
