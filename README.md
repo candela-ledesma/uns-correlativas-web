@@ -32,38 +32,40 @@ flowchart LR
 
 ```text
 .
-|-- core/
-|   `-- parser/           # Parser PDF: extraccion, correlativas, contrato
-|       |-- parser_plan.py
-|       |-- correlativa_prosa.py   # Deteccion de requisito_especial en prosa
-|       `-- contract_validator.py
-|-- scripts/
-|   `-- comparar_json.py  # Evalua similitud ref vs. candidato (score /100)
-|-- tests/                # Tests parser + contrato + fixtures PDF
-|-- pdf/                  # PDFs de planes (fixtures)
-`-- web/
-    |-- app/
-    |   |-- api/admin/planes/
-    |   |   |-- parsear/         # Gemini: PDF → JSON + autoguarda en Plan (BORRADOR)
-    |   |   |-- parsear-local/   # Parser Python (SSE) + autoguarda en Plan (BORRADOR)
-    |   |   |-- guardar/         # Plan BORRADOR → PUBLICADO + crea/actualiza CarreraVersion
-    |   |   |-- existe/          # Chequea borradores en Plan por fuente
-    |   |   |-- validar/         # Compara con ground truth via comparar_json.py
-    |   |   `-- enviar-revision/ # Envio a revision (MODERATOR → ADMIN)
-    |   `-- admin/               # Panel de administracion
-    |-- components/
-    |   |-- admin/
-    |   |   |-- tabs/CargarPlanTab.tsx    # Flujo subida PDF + comparacion
-    |   |   |-- tabs/DiffExportDrawer.tsx # Exportacion few-shot
-    |   |   `-- tabs/ConfigTab.tsx        # Prompt, version, modelo
-    |   `-- materias/MateriaCard.tsx      # Muestra requisito_especial[]
-    `-- lib/
-        |-- ai/prompt.ts          # DEFAULT_SYSTEM_PROMPT + PROMPT_VERSION (v33)
-        |-- plan/
-        |   |-- evaluarCorrelativas.ts
-        |   `-- requisitoEspecial.ts  # Tipos y evaluacion de requisito_especial[]
-        |-- db/carreraRepository.ts   # CRUD de Carrera y CarreraVersion
-        `-- data/planValidation.ts    # Parseo y validacion del schema PlanData
+|-- frontend/                  # App Next.js (presentación + lógica + BD)
+|   |-- app/
+|   |   |-- api/admin/planes/
+|   |   |   |-- parsear/         # Gemini: PDF → JSON + autoguarda en Plan (BORRADOR)
+|   |   |   |-- parsear-local/   # Parser Python (SSE) + autoguarda en Plan (BORRADOR)
+|   |   |   |-- guardar/         # Plan BORRADOR → PUBLICADO + crea/actualiza CarreraVersion
+|   |   |   |-- existe/          # Chequea borradores en Plan por fuente
+|   |   |   |-- validar/         # Compara con ground truth via comparar_json.py
+|   |   |   `-- enviar-revision/ # Envio a revision (MODERATOR → ADMIN)
+|   |   `-- admin/               # Panel de administracion
+|   |-- components/
+|   |   |-- admin/
+|   |   |   |-- tabs/CargarPlanTab.tsx    # Flujo subida PDF + comparacion
+|   |   |   |-- tabs/DiffExportDrawer.tsx # Exportacion few-shot
+|   |   |   `-- tabs/ConfigTab.tsx        # Prompt, version, modelo
+|   |   `-- materias/MateriaCard.tsx      # Muestra requisito_especial[]
+|   |-- lib/
+|   |   |-- ai/prompt.ts          # DEFAULT_SYSTEM_PROMPT + PROMPT_VERSION (v33)
+|   |   |-- plan/
+|   |   |   |-- evaluarCorrelativas.ts
+|   |   |   `-- requisitoEspecial.ts  # Tipos y evaluacion de requisito_especial[]
+|   |   |-- db/carreraRepository.ts   # CRUD de Carrera y CarreraVersion
+|   |   `-- data/planValidation.ts    # Parseo y validacion del schema PlanData
+|   `-- prisma/schema.prisma          # Schema BD
+|-- parser/                    # Parser Python + API FastAPI
+|   |-- core/parser/           # Extraccion, correlativas, contrato
+|   |   |-- parser_plan.py
+|   |   |-- correlativa_prosa.py   # Deteccion de requisito_especial en prosa
+|   |   `-- contract_validator.py
+|   |-- parser_api/            # FastAPI: expone el parser via HTTP (Render)
+|   |-- scripts/
+|   |   `-- comparar_json.py   # Evalua similitud ref vs. candidato (score /100)
+|   `-- tests/                 # Tests parser + contrato + fixtures
+`-- docs/                      # Documentacion interna e issues por carrera
 ```
 
 ## 4) Flujo de procesamiento: PDF → JSON
@@ -147,7 +149,7 @@ El servidor aplica unicamente parseo/validacion estructural y metadata:
 
 ## 7) Prompt Gemini
 
-- Version actual: **v33** — `web/lib/ai/prompt.ts`
+- Version actual: **v33** — `frontend/lib/ai/prompt.ts`
 - El prompt activo se puede editar desde `/admin` → tab Configuracion y se persiste en Neon (tabla `AdminConfig`). Si no hay override en DB, se usa la constante del codigo.
 - El panel admin incluye la herramienta **"Exportar diff como few-shot"** que genera bloques de correccion para mejorar el prompt manualmente.
 - **v33+**: limpieza del pipeline para vision nativa, reglas de schema/grupos consolidadas y eliminacion de fixups server-side sobre IDs.
@@ -171,11 +173,11 @@ El servidor aplica unicamente parseo/validacion estructural y metadata:
 
 ### Limitacion conocida del prompting (boundary cross-page)
 
-El PDF de Farmacia termina la pagina con `1142 FISIOPATOLOGIA HUMANA ... 1149 Cursada Cursada` y la pagina siguiente abre con `1376 Aprobada Aprobada` (correlativa de continuacion de 1142). Gemini interpreta el encabezado de tabla repetido al inicio de la nueva pagina como cierre de materia y asigna `1376` a la materia siguiente (1228). El mismo patron ocurre en Abogacia (9100/9113). Se sigue monitoreando con `scripts/comparar_json.py` y ajustes de prompting. Ver `issues/farmacia.md` e `issues/abogacia.md`.
+El PDF de Farmacia termina la pagina con `1142 FISIOPATOLOGIA HUMANA ... 1149 Cursada Cursada` y la pagina siguiente abre con `1376 Aprobada Aprobada` (correlativa de continuacion de 1142). Gemini interpreta el encabezado de tabla repetido al inicio de la nueva pagina como cierre de materia y asigna `1376` a la materia siguiente (1228). El mismo patron ocurre en Abogacia (9100/9113). Se sigue monitoreando con `parser/scripts/comparar_json.py` y ajustes de prompting. Ver `docs/issues/farmacia.md` e `docs/issues/abogacia.md`.
 
 ## 8) Requisitos
 
-- Node.js 20+
+- Node.js 22+
 - Python 3.11+
 - PostgreSQL (Neon en produccion)
 
@@ -184,6 +186,7 @@ El PDF de Farmacia termina la pagina con `1142 FISIOPATOLOGIA HUMANA ... 1149 Cu
 ### Parser Python
 
 ```bash
+cd parser
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
@@ -192,7 +195,7 @@ pip install -r requirements.txt
 Generar JSON desde PDF:
 
 ```bash
-python3 -m core.parser pdf/arquitectura.pdf output.json
+python3 -m core.parser ../pdf/arquitectura.pdf output.json
 ```
 
 Comparar dos JSONs (score /100):
@@ -201,13 +204,13 @@ Comparar dos JSONs (score /100):
 python3 -m scripts.comparar_json ref.json candidato.json
 ```
 
-### Web (Next.js)
+### Frontend (Next.js)
 
 ```bash
-cd web
+cd frontend
 npm install
 cp .env.example .env.local
-# completar variables en .env.local (ver web/README.md)
+# completar variables en .env.local (ver frontend/README.md)
 npm run db:prepare   # migraciones + seed
 npm run dev
 ```
@@ -230,32 +233,33 @@ Variables de entorno clave:
 |---|---|
 | `GEMINI_API_KEY` | Requerida para parsear con Gemini |
 
-Ver `web/README.md` para la lista completa de variables y opciones de configuracion.
+Ver `frontend/README.md` para la lista completa de variables y opciones de configuracion.
 
 ## 10) Testing
 
 ### Parser Python
 
 ```bash
+cd parser
 python3 -m pytest tests/ --ignore=tests/test_parser_fixtures.py -q
 ```
 
-### Web (Vitest)
+### Frontend (Vitest)
 
 ```bash
-cd web && npm test -- --run
+cd frontend && npm test -- --run
 ```
 
 ### E2E (Playwright)
 
 ```bash
-cd web && npm run test:e2e
+cd frontend && npm run test:e2e
 ```
 
 ### Validacion batch de datos
 
 ```bash
-cd web && npm run validate:data
+cd frontend && npm run validate:data
 ```
 
 ## 11) Endpoints API principales
@@ -319,20 +323,21 @@ Al publicar, el JSON queda en `Plan.planJson` con `estado=PUBLICADO` y se crea o
 ### Via CLI (solo para generar/comparar JSONs localmente)
 
 ```bash
-python3 -m core.parser pdf/carrera.pdf output.json
-python3 -m scripts.comparar_json web/data/local/carrera.json output.json
+cd parser
+python3 -m core.parser ../pdf/carrera.pdf output.json
+python3 -m scripts.comparar_json ref.json output.json
 ```
 
 Para publicar, usar el panel admin.
 
 ## 14) Documentacion complementaria
 
-- Contrato parser: `core/parser/contract_validator.py`
-- Tipos de datos web: `web/app/types/plan.ts`
-- Validacion schema: `web/lib/data/planValidation.ts`
-- Schema BD: `web/prisma/schema.prisma`
-- Decisiones de normalizacion BD: `web/prisma/NORMALIZATION.md`, `web/prisma/PLAN_CARRERVERSION_MIGRATION.md`
-- Issues por carrera: `issues/*.md`
+- Contrato parser: `parser/core/parser/contract_validator.py`
+- Tipos de datos web: `frontend/app/types/plan.ts`
+- Validacion schema: `frontend/lib/data/planValidation.ts`
+- Schema BD: `frontend/prisma/schema.prisma`
+- Decisiones de normalizacion BD: `frontend/prisma/NORMALIZATION.md`, `frontend/prisma/PLAN_CARRERVERSION_MIGRATION.md`
+- Issues por carrera: `docs/issues/*.md`
 
 ## 15) Features de la web
 
