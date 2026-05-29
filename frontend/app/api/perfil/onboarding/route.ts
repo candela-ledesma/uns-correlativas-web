@@ -18,9 +18,7 @@ export async function GET() {
     return unauthorized();
   }
 
-  const context = await getUserProductContext(session.user.id, {
-    activityLimit: 1,
-  });
+  const context = await getUserProductContext(session.user.id);
 
   return NextResponse.json({
     onboardingCompletedAt: context.onboardingCompletedAt,

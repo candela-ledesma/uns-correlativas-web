@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { GET } from "../app/api/materias/[carrera]/route";
 
 const env = process.env as Record<string, string | undefined>;

@@ -18,7 +18,6 @@ export type UserProductContextResponse = {
   onboardingDismissedAt: string | null;
   shouldAutoShowOnboarding: boolean;
   lastPlanByCareer: Record<string, UserLastPlan>;
-  recentActivity: never[];
   careerIdsWithProgress: string[];
 };
 

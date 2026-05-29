@@ -27,7 +27,6 @@ function unauthorized() {
   return NextResponse.json({ error: "No autenticado" }, { status: 401 });
 }
 
-
 export async function GET(request: Request) {
   const session = await auth();
   if (!session?.user?.id) return unauthorized();
