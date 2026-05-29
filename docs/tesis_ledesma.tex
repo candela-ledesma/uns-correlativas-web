@@ -484,12 +484,19 @@ estado se representa como un objeto JSON serializado
 completo en cada sincronización. La justificación técnica de esta decisión de diseño se
 desarrolla en la sección~\ref{sec:modulo-progreso}.
 
-\subsubsection*{CarreraSeleccionada}
+\subsubsection*{PlanSeleccionado}
 
 Gestiona la relación muchos-a-muchos entre \texttt{User} y \texttt{Carrera}: cada fila
 indica que un usuario eligió seguir una carrera dentro de la aplicación. No representa
 una inscripción académica formal. La restricción \texttt{UNIQUE([userId, careerId])}
 evita duplicados en el panel del usuario.
+
+\textbf{Limitación conocida:} la clave foránea \texttt{careerId} apunta a \texttt{Carrera},
+no a \texttt{PlanVersion}. Esto significa que no se registra \emph{qué versión específica}
+del plan seleccionó el usuario cuando una carrera tiene más de una versión disponible.
+El nombre \texttt{PlanSeleccionado} sugiere selección de plan, pero la granularidad real
+es a nivel de carrera. Una migración futura debería agregar una FK opcional a
+\texttt{PlanVersion} para soportar selección por versión.
 
 \subsubsection*{UserPreference}
 

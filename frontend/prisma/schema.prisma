@@ -45,7 +45,7 @@ model User {
   accounts      Account[]
   sessions      Session[]
   progresses    UserPlanProgress[]
-  carrerasSeleccionadas CarreraSeleccionada[]
+  carrerasSeleccionadas PlanSeleccionado[]
   preference    UserPreference?
   recentPlans   UserRecentPlan[]
   auditLogs     AuditLog[]         @relation("AuditActor")
@@ -55,7 +55,7 @@ model User {
 // Carreras que un usuario seleccionó para hacer seguimiento dentro de la app.
 // No representa inscripción académica formal — es la lista de carreras visibles en su panel.
 // careerId es el slug de la carrera (ej: "ingenieria_civil"). FK a Carrera.
-model CarreraSeleccionada {
+model PlanSeleccionado {
   id        String   @id @default(cuid())
   userId    String
   careerId  String
@@ -271,7 +271,7 @@ model Carrera {
 
   departamento          Departamento?          @relation(fields: [departamentoId], references: [id])
   versions              PlanVersion[]
-  carrerasSeleccionadas CarreraSeleccionada[]
+  carrerasSeleccionadas PlanSeleccionado[]
   recentPlans           UserRecentPlan[]
   scheduleBlocks        ScheduleBlock[]
 

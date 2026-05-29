@@ -30,7 +30,7 @@ erDiagram
     string activeCareerId
     DateTime onboardingCompletedAt
   }
-  CarreraSeleccionada {
+  PlanSeleccionado {
     string id PK
     string userId FK
     string careerId FK
@@ -113,14 +113,14 @@ erDiagram
   User ||--o{ Account : "has"
   User ||--o{ Session : "has"
   User ||--o| UserPreference : "has"
-  User ||--o{ CarreraSeleccionada : "selects"
+  User ||--o{ PlanSeleccionado : "selects"
   User ||--o{ UserRecentPlan : "recently viewed"
   User ||--o{ UserPlanProgress : "tracks"
   User ||--o{ ScheduleBlock : "schedules"
   User ||--o{ AuditLog : "audited by"
   Departamento ||--o{ Carrera : "groups"
   Carrera ||--o{ PlanVersion : "has"
-  Carrera ||--o{ CarreraSeleccionada : "selected in"
+  Carrera ||--o{ PlanSeleccionado : "selected in"
   Carrera ||--o{ UserRecentPlan : "referenced in"
   Carrera ||--o{ ScheduleBlock : "used in"
   PlanVersion ||--o{ UserPlanProgress : "tracks"

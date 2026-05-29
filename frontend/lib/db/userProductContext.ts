@@ -18,7 +18,7 @@ async function sanitizeCarreraIds(carreraIds: string[]): Promise<string[]> {
 }
 
 async function ensureEnrollmentBootstrap(userId: string) {
-  const existing = await prisma.carreraSeleccionada.findMany({
+  const existing = await prisma.planSeleccionado.findMany({
     where: { userId },
     select: { careerId: true },
   });
@@ -48,7 +48,7 @@ async function ensureEnrollmentBootstrap(userId: string) {
 
   if (initialCareers.length === 0) return [];
 
-  await prisma.carreraSeleccionada.createMany({
+  await prisma.planSeleccionado.createMany({
     data: initialCareers.map((careerId) => ({ userId, careerId })),
     skipDuplicates: true,
   });
@@ -188,11 +188,11 @@ export async function updateUserCareerContext(input: {
   }
 
   await prisma.$transaction(async (tx) => {
-    await tx.carreraSeleccionada.deleteMany({
+    await tx.planSeleccionado.deleteMany({
       where: { userId: input.userId, careerId: { notIn: nextEnrolledCareerIds } },
     });
 
-    await tx.carreraSeleccionada.createMany({
+    await tx.planSeleccionado.createMany({
       data: nextEnrolledCareerIds.map((careerId) => ({ userId: input.userId, careerId })),
       skipDuplicates: true,
     });
@@ -223,7 +223,7 @@ export async function recordPlanOpened(input: {
   const planVersionId = await resolvePlanVersionId(input.planSlug, input.versionId);
 
   await prisma.$transaction(async (tx) => {
-    await tx.carreraSeleccionada.upsert({
+    await tx.planSeleccionado.upsert({
       where: { userId_careerId: { userId: input.userId, careerId: resolvedCareerId } },
       update: {},
       create: { userId: input.userId, careerId: resolvedCareerId },

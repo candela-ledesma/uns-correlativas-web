@@ -227,7 +227,7 @@ Log append-only de acciones administrativas. `actorEmail` y `actorRole` están d
 ### Relaciones principales
 
 ```
-User ──< CarreraSeleccionada >── Carrera
+User ──< PlanSeleccionado >── Carrera
 User ──< UserPlanProgress >── PlanVersion
 User ──< ScheduleBlock >── PlanVersion
 User ──< UserRecentPlan >── PlanVersion
@@ -239,6 +239,7 @@ Carrera >── Departamento
 
 - **Desnormalización intencional en AuditLog**: `actorEmail` y `actorRole` se copian al momento del evento para preservar el contexto histórico, una práctica estándar en logs de auditoría.
 - **`stateJson` como string serializado**: el progreso del usuario y los snapshots compartidos se almacenan como JSON serializado en un campo texto, lo que simplifica el modelo sin requerir una tabla de filas por materia.
+- **Limitación conocida en `PlanSeleccionado`**: la FK `careerId` apunta a `Carrera`, no a `PlanVersion`. Esto significa que la selección del usuario es a nivel de carrera, no de versión específica del plan. Una migración futura debería agregar una FK opcional a `PlanVersion` para soportar selección por versión cuando una carrera tiene múltiples planes activos.
 - **Separación entre `UserPlanProgress` y `UserRecentPlan`**: ambas tablas referencian al mismo usuario y versión de plan, pero responden a preguntas distintas. `UserPlanProgress` almacena el estado académico del usuario (qué materias aprobó o cursó); `UserRecentPlan` registra cuándo abrió el plan por última vez. Sus ciclos de vida son independientes: `UserRecentPlan` se actualiza con un simple upsert cada vez que el usuario navega a un plan, aunque no interactúe con ninguna materia, mientras que `UserPlanProgress` puede no existir si el usuario nunca marcó nada. Unificarlas obligaría a crear filas de progreso vacías como efecto secundario de la navegación, mezclando dos eventos que el sistema trata por separado.
 
 **Progreso del usuario como documento serializado**
