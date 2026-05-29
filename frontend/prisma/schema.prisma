@@ -30,17 +30,6 @@ enum Role {
   ADMIN
 }
 
-// Tipos de eventos que se registran en UserActivity.
-// Permiten filtrar el historial de acciones de un usuario por categoría.
-enum UserActivityType {
-  MATERIA_STATUS_CHANGED  // el usuario marcó/desmarcó una materia
-  ACTIVE_CAREER_CHANGED   // cambió la carrera activa en preferencias
-  PLAN_OPENED             // abrió un plan de estudios
-  ONBOARDING_COMPLETED    // completó el flujo de onboarding
-  ONBOARDING_DISMISSED    // cerró el onboarding sin completarlo
-  ONBOARDING_RESET        // el admin reseteó su onboarding
-}
-
 // Usuario autenticado. Creado automáticamente por NextAuth al primer login con Google.
 // El campo role determina qué puede hacer: USER solo usa la app, MODERATOR puede enviar planes,
 // ADMIN puede publicar, editar configuración y gestionar usuarios.
@@ -59,7 +48,6 @@ model User {
   carrerasSeleccionadas CarreraSeleccionada[]
   preference    UserPreference?
   recentPlans   UserRecentPlan[]
-  activities    UserActivity[]
   auditLogs     AuditLog[]         @relation("AuditActor")
   scheduleBlocks ScheduleBlock[]
 }
@@ -116,24 +104,6 @@ model UserRecentPlan {
 // actividad reciente. Los campos opcionales se llenan según el tipo de evento.
 // planSlug y versionId son strings libres (no FK) — el log debe preservar el contexto
 // aunque el plan sea eliminado en el futuro.
-model UserActivity {
-  id           String           @id @default(cuid())
-  userId       String
-  type         UserActivityType
-  careerId     String?
-  planSlug     String?          // slug de la carrera, ej: "arquitectura" (no es FK a Plan)
-  versionId    String?
-  materiaKey   String?          // solo para MATERIA_STATUS_CHANGED
-  fromState    String?          // estado anterior de la materia
-  toState      String?          // estado nuevo de la materia
-  metadataJson String?          // datos extra según el tipo de evento
-  createdAt    DateTime         @default(now())
-  user         User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId, createdAt])
-  @@index([userId, type, createdAt])
-}
-
 // Cuenta OAuth vinculada a un usuario. Generada y gestionada por NextAuth.
 // Un usuario puede tener múltiples cuentas (ej: Google + GitHub). En la práctica
 // solo usamos Google como provider.

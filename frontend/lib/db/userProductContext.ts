@@ -4,18 +4,6 @@ import type {
   UserProductContextResponse,
   UserSessionSummaryResponse,
 } from "@/lib/db/userProductContextTypes";
-import { createUserActivity } from "@/lib/db/userActivity";
-
-const DEFAULT_ACTIVITY_LIMIT = 25;
-
-function parseMetadata(raw: string | null) {
-  if (!raw) return null;
-  try {
-    return JSON.parse(raw) as unknown;
-  } catch {
-    return null;
-  }
-}
 
 async function getAvailableCarreraIds(): Promise<string[]> {
   const carreras = await getCarreras({ soloDisponibles: true });
@@ -114,9 +102,8 @@ export async function getUserProductContext(
 ): Promise<UserProductContextResponse> {
   const enrolledCareerIds = await ensureEnrollmentBootstrap(userId);
   const preference = await ensurePreferenceRow(userId, enrolledCareerIds);
-  const includeActivity = options?.includeActivity !== false;
 
-  const [carreras, lastPlans, progressRows, activities] = await Promise.all([
+  const [carreras, lastPlans, progressRows] = await Promise.all([
     getCarreras({ soloDisponibles: true }),
     prisma.userRecentPlan.findMany({
       where: { userId },
@@ -130,13 +117,6 @@ export async function getUserProductContext(
         carreraVersion: { select: { carreraId: true } },
       },
     }),
-    includeActivity
-      ? prisma.userActivity.findMany({
-          where: { userId },
-          orderBy: { createdAt: "desc" },
-          take: Math.max(1, options?.activityLimit ?? DEFAULT_ACTIVITY_LIMIT),
-        })
-      : Promise.resolve([]),
   ]);
 
   const careerIdsWithProgress = Array.from(new Set(
@@ -173,20 +153,7 @@ export async function getUserProductContext(
     onboardingDismissedAt: preference.onboardingDismissedAt?.toISOString() ?? null,
     shouldAutoShowOnboarding: !preference.onboardingCompletedAt && !preference.onboardingDismissedAt,
     lastPlanByCareer,
-    recentActivity: includeActivity
-      ? activities.map((item) => ({
-          id: item.id,
-          type: item.type,
-          careerId: item.careerId,
-          planSlug: item.planSlug,
-          versionId: item.versionId,
-          materiaKey: item.materiaKey,
-          fromState: item.fromState,
-          toState: item.toState,
-          metadata: parseMetadata(item.metadataJson),
-          createdAt: item.createdAt.toISOString(),
-        }))
-      : [],
+    recentActivity: [],
     careerIdsWithProgress,
   };
 }
@@ -222,9 +189,6 @@ export async function updateUserCareerContext(input: {
     throw new Error("La carrera activa debe pertenecer a las carreras inscriptas");
   }
 
-  const currentContext = await getUserProductContext(input.userId, { activityLimit: 1 });
-  const previousActiveCareerId = currentContext.activeCareerId;
-
   await prisma.$transaction(async (tx) => {
     await tx.carreraSeleccionada.deleteMany({
       where: { userId: input.userId, careerId: { notIn: nextEnrolledCareerIds } },
@@ -241,19 +205,6 @@ export async function updateUserCareerContext(input: {
       create: { userId: input.userId, activeCareerId },
     });
   });
-
-  if (previousActiveCareerId !== activeCareerId) {
-    await createUserActivity({
-      userId: input.userId,
-      type: "ACTIVE_CAREER_CHANGED",
-      careerId: activeCareerId,
-      metadata: {
-        previousActiveCareerId,
-        nextActiveCareerId: activeCareerId,
-        source: "perfil",
-      },
-    });
-  }
 
   return getUserProductContext(input.userId);
 }
@@ -272,9 +223,6 @@ export async function recordPlanOpened(input: {
   }
 
   const carreraVersionId = await resolveCarreraVersionId(input.planSlug, input.versionId);
-
-  const currentContext = await getUserProductContext(input.userId, { activityLimit: 1 });
-  const previousActiveCareerId = currentContext.activeCareerId;
 
   await prisma.$transaction(async (tx) => {
     await tx.carreraSeleccionada.upsert({
@@ -296,27 +244,6 @@ export async function recordPlanOpened(input: {
     });
   });
 
-  await createUserActivity({
-    userId: input.userId,
-    type: "PLAN_OPENED",
-    careerId: resolvedCareerId,
-    planSlug: input.planSlug,
-    versionId: input.versionId,
-  });
-
-  if (previousActiveCareerId !== resolvedCareerId) {
-    await createUserActivity({
-      userId: input.userId,
-      type: "ACTIVE_CAREER_CHANGED",
-      careerId: resolvedCareerId,
-      metadata: {
-        previousActiveCareerId,
-        nextActiveCareerId: resolvedCareerId,
-        source: "plan-open",
-        },
-    });
-  }
-
   return getUserProductContext(input.userId, { activityLimit: 1 });
 }
 
@@ -324,17 +251,11 @@ export async function updateOnboardingState(input: {
   userId: string;
   action: "dismiss" | "complete" | "reset";
 }) {
-  const context = await getUserProductContext(input.userId, { activityLimit: 1 });
 
   if (input.action === "dismiss") {
     await prisma.userPreference.update({
       where: { userId: input.userId },
       data: { onboardingDismissedAt: new Date() },
-    });
-    await createUserActivity({
-      userId: input.userId,
-      type: "ONBOARDING_DISMISSED",
-      careerId: context.activeCareerId,
     });
   }
 
@@ -343,22 +264,12 @@ export async function updateOnboardingState(input: {
       where: { userId: input.userId },
       data: { onboardingCompletedAt: new Date(), onboardingDismissedAt: null },
     });
-    await createUserActivity({
-      userId: input.userId,
-      type: "ONBOARDING_COMPLETED",
-      careerId: context.activeCareerId,
-    });
   }
 
   if (input.action === "reset") {
     await prisma.userPreference.update({
       where: { userId: input.userId },
       data: { onboardingCompletedAt: null, onboardingDismissedAt: null },
-    });
-    await createUserActivity({
-      userId: input.userId,
-      type: "ONBOARDING_RESET",
-      careerId: context.activeCareerId,
     });
   }
 

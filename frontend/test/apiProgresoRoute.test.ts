@@ -6,7 +6,6 @@ import {
   upsertProgressSnapshot,
 } from "@/lib/db/progressRepository";
 import { createAuditEvent } from "@/lib/db/audit";
-import { createUserActivity } from "@/lib/db/userActivity";
 
 vi.mock("@/auth", () => ({
   auth: vi.fn(),
@@ -21,9 +20,6 @@ vi.mock("@/lib/db/audit", () => ({
   createAuditEvent: vi.fn(),
 }));
 
-vi.mock("@/lib/db/userActivity", () => ({
-  createUserActivity: vi.fn(),
-}));
 
 describe("/api/progreso", () => {
   beforeEach(() => {
@@ -80,7 +76,6 @@ describe("/api/progreso", () => {
     expect(body.source).toBe("local");
     expect(upsertProgressSnapshot).toHaveBeenCalled();
     expect(createAuditEvent).toHaveBeenCalled();
-    expect(createUserActivity).toHaveBeenCalled();
   });
 
   it("DELETE reinicia estado y audita", async () => {
@@ -105,7 +100,6 @@ describe("/api/progreso", () => {
     expect(body.state).toEqual({});
     expect(upsertProgressSnapshot).toHaveBeenCalled();
     expect(createAuditEvent).toHaveBeenCalled();
-    expect(createUserActivity).toHaveBeenCalled();
   });
 
   it("responde 401 si no hay sesion", async () => {
