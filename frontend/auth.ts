@@ -17,7 +17,7 @@ if (!process.env.NEXTAUTH_SECRET && process.env.AUTH_SECRET) {
   process.env.NEXTAUTH_SECRET = process.env.AUTH_SECRET;
 }
 
-const { hasGoogleProvider, allowDevLogin, isProduction } = getAuthProviderFlags();
+const { hasGoogleProvider, allowDevLogin } = getAuthProviderFlags();
 
 // Only allow role override if explicitly enabled and NOT in production
 const allowDevRoleOverride =

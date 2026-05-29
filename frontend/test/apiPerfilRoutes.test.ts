@@ -44,7 +44,6 @@ const baseContext = {
   onboardingDismissedAt: null,
   shouldAutoShowOnboarding: true,
   lastPlanByCareer: {},
-  recentActivity: [],
 };
 
 const baseSummary = {

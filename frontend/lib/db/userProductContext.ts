@@ -98,7 +98,6 @@ async function ensurePreferenceRow(userId: string, enrolledCareerIds: string[]) 
 
 export async function getUserProductContext(
   userId: string,
-  options?: { activityLimit?: number; includeActivity?: boolean }
 ): Promise<UserProductContextResponse> {
   const enrolledCareerIds = await ensureEnrollmentBootstrap(userId);
   const preference = await ensurePreferenceRow(userId, enrolledCareerIds);
@@ -153,13 +152,12 @@ export async function getUserProductContext(
     onboardingDismissedAt: preference.onboardingDismissedAt?.toISOString() ?? null,
     shouldAutoShowOnboarding: !preference.onboardingCompletedAt && !preference.onboardingDismissedAt,
     lastPlanByCareer,
-    recentActivity: [],
     careerIdsWithProgress,
   };
 }
 
 export async function getUserSessionSummary(userId: string): Promise<UserSessionSummaryResponse> {
-  const context = await getUserProductContext(userId, { includeActivity: false });
+  const context = await getUserProductContext(userId);
 
   const activeCareer = context.activeCareerId
     ? context.careers.find((career) => career.id === context.activeCareerId) ?? null
@@ -244,7 +242,7 @@ export async function recordPlanOpened(input: {
     });
   });
 
-  return getUserProductContext(input.userId, { activityLimit: 1 });
+  return getUserProductContext(input.userId);
 }
 
 export async function updateOnboardingState(input: {
@@ -273,5 +271,5 @@ export async function updateOnboardingState(input: {
     });
   }
 
-  return getUserProductContext(input.userId, { activityLimit: 1 });
+  return getUserProductContext(input.userId);
 }
