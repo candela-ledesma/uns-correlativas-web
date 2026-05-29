@@ -15,7 +15,7 @@ export default async function Page({ params }: Props) {
 
   const share = await prisma.progressShare.findUnique({
     where: { token },
-    include: { carreraVersion: { select: { versionId: true } } },
+    include: { planVersion: { select: { versionId: true } } },
   });
   if (!share) notFound();
 
@@ -26,7 +26,7 @@ export default async function Page({ params }: Props) {
     notFound();
   }
 
-  const result = await loadPlanData(carreraId, share.carreraVersion.versionId);
+  const result = await loadPlanData(carreraId, share.planVersion.versionId);
 
   if (result.status === "not-found") notFound();
 

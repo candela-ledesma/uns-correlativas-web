@@ -84,5 +84,7 @@ pdf/
 google-cloud-sdk/
 google-cloud-cli-*.tar.gz
 
-# Tesis (borrador personal)
+# Tesis (borrador personal — no se versiona en el repo)
 tesis-erd.md
+docs/tesis_ledesma.tex
+docs/informe.md

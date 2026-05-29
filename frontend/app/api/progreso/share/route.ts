@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db/prisma";
-import { resolveCarreraVersionId } from "@/lib/db/carreraRepository";
+import { resolvePlanVersionId } from "@/lib/db/carreraRepository";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -28,15 +28,15 @@ export async function POST(request: Request) {
 
   const { planId, versionId } = parsed.data;
 
-  let carreraVersionId: string;
+  let planVersionId: string;
   try {
-    carreraVersionId = await resolveCarreraVersionId(planId, versionId);
+    planVersionId = await resolvePlanVersionId(planId, versionId);
   } catch {
     return NextResponse.json({ error: "Plan no encontrado" }, { status: 404 });
   }
 
   const progress = await prisma.userPlanProgress.findUnique({
-    where: { userId_carreraVersionId: { userId: session.user.id, carreraVersionId } },
+    where: { userId_planVersionId: { userId: session.user.id, planVersionId } },
     select: { stateJson: true },
   });
 
@@ -46,7 +46,7 @@ export async function POST(request: Request) {
 
   const share = await prisma.progressShare.create({
     data: {
-      carreraVersionId,
+      planVersionId,
       stateJson: progress.stateJson,
       createdBy: session.user.id,
     },

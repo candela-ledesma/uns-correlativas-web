@@ -1,4 +1,4 @@
-# Diagnóstico y plan de migración — Plan ↔ CarreraVersion
+# Diagnóstico y plan de migración — Plan ↔ PlanVersion
 
 Fecha: 2026-05-25  
 Rama actual: `feat/cerrar-bd-plan-carreraversion`  
@@ -15,18 +15,18 @@ El contenido de un plan de estudios existe simultáneamente en tres lugares:
 | Representación | Dónde | Cuándo manda |
 |---|---|---|
 | `Plan.planJson` | BD (tabla `Plan`) | Durante el ciclo editorial (borrador → publicado) |
-| `CarreraVersion.jsonFile` | BD (string con nombre de archivo) | Referencia al archivo en disco |
+| `PlanVersion.jsonFile` | BD (string con nombre de archivo) | Referencia al archivo en disco |
 | Archivo físico en disco | `frontend/data/local/*.json` | En producción — lo que la app sirve al usuario |
 
-El flujo de publicación escribe el JSON en disco y crea la `CarreraVersion`. Después de publicar, `Plan.planJson` queda como registro histórico sin rol activo: la app lee el archivo, no la BD.
+El flujo de publicación escribe el JSON en disco y crea la `PlanVersion`. Después de publicar, `Plan.planJson` queda como registro histórico sin rol activo: la app lee el archivo, no la BD.
 
 **Resultado:** hay dos fuentes de verdad según el estado del plan.
 
 ---
 
-### 1.2 `Plan` y `CarreraVersion` no tienen conexión formal
+### 1.2 `Plan` y `PlanVersion` no tienen conexión formal
 
-`Plan` y `CarreraVersion` apuntan conceptualmente al mismo contenido pero no tienen FK entre sí. La consistencia depende del código de la action de publicación. Si ese proceso falla a mitad, puede quedar un `Plan` en estado `PUBLICADO` sin `CarreraVersion` correspondiente, o viceversa.
+`Plan` y `PlanVersion` apuntan conceptualmente al mismo contenido pero no tienen FK entre sí. La consistencia depende del código de la action de publicación. Si ese proceso falla a mitad, puede quedar un `Plan` en estado `PUBLICADO` sin `PlanVersion` correspondiente, o viceversa.
 
 ---
 
@@ -39,7 +39,7 @@ El schema tiene dos modelos de carrera activos simultáneamente:
 - Solo registra carreras dinámicas (las nuevas subidas desde el admin)
 - Las carreras estáticas del array `CARRERAS` en `carreras.ts` no tienen fila acá
 
-**`Carrera` + `CarreraVersion`** (modelo nuevo):
+**`Carrera` + `PlanVersion`** (modelo nuevo):
 - Soporta múltiples versiones por carrera
 - Existe en el schema y tiene datos de progreso de usuario anclados a él
 - Pero el data loader **no lo usa** para leer metadatos
@@ -59,7 +59,7 @@ El modelo `Carrera` de la BD nunca se consulta para resolver metadatos de carrer
 
 ### 1.5 `CarreraConfig` está deprecado en la práctica pero activo en el código
 
-Luego del refactor que introdujo `Carrera` + `CarreraVersion`, `CarreraConfig` debería haberse eliminado. En cambio:
+Luego del refactor que introdujo `Carrera` + `PlanVersion`, `CarreraConfig` debería haberse eliminado. En cambio:
 
 - Sigue en el schema con su propia tabla en la BD
 - El código lo referencia activamente:
@@ -68,13 +68,13 @@ Luego del refactor que introdujo `Carrera` + `CarreraVersion`, `CarreraConfig` d
   - `/api/admin/planes/publicados/route.ts:18` — panel admin
   - `/api/admin/planes/guardar/route.ts:36` — upsert al publicar
 
-**El estado real:** hay dos definiciones paralelas de los metadatos de una carrera — `carreras.ts` (estáticas) + `CarreraConfig` (dinámicas) — cuando el objetivo es que `Carrera` + `CarreraVersion` sea la única fuente de verdad.
+**El estado real:** hay dos definiciones paralelas de los metadatos de una carrera — `carreras.ts` (estáticas) + `CarreraConfig` (dinámicas) — cuando el objetivo es que `Carrera` + `PlanVersion` sea la única fuente de verdad.
 
 ---
 
 ### 1.6 `defaultVersionId` en `Carrera` es un string libre sin FK
 
-`Carrera.defaultVersionId` guarda el `versionId` string (ej: `"v1"`) de la versión por defecto. No es FK a `CarreraVersion.id`. Si la versión se elimina o renombra, el campo queda apuntando a algo inexistente sin que la BD lo detecte.
+`Carrera.defaultVersionId` guarda el `versionId` string (ej: `"v1"`) de la versión por defecto. No es FK a `PlanVersion.id`. Si la versión se elimina o renombra, el campo queda apuntando a algo inexistente sin que la BD lo detecte.
 
 ---
 
@@ -83,9 +83,9 @@ Luego del refactor que introdujo `Carrera` + `CarreraVersion`, `CarreraConfig` d
 ```
 loadPlanData(carreraId, versionId)
     │
-    ├── lee Carrera + CarreraVersion desde BD   (metadatos)
+    ├── lee Carrera + PlanVersion desde BD   (metadatos)
     │       ↓
-    │   CarreraVersion.jsonFile
+    │   PlanVersion.jsonFile
     │       ↓
     ├── lee archivo en disco                    (contenido)
     │       ↓ (fallback si no existe)
@@ -94,7 +94,7 @@ loadPlanData(carreraId, versionId)
 
 - `carreras.ts` desaparece o se convierte en script de seed únicamente.
 - `CarreraConfig` se elimina del schema.
-- `Carrera` + `CarreraVersion` son la única fuente de metadatos.
+- `Carrera` + `PlanVersion` son la única fuente de metadatos.
 - El archivo en disco sigue siendo la fuente de verdad del contenido en producción (opción B — conservadora, sin cambiar cómo Next.js sirve los datos).
 - `Plan.planJson` sigue siendo staging temporal durante el ciclo editorial.
 
@@ -102,25 +102,25 @@ loadPlanData(carreraId, versionId)
 
 ## 3. Plan de implementación
 
-### Paso A — Seedear `Carrera` y `CarreraVersion` desde `carreras.ts`
+### Paso A — Seedear `Carrera` y `PlanVersion` desde `carreras.ts`
 
 **Objetivo:** poblar la BD con todas las carreras que hoy solo existen en el array estático.
 
 **Archivos:**
-- `frontend/prisma/seed.ts` — agregar bloque que lea `CARRERAS` y haga upsert en `Carrera` + `CarreraVersion`
+- `frontend/prisma/seed.ts` — agregar bloque que lea `CARRERAS` y haga upsert en `Carrera` + `PlanVersion`
 
 **Lógica del seed:**
 - Para cada entrada en `CARRERAS`: upsert en `Carrera` (id, nombre, descripcion, departamentoId, disponible)
-- Para cada versión en `carrera.versions`: upsert en `CarreraVersion` (carreraId, versionId, label, jsonFile, disponible, hidden)
-- Poblar `Carrera.defaultVersionId` con el CUID de la `CarreraVersion` correspondiente (ver Paso B)
+- Para cada versión en `carrera.versions`: upsert en `PlanVersion` (carreraId, versionId, label, jsonFile, disponible, hidden)
+- Poblar `Carrera.defaultVersionId` con el CUID de la `PlanVersion` correspondiente (ver Paso B)
 
-**Resultado:** `Carrera` + `CarreraVersion` tienen todos los datos que hoy están en el código.
+**Resultado:** `Carrera` + `PlanVersion` tienen todos los datos que hoy están en el código.
 
 ---
 
 ### Paso B — Cambiar `Carrera.defaultVersionId` a FK real
 
-**Objetivo:** hacer que `defaultVersionId` apunte al CUID de `CarreraVersion`, no al string `"v1"`.
+**Objetivo:** hacer que `defaultVersionId` apunte al CUID de `PlanVersion`, no al string `"v1"`.
 
 **Cambio en schema:**
 ```prisma
@@ -129,14 +129,14 @@ model Carrera {
   defaultVersionId String?  // string libre, ej: "v1"
 
   // después:
-  defaultCarreraVersionId String?
-  defaultVersion          CarreraVersion? @relation("DefaultVersion", fields: [defaultCarreraVersionId], references: [id])
+  defaultPlanVersionId String?
+  defaultVersion          PlanVersion? @relation("DefaultVersion", fields: [defaultPlanVersionId], references: [id])
 }
 ```
 
 **Nota:** requiere relación con nombre para no colisionar con la relación `versions` existente.
 
-**Migración de datos:** en el mismo seed del Paso A, después de crear las `CarreraVersion`, hacer update de `Carrera.defaultCarreraVersionId` con el id real.
+**Migración de datos:** en el mismo seed del Paso A, después de crear las `PlanVersion`, hacer update de `Carrera.defaultPlanVersionId` con el id real.
 
 ---
 
@@ -182,11 +182,11 @@ const carreras = await prisma.carrera.findMany({
 
 ### Paso E — Reescribir `/api/admin/planes/guardar` para registrar en `Carrera`
 
-**Objetivo:** al publicar una carrera nueva, registrarla en `Carrera` + `CarreraVersion` en lugar de `CarreraConfig`.
+**Objetivo:** al publicar una carrera nueva, registrarla en `Carrera` + `PlanVersion` en lugar de `CarreraConfig`.
 
 **Archivo:** `frontend/app/api/admin/planes/guardar/route.ts`
 
-**Función a reemplazar:** `registrarCarreraEnDB()` — actualmente hace upsert en `carreraConfig`. Cambiar por upsert en `Carrera` + `CarreraVersion`.
+**Función a reemplazar:** `registrarCarreraEnDB()` — actualmente hace upsert en `carreraConfig`. Cambiar por upsert en `Carrera` + `PlanVersion`.
 
 ---
 
@@ -202,13 +202,13 @@ const carreras = await prisma.carrera.findMany({
 
 ---
 
-### Paso G — FK opcional de `CarreraVersion` hacia `Plan` (mejora de integridad)
+### Paso G — FK opcional de `PlanVersion` hacia `Plan` (mejora de integridad)
 
-**Objetivo:** garantizar a nivel BD que no puede existir una `CarreraVersion` sin un `Plan` publicado que la respalde.
+**Objetivo:** garantizar a nivel BD que no puede existir una `PlanVersion` sin un `Plan` publicado que la respalde.
 
 **Cambio en schema:**
 ```prisma
-model CarreraVersion {
+model PlanVersion {
   planId String?
   plan   Plan?   @relation(fields: [planId], references: [id], onDelete: SetNull)
 }
@@ -223,7 +223,7 @@ FK nullable: versiones existentes (pre-migración) quedan con `planId = null`. S
 ## 4. Orden y dependencias
 
 ```
-A (seed Carrera/CarreraVersion)
+A (seed Carrera/PlanVersion)
 │
 ├─► B (defaultVersionId como FK)     — depende de A (necesita los CUIDs)
 │
@@ -235,7 +235,7 @@ A (seed Carrera/CarreraVersion)
 │
 └─► F (eliminar CarreraConfig)        — depende de C + D + E (todos deben estar migrados)
         │
-        └─► G (FK CarreraVersion → Plan) — depende de F (mejora de integridad, no bloqueante)
+        └─► G (FK PlanVersion → Plan) — depende de F (mejora de integridad, no bloqueante)
 ```
 
 El Paso G es opcional para cerrar la BD — mejora la integridad pero no es prerequisito del flujo.
@@ -246,7 +246,7 @@ El Paso G es opcional para cerrar la BD — mejora la integridad pero no es prer
 
 - El schema de `Plan` (tabla unificada del ciclo editorial) — ya está correcto.
 - La lógica de `readPlanJson`: disco primero, `Plan.planJson` como fallback.
-- `CarreraVersion` como ancla de FK para `UserPlanProgress`, `ScheduleBlock`, `UserRecentPlan` y `ProgressShare`.
+- `PlanVersion` como ancla de FK para `UserPlanProgress`, `ScheduleBlock`, `UserRecentPlan` y `ProgressShare`.
 - El `@@unique([slug, fuente, estado])` en `Plan`.
 - Los archivos JSON en disco como fuente de verdad del contenido publicado.
 
@@ -258,7 +258,7 @@ Estos temas están diagnosticados pero no se resuelven en esta migración:
 
 - **`PlanVersion` deprecated** — sigue en el schema. Verificar si tiene datos antes de eliminar.
 - **`esBackup` vs estado `ARCHIVADO`** — boolean por ahora; se puede evaluar moverlo al enum `PlanEstado` en un refactor posterior.
-- **Múltiples versiones publicadas simultáneas** — el schema lo permite estructuralmente pero falta UX para exponerlo. `defaultCarreraVersionId` asume una sola versión activa por carrera.
+- **Múltiples versiones publicadas simultáneas** — el schema lo permite estructuralmente pero falta UX para exponerlo. `defaultPlanVersionId` asume una sola versión activa por carrera.
 
 ---
 
@@ -268,20 +268,20 @@ Estos temas están diagnosticados pero no se resuelven en esta migración:
 
 | Paso | Descripción | Estado |
 |---|---|---|
-| A | Seed de `Carrera` + `CarreraVersion` desde `carreras.ts` | Completado en `main` (pull 2026-05-25) |
+| A | Seed de `Carrera` + `PlanVersion` desde `carreras.ts` | Completado en `main` (pull 2026-05-25) |
 | B | `defaultVersionId` como FK real | Diferido — ver deuda técnica |
 | C | `loadPlanData` lee de la BD | Completado en `main` (pull 2026-05-25) |
 | D | `/api/planes` y `/api/admin/planes/publicados` sin `CarreraConfig` | Completado en `main` (pull 2026-05-25) |
-| E | `/api/admin/planes/guardar` registra en `Carrera` + `CarreraVersion` | Completado en `main` (pull 2026-05-25) |
+| E | `/api/admin/planes/guardar` registra en `Carrera` + `PlanVersion` | Completado en `main` (pull 2026-05-25) |
 | F | `CarreraConfig` eliminada del schema y la BD | Completado en `main` (pull 2026-05-25) |
-| G | FK nullable `CarreraVersion.planId → Plan` | Completado en esta rama |
-| — | Backfill retroactivo de `planId` en las 19 `CarreraVersion` existentes | Completado en esta rama (script puntual, no migración) |
+| G | FK nullable `PlanVersion.planId → Plan` | Completado en esta rama |
+| — | Backfill retroactivo de `planId` en las 19 `PlanVersion` existentes | Completado en esta rama (script puntual, no migración) |
 
 ### 7.2 Estado del schema hoy
 
 - `Plan` — tabla unificada del ciclo editorial. Fuente de verdad del contenido (la app lee `Plan.planJson`, ya no hay archivos en disco).
-- `Carrera` + `CarreraVersion` — única fuente de metadatos. `CarreraVersion` ancla FK de progreso de usuario y ahora también apunta al `Plan` publicado que la respalda.
-- `UserPlanProgress`, `ScheduleBlock`, `UserRecentPlan`, `ProgressShare` — todos tienen FK real a `CarreraVersion.id`.
+- `Carrera` + `PlanVersion` — única fuente de metadatos. `PlanVersion` ancla FK de progreso de usuario y ahora también apunta al `Plan` publicado que la respalda.
+- `UserPlanProgress`, `ScheduleBlock`, `UserRecentPlan`, `ProgressShare` — todos tienen FK real a `PlanVersion.id`.
 - `CarreraConfig` — eliminada de schema y BD.
 - `carreras.ts` — eliminado del código.
 
@@ -295,11 +295,11 @@ Acción: eliminar el bloque `model PlanVersion` del schema y generar una migraci
 
 **2. `Carrera.defaultVersionId` es un string libre sin FK**
 
-`defaultVersionId` guarda el string `"v1"` en lugar del CUID de `CarreraVersion`. No hay integridad referencial: si una versión se elimina o renombra, el campo queda apuntando a algo inexistente sin que la BD lo detecte.
+`defaultVersionId` guarda el string `"v1"` en lugar del CUID de `PlanVersion`. No hay integridad referencial: si una versión se elimina o renombra, el campo queda apuntando a algo inexistente sin que la BD lo detecte.
 
-El cambio no se hizo en esta rama porque todos los usos actuales comparan `defaultVersionId` contra `CarreraVersion.versionId` (el string), y cambiar a CUID requeriría reescribir `carreraRepository.getVersionForCarrera`, `publicados/route.ts` y el componente `PlanViewer`. No es urgente mientras no haya versiones que se eliminen o renombren.
+El cambio no se hizo en esta rama porque todos los usos actuales comparan `defaultVersionId` contra `PlanVersion.versionId` (el string), y cambiar a CUID requeriría reescribir `carreraRepository.getVersionForCarrera`, `publicados/route.ts` y el componente `PlanViewer`. No es urgente mientras no haya versiones que se eliminen o renombren.
 
-Acción futura: cambiar `defaultVersionId String?` por `defaultCarreraVersionId String?` con FK a `CarreraVersion.id`, y actualizar los puntos de uso.
+Acción futura: cambiar `defaultVersionId String?` por `defaultPlanVersionId String?` con FK a `PlanVersion.id`, y actualizar los puntos de uso.
 
 **3. `esBackup` como boolean en lugar de estado del enum**
 
@@ -307,10 +307,10 @@ Acción futura: cambiar `defaultVersionId String?` por `defaultCarreraVersionId 
 
 No es urgente: la convención está documentada y el `@@index([slug, esBackup])` hace el filtro eficiente.
 
-**4. `PUT /api/admin/planes/publicados/[slug]` no actualiza `CarreraVersion.planId` ⚠️**
+**4. `PUT /api/admin/planes/publicados/[slug]` no actualiza `PlanVersion.planId` ⚠️**
 
-Hoy el `PUT` muta `Plan.planJson` sobre el registro existente — el `planId` en `CarreraVersion` sigue apuntando al mismo `Plan`, lo cual es correcto.
+Hoy el `PUT` muta `Plan.planJson` sobre el registro existente — el `planId` en `PlanVersion` sigue apuntando al mismo `Plan`, lo cual es correcto.
 
-El riesgo aparece si en algún momento "editar un plan publicado" pasa a significar "crear una nueva versión del `Plan`" en lugar de "mutar el existente". En ese caso, el `PUT` actual rompería la integridad construida en el paso G: se crearía un `Plan` nuevo sin actualizar `CarreraVersion.planId`, dejando la versión apuntando al registro anterior.
+El riesgo aparece si en algún momento "editar un plan publicado" pasa a significar "crear una nueva versión del `Plan`" en lugar de "mutar el existente". En ese caso, el `PUT` actual rompería la integridad construida en el paso G: se crearía un `Plan` nuevo sin actualizar `PlanVersion.planId`, dejando la versión apuntando al registro anterior.
 
 A diferencia de los otros tres puntos de deuda, este no es cosmético — es una trampa de regresión silenciosa. Cuando se diseñe la funcionalidad de "nueva versión desde edición", hay que revisar este endpoint y asegurarse de que el flujo de publicación pase siempre por `registrarCarreraEnDB` (o su equivalente) para mantener el vínculo.

@@ -22,7 +22,7 @@
 
 ## Normalización BD — unificar fuentes de carreras
 
-- `alta` [x] **Fusionar `carreras.ts` + `CarreraConfig` (DB) + `PlanVersion` en dos tablas `Carrera` y `CarreraVersion`** — completado. Ver `web/prisma/PLAN_CARRERVERSION_MIGRATION.md`.
+- `alta` [x] **Fusionar `carreras.ts` + `CarreraConfig` (DB) + `PlanVersion` en dos tablas `Carrera` y `PlanVersion`** — completado. Ver `web/prisma/PLAN_CARRERVERSION_MIGRATION.md`.
 
 - `media` [x] **Crear tabla `Departamento` y normalizar `CarreraConfig.departamento`** — completado. Migración `20260525_add_departamento`.
 
@@ -30,14 +30,14 @@
 
 - `media` [ ] **Implementar "Guardar como nueva versión" en el flujo de publicación**
 
-  Hoy la opción existe en la UI pero está deshabilitada: el backend siempre muta el `Plan` existente y hace upsert sobre `CarreraVersion v1`, sin crear una segunda versión real. Ver diagnóstico completo en `web/prisma/PLAN_CARRERVERSION_MIGRATION.md §7.3 punto 4`.
+  Hoy la opción existe en la UI pero está deshabilitada: el backend siempre muta el `Plan` existente y hace upsert sobre `PlanVersion v1`, sin crear una segunda versión real. Ver diagnóstico completo en `web/prisma/PLAN_CARRERVERSION_MIGRATION.md §7.3 punto 4`.
 
   **Lo que debe hacer el flujo cuando `resolucion === "nueva_version"`:**
-  1. Dejar `CarreraVersion v1` y su `Plan` intactos
+  1. Dejar `PlanVersion v1` y su `Plan` intactos
   2. Crear un `Plan` nuevo con `estado: PUBLICADO`
-  3. Crear una `CarreraVersion` nueva con `versionId: "v2"` apuntando al nuevo `Plan`
+  3. Crear una `PlanVersion` nueva con `versionId: "v2"` apuntando al nuevo `Plan`
   4. Actualizar `Carrera.defaultVersionId` a `"v2"` para que la app sirva la nueva versión por defecto
-  5. El progreso de usuarios en `v1` no se rompe — siguen anclados a su `CarreraVersion`
+  5. El progreso de usuarios en `v1` no se rompe — siguen anclados a su `PlanVersion`
 
   **Archivos a modificar:**
   - `web/app/api/admin/planes/guardar/route.ts` — lógica de publicación
@@ -48,10 +48,23 @@
 
 ---
 
+## Arquitectura — separación de capas
+
+No hay separación formal de capas: la lógica de negocio, el acceso a datos y la orquestación de servicios conviven en los route handlers. Es pragmático y funciona para el volumen actual, pero si el sistema crece podría justificar extraer una capa de servicios.
+
+Estimación: 2-3 días. El Paso 1 es el más mecánico y se puede hacer de forma independiente.
+
+- `baja` [ ] **Paso 1 — `planRepository.ts`** (~2-3h) — extraer operaciones Prisma de `Plan` que hoy están inline en los route handlers (`guardar`, `parsear`, `parsear-local`).
+- `baja` [ ] **Paso 2 — `parserService.ts`** (~3-4h) — encapsular la decisión prod/local, llamadas a Render y subprocess. Hoy duplicada entre `parsear/route.ts` y `parsear-local/route.ts`.
+- `baja` [ ] **Paso 3 — `geminiService.ts`** (~2-3h) — separar la llamada a la API de Google del route handler.
+- `baja` [ ] **Paso 4 — route handlers como coordinadores puros** (~2-3h) — que cada handler quede en ~20 líneas: auth check → llamar servicio → devolver respuesta.
+
+---
+
 ## Panel admin
 
 - `media` [ ] **Validación de schema completo** — validar contra el schema completo de `PlanData` además de chequeos estructurales básicos.
-- `media` [ ] **Eliminar carrera desde el admin borra en BD** — hoy la acción "eliminar" del panel solo desactiva el plan (estado=INACTIVO o disponible=false) pero deja filas huérfanas en `Carrera` y `CarreraVersion`. Conectar esa acción a un delete real (o soft-delete con `disponible=false`) en `Carrera`, incluyendo la limpieza de `UserCareerEnrollment`, `UserRecentPlan` y `ScheduleBlock` asociados.
+- `media` [ ] **Eliminar carrera desde el admin borra en BD** — hoy la acción "eliminar" del panel solo desactiva el plan (estado=INACTIVO o disponible=false) pero deja filas huérfanas en `Carrera` y `PlanVersion`. Conectar esa acción a un delete real (o soft-delete con `disponible=false`) en `Carrera`, incluyendo la limpieza de `UserCareerEnrollment`, `UserRecentPlan` y `ScheduleBlock` asociados.
 
 ---
 

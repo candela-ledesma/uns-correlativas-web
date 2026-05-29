@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/db/prisma";
-import type { Carrera, CarreraVersion, Departamento } from "@prisma/client";
+import type { Carrera, PlanVersion, Departamento } from "@prisma/client";
 
-export type CarreraWithVersions = Carrera & { versions: CarreraVersion[]; departamento: Departamento | null };
+export type CarreraWithVersions = Carrera & { versions: PlanVersion[]; departamento: Departamento | null };
 
 const carreraInclude = {
   versions: { orderBy: { createdAt: "asc" as const } },
@@ -26,7 +26,7 @@ export async function getCarreraById(id: string): Promise<CarreraWithVersions | 
 export async function getVersionForCarrera(
   carreraId: string,
   versionId: string | null
-): Promise<CarreraVersion | null> {
+): Promise<PlanVersion | null> {
   const carrera = await prisma.carrera.findUnique({
     where: { id: carreraId },
     select: { defaultVersionId: true, versions: true },
@@ -38,12 +38,12 @@ export async function getVersionForCarrera(
   return carrera.versions.find((v) => v.versionId === resolvedVersionId) ?? null;
 }
 
-export async function getDefaultVersionForCarrera(carreraId: string): Promise<CarreraVersion | null> {
+export async function getDefaultPlanVersion(carreraId: string): Promise<PlanVersion | null> {
   return getVersionForCarrera(carreraId, null);
 }
 
-export async function resolveCarreraVersionId(carreraId: string, versionId: string): Promise<string> {
-  const cv = await prisma.carreraVersion.findUnique({
+export async function resolvePlanVersionId(carreraId: string, versionId: string): Promise<string> {
+  const cv = await prisma.planVersion.findUnique({
     where: { carreraId_versionId: { carreraId, versionId } },
     select: { id: true },
   });
@@ -76,15 +76,15 @@ export async function upsertCarrera(data: {
   });
 }
 
-export async function upsertCarreraVersion(data: {
+export async function upsertPlanVersion(data: {
   carreraId: string;
   versionId: string;
   label?: string;
   jsonFile: string;
   planId?: string | null;
   disponible?: boolean;
-}): Promise<CarreraVersion> {
-  return prisma.carreraVersion.upsert({
+}): Promise<PlanVersion> {
+  return prisma.planVersion.upsert({
     where: { carreraId_versionId: { carreraId: data.carreraId, versionId: data.versionId } },
     update: {
       jsonFile: data.jsonFile,
