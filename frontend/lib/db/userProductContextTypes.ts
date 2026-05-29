@@ -10,25 +10,6 @@ export type UserLastPlan = {
   openedAt: string;
 };
 
-export type UserActivityItem = {
-  id: string;
-  type:
-    | "MATERIA_STATUS_CHANGED"
-    | "ACTIVE_CAREER_CHANGED"
-    | "PLAN_OPENED"
-    | "ONBOARDING_COMPLETED"
-    | "ONBOARDING_DISMISSED"
-    | "ONBOARDING_RESET";
-  careerId: string | null;
-  planSlug: string | null;
-  versionId: string | null;
-  materiaKey: string | null;
-  fromState: string | null;
-  toState: string | null;
-  metadata: unknown;
-  createdAt: string;
-};
-
 export type UserProductContextResponse = {
   careers: UserCareerSummary[];
   enrolledCareerIds: string[];
@@ -37,7 +18,7 @@ export type UserProductContextResponse = {
   onboardingDismissedAt: string | null;
   shouldAutoShowOnboarding: boolean;
   lastPlanByCareer: Record<string, UserLastPlan>;
-  recentActivity: UserActivityItem[];
+  recentActivity: never[];
   careerIdsWithProgress: string[];
 };
 

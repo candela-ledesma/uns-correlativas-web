@@ -3,7 +3,6 @@ import { z } from "zod";
 import { auth } from "@/auth";
 import { createAuditEvent } from "@/lib/db/audit";
 import { getProgressSnapshot, upsertProgressSnapshot } from "@/lib/db/progressRepository";
-import { createUserActivity } from "@/lib/db/userActivity";
 import {
   resolveProgressSnapshotLww,
   sanitizeProgressState,
@@ -28,36 +27,6 @@ function unauthorized() {
   return NextResponse.json({ error: "No autenticado" }, { status: 401 });
 }
 
-function normalizeMateriaState(value: string | undefined) {
-  return value ?? "no_cursada";
-}
-
-function collectStateChanges(
-  previous: Record<string, string>,
-  next: Record<string, string>
-) {
-  const changedKeys = new Set([
-    ...Object.keys(previous),
-    ...Object.keys(next),
-  ]);
-
-  const changes: Array<{ materiaKey: string; fromState: string; toState: string }> = [];
-
-  for (const materiaKey of changedKeys) {
-    const fromState = normalizeMateriaState(previous[materiaKey]);
-    const toState = normalizeMateriaState(next[materiaKey]);
-
-    if (fromState === toState) continue;
-
-    changes.push({
-      materiaKey,
-      fromState,
-      toState,
-    });
-  }
-
-  return changes;
-}
 
 export async function GET(request: Request) {
   const session = await auth();
@@ -141,25 +110,6 @@ export async function PUT(request: Request) {
       reason: reason ?? "Actualizacion de progreso",
     });
 
-    const changes = collectStateChanges(remoteSnapshot.state, resolution.snapshot.state);
-    const careerId = planId;
-
-    if (changes.length > 0) {
-      await Promise.all(
-        changes.map((change) =>
-          createUserActivity({
-            userId: session.user.id,
-            type: "MATERIA_STATUS_CHANGED",
-            careerId,
-            planSlug: planId,
-            versionId,
-            materiaKey: change.materiaKey,
-            fromState: change.fromState,
-            toState: change.toState,
-          })
-        )
-      );
-    }
   }
 
   return NextResponse.json({
@@ -212,29 +162,6 @@ export async function DELETE(request: Request) {
     after: {},
     reason: reason ?? "Reinicio de progreso",
   });
-
-  const careerId = planId;
-  const changes = collectStateChanges(previous.state, {});
-
-  if (changes.length > 0) {
-    await Promise.all(
-      changes.map((change) =>
-        createUserActivity({
-          userId: session.user.id,
-          type: "MATERIA_STATUS_CHANGED",
-          careerId,
-          planSlug: planId,
-          versionId,
-          materiaKey: change.materiaKey,
-          fromState: change.fromState,
-          toState: change.toState,
-          metadata: {
-            source: "reset",
-          },
-        })
-      )
-    );
-  }
 
   return NextResponse.json({
     state: {},

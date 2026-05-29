@@ -82,7 +82,7 @@ export default async function AdminDashboardPage() {
   if (!session?.user) redirect("/login?next=/admin/dashboard");
   if (session.user.role !== Role.ADMIN) redirect("/");
 
-  const [users, loginLogs, planActivity, roleCounts] = await Promise.all([
+  const [users, loginLogs, roleCounts] = await Promise.all([
     prisma.user.findMany({
       where: { email: { not: { contains: "@uns.local" } } },
       select: { id: true, email: true, role: true, createdAt: true },
@@ -97,14 +97,6 @@ export default async function AdminDashboardPage() {
       orderBy: { createdAt: "desc" },
       take: 50,
       select: { actorEmail: true, action: true, authProvider: true, createdAt: true },
-    }),
-
-    prisma.userActivity.groupBy({
-      by: ["careerId"],
-      where: { type: "PLAN_OPENED" },
-      _count: { careerId: true },
-      orderBy: { _count: { careerId: "desc" } },
-      take: 10,
     }),
 
     prisma.user.groupBy({
@@ -163,35 +155,6 @@ export default async function AdminDashboardPage() {
           <p style={{ fontSize: 13, color: TEXT_SEC }}>Sin datos.</p>
         ) : (
           <LoginBarChart data={logsByDaySorted} />
-        )}
-      </section>
-
-      {/* Planes más consultados */}
-      <section style={{ ...SURFACE, borderRadius: 12, padding: "20px 22px", marginBottom: 24 }}>
-        <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: TEXT_SEC, marginBottom: 14 }}>
-          Planes más consultados
-        </p>
-        {planActivity.length === 0 ? (
-          <p style={{ fontSize: 13, color: TEXT_SEC }}>Sin datos.</p>
-        ) : (
-          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
-            <thead>
-              <tr style={{ borderBottom: `1px solid ${GLASS.border}`, textAlign: "left" }}>
-                <th style={{ padding: "6px 10px", color: TEXT_SEC, fontWeight: 500 }}>#</th>
-                <th style={{ padding: "6px 10px", color: TEXT_SEC, fontWeight: 500 }}>Carrera</th>
-                <th style={{ padding: "6px 10px", color: TEXT_SEC, fontWeight: 500 }}>Aperturas</th>
-              </tr>
-            </thead>
-            <tbody>
-              {planActivity.map((row, i) => (
-                <tr key={row.careerId} style={{ borderBottom: `1px solid ${GLASS.faint}` }}>
-                  <td style={{ padding: "6px 10px", color: TEXT_SEC }}>{i + 1}</td>
-                  <td style={{ padding: "6px 10px" }}>{row.careerId}</td>
-                  <td style={{ padding: "6px 10px", fontWeight: 600 }}>{row._count.careerId}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
         )}
       </section>
 
