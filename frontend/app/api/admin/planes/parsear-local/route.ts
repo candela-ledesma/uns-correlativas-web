@@ -1,22 +1,11 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { Role } from "@/lib/auth/roles";
-import { prisma } from "@/lib/db/prisma";
 import { spawn } from "child_process";
 import { writeFile, readFile, unlink } from "fs/promises";
 import { tmpdir } from "os";
 import path from "path";
 
-function slugFromData(data: Record<string, unknown>): string | null {
-  const carrera = (data.plan as Record<string, unknown> | undefined)?.carrera;
-  if (typeof carrera !== "string" || !carrera) return null;
-  return carrera
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "")
-    .replace(/[^a-z0-9]+/g, "_")
-    .replace(/^_+|_+$/g, "");
-}
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -95,19 +84,10 @@ export async function POST(request: Request) {
         const bytes = await file.arrayBuffer();
 
         if (PARSER_API_URL) {
-          // Prod: usar la API remota en Railway
+          // Prod: usar la API remota en Render
           send("progress", { step: "parseando", message: "Ejecutando parser…" });
           const data = await runParserRemote(bytes, file.name);
           send("progress", { step: "leyendo", message: "Procesando resultado…" });
-          // Autoguardar borrador parser en BD
-          const slug = slugFromData(data);
-          if (slug) {
-            await prisma.plan.upsert({
-              where: { slug_fuente_estado: { slug, fuente: "PARSER", estado: "BORRADOR" } },
-              update: { planJson: JSON.stringify(data), updatedAt: new Date() },
-              create: { slug, fuente: "PARSER", estado: "BORRADOR", planJson: JSON.stringify(data) },
-            }).catch(() => {});
-          }
           send("done", { data });
         } else {
           // Local: usar subprocess Python
@@ -125,16 +105,6 @@ export async function POST(request: Request) {
             send("progress", { step: "leyendo", message: "Procesando resultado…" });
             const raw = await readFile(outPath, "utf-8");
             const data = JSON.parse(raw) as Record<string, unknown>;
-
-            // Autoguardar borrador parser en BD
-            const slug = slugFromData(data);
-            if (slug) {
-              await prisma.plan.upsert({
-                where: { slug_fuente_estado: { slug, fuente: "PARSER", estado: "BORRADOR" } },
-                update: { planJson: JSON.stringify(data), updatedAt: new Date() },
-                create: { slug, fuente: "PARSER", estado: "BORRADOR", planJson: JSON.stringify(data) },
-              }).catch(() => {});
-            }
 
             send("done", { data });
           } finally {
