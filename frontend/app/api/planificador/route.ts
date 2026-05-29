@@ -3,7 +3,7 @@ import { z } from "zod";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db/prisma";
 import { validateScheduleBlock, findOverlaps } from "@/lib/schedule/scheduleValidation";
-import { resolveCarreraVersionId } from "@/lib/db/carreraRepository";
+import { resolvePlanVersionId } from "@/lib/db/carreraRepository";
 
 function unauthorized() {
   return NextResponse.json({ error: "No autenticado" }, { status: 401 });
@@ -39,15 +39,15 @@ export async function GET(request: Request) {
     );
   }
 
-  let carreraVersionId: string;
+  let planVersionId: string;
   try {
-    carreraVersionId = await resolveCarreraVersionId(planId, versionId);
+    planVersionId = await resolvePlanVersionId(planId, versionId);
   } catch {
     return NextResponse.json({ error: "Plan no encontrado" }, { status: 404 });
   }
 
   const blocks = await prisma.scheduleBlock.findMany({
-    where: { userId: session.user.id, careerId, carreraVersionId },
+    where: { userId: session.user.id, careerId, planVersionId },
     orderBy: [{ dia: "asc" }, { horaInicio: "asc" }],
   });
 
@@ -74,15 +74,15 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: validationError }, { status: 422 });
   }
 
-  let carreraVersionId: string;
+  let planVersionId: string;
   try {
-    carreraVersionId = await resolveCarreraVersionId(data.planId, data.versionId);
+    planVersionId = await resolvePlanVersionId(data.planId, data.versionId);
   } catch {
     return NextResponse.json({ error: "Plan no encontrado" }, { status: 404 });
   }
 
   const existing = await prisma.scheduleBlock.findMany({
-    where: { userId: session.user.id, careerId: data.careerId, carreraVersionId },
+    where: { userId: session.user.id, careerId: data.careerId, planVersionId },
     select: { id: true, dia: true, horaInicio: true, horaFin: true },
   });
 
@@ -98,7 +98,7 @@ export async function POST(request: Request) {
     data: {
       userId: session.user.id,
       careerId: data.careerId,
-      carreraVersionId,
+      planVersionId,
       materiaNombre: data.materiaNombre,
       materiaId: data.materiaId ?? null,
       dia: data.dia,

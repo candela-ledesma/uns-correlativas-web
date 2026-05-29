@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/db/prisma";
-import { getCarreras, getCarreraById, resolveCarreraVersionId } from "@/lib/db/carreraRepository";
+import { getCarreras, getCarreraById, resolvePlanVersionId } from "@/lib/db/carreraRepository";
 import type {
   UserProductContextResponse,
   UserSessionSummaryResponse,
@@ -27,15 +27,15 @@ async function ensureEnrollmentBootstrap(userId: string) {
     return sanitizeCarreraIds(existing.map((item) => item.careerId));
   }
 
-  // Primer login: inferir carreras desde el progreso existente usando carreraVersion.carreraId
+  // Primer login: inferir carreras desde el progreso existente usando planVersion.carreraId
   const userProgressCareers = await prisma.userPlanProgress.findMany({
     where: { userId },
-    select: { carreraVersion: { select: { carreraId: true } } },
-    distinct: ["carreraVersionId"],
+    select: { planVersion: { select: { carreraId: true } } },
+    distinct: ["planVersionId"],
   });
 
   const fromProgress = await sanitizeCarreraIds(
-    userProgressCareers.map((item) => item.carreraVersion.carreraId)
+    userProgressCareers.map((item) => item.planVersion.carreraId)
   );
 
   const availableIds = await getAvailableCarreraIds();
@@ -107,13 +107,13 @@ export async function getUserProductContext(
     prisma.userRecentPlan.findMany({
       where: { userId },
       orderBy: { openedAt: "desc" },
-      include: { carreraVersion: { select: { carreraId: true, versionId: true } } },
+      include: { planVersion: { select: { carreraId: true, versionId: true } } },
     }),
     prisma.userPlanProgress.findMany({
       where: { userId },
       select: {
         stateJson: true,
-        carreraVersion: { select: { carreraId: true } },
+        planVersion: { select: { carreraId: true } },
       },
     }),
   ]);
@@ -126,15 +126,15 @@ export async function getUserProductContext(
           return typeof s === "object" && s !== null && Object.keys(s).length > 0;
         } catch { return false; }
       })
-      .map((r) => r.carreraVersion.carreraId)
+      .map((r) => r.planVersion.carreraId)
   ));
 
   const lastPlanByCareer = Object.fromEntries(
     lastPlans.map((row) => [
       row.careerId,
       {
-        planSlug: row.carreraVersion.carreraId,
-        versionId: row.carreraVersion.versionId,
+        planSlug: row.planVersion.carreraId,
+        versionId: row.planVersion.versionId,
         openedAt: row.openedAt.toISOString(),
       },
     ])
@@ -220,7 +220,7 @@ export async function recordPlanOpened(input: {
     throw new Error("Carrera invalida");
   }
 
-  const carreraVersionId = await resolveCarreraVersionId(input.planSlug, input.versionId);
+  const planVersionId = await resolvePlanVersionId(input.planSlug, input.versionId);
 
   await prisma.$transaction(async (tx) => {
     await tx.carreraSeleccionada.upsert({
@@ -231,8 +231,8 @@ export async function recordPlanOpened(input: {
 
     await tx.userRecentPlan.upsert({
       where: { userId_careerId: { userId: input.userId, careerId: resolvedCareerId } },
-      update: { carreraVersionId, openedAt: new Date() },
-      create: { userId: input.userId, careerId: resolvedCareerId, carreraVersionId },
+      update: { planVersionId, openedAt: new Date() },
+      create: { userId: input.userId, careerId: resolvedCareerId, planVersionId },
     });
 
     await tx.userPreference.upsert({

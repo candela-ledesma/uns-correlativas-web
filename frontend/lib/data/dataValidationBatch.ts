@@ -7,7 +7,7 @@ import type { PlanData } from "@/app/types/plan";
 import { getCarreras } from "@/lib/db/carreraRepository";
 import { prisma } from "@/lib/db/prisma";
 
-type CarreraVersionConfig = {
+type PlanVersionConfig = {
   versionId: string;
   label: string;
   disponible: boolean;
@@ -17,7 +17,7 @@ type CarreraVersionConfig = {
 type CarreraConfig = {
   id: string;
   nombre: string;
-  versions: CarreraVersionConfig[];
+  versions: PlanVersionConfig[];
 };
 
 export type DataIssueSeverity = "critical" | "medium" | "low";
@@ -315,7 +315,7 @@ function updateSummaryWithIssues(
 }
 
 function shouldSkipVersion(
-  version: CarreraVersionConfig,
+  version: PlanVersionConfig,
   options: Required<Pick<ValidateBatchOptions, "includeHidden" | "includeUnavailable">>
 ): string | null {
   if (version.hidden === true && !options.includeHidden) {
@@ -331,7 +331,7 @@ function shouldSkipVersion(
 
 async function validateSingleVersion(
   carrera: CarreraConfig,
-  version: CarreraVersionConfig
+  version: PlanVersionConfig
 ): Promise<{ status: VersionValidationStatus; issues: DataValidationIssue[] }> {
   const plan = await prisma.plan
     .findFirst({ where: { slug: carrera.id, estado: "PUBLICADO", esBackup: false } })

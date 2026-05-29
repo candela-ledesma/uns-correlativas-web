@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { Role } from "@/lib/auth/roles";
 import { prisma } from "@/lib/db/prisma";
-import { upsertCarrera, upsertCarreraVersion } from "@/lib/db/carreraRepository";
+import { upsertCarrera, upsertPlanVersion } from "@/lib/db/carreraRepository";
 import { createAuditEvent } from "@/lib/db/audit";
 
 export const dynamic = "force-dynamic";
@@ -32,7 +32,7 @@ async function registrarCarreraEnDB(
   departamentoId?: string | null,
 ): Promise<void> {
   await upsertCarrera({ id: slug, nombre, departamentoId });
-  await upsertCarreraVersion({ carreraId: slug, versionId: "v1", jsonFile, planId });
+  await upsertPlanVersion({ carreraId: slug, versionId: "v1", jsonFile, planId });
 }
 
 export async function POST(request: Request) {
@@ -164,7 +164,7 @@ export async function POST(request: Request) {
     // Borrar pendiente si existe
     await prisma.plan.deleteMany({ where: { slug, estado: "PENDIENTE" } }).catch(() => {});
 
-    // Registrar carrera si es nueva y vincular CarreraVersion al Plan publicado
+    // Registrar carrera si es nueva y vincular PlanVersion al Plan publicado
     await registrarCarreraEnDB(slug, `${slug}.json`, plan.plan.carrera, publishedPlanId, departamentoId).catch(() => {});
 
     await createAuditEvent({

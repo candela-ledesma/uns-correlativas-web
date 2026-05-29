@@ -1,0 +1,1434 @@
+% ============================================================
+%  TEMPLATE DE TESIS - Universidad Nacional del Sur
+%  Licenciatura en Ciencias de la Computación
+%  Alumna: Candela Ledesma
+% ============================================================
+
+\documentclass[12pt, a4paper]{report}
+
+% ---- Paquetes ----
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish]{babel}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{setspace}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{tocloft}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{csquotes}
+\usepackage{enumitem}
+\usepackage{parskip}
+\usepackage{emptypage}
+\usepackage{microtype}
+\usepackage{float}      % permite [H] para fijar figuras exactamente en su posición
+
+% ---- Márgenes ----
+\geometry{
+  top=2.5cm,
+  bottom=2.5cm,
+  left=3cm,
+  right=2.5cm
+}
+
+% ---- Interlineado ----
+\onehalfspacing
+
+% ---- Colores para código ----
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.97,0.97,0.97}
+
+% ---- Estilo para bloques de código ----
+\lstdefinestyle{mystyle}{
+  backgroundcolor=\color{backcolour},
+  commentstyle=\color{codegreen},
+  keywordstyle=\color{codepurple}\bfseries,
+  numberstyle=\tiny\color{codegray},
+  stringstyle=\color{codegreen},
+  basicstyle=\ttfamily\footnotesize,
+  breakatwhitespace=false,
+  breaklines=true,
+  captionpos=b,
+  keepspaces=true,
+  numbers=left,
+  numbersep=5pt,
+  showspaces=false,
+  showstringspaces=false,
+  showtabs=false,
+  tabsize=2,
+  frame=single,
+  rulecolor=\color{codegray}
+}
+\lstset{style=mystyle}
+
+% ---- Estilo de encabezado y pie de página ----
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\nouppercase{\leftmark}}
+\fancyhead[R]{\small Candela Ledesma}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\chaptermark}[1]{\markboth{\thechapter.\ #1}{}}
+
+% ---- Estilo de capítulos ----
+\titleformat{\chapter}[display]
+  {\normalfont\Large\bfseries}
+  {\chaptertitlename\ \thechapter}{10pt}{\huge}
+\titlespacing*{\chapter}{0pt}{-10pt}{20pt}
+
+% ---- Hipervínculos (siempre al final del preámbulo) ----
+\hypersetup{
+  colorlinks=true,
+  linkcolor=black,
+  urlcolor=blue,
+  citecolor=black,
+  pdftitle={Título de la Tesis - Candela Ledesma},
+  pdfauthor={Candela Ledesma}
+}
+
+% ============================================================
+\begin{document}
+
+% ============================================================
+%  PORTADA
+% ============================================================
+\begin{titlepage}
+  \centering
+
+  % \includegraphics[width=0.25\textwidth]{logo_uns.png}\\[1cm]
+
+  \vspace{1cm}
+
+  {\LARGE \textbf{Documento de Tesis}}\\[0.3cm]
+  {\large Licenciatura en Ciencias de la Computación}\\[2cm]
+
+  {\huge \textbf{[Título de la Tesis Placeholder]}}\\[0.5cm]
+  {\large Subtítulo descriptivo del proyecto (opcional)}\\[2.5cm]
+
+  \begin{flushleft}
+    \large
+    \textbf{Alumna:} Candela Ledesma \\[0.4cm]
+    \textbf{Director:} Dr.\ Sebastian Gottifredi \\[0.4cm]
+    \textbf{Departamento:} Ciencias e Ingeniería de la Computación \\[0.4cm]
+    \textbf{Universidad:} Universidad Nacional del Sur \\[0.4cm]
+    \textbf{Fecha:} \the\year
+  \end{flushleft}
+
+  \vfill
+\end{titlepage}
+
+% ============================================================
+%  PÁGINAS PRELIMINARES
+% ============================================================
+\pagenumbering{roman}
+\setcounter{page}{1}
+
+\newpage
+\thispagestyle{empty}
+\mbox{}
+
+% ---- Índice general ----
+\newpage
+\tableofcontents
+
+% ============================================================
+%  CUERPO PRINCIPAL
+% ============================================================
+\newpage
+\pagenumbering{arabic}
+\setcounter{page}{1}
+
+% ============================================================
+%  CAPÍTULO 1 - INTRODUCCIÓN
+% ============================================================
+\chapter{Introducción}
+\label{cap:introduccion}
+
+\section{Motivación}
+
+Las universidades publican sus planes de estudio en formato PDF: documentos diseñados para
+ser leídos por personas, no procesados por sistemas. Para un estudiante que quiere entender
+qué materias debe cursar antes de inscribirse a otra, o planificar su recorrido académico a
+lo largo de años, ese PDF ofrece poca ayuda. La información está ahí, pero no es
+interactiva, no responde preguntas, y no permite explorar dependencias entre materias de
+forma visual.
+
+Este problema existe en la Universidad Nacional del Sur (UNS), donde cada carrera tiene su
+propio plan de estudios con correlativas, agrupadores de optativas, requisitos especiales
+expresados en prosa y estructuras que varían entre departamentos. Un estudiante que quiere
+saber si puede inscribirse a una materia debe rastrear manualmente una cadena de
+dependencias que puede atravesar varios años del plan.
+
+La motivación de este trabajo es resolver ese problema: transformar los planes de estudio
+estáticos de la UNS en una aplicación web interactiva que permita a cada estudiante
+visualizar su situación académica, marcar el progreso de sus materias y entender qué
+caminos tiene disponibles para avanzar en su carrera.
+
+\section{Problema y Desafíos}
+
+El punto de partida del problema es la brecha entre el formato de publicación y el formato
+que requiere una aplicación interactiva. Los PDFs de planes de estudio de la UNS no siguen
+una estructura uniforme: algunas carreras usan tablas, otras listas, algunas expresan
+correlativas como IDs numéricos, otras las describen en prosa. Esta heterogeneidad hace que
+cualquier intento de extracción automática enfrente casos borde difíciles de anticipar.
+
+El primer desafío técnico es convertir esos documentos en un JSON estructurado y validado
+que capture fielmente la información del plan: materias, años, cuatrimestres, correlativas
+para cursar y para rendir, agrupadores de optativas, grupos de idioma y requisitos
+especiales. Cualquier error en esta conversión se propaga directamente a la experiencia del
+usuario: si una correlativa está mal registrada, el sistema puede habilitar materias que el
+estudiante no debería poder cursar, o bloquear materias que sí debería tener disponibles.
+
+El segundo desafío es la escala del problema de conversión. La UNS ofrece decenas de
+carreras. Mantener los JSONs actualizados manualmente cada vez que un plan cambia no es
+viable. Se necesita un pipeline que reduzca la intervención humana al mínimo y que pueda
+incorporar nuevos planes con el menor esfuerzo posible.
+
+El tercer desafío es la validación. Dado que el pipeline involucra modelos de inteligencia
+artificial generativa, los outputs no son deterministas ni siempre correctos. Se requiere
+una estrategia de evaluación que permita medir la calidad del JSON generado y detectar
+errores antes de que lleguen a los usuarios.
+
+\section{Objetivo General}
+
+Diseñar e implementar un sistema que convierta planes de estudio universitarios en PDF a
+datos estructurados, y los publique en una aplicación web que permita a los estudiantes
+gestionar su progreso académico y explorar las dependencias entre materias de su carrera.
+
+\section{Objetivos Específicos}
+
+\begin{enumerate}
+  \item Diseñar un schema JSON validado que represente fielmente la estructura de un plan de
+        estudios, incluyendo correlativas, optativas e idiomas.
+  \item Desarrollar un parser local en Python capaz de extraer materias, correlativas y
+        agrupadores desde PDFs de planes de estudio de la UNS.
+  \item Integrar un modelo de lenguaje de gran escala (Gemini) para generar JSONs
+        directamente desde PDFs mediante visión nativa, como alternativa al parser local.
+  \item Implementar una métrica de similitud que permita comparar el output del modelo
+        contra el ground truth del parser local.
+  \item Desarrollar una aplicación web que permita a los estudiantes visualizar planes de
+        estudio, marcar su progreso y explorar correlativas de forma interactiva.
+  \item Implementar un panel de administración que permita subir PDFs, comparar outputs del
+        parser y del modelo, y publicar planes sin intervención técnica.
+\end{enumerate}
+
+\section{Organización del documento}
+
+El capítulo~\ref{cap:contexto} describe el contexto institucional y las tecnologías
+utilizadas. El capítulo~\ref{cap:arquitectura} presenta la arquitectura de la solución y el
+modelo de datos. El capítulo~\ref{cap:implementacion} detalla la implementación de los
+módulos principales. El capítulo~\ref{cap:evaluacion} evalúa los resultados obtenidos
+mediante la métrica de comparación entre el parser local y el modelo de IA. El
+capítulo~\ref{cap:conclusiones} presenta las conclusiones, lecciones aprendidas y trabajo
+futuro.
+
+% ============================================================
+%  CAPÍTULO 2 - CONTEXTO Y TECNOLOGÍAS
+% ============================================================
+\chapter{Contexto y Tecnologías}
+\label{cap:contexto}
+
+\section{Contexto}
+
+La Universidad Nacional del Sur (UNS) es una universidad pública argentina con sede en
+Bahía Blanca. Ofrece carreras de grado distribuidas en múltiples departamentos, cada uno
+con autonomía para definir la estructura de sus planes de estudio. Esta autonomía se refleja
+en la heterogeneidad de los documentos: algunas carreras organizan el plan en tablas por
+año y cuatrimestre, otras en listas lineales; algunas expresan las correlativas como
+identificadores numéricos, otras las describen en prosa. No existe un formato unificado.
+
+Los planes de estudio se publican únicamente en formato PDF, un formato diseñado para
+impresión y lectura humana. Para un sistema informático, extraer información estructurada de
+esos documentos requiere resolver primero el problema de la conversión: transformar un
+documento orientado a la presentación en datos procesables por una aplicación.
+
+Este trabajo se enmarca también en el surgimiento de los modelos de lenguaje de gran escala
+(LLMs) con capacidades de visión: modelos que pueden recibir un PDF como imagen y razonar
+sobre su contenido visual sin requerir extracción de texto previa. Esta capacidad abre una
+vía alternativa al parsing clásico basado en reglas, con la posibilidad de generalizar a
+documentos con estructuras arbitrarias que serían difíciles de cubrir con heurísticas
+escritas a mano.
+
+El sistema desarrollado en este trabajo aprovecha ambos enfoques: un parser local en Python
+como fuente de verdad verificable, y un modelo de IA generativa (Gemini) como mecanismo de
+conversión escalable, con un panel de administración que permite comparar ambos outputs
+antes de publicar.
+
+\section{Herramientas y Tecnologías}
+
+A continuación se describen las principales tecnologías utilizadas en el desarrollo del
+proyecto.
+
+\subsection{Prisma y PostgreSQL}
+
+La base de datos relacional es PostgreSQL, accedida a través de Prisma ORM v6. Prisma
+cumple tres roles en el proyecto: define el schema de la base de datos en un lenguaje
+declarativo propio (\texttt{schema.prisma}), genera un cliente TypeScript con tipado
+completo a partir de ese schema, y gestiona las migraciones de base de datos.
+
+La instancia de PostgreSQL se aloja en Neon, una plataforma de PostgreSQL serverless con
+soporte a conexiones HTTP y WebSocket, elegida por su integración nativa con el modelo de
+despliegue serverless de Vercel. Neon provee dos URLs de conexión: una pooled (vía
+PgBouncer) para las funciones serverless, y una directa para las migraciones de Prisma que
+requieren una conexión persistente.
+
+\subsection{Gemini y la API de Google GenAI}
+
+El componente de inteligencia artificial usa la API de Google Generative AI
+(\texttt{@google/genai}) para enviar PDFs directamente al modelo Gemini~2.5~Flash y recibir
+un JSON estructurado como respuesta. El PDF se transmite como \texttt{inlineData} en base64
+con MIME type \texttt{application/pdf}, lo que permite que Gemini procese el documento con
+sus capacidades de visión nativa sin extracción de texto previa.
+
+El modelo opera con temperatura~0 para maximizar el determinismo de los outputs. El prompt
+del sistema (almacenado en \texttt{frontend/lib/ai/prompt.ts} y editable desde la tabla
+\texttt{AdminConfig} de la base de datos sin necesidad de redeploy) instruye al modelo sobre
+el schema JSON de salida, las reglas de agrupadores de optativas, los grupos de idioma y los
+casos borde más frecuentes. El sistema soporta cuatro modelos intercambiables desde el panel
+admin: \texttt{gemini-2.5-flash} (modelo principal), \texttt{gemini-2.5-flash-lite},
+\texttt{gemini-2.5-pro} y \texttt{gemma-4-26b-a4b-it}.
+
+\subsection{Parser local en Python}
+
+El parser local está implementado en Python y expuesto como una API REST con FastAPI y
+Uvicorn. Recibe un PDF por multipart form-data y devuelve el JSON del plan de estudios.
+Internamente usa \texttt{pdfplumber} para la extracción de texto y la detección de layout,
+y aplica reglas de parsing específicas para los formatos de la UNS.
+
+Este parser no reemplaza al modelo de IA: cumple el rol de generador del ground truth,
+produciendo el JSON de referencia contra el cual se evalúa la calidad del output de Gemini.
+La comparación entre ambos outputs se realiza con un script de evaluación
+(\texttt{scripts/comparar\_json.py}) que calcula métricas de similitud sobre materias,
+correlativas y agrupadores.
+
+\subsection{Despliegue: Vercel y Render}
+
+El frontend Next.js se despliega en Vercel. Vercel compila y publica automáticamente cada
+push a la rama principal, genera previews por pull request, y sirve las funciones
+serverless con routing optimizado para Next.js. Los deployments de preview usan branches
+de Neon aisladas, sin contaminar la base de datos de producción.
+
+El parser local en Python se despliega en Render como servicio independiente. Render
+permite workers persistentes de larga duración, necesarios para Uvicorn: el parser no
+puede correr como función serverless porque el modelo stateless de Vercel es incompatible
+con el tiempo de startup de un servidor Python con dependencias como \texttt{pdfplumber}.
+Esta separación implica que el panel admin realiza dos requests en paralelo al subir un
+PDF: uno a Vercel (para Gemini) y otro a Render (para el parser local).
+
+\subsection{Testing}
+
+La suite de tests cubre tres niveles. Los \textbf{tests unitarios del parser} en Python
+(pytest) verifican que las reglas de parsing produzcan el JSON correcto para cada PDF del
+dataset. Los \textbf{tests de integración del frontend} (Vitest) cubren la lógica de
+validación de schemas, sincronización de progreso y utilidades de correlativas. Los
+\textbf{tests end-to-end} (Playwright) verifican los flujos principales de la aplicación
+web, incluyendo navegación, marcado de progreso y acceso al panel de administración.
+
+\section{Comparación de alternativas}
+\label{sec:comparacion-alternativas}
+
+La tabla~\ref{tab:alternativas} resume las principales decisiones tecnológicas del sistema
+y el motivo de cada elección.
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabular}{p{3.2cm} p{3.2cm} p{7cm}}
+\toprule
+\textbf{Elegido} & \textbf{Descartado} & \textbf{Motivo principal} \\
+\midrule
+Parser + Gemini (híbrido)
+  & Solo parser o solo IA
+  & El parser garantiza ground truth verificable; Gemini escala a formatos arbitrarios.
+    Ninguno es suficiente solo. \\
+\addlinespace
+PostgreSQL (Prisma)
+  & MongoDB u otra BD documental
+  & Las entidades del sistema son relacionales; solo el progreso del usuario tiene naturaleza
+    documental y se serializa como JSON en un campo texto
+    (véase sección~\ref{sec:modulo-progreso}). \\
+\addlinespace
+NextAuth v4
+  & OAuth propio
+  & Encapsula el flujo completo de Google OAuth en pocas líneas y se integra nativamente
+    con Prisma. Suficiente para el alcance del sistema. \\
+\addlinespace
+Vercel + Neon
+  & Servidor dedicado
+  & Despliegue continuo sin configuración de infraestructura; escalado automático adecuado
+    para la carga variable de un sistema universitario. \\
+\bottomrule
+\end{tabular}
+\caption{Resumen de decisiones tecnológicas principales.}
+\label{tab:alternativas}
+\end{table}
+
+La decisión más relevante es la arquitectura híbrida parser/IA. Un parser basado en reglas
+ofrece alta predecibilidad y resultados verificables, pero requiere mantenimiento
+proporcional a la diversidad de formatos de cada carrera. Un modelo de IA generativa
+generaliza a formatos arbitrarios sin código adicional, pero sus outputs no son
+deterministas. El sistema combina ambos: el parser genera el ground truth y Gemini opera
+como motor de conversión escalable, con el panel admin como punto de validación entre
+ambos.
+
+% ============================================================
+%  CAPÍTULO 3 - ARQUITECTURA DE LA SOLUCIÓN
+% ============================================================
+\chapter{Arquitectura de la Solución}
+\label{cap:arquitectura}
+
+\section{Descripción general}
+
+La solución propuesta se apoya en una arquitectura [tipo de arquitectura, por ejemplo:
+modular, cliente-servidor, etc.] que permite [ventaja principal].
+
+\section{Diagrama de arquitectura}
+
+% \begin{figure}[htbp]
+%   \centering
+%   \includegraphics[width=0.8\textwidth]{diagrama_arquitectura.png}
+%   \caption{Diagrama general de la arquitectura del sistema.}
+%   \label{fig:arquitectura}
+% \end{figure}
+
+La arquitectura se puede dividir en las siguientes capas:
+
+\begin{itemize}
+  \item \textbf{Capa de presentación:} [descripción]
+  \item \textbf{Capa de lógica de negocio:} [descripción]
+  \item \textbf{Capa de datos:} [descripción]
+\end{itemize}
+
+\section{Modelo de datos}
+
+El sistema utiliza PostgreSQL como base de datos relacional, accedida a través de Prisma
+ORM. El schema está diseñado alrededor de tres ejes: autenticación y perfil de usuario,
+gestión del ciclo de vida de los planes de estudio, y trazabilidad de acciones
+administrativas.
+
+\subsection{Entidades principales}
+
+\subsubsection*{User}
+
+Representa a un usuario autenticado. Se crea automáticamente al primer login con Google
+(vía NextAuth). El campo \texttt{role} controla el nivel de acceso: \texttt{USER} solo
+accede a la aplicación, \texttt{MODERATOR} puede enviar planes para revisión,
+\texttt{ADMIN} puede publicar planes, gestionar usuarios y editar la configuración del
+sistema.
+
+\subsubsection*{Carrera y Departamento}
+
+\texttt{Carrera} es la entidad central del dominio académico: tiene un identificador
+\texttt{slug} único (ej: \texttt{ingenieria\_civil}), pertenece a un \texttt{Departamento}
+(unidad académica, también identificada por slug), y puede tener múltiples versiones de
+plan (\texttt{PlanVersion}).
+
+\subsubsection*{PlanVersion}
+
+Modela las versiones del plan de estudios de una carrera (ej: \texttt{v1}, \texttt{v2}).
+Referencia el archivo JSON con el contenido del plan (\texttt{jsonFile}) y apunta al
+\texttt{Plan} publicado que respalda esa versión.
+
+\subsubsection*{Plan}
+
+Tabla unificada para el ciclo de vida de un plan. Anteriormente existían tres tablas
+separadas (\texttt{PlanBorrador}, \texttt{PlanPendiente}, \texttt{PlanPublicado}) con
+campos inconsistentes entre sí. Se consolidaron en una sola tabla con un enum
+\texttt{estado}:
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{ll}
+\toprule
+\textbf{Estado} & \textbf{Significado} \\
+\midrule
+\texttt{BORRADOR}  & Generado al parsear un PDF, pendiente de revisión \\
+\texttt{PENDIENTE} & Enviado por moderador, esperando aprobación de admin \\
+\texttt{PUBLICADO} & Visible para los usuarios \\
+\texttt{INACTIVO}  & Desactivado temporalmente sin perder historial \\
+\bottomrule
+\end{tabular}
+\caption{Estados del ciclo de vida de un \texttt{Plan}.}
+\label{tab:estados-plan}
+\end{table}
+
+El campo \texttt{fuente} (enum \texttt{PlanFuente}) indica si el JSON fue generado por el
+parser local Python (\texttt{PARSER}), por Gemini con visión nativa (\texttt{GEMINI}), o
+fusionado manualmente en el panel admin (\texttt{MERGED}). El campo \texttt{esBackup}
+reemplaza el mecanismo anterior donde los backups se guardaban con el slug
+\texttt{"\{slug\}\_v1\_backup"} dentro de la misma tabla.
+
+La restricción de unicidad \texttt{@@unique([slug, fuente, estado])} es central para el
+flujo de comparación del panel admin: permite que coexistan simultáneamente un plan de
+fuente \texttt{PARSER} y uno de fuente \texttt{GEMINI} en estado \texttt{BORRADOR} para
+la misma carrera, habilitando la comparación side-by-side entre ambos outputs antes de
+decidir cuál publicar. Al mismo tiempo, la restricción garantiza que no pueda existir más
+de un plan \texttt{PUBLICADO} por carrera y fuente, evitando inconsistencias en la versión
+visible para los usuarios.
+
+\subsubsection*{UserPlanProgress}
+
+Almacena el progreso del usuario en un plan: qué materias aprobó, cursó o no cursó. El
+estado se representa como un objeto JSON serializado
+\texttt{\{[materiaId]: "aprobada"\,|\,"cursada"\,|\,"no\_cursada"\}} que se sobreescribe
+completo en cada sincronización. La justificación técnica de esta decisión de diseño se
+desarrolla en la sección~\ref{sec:modulo-progreso}.
+
+\subsubsection*{CarreraSeleccionada}
+
+Gestiona la relación muchos-a-muchos entre \texttt{User} y \texttt{Carrera}: cada fila
+indica que un usuario eligió seguir una carrera dentro de la aplicación. No representa
+una inscripción académica formal. La restricción \texttt{UNIQUE([userId, careerId])}
+evita duplicados en el panel del usuario.
+
+\subsubsection*{UserPreference}
+
+Singleton por usuario (relación 1-a-1). Almacena \texttt{activeCareerId} (carrera
+seleccionada actualmente en el dashboard) y los timestamps de onboarding
+(\texttt{onboardingCompletedAt}, \texttt{onboardingDismissedAt}), que controlan si se
+muestra el wizard de bienvenida en el próximo acceso.
+
+\subsubsection*{UserRecentPlan}
+
+Registra el último plan que cada usuario abrió por carrera, con un upsert en cada
+navegación. Esta tabla habilita la funcionalidad ``continuar donde lo dejaste'': al
+cargar la pantalla principal, el sistema consulta \texttt{UserRecentPlan} para mostrar
+directamente la versión del plan visitada por última vez.
+
+\subsubsection*{ProgressShare}
+
+Snapshot inmutable del progreso de un usuario en un momento dado, identificado por un
+token público. Se crea al compartir el avance y nunca se actualiza: el enlace siempre
+muestra el estado exacto del instante en que se compartió.
+
+\subsubsection*{ScheduleBlock}
+
+Bloques del planificador semanal. \texttt{dia} va de \texttt{0} (lunes) a \texttt{6}
+(domingo); los horarios se almacenan como enteros \texttt{HHMM} (ej: \texttt{830},
+\texttt{1000}). El campo \texttt{materiaId} es opcional, permitiendo bloques libres sin
+materia asociada. El campo \texttt{color} permite asignar un color hexadecimal a cada
+bloque para distinguirlos visualmente en la grilla.
+
+\subsubsection*{AdminConfig}
+
+Singleton (\texttt{id = "singleton"}) que almacena los prompts enviados a Gemini para
+parsear PDFs. Editable desde el panel admin sin necesidad de redeploy: si existe la fila,
+el sistema la usa; si no, cae al valor compilado en \texttt{frontend/lib/ai/prompt.ts}.
+
+\subsubsection*{AuditLog}
+
+Log append-only de acciones administrativas. Los campos \texttt{actorEmail} y
+\texttt{actorRole} están desnormalizados intencionalmente: reflejan la identidad del actor
+en el momento del evento, no su estado actual. Cada registro incluye \texttt{beforeJson} y
+\texttt{afterJson}, que permiten reconstruir exactamente qué cambió en cada acción. El
+campo \texttt{actorUserId} es nullable con \texttt{onDelete: SetNull}: si el actor es
+eliminado, el log persiste con los campos desnormalizados que conservan la identidad
+histórica del evento.
+
+\subsection{Relaciones principales}
+
+Las relaciones entre entidades se pueden ver en detalle en el diagrama ER de la
+figura~\ref{fig:diagrama-er}. Los aspectos que merecen atención explícita son los
+siguientes:
+
+\begin{itemize}
+  \item \textbf{Relación \texttt{PlanVersion} $\longrightarrow$ \texttt{Plan} opcional:}
+        el campo \texttt{planId} es nullable para soportar versiones de carrera previas a la
+        migración del sistema que no tienen un \texttt{Plan} asociado en la nueva tabla
+        unificada.
+
+  \item \textbf{\texttt{onDelete: Cascade} en datos de usuario:} \texttt{UserPlanProgress},
+        \texttt{ScheduleBlock}, \texttt{UserRecentPlan} y \texttt{UserPreference} se
+        eliminan en cascada al borrar el \texttt{User} o la \texttt{PlanVersion}
+        padre. Esto evita datos huérfanos sin requerir lógica explícita en la aplicación.
+
+  \item \textbf{FK nula en \texttt{AuditLog}:} \texttt{actorUserId} es nullable con
+        \texttt{onDelete: SetNull}. Si el actor es eliminado, el log persiste con los campos
+        \texttt{actorEmail} y \texttt{actorRole} desnormalizados, que conservan la identidad
+        histórica del evento.
+\end{itemize}
+
+\begin{figure}[htbp]
+  \centering
+
+  \begin{subfigure}[t]{0.65\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{figuras/USER-simplificada.png}
+    \caption{Entidades centradas en \texttt{User}.}
+    \label{fig:er-user}
+  \end{subfigure}
+
+  \vspace{1em}
+
+  \begin{subfigure}[t]{0.65\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{figuras/Carrera-simplificada.png}
+    \caption{Entidades centradas en \texttt{Carrera}.}
+    \label{fig:er-carrera}
+  \end{subfigure}
+
+  \vspace{1em}
+
+  \begin{subfigure}[t]{0.65\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{figuras/relacion.png}
+    \caption{Relación entre \texttt{User} y \texttt{Carrera}.}
+    \label{fig:er-relacion}
+  \end{subfigure}
+
+  \caption{Diagrama entidad-relación del modelo de datos, organizado en tres bloques.}
+  \label{fig:diagrama-er}
+\end{figure}
+
+\section{Decisiones de diseño}
+\label{sec:decisiones-disenio}
+
+Esta sección justifica las decisiones de diseño más relevantes del sistema, tanto a nivel
+de modelo de datos como de selección de herramientas.
+
+\subsection{Modelo de datos}
+
+\begin{itemize}
+  \item \textbf{Desnormalización intencional en \texttt{AuditLog}:} los campos
+        \texttt{actorEmail} y \texttt{actorRole} se copian literalmente en el momento del
+        evento en lugar de referenciarse mediante una clave foránea al usuario. Esta
+        decisión protege la integridad histórica del log: si un usuario cambia de rol o
+        es eliminado del sistema, el registro de auditoría debe reflejar quién era el actor
+        y qué rol tenía en el momento exacto en que ocurrió la acción.
+
+  \item \textbf{Enums \texttt{PlanEstado} y \texttt{PlanFuente} como reemplazo de tablas
+        separadas:} la arquitectura anterior usaba tres tablas distintas
+        (\texttt{PlanBorrador}, \texttt{PlanPendiente}, \texttt{PlanPublicado}), lo que
+        generaba campos inconsistentes entre sí y complicaba las consultas transversales.
+        Los enums centralizan esa lógica en una única tabla \texttt{Plan}, simplificando
+        migraciones, consultas y el panel de administración.
+
+  \item \textbf{Snapshot inmutable en \texttt{ProgressShare}:} al compartir el avance, el
+        sistema copia físicamente el \texttt{stateJson} en ese momento. El enlace siempre
+        muestra el estado en el instante en que se compartió, independientemente de cambios
+        posteriores del usuario.
+
+  \item \textbf{Progreso del usuario como documento serializado:} el estado de avance
+        se almacena como un único objeto JSON (\texttt{stateJson}) en lugar de una tabla
+        relacional con una fila por materia. El cliente siempre carga el progreso completo
+        de un plan, interactúa localmente y envía el mapa completo al sincronizar: no
+        existen consultas del tipo \emph{«dame el estado de la materia X para el usuario Y»}.
+        Una tabla normalizada introduciría un \texttt{DELETE} más $N$ inserciones por
+        sincronización y reconstruiría en memoria el mismo objeto que ya existe serializado,
+        sin beneficio funcional. La estrategia de sincronización LWW y la sanitización del
+        payload se describen en la sección~\ref{sec:modulo-progreso}.
+\end{itemize}
+
+\subsection{Selección del modelo de IA}
+\label{sec:modelos-ia-descartados}
+
+Durante el desarrollo se evaluaron tres alternativas a Gemini para la generación de JSONs
+desde PDFs:
+
+\begin{itemize}
+  \item \textbf{Grok (xAI):} al momento de evaluación no ofrecía soporte estable para
+        \texttt{inlineData} de PDFs y requería extracción de texto previa, lo que contradice
+        la estrategia de visión nativa del proyecto.
+
+  \item \textbf{Claude API (Anthropic):} con capacidades de visión comparables a Gemini y
+        mejor desempeño en seguimiento de instrucciones complejas. Se descartó por costo:
+        el volumen de tokens por PDF resulta significativamente más caro que en Gemini,
+        especialmente considerando el plan gratuito disponible durante la etapa de
+        desarrollo.
+
+  \item \textbf{Ollama (modelos locales):} permite correr modelos open-source sin costo por
+        token, pero los modelos con capacidades de visión suficientes para PDFs complejos
+        (LLaVA, Qwen-VL) requieren GPU dedicada. La calidad de extracción en documentos con
+        tablas y layouts complejos fue inferior a la de Gemini en las pruebas realizadas.
+\end{itemize}
+
+% ============================================================
+%  CAPÍTULO 4 - IMPLEMENTACIÓN
+% ============================================================
+\chapter{Implementación}
+\label{cap:implementacion}
+
+\section{Estructura del proyecto}
+
+El repositorio está organizado en tres módulos que se despliegan en servicios separados:
+\texttt{frontend/} contiene la aplicación Next.js (App Router, API Routes, componentes de
+UI y lógica de plan); \texttt{parser/} contiene el motor de parsing Python con FastAPI,
+sus patrones, clasificador y tests por carrera; y \texttt{scripts/} contiene las
+utilidades de evaluación, incluyendo \texttt{comparar\_json.py}. Las secciones siguientes
+detallan la implementación de los tres módulos principales del sistema.
+
+% ============================================================
+%  MÓDULO 1 — PIPELINE GEMINI (VISIÓN NATIVA)
+% ============================================================
+\section{Módulo: Pipeline Gemini con visión nativa}
+\label{sec:modulo-gemini}
+
+\subsection{Flujo de una solicitud}
+
+La figura~\ref{fig:pipelines-comparacion} (al final de la sección~\ref{sec:modulo-parser})
+ilustra ambos pipelines en paralelo para facilitar su comparación.
+
+El proceso se inicia en la interfaz de administración, donde el archivo se envía mediante
+una solicitud \texttt{POST} hacia la API Route \texttt{/api/admin/planes/parsear} de
+Next.js. Debido a las limitaciones de tiempo de ejecución de las funciones
+\textit{serverless} en Vercel (\texttt{maxDuration: 120s}), el sistema implementa una
+bifurcación de entorno: en producción, la solicitud se delega a un servidor persistente en
+Render; en desarrollo local, se procesa directamente desde el runtime de Next.js.
+
+El núcleo del pipeline reside en la integración con la API de Google Generative AI, donde
+el PDF se transmite como \texttt{inlineData} en base64 con MIME type
+\texttt{application/pdf}. Esta técnica permite aprovechar la visión nativa del modelo
+Gemini~2.5~Flash para interpretar la jerarquía visual del documento --- tablas, encabezados
+y saltos de página --- sin requerir una capa previa de extracción de texto plano. Para
+garantizar resultados predecibles y repetibles, el modelo opera con temperatura~0. La
+temperatura es un parámetro que controla el grado de aleatoriedad en la generación de
+texto: con temperatura alta el modelo explora opciones menos probables y produce respuestas
+más variadas y creativas; con temperatura~0 selecciona siempre el token de mayor
+probabilidad en cada paso, lo que produce una salida determinista. Para una tarea de
+extracción estructurada como esta --- donde el output correcto es único y está definido por
+un schema estricto --- la creatividad es indeseable: dos ejecuciones sobre el mismo PDF
+deben producir el mismo JSON. Temperatura~0 elimina esa variabilidad y hace los resultados
+reproducibles y comparables entre ejecuciones.
+
+La respuesta cruda del modelo es procesada por la función \texttt{extraerJSON}, que limpia
+posibles bloques de Markdown y aplica tres intentos de parseo en cascada para asegurar la
+validez del formato. El JSON resultante se muestra en el panel de comparación pero
+\textbf{no se persiste automáticamente}: el admin decide explícitamente si guardarlo como
+borrador o publicarlo directamente (véase la subsección~\ref{sec:guardado-resultado}).
+
+Este flujo ocurre en paralelo al del parser Python (sección~\ref{sec:modulo-parser}): el
+panel admin lanza ambas solicitudes simultáneamente al recibir el PDF, y presenta los dos
+JSONs resultantes en una vista de comparación side-by-side que se describe en la
+sección~\ref{sec:integracion-flujo}.
+
+\subsection{Estructura del prompt (v33)}
+
+El prompt del sistema (constante \texttt{DEFAULT\_SYSTEM\_PROMPT} en
+\texttt{frontend/lib/ai/prompt.ts}) tiene la siguiente estructura:
+
+\begin{enumerate}
+  \item \textbf{Rol del modelo:} se define como ``motor de extracción determinista
+        de planes de estudio''.
+  \item \textbf{Instrucción crítica de continuidad entre páginas:} dado que los
+        PDFs de la UNS frecuentemente cortan la tabla de correlativas de una materia
+        entre dos páginas, la primera instrucción del prompt explica que las filas
+        que comienzan una página sin nombre de materia pertenecen \emph{siempre} a la
+        última materia de la página anterior. Esta instrucción apareció en versiones
+        tempranas del prompt y se reforzó luego de detectar que era uno de los errores
+        más frecuentes del modelo.
+  \item \textbf{Schema de salida:} el JSON target completo con tipos y valores
+        válidos para cada campo.
+  \item \textbf{Detalles de campo:} sección por sección, las reglas de normalización
+        (e.g.\ los valores de \texttt{para\_cursar} y \texttt{para\_rendir} deben
+        ser siempre minúscula: \texttt{"cursada"} o \texttt{"aprobada"}, aunque el PDF
+        los muestre capitalizados).
+  \item \textbf{Patrones especiales (CRITICAL):} dos patrones que requieren
+        generación condicional de entradas en dos arreglos simultáneos:
+        \begin{itemize}
+          \item \textbf{POSITION A / POSITION B} para agrupadores de optativas
+                (\texttt{G\#\#\#\#}): un grupo en POSITION~A debe generar una entrada
+                en \texttt{materias[]} \emph{y} otra en \texttt{agrupadores[]};
+                en POSITION~B solo genera entrada en \texttt{agrupadores[]}.
+          \item \textbf{Grupos de idioma} (\texttt{I\#\#\#\#}): el prompt incluye
+                una instrucción explícita para que el modelo distinga la letra
+                \texttt{I} mayúscula del dígito \texttt{1} --- un error sistemático
+                detectado durante la evaluación. Se incluyó además una instrucción
+                de validación cruzada al final: antes de devolver el JSON, el modelo
+                debe escanear todos los \texttt{correlativas} y reemplazar claves
+                numéricas como \texttt{"12201"} por su equivalente correcto
+                \texttt{"I2201"}.
+        \end{itemize}
+  \item \textbf{Reglas globales y validación:} lista de invariantes que debe
+        cumplir el JSON (arrays no vacíos, objetos en lugar de null, sin duplicados,
+        etc.).
+\end{enumerate}
+
+El prompt es editable en tiempo de ejecución desde la tabla \texttt{AdminConfig}
+de la base de datos. Si existe una fila con \texttt{id = "singleton"}, se usa ese
+valor; si no, se cae al texto compilado en \texttt{prompt.ts}. Esto permite iterar
+el prompt sin necesidad de redeploy.
+
+\subsection{Extracción del JSON de la respuesta}
+
+El modelo puede devolver el JSON directamente, envuelto en un bloque markdown
+(\texttt{```json ... ```}), o con texto adicional antes o después. La función
+\texttt{extraerJSON} implementa tres intentos en cascada: parseo directo,
+extracción del bloque markdown, y extracción por delimitadores de llaves.
+Si los tres fallan, devuelve el error con un preview de los primeros 500
+caracteres de la respuesta.
+
+\subsection{Guardado del resultado}
+\label{sec:guardado-resultado}
+
+Una vez extraído el JSON, el resultado se muestra en el panel de comparación pero
+\textbf{no se persiste automáticamente}. El admin decide explícitamente qué hacer
+con el resultado mediante dos acciones:
+
+\begin{itemize}
+  \item \textbf{Guardar borrador:} persiste el plan con \texttt{estado = BORRADOR}
+        para revisión posterior, sin publicarlo todavía.
+  \item \textbf{Publicar:} persiste el plan directamente con
+        \texttt{estado = PUBLICADO}, haciéndolo visible para los usuarios de
+        inmediato.
+\end{itemize}
+
+En ambos casos el plan queda registrado en la tabla \texttt{Plan} con
+\texttt{fuente = GEMINI}. Esta decisión mantiene la base de datos limpia: solo
+se persiste lo que el admin consideró suficientemente válido para conservar.
+
+% ============================================================
+%  MÓDULO 2 — PARSER LOCAL EN PYTHON
+% ============================================================
+\section{Módulo: Parser local en Python}
+\label{sec:modulo-parser}
+
+\subsection{Responsabilidad y posición en el sistema}
+
+El parser local cumple el rol de generador del \textit{ground truth}: produce el
+JSON de referencia contra el cual se evalúa la calidad del output de Gemini. No
+es un adapter que corrige el output del modelo; es una fuente de verdad
+independiente basada en reglas explícitas y verificables.
+
+\subsection{Flujo de una solicitud}
+
+El pipeline del parser local se ilustra en la figura~\ref{fig:pipeline-python},
+presentada al final de esta sección junto al pipeline Gemini
+(figura~\ref{fig:pipeline-gemini}) para facilitar la comparación de ambos flujos.
+
+El proceso se inicia en \texttt{CargarPlanTab.tsx} cuando el administrador
+selecciona el modo ``Parser local''. La acción desencadena la cadena
+\texttt{handleFile} $\rightarrow$ \texttt{chequearYParsear("parser")} $\rightarrow$
+\texttt{ejecutarParseo} $\rightarrow$ \texttt{parsearSSE}, que envía el PDF
+mediante \texttt{POST} a la API Route \texttt{/api/admin/planes/parsear-local}.
+
+Al igual que el pipeline Gemini, la route bifurca según el entorno:
+
+\begin{itemize}
+  \item \textbf{Producción (Render):} si la variable de entorno
+        \texttt{PARSER\_API\_URL} está definida, el PDF se reenvía al servicio
+        FastAPI en Render (\texttt{POST \$\{PARSER\_API\_URL\}/parse}). La respuesta
+        llega como JSON directo con \texttt{\{type: "done", data\}}.
+
+  \item \textbf{Desarrollo local:} si \texttt{PARSER\_API\_URL} no está definida,
+        la route escribe el PDF a \texttt{/tmp} y ejecuta un subprocess:
+        \texttt{python3 -m core.parser <pdfPath> <outPath>}. La respuesta llega
+        como stream de eventos SSE (\texttt{guardando} $\rightarrow$
+        \texttt{parseando} $\rightarrow$ \texttt{leyendo} $\rightarrow$
+        \texttt{done}).
+\end{itemize}
+
+En ambos casos, el JSON resultante se muestra en el panel de comparación pero
+no se persiste automáticamente. Al igual que en el pipeline Gemini, el admin
+decide explícitamente qué hacer con el resultado: guardarlo como borrador
+(\texttt{estado = BORRADOR}) para revisión posterior, o publicarlo directamente
+(\texttt{estado = PUBLICADO}). En ambos casos el plan queda registrado en Neon
+con \texttt{fuente = PARSER}.
+
+\subsection{Motor de extracción: tres pasos}
+
+Independientemente del entorno, el núcleo del parsing es siempre
+\texttt{parsear\_plan\_pdf()} en \texttt{cli.py}, que ejecuta tres pasos en
+secuencia:
+
+\begin{enumerate}
+  \item \textbf{Extracción de texto plano} (\texttt{extractor.py}):
+        \texttt{pdfplumber} abre el PDF y llama a \texttt{page.extract\_text()}
+        en cada página, concatenando los resultados con saltos de línea. El texto
+        resultante preserva el orden visual de las líneas tal como las organiza el
+        motor de layout de \texttt{pdfplumber}.
+
+  \item \textbf{Limpieza y recomposición} (\texttt{cleaner.py}): elimina líneas
+        de decoración (encabezados de tabla como \texttt{"Para cursar Para rendir"},
+        pie de página como \texttt{"Ir a Moodle UNS"}, líneas de navegación como
+        \texttt{"Volver"}) usando cadenas exactas y prefijos conocidos. Luego
+        \texttt{recomponer\_lineas\_partidas} fusiona líneas que \texttt{pdfplumber}
+        partió incorrectamente: correlativas sin su segundo estado, nombres de
+        materias cortados en dos líneas, y prosa de requisitos especiales partida
+        en el salto de página.
+
+  \item \textbf{Clasificación y construcción del JSON}
+        (\texttt{parser\_plan.py}, \texttt{classifiers.py}): cada línea pasa por
+        \texttt{clasificar\_linea()}, que la categoriza con los patrones regex de
+        \texttt{patterns.py}. La tabla~\ref{tab:patrones} muestra los tipos y
+        ejemplos representativos. Según el tipo, el parser actualiza el estado de
+        contexto (\texttt{año\_actual}, \texttt{cuatrimestre\_actual},
+        \texttt{orientacion\_actual}) y construye los arreglos \texttt{materias[]}
+        y \texttt{agrupadores[]}. Al terminar el recorrido línea a línea, una
+        segunda pasada resuelve las orientaciones por materia.
+\end{enumerate}
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabular}{p{3.5cm} p{4.5cm} p{5cm}}
+\toprule
+\textbf{Tipo} & \textbf{Ejemplo} & \textbf{Patrón (simplificado)} \\
+\midrule
+\texttt{anio}
+  & \texttt{PRIMER AÑO}
+  & \texttt{/\^{}(PRIMER|...|SEXTO)\textbackslash{}s+AÑO\$/i} \\
+\addlinespace
+\texttt{cuatrimestre}
+  & \texttt{Primer Cuatrimestre}
+  & \texttt{/\^{}(Anual|Primer|Segundo Cuatrimestre)\$/i} \\
+\addlinespace
+\texttt{materia}
+  & \texttt{3942 ALGEBRA 96hs.}
+  & \texttt{/\^{}([A-Z]?\textbackslash{}d\{3,\})\textbackslash{}s+(.+?)\$/i} \\
+\addlinespace
+\texttt{correlativa}
+  & \texttt{2405 Aprobada Aprobada}
+  & \texttt{/([A-Z]?\textbackslash{}d\{3,\})\textbackslash{}s+(Aprobada|Cursada)\{2\}/i} \\
+\addlinespace
+\texttt{seccion\_optativas}
+  & \texttt{MATERIAS OPTATIVAS}
+  & \texttt{/\^{}MATERIAS\textbackslash{}s+OPTATIVAS\$/i} \\
+\addlinespace
+\texttt{seccion\_orientacion}
+  & \texttt{ORIENTACIÓN Hidráulica}
+  & \texttt{/\^{}ORIENTACI[OÓ]N\textbackslash{}s+(.+)\$/i} \\
+\addlinespace
+\texttt{grupo}
+  & \texttt{G0624 Nombre grupo}
+  & \texttt{/\^{}([A-Z]\textbackslash{}d\{4,\})\textbackslash{}s*(.*)\$/i}
+    (solo en sección optativas) \\
+\bottomrule
+\end{tabular}
+\caption{Tipos de línea del clasificador del parser local con ejemplos reales.}
+\label{tab:patrones}
+\end{table}
+
+\subsection{Validación de schema y diferencia entre entornos}
+
+En desarrollo local, \texttt{contract\_validator.py} valida el JSON generado
+contra el schema del sistema antes de escribirlo a disco. Si la validación falla,
+el proceso termina con código~1 y la route Next.js lo reporta como un evento de
+error SSE visible en el panel admin. En producción (Render), esta validación no
+corre: \texttt{parsear\_plan\_pdf} devuelve el diccionario directamente y Render
+responde con \texttt{\{type: "done", data\}}. La validación queda delegada al
+panel de comparación, donde el admin puede detectar anomalías antes de publicar.
+
+\subsection{Heurísticas de contexto}
+
+La mayor parte de la lógica del parser no está en los patrones sino en cómo el
+estado de contexto se actualiza y propaga:
+
+\begin{itemize}
+  \item \textbf{Estado de sección:} \texttt{seccion\_actual} puede ser
+        \texttt{"normal"}, \texttt{"optativas"}, \texttt{"idiomas"} o
+        \texttt{"seminarios"}. Este estado controla qué tipos de línea son válidos
+        en cada momento: un patrón de grupo (\texttt{G\#\#\#\#}) solo se
+        interpreta como encabezado de grupo optativo dentro de la sección
+        \texttt{"optativas"}.
+
+  \item \textbf{Colisiones de ID:} algunos IDs aparecen primero como materia en
+        la sección normal y luego como encabezado de agrupador en la sección
+        optativas (o viceversa). El parser detecta estas colisiones: cuando un ID
+        ya registrado en \texttt{materias\_index} aparece como encabezado de grupo,
+        transfiere su ubicación al agrupador y elimina la entrada duplicada de
+        \texttt{materias[]}. La excepción son las colisiones de tipo
+        \texttt{idioma\_grupo}: el ID debe permanecer en \texttt{materias[]} con
+        \texttt{tipo: "materia"}, ya que la regla POSITION~A así lo requiere.
+
+  \item \textbf{Orientaciones múltiples:} cuando el PDF divide el plan en bloques
+        de orientación, el parser rastrea en qué orientación apareció cada materia
+        usando dos estructuras separadas para materias obligatorias y optativas. Al
+        finalizar el recorrido, las materias presentes en todos los bloques se
+        marcan como comunes; las que solo aparecen en algunos reciben el campo
+        \texttt{orientacion} o \texttt{orientaciones} según corresponda.
+
+  \item \textbf{Correlativas en prosa:} las líneas que no pueden tipificarse como
+        correlativa estructurada (\texttt{ID Estado Estado}) pero contienen texto de
+        requisito son procesadas por \texttt{correlativa\_prosa.py}, que intenta
+        inferir el \texttt{requisito\_especial[]} correspondiente o, como fallback,
+        genera correlativas aproximadas con un warning.
+\end{itemize}
+
+\begin{figure}[H]
+  \centering
+  \begin{subfigure}[t]{0.47\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{figuras/pipeline-gemini.png}
+    \caption{Pipeline Gemini (visión nativa).}
+    \label{fig:pipeline-gemini}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[t]{0.47\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{figuras/pipeline-python.png}
+    \caption{Pipeline parser local (Python).}
+    \label{fig:pipeline-python}
+  \end{subfigure}
+  \caption{Pipelines de extracción del sistema. Ambos se ejecutan en paralelo al subir
+           un PDF desde el panel admin y sus resultados se comparan side-by-side antes
+           de publicar.}
+  \label{fig:pipelines-comparacion}
+\end{figure}
+
+% ============================================================
+%  MÓDULO 3 — SINCRONIZACIÓN DE PROGRESO
+% ============================================================
+\section{Módulo: Sincronización de progreso del usuario}
+\label{sec:modulo-progreso}
+
+\subsection{Modelo de almacenamiento}
+
+El progreso del usuario en un plan se almacena como un único objeto JSON
+serializado en el campo \texttt{stateJson} de la tabla \texttt{UserPlanProgress}.
+Su estructura es un mapa plano de ID de materia a estado:
+
+\begin{lstlisting}[language=JavaScript,
+                   caption={Estructura del \texttt{stateJson} en \texttt{UserPlanProgress}.}]
+{
+  "5175": "aprobada",
+  "3942": "cursada",
+  "4102": "no_cursada",
+  ...
+}
+\end{lstlisting}
+
+Esta decisión está justificada por el patrón de acceso real del sistema: el
+cliente siempre carga el progreso completo de un plan al abrir la vista, el
+usuario interactúa localmente con los estados de cada materia, y al sincronizar
+envía el mapa completo de vuelta al servidor. No existen consultas del tipo
+\emph{«dame el estado de la materia X para el usuario Y»}: la unidad mínima de
+lectura y escritura es siempre el progreso completo del plan.
+
+Una tabla normalizada (\texttt{EstadoMateria} con una fila por materia por usuario)
+introduciría complejidad operativa sin beneficio funcional: cada sincronización
+requeriría un \texttt{DELETE} seguido de $N$ inserciones (o un upsert por materia),
+y cada lectura reconstruiría en memoria el mismo objeto que ya existe serializado.
+
+\subsection{Protocolo de sincronización: Last-Write-Wins}
+
+El cliente mantiene una copia local del progreso en el almacenamiento del
+navegador, con un timestamp \texttt{updatedAt}. Al sincronizar, el endpoint
+\texttt{POST /api/progreso/sync} aplica una política
+\textit{Last-Write-Wins} (LWW) basada en ese timestamp:
+
+\begin{lstlisting}[language=JavaScript,
+                   caption={Resolución LWW en \texttt{progressSync.ts}.}]
+export function resolveProgressSnapshotLww(params: {
+  local: ProgressSnapshot;
+  remote: ProgressSnapshot;
+}): ProgressResolution {
+  const localMs  = toMillis(params.local.updatedAt);
+  const remoteMs = toMillis(params.remote.updatedAt);
+
+  if (localMs >= remoteMs) {
+    return { source: "local",  snapshot: params.local };
+  }
+  return { source: "remote", snapshot: params.remote };
+}
+\end{lstlisting}
+
+Si el snapshot local es más reciente (o igual), el servidor persiste el estado
+local mediante un \texttt{upsert} sobre la clave compuesta
+\texttt{(userId, planVersionId)}. Si el snapshot remoto es más reciente
+(por ejemplo, el usuario actualizó su progreso desde otro dispositivo), el
+servidor devuelve el estado remoto y el cliente lo adopta.
+
+\subsection{Sanitización del payload}
+
+Antes de persistir, la función \texttt{sanitizeProgressState} valida el payload
+descartando cualquier entrada cuya clave sea vacía, cuyo valor no sea un string,
+o cuyo valor no sea uno de los tres estados válidos (\texttt{"no\_cursada"},
+\texttt{"cursada"}, \texttt{"aprobada"}). Esto garantiza que nunca lleguen a la
+base de datos estados inválidos provenientes de versiones antiguas del cliente o
+de manipulación del payload.
+
+\subsection{Trazabilidad del upsert}
+
+Cuando el servidor persiste un estado local (es decir, cuando el cliente tenía
+datos más recientes que la base de datos), el endpoint registra un evento
+\texttt{PROGRESS\_MIGRATED} en la tabla \texttt{AuditLog}, capturando el estado
+anterior y posterior del progreso. Esta decisión permite al equipo de desarrollo
+detectar situaciones inusuales (por ejemplo, pérdida masiva de progreso) sin
+exponer los datos del usuario al cliente.
+
+\section{Integración y flujo general}
+\label{sec:integracion-flujo}
+
+El flujo completo desde la carga de un PDF hasta la publicación del plan
+es el siguiente:
+
+\begin{enumerate}
+  \item El administrador sube un PDF desde el panel \texttt{/admin}.
+  \item El frontend realiza dos requests en paralelo: uno a
+        \texttt{/api/admin/planes/parsear} (Gemini) y otro a
+        \texttt{/api/admin/planes/parsear-local} (parser Python en Render).
+  \item Ambos resultados se muestran en una vista de comparación side-by-side.
+        El admin puede inspeccionar las diferencias campo a campo mediante el
+        componente \texttt{MergeInteractivo}.
+  \item El admin elige qué JSON publicar (o fusiona manualmente campos de ambos),
+        y confirma desde el drawer de publicación (\texttt{GuardarPlanDrawer}).
+  \item El plan queda registrado en la tabla \texttt{Plan} con
+        \texttt{estado = PUBLICADO} y es inmediatamente visible para los usuarios
+        en \texttt{/planes/[carrera]}.
+\end{enumerate}
+
+% ============================================================
+%  CAPÍTULO 5 - EVALUACIÓN Y RESULTADOS
+% ============================================================
+\chapter{Evaluación y Resultados}
+\label{cap:evaluacion}
+
+\section{Metodología de evaluación}
+
+[Describir cómo se evaluó el sistema: pruebas funcionales, pruebas con usuarios,
+benchmarks de rendimiento, etc.]
+
+\section{Resultados obtenidos}
+
+[Presentar los resultados. Podés usar tablas, gráficos, capturas de pantalla, etc.]
+
+\section{Problemas encontrados al usar Gemini}
+\label{sec:problemas-gemini}
+
+La integración con la API de Gemini presentó varios problemas concretos que condicionaron
+las decisiones de diseño del pipeline y que se detectaron durante la evaluación comparativa
+contra el ground truth del parser local.
+
+\textbf{Restricciones de la API gratuita.} Durante el desarrollo se usó el plan gratuito
+de Google AI Studio, que impone límites de tasa por minuto, por hora y por día: para
+\texttt{gemini-2.5-flash}, el plan gratuito permite 10~requests por minuto y 500 por día.
+Estos límites son suficientes para uso administrativo ocasional (subir un PDF y esperar el
+JSON), pero no para procesamiento batch de múltiples carreras en paralelo. El panel admin
+incluye manejo explícito de estos límites y muestra el estado de rate limit al usuario
+cuando se alcanza.
+
+\textbf{Calidad variable entre modelos.} \texttt{gemini-2.5-flash} resultó el mejor
+balance entre calidad de extracción y velocidad de respuesta. \texttt{gemini-2.5-pro}
+produce outputs de mayor calidad pero es significativamente más lento y tiene límites de
+rate más estrictos (5~requests/minuto en el plan gratuito). \texttt{gemma-4-26b-a4b-it},
+el modelo open-weight de Google disponible vía API, resultó impráctico para el flujo del
+panel admin: tiempos de respuesta de varios minutos por PDF y calidad de extracción
+inferior en documentos con tablas complejas.
+
+\textbf{Problema de salto de página.} Gemini tiene dificultades para detectar correctamente
+las correlativas de materias cuya entrada en el PDF está dividida entre dos páginas. Cuando
+el nombre de una materia aparece al final de una página y sus correlativas al inicio de la
+siguiente, el modelo frecuentemente omite las correlativas o las asocia a la materia
+incorrecta. Este es uno de los errores más frecuentes detectados en la comparación con el
+parser local.
+
+\textbf{Confusión entre \texttt{I} y \texttt{1} en IDs.} Los identificadores de grupos de
+idioma comienzan con la letra \texttt{I} mayúscula (ej: \texttt{I0001}, \texttt{I0002}).
+Gemini confunde sistemáticamente esta letra con el número \texttt{1}, generando IDs
+inválidos como \texttt{10001}. Este error es consistente y reproducible, y requirió una
+instrucción explícita en el prompt del sistema para mitigarlo, aunque no se eliminó
+completamente.
+
+\section{Discusión}
+
+[Analizar los resultados: qué funcionó bien, qué limitaciones se encontraron, cómo se
+compara con el estado del arte.]
+
+\subsection{Escalabilidad de la base de datos y límites del plan gratuito de Neon}
+
+El diseño del schema de la base de datos es adecuado para soportar múltiples usuarios
+concurrentes en el volumen esperado para la UNS. Las decisiones de diseño más relevantes
+para la concurrencia son las siguientes:
+
+\begin{itemize}
+  \item Todas las tablas de usuario tienen índices sobre \texttt{(userId, createdAt)},
+        lo que garantiza que las consultas por usuario sean O(log n) sin necesidad de
+        full scans aunque la base de datos crezca.
+  \item \texttt{UserPlanProgress} almacena una única fila por \texttt{(userId,
+        planVersionId)}: no hay contención entre usuarios porque cada uno escribe
+        exclusivamente sobre su propia fila.
+  \item \texttt{AuditLog} es una tabla append-only: las inserciones no generan locks
+        sobre filas existentes y múltiples usuarios pueden escribir en paralelo sin
+        interferencia.
+  \item El connection pooling vía PgBouncer (configurado en Neon) permite hasta 10.000
+        conexiones concurrentes independientemente del tamaño del compute, absorbiendo
+        picos de tráfico sin agotar el pool de conexiones de PostgreSQL.
+\end{itemize}
+
+\textbf{Límites del plan gratuito de Neon.} El sistema utiliza el plan gratuito de Neon
+durante su etapa de desarrollo y despliegue inicial. Este plan impone tres límites que
+son relevantes para la escalabilidad:
+
+\begin{itemize}
+  \item \textbf{Storage: 0,5 GB.} Si se supera este límite, el compute queda suspendido
+        hasta el siguiente ciclo de facturación. Para el volumen actual del sistema
+        (decenas de carreras con JSONs de plan de pocos kilobytes cada uno, más filas de
+        progreso de usuarios) este límite es holgado, pero podría convertirse en un
+        cuello de botella si el sistema se generaliza a múltiples universidades con
+        grandes volúmenes de datos de actividad.
+  \item \textbf{Compute hours: 100 CU-hours por mes.} Equivale aproximadamente a una
+        instancia de 0,25 CU corriendo durante 400 horas continuas. Para uso
+        administrativo esporádico este presupuesto es más que suficiente, pero con
+        cientos de usuarios activos simultáneos el compute se agotaría antes de fin
+        de mes, dejando la aplicación sin base de datos hasta el siguiente ciclo.
+  \item \textbf{Scale-to-zero automático.} La instancia de Neon entra en suspensión
+        tras 5 minutos de inactividad (no configurable en el plan gratuito). El primer
+        request tras el período de inactividad experimenta un cold start de 1--2
+        segundos mientras el compute vuelve a levantarse. Para la aplicación web esto
+        es perceptible como una latencia inicial inusual pero no constituye un error.
+\end{itemize}
+
+En conclusión, el plan gratuito de Neon es adecuado para el uso actual del sistema
+(panel admin con tráfico bajo y usuarios universitarios de una sola institución), pero
+no es suficiente si la aplicación escala a miles de usuarios activos simultáneos o se
+generaliza a múltiples universidades. En ese escenario sería necesario migrar al plan
+pago de Neon (que elimina los límites de compute y aumenta el storage) o evaluar otras
+opciones de PostgreSQL gestionado como Supabase o Railway.
+
+\textbf{Problemas de performance a futuro.} Más allá de los límites de Neon, existen
+dos aspectos del diseño actual que podrían generar problemas de rendimiento a escala:
+
+\begin{itemize}
+  \item \textbf{\texttt{planJson} como texto sin comprimir:} el JSON completo de cada
+        carrera se almacena como string en la tabla \texttt{Plan}. Con planes de 200+
+        materias y muchos usuarios leyendo el mismo plan en paralelo, el volumen de
+        datos transferidos por query aumenta. Una optimización posible es mover el JSON
+        a almacenamiento de objetos (S3, R2 o similar) y guardar solo la URL en la base
+        de datos, reduciendo la carga sobre PostgreSQL.
+  \item \textbf{Eliminación de \texttt{UserActivity}:} una versión anterior del schema
+        incluía una tabla \texttt{UserActivity} que registraba en forma append-only todos
+        los eventos del usuario (materias marcadas, cambios de carrera activa, aperturas
+        de plan). Se eliminó porque su crecimiento era ilimitado sin ninguna política de
+        retención definida, y las funcionalidades que habilitaba (feed de actividad en el
+        perfil, estadísticas de planes más consultados en el dashboard) eran prescindibles
+        frente al costo de mantener una tabla que crece indefinidamente. El único dato de
+        trazabilidad que se conserva es \texttt{AuditLog}, que registra exclusivamente
+        acciones administrativas con alcance acotado y un volumen de escritura bajo.
+\end{itemize}
+
+\subsection{Extensión multi-institucional: incorporación de otras universidades}
+
+Una extensión natural del sistema es soportar planes de estudio de universidades distintas
+a la UNS. El schema actual está diseñado alrededor de una única institución implícita: la
+jerarquía \texttt{Departamento} $\rightarrow$ \texttt{Carrera} $\rightarrow$
+\texttt{PlanVersion} no incluye un nivel de universidad porque el sistema nació como
+una herramienta específica para la UNS.
+
+Agregar soporte multi-institucional requeriría una modificación estructural mínima: crear
+una tabla \texttt{Universidad} e incorporar una clave foránea \texttt{universidadId} en
+\texttt{Departamento}, extendiendo la jerarquía a:
+
+\begin{center}
+\texttt{Universidad} $\longrightarrow$ \texttt{Departamento} $\longrightarrow$
+\texttt{Carrera} $\longrightarrow$ \texttt{PlanVersion} $\longrightarrow$ \texttt{Plan}
+\end{center}
+
+Todo lo demás del schema --- progreso de usuarios, bloques de horario, auditoría ---
+permanece sin cambios, ya que esas tablas referencian \texttt{Carrera} o
+\texttt{PlanVersion} directamente y son independientes de la institución.
+
+El aspecto más delicado de esta extensión no es estructural sino de unicidad. El campo
+\texttt{id} de \texttt{Carrera} es hoy un slug único globalmente
+(ej: \texttt{ingenieria\_civil}). Con múltiples universidades pueden existir carreras con
+el mismo nombre en distintas instituciones, lo que generaría colisiones de slug. La
+solución es cambiar la unicidad de global a institucional, por ejemplo mediante un slug
+compuesto (\texttt{uns\_\_ingenieria\_civil}, \texttt{utn\_\_ingenieria\_civil}) o
+modificando la restricción de unicidad a \texttt{@@unique([universidadId, slug])} y
+actualizando las rutas de la aplicación para incluir el identificador de universidad
+(\texttt{/planes/[universidad]/[carrera]}).
+
+En síntesis, la base de datos soporta esta extensión sin rediseño profundo: es una
+migración incremental que agrega un nivel en la jerarquía existente, con el único cambio
+no trivial en la estrategia de slugs de carrera.
+
+\subsection{Versionado de planes y migración entre versiones}
+
+El schema del sistema incluye la tabla \texttt{PlanVersion} precisamente para soportar
+el escenario en que una universidad actualiza su plan de estudios y coexisten múltiples
+versiones activas. Un estudiante que inició su carrera con el plan 2012 (\texttt{v1}) puede
+seguir trabajando con esa versión aunque la universidad publique el plan 2027 (\texttt{v2}),
+ya que su progreso está anclado a una \texttt{PlanVersion} específica mediante la clave
+\texttt{(userId, planVersionId)} en \texttt{UserPlanProgress}.
+
+Sin embargo, la implementación actual de este mecanismo está incompleta. La opción
+``Guardar como nueva versión'' existe en la interfaz del panel admin pero está
+deshabilitada: el backend siempre muta el \texttt{Plan} existente en lugar de crear una
+nueva \texttt{PlanVersion} y actualizar \texttt{Carrera.defaultVersionId}. Esta
+limitación está identificada como trabajo pendiente en el sistema y no requiere cambios
+en el schema de la base de datos para resolverse, solo completar la lógica del backend y
+la experiencia de usuario del panel admin.
+
+La base de datos soporta el versionado múltiple sin modificaciones: la restricción
+\texttt{@@unique([carreraId, versionId])} en \texttt{PlanVersion} permite que coexistan
+\texttt{v1} y \texttt{v2} para la misma carrera, cada una con su propio \texttt{Plan}
+publicado y con el progreso de cada usuario preservado de forma independiente.
+
+% ============================================================
+%  CAPÍTULO 6 - CONCLUSIÓN
+% ============================================================
+\chapter{Conclusión}
+\label{cap:conclusiones}
+
+Este proyecto logró desarrollar con éxito un sistema integral para la transformación de
+planes de estudio universitarios estáticos en herramientas digitales interactivas. La
+solución abordó de forma efectiva el problema de la brecha entre el formato PDF y los datos
+estructurados mediante un enfoque híbrido que combina la precisión de un parser basado en
+reglas con la flexibilidad de la inteligencia artificial generativa.
+
+\section{Aportes del trabajo}
+
+\begin{itemize}
+  \item \textbf{Pipeline de extracción híbrido:} Se implementó una arquitectura capaz de
+        procesar documentos heterogéneos de la UNS, utilizando un parser local en Python
+        para generar el \textit{ground truth} y el modelo Gemini para una conversión
+        escalable mediante visión nativa.
+
+  \item \textbf{Esquema de datos robusto:} Se diseñó un schema JSON validado que captura
+        la complejidad académica (correlativas, optativas e idiomas) y un modelo de base de
+        datos optimizado para la trazabilidad y el rendimiento.
+
+  \item \textbf{Aplicación de seguimiento interactivo:} Se desarrolló una plataforma web
+        que permite a los estudiantes de la UNS visualizar dependencias de forma gráfica y
+        gestionar su progreso sincronizado en la nube.
+
+  \item \textbf{Métrica de validación de IA:} Se estableció un mecanismo de comparación
+        entre el parser y el LLM, permitiendo a los administradores auditar la precisión de
+        la IA antes de la publicación oficial de los datos.
+\end{itemize}
+
+\section{Lecciones aprendidas}
+
+A lo largo del desarrollo de este proyecto aprendí [reflexión personal sobre el proceso,
+tecnologías nuevas, desafíos superados, etc.].
+
+\section{Trabajo futuro}
+
+Las siguientes líneas de trabajo quedaron fuera del alcance de esta versión pero están
+identificadas como extensiones naturales del sistema:
+
+\begin{enumerate}
+  \item \textbf{Generalización multi-institucional:} Expandir el sistema para soportar
+        planes de otras universidades nacionales, aprovechando la configuración de
+        \textit{prompts} genéricos ya prevista en el sistema.
+
+  \item \textbf{Analítica avanzada de datos:} Implementar procesos de agregación sobre los
+        JSON de progreso para generar estadísticas sobre tasas de recursado y materias
+        críticas, sin alterar el modelo de almacenamiento actual.
+
+  \item \textbf{Integración con sistemas de gestión:} Explorar la vinculación mediante API
+        con sistemas de autogestión de alumnos (como SIU-Guaraní) para automatizar la
+        carga inicial del progreso académico.
+
+  \item \textbf{Historia académica automática:} Permitir que el usuario suba el PDF de su
+        historia académica y que el sistema marque automáticamente las materias aprobadas y
+        cursadas en el plan, sin necesidad de ingresarlas manualmente una a una.
+
+  \item \textbf{Nota y promedio por materia:} Ampliar el modelo de progreso para que el
+        usuario pueda registrar la nota obtenida en cada materia aprobada. Con esa
+        información el sistema podría calcular el promedio académico y proyectarlo a futuro.
+
+  \item \textbf{Mejora paralela del prompt y el parser:} El parser local y el prompt de
+        Gemini evolucionan de forma independiente hoy. Una línea de mejora es usar los
+        errores detectados por el comparador como señal de retroalimentación para iterar
+        ambos en paralelo, construyendo un dataset incremental donde cada nuevo plan
+        correcto se convierte en un caso de prueba adicional.
+
+  \item \textbf{Integración completa de carreras pendientes:} La UNS tiene decenas de
+        carreras aún no incorporadas al sistema. Completar la cobertura requiere procesar
+        los PDFs restantes, validar los JSONs generados y publicarlos en el panel admin.
+
+  \item \textbf{Evaluación automática de requisitos especiales:} Implementar la evaluación
+        de las condiciones de mínimo de materias aprobadas y año completo aprobado
+        directamente sobre el progreso marcado por el usuario, para que el sistema pueda
+        bloquear o habilitar materias con requisitos especiales de forma automática.
+
+  \item \textbf{Soporte de cursado paralelo:} Extender el schema JSON y la lógica de
+        habilitación para representar correlativas que admiten inscripción simultánea,
+        cuando el reglamento de la carrera lo permite.
+
+  \item \textbf{Selector de versiones de plan y migración asistida:} Completar el flujo de
+        publicación de nuevas versiones en el panel admin y diseñar la experiencia de
+        selección de versión para los usuarios finales, de modo que estudiantes de distintos
+        años de ingreso puedan trabajar con el plan que les corresponde. Como extensión de
+        esta funcionalidad, implementar una vista de comparación entre versiones que permita
+        al usuario visualizar qué materias tienen en común \texttt{v1} y \texttt{v2},
+        proyectar su progreso actual sobre el nuevo plan (identificando qué materias ya
+        aprobadas son reconocidas en la versión nueva), y tomar una decisión informada sobre
+        si conviene o no migrar al plan actualizado.
+\end{enumerate}
+
+% ============================================================
+%  BIBLIOGRAFÍA
+% ============================================================
+\newpage
+\chapter*{Bibliografía}
+\addcontentsline{toc}{chapter}{Bibliografía}
+
+\begin{thebibliography}{99}
+
+\bibitem{ref1}
+[Autor/es].
+\textit{[Título del libro o artículo]}.
+[Editorial / Revista / Sitio web], [Año].
+Recuperado de: \url{https://ejemplo.com}
+
+\bibitem{ref2}
+[Autor/es].
+\textit{[Título]}.
+[Fuente], [Año].
+
+\bibitem{ref3}
+Universidad Nacional del Sur.
+\textit{Planes de carreras}.
+Recuperado de: \url{https://www.uns.edu.ar/academicas/carreras/oferta-academica_carreras-grado}
+
+\bibitem{neon-pricing}
+Neon.
+\textit{Pricing --- Neon Docs}.
+2025.
+Recuperado de: \url{https://neon.com/pricing}
+
+\bibitem{neon-plans}
+Neon.
+\textit{Plans --- Neon Docs}.
+2025.
+Recuperado de: \url{https://neon.com/docs/introduction/plans}
+
+\bibitem{neon-pooling}
+Neon.
+\textit{Connection pooling --- Neon Docs}.
+2025.
+Recuperado de: \url{https://neon.com/docs/connect/connection-pooling}
+
+\end{thebibliography}
+
+% ============================================================
+%  APÉNDICES
+% ============================================================
+\appendix
+
+\chapter{Glosario}
+\label{ap:glosario}
+
+\begin{description}[style=nextline]
+  \item[Agrupador] Entidad del schema JSON que representa un grupo de materias optativas
+        o de idioma. Puede aparecer como correlativa de una materia obligatoria
+        (POSITION~A) o solo como encabezado de sección (POSITION~B).
+  \item[Ground truth] JSON generado por el parser local en Python, usado como
+        referencia para evaluar la calidad del output de Gemini.
+  \item[inlineData] Mecanismo de la API de Gemini para enviar el contenido de un
+        archivo (PDF, imagen) codificado en base64 directamente en el cuerpo del
+        request, sin cargarlo previamente a un servicio de almacenamiento.
+  \item[LWW (Last-Write-Wins)] Política de resolución de conflictos en la que,
+        ante dos versiones en conflicto, se conserva la más reciente según su
+        timestamp.
+  \item[Slug] Identificador de URL de una carrera, derivado de su nombre en
+        minúsculas y sin acentos, con espacios reemplazados por guiones bajos
+        (ej: \texttt{ingenieria\_civil}).
+  \item[Visión nativa] Capacidad de un modelo de lenguaje para procesar el
+        contenido visual de un documento (tablas, layouts, imágenes) sin requerir
+        extracción de texto previa.
+\end{description}
+
+% ============================================================
+\end{document}

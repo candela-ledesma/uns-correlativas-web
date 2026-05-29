@@ -87,16 +87,16 @@ model UserRecentPlan {
   id               String         @id @default(cuid())
   userId           String
   careerId         String
-  carreraVersionId String
+  planVersionId String
   openedAt         DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
   user             User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  carreraVersion   CarreraVersion @relation(fields: [carreraVersionId], references: [id], onDelete: Cascade)
+  planVersion      PlanVersion @relation(fields: [planVersionId], references: [id], onDelete: Cascade)
   carrera          Carrera        @relation(fields: [careerId], references: [id])
 
   @@unique([userId, careerId])
   @@index([userId, openedAt])
-  @@index([carreraVersionId])
+  @@index([planVersionId])
 }
 
 // Log append-only de acciones del usuario. Se inserta un registro por cada evento relevante
@@ -146,21 +146,21 @@ model VerificationToken {
   @@id([identifier, token])
 }
 
-// Estado del progreso de un usuario en un plan específico. Una fila por (usuario, carreraVersion).
+// Estado del progreso de un usuario en un plan específico. Una fila por (usuario, planVersion).
 // stateJson es un objeto { [materiaId]: "aprobada" | "cursada" | "no_cursada" } que se
 // sobreescribe completo en cada sync. Se hace upsert desde el cliente cada vez que el
 // usuario cambia el estado de una materia.
 model UserPlanProgress {
   id               String         @id @default(cuid())
   userId           String
-  carreraVersionId String
+  planVersionId String
   stateJson        String
   updatedAt        DateTime       @default(now())
   createdAt        DateTime       @default(now())
   user             User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  carreraVersion   CarreraVersion @relation(fields: [carreraVersionId], references: [id], onDelete: Cascade)
+  planVersion      PlanVersion @relation(fields: [planVersionId], references: [id], onDelete: Cascade)
 
-  @@unique([userId, carreraVersionId])
+  @@unique([userId, planVersionId])
   @@index([userId, updatedAt])
 }
 
@@ -172,7 +172,7 @@ model ScheduleBlock {
   id               String         @id @default(cuid())
   userId           String
   careerId         String
-  carreraVersionId String
+  planVersionId String
   materiaNombre    String
   materiaId        String?
   dia              Int
@@ -184,11 +184,11 @@ model ScheduleBlock {
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
   user             User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  carreraVersion   CarreraVersion @relation(fields: [carreraVersionId], references: [id], onDelete: Cascade)
+  planVersion      PlanVersion @relation(fields: [planVersionId], references: [id], onDelete: Cascade)
   carrera          Carrera        @relation(fields: [careerId], references: [id])
 
-  @@index([userId, careerId, carreraVersionId])
-  @@index([carreraVersionId])
+  @@index([userId, careerId, planVersionId])
+  @@index([planVersionId])
 }
 
 // Snapshot de progreso compartible. Cuando un usuario genera un link para compartir
@@ -199,15 +199,15 @@ model ScheduleBlock {
 model ProgressShare {
   id               String         @id @default(cuid())
   token            String         @unique @default(cuid())
-  carreraVersionId String
+  planVersionId String
   stateJson        String
   createdBy        String?
   createdAt        DateTime       @default(now())
-  carreraVersion   CarreraVersion @relation(fields: [carreraVersionId], references: [id], onDelete: Cascade)
+  planVersion      PlanVersion @relation(fields: [planVersionId], references: [id], onDelete: Cascade)
 
   @@index([token])
   @@index([createdBy])
-  @@index([carreraVersionId])
+  @@index([planVersionId])
 }
 
 // Configuración global editable por admin. Singleton (siempre id = "singleton").
@@ -240,7 +240,7 @@ model Plan {
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
 
-  carreraVersions CarreraVersion[]
+  planVersions    PlanVersion[]
 
   @@unique([slug, fuente, estado])
   @@index([slug, estado])
@@ -270,7 +270,7 @@ model Carrera {
   updatedAt        DateTime @updatedAt
 
   departamento          Departamento?          @relation(fields: [departamentoId], references: [id])
-  versions              CarreraVersion[]
+  versions              PlanVersion[]
   carrerasSeleccionadas CarreraSeleccionada[]
   recentPlans           UserRecentPlan[]
   scheduleBlocks        ScheduleBlock[]
@@ -279,12 +279,12 @@ model Carrera {
   @@index([departamentoId])
 }
 
-// Versión de un plan de estudios dentro de una carrera. Reemplaza PlanVersion.
+// Versión de un plan de estudios dentro de una carrera.
 // carreraId es el slug de la carrera (FK a Carrera).
 // versionId es el string de versión (ej: "v1", "v2").
 // jsonFile es el nombre del archivo JSON del plan (ej: "ingenieria_civil.json").
 // hidden=true indica versiones de desarrollo/test no visibles en producción.
-model CarreraVersion {
+model PlanVersion {
   id         String   @id @default(cuid())
   carreraId  String
   versionId  String   // ej: "v1", "v2"
