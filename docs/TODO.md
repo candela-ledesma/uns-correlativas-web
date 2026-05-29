@@ -69,6 +69,12 @@
 
 ---
 
+## Autoguardado de borradores en BD
+
+- `media` [x] **Eliminar autoguardado automático de borradores** — se decidió que la BD solo persiste lo que el admin valida explícitamente. Se eliminaron los `prisma.plan.upsert` automáticos de `parsear/route.ts` y `parsear-local/route.ts`. El único camino para guardar es el botón "Guardar borrador".
+
+---
+
 ## Deuda técnica — parser local
 
 - `baja` [ ] **Agrimensura (`5293`)** — `cuatrimestre` vuelve `null` y debería ser `"Anual"` (`issues/agrimensura.md`).

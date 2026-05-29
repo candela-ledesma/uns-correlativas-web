@@ -36,16 +36,6 @@ async function readAdminConfig(): Promise<{ systemPrompt?: string; genericPrompt
   }
 }
 
-function slugFromData(data: Record<string, unknown>): string | null {
-  const carrera = (data.plan as Record<string, unknown> | undefined)?.carrera;
-  if (typeof carrera !== "string" || !carrera) return null;
-  return carrera
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "")
-    .replace(/[^a-z0-9]+/g, "_")
-    .replace(/^_+|_+$/g, "");
-}
 
 function extraerJSON(raw: string): unknown {
   const direct = raw.trim();
@@ -118,15 +108,6 @@ export async function POST(request: Request) {
         const data = result.data as Record<string, unknown>;
         data._llm_prompt_version = PROMPT_VERSION;
         data._llm_mode = "llm";
-        // Autoguardar borrador Gemini en BD
-        const slug = slugFromData(data);
-        if (slug) {
-          await prisma.plan.upsert({
-            where: { slug_fuente_estado: { slug, fuente: "GEMINI", estado: "BORRADOR" } },
-            update: { planJson: JSON.stringify(data), updatedAt: new Date() },
-            create: { slug, fuente: "GEMINI", estado: "BORRADOR", planJson: JSON.stringify(data) },
-          }).catch(() => {});
-        }
       }
       return NextResponse.json(result);
     } catch (err) {
@@ -167,16 +148,6 @@ export async function POST(request: Request) {
     const data = extraerJSON(rawText) as Record<string, unknown>;
     data._llm_prompt_version = PROMPT_VERSION;
     data._llm_mode = "llm";
-
-    // Autoguardar borrador Gemini en BD
-    const slug = slugFromData(data);
-    if (slug) {
-      await prisma.plan.upsert({
-        where: { slug_fuente_estado: { slug, fuente: "GEMINI", estado: "BORRADOR" } },
-        update: { planJson: JSON.stringify(data), updatedAt: new Date() },
-        create: { slug, fuente: "GEMINI", estado: "BORRADOR", planJson: JSON.stringify(data) },
-      }).catch(() => {});
-    }
 
     const usage = response.usageMetadata ?? null;
     return NextResponse.json({
