@@ -39,7 +39,6 @@ type Props = {
   carreraId: string;
   versionLabel: string;
   forceShowOnboarding?: boolean;
-  defaultVersionId: string;
   versionOptions: {
     versionId: string;
     label: string;

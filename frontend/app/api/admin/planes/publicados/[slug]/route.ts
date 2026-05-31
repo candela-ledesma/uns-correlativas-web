@@ -109,7 +109,6 @@ export async function PATCH(req: Request, { params }: Params) {
   return NextResponse.json({ ok: true, slug, ...body });
 }
 
-// ── DELETE: borra el plan y la carrera de DB ──────────────────────────────────
 export async function DELETE(_req: Request, { params }: Params) {
   const session = await requireAdmin();
   if (!session) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
