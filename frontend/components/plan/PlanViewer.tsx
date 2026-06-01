@@ -369,7 +369,7 @@ export default function PlanViewer({
         versionId: data.plan.version_id,
       }),
     }).catch(() => undefined);
-  }, [carreraId, data.plan.plan_id, data.plan.version_id, sessionStatus]);
+  }, [carreraId, data.plan.version_id, sessionStatus]);
 
   async function compartirProgreso() {
     setShareStatus("loading");
