@@ -138,6 +138,8 @@ model Session {
 }
 
 // Token temporal para verificar email o magic link. Generado y consumido por NextAuth.
+// No tiene FK a User intencionalmente: la spec de NextAuth vincula por `identifier`
+// (que coincide con el email), no por userId. NextAuth crea y borra estas filas solo.
 model VerificationToken {
   identifier String
   token      String   @unique
@@ -214,6 +216,10 @@ model ProgressShare {
 // systemPrompt es el prompt principal que se envía a Gemini para parsear PDFs.
 // genericPrompt es una variante alternativa para planes de universidades genéricas.
 // version es un string libre para identificar la versión del prompt (ej: "v33").
+// Configuración global del sistema. Tabla singleton: siempre hay exactamente una fila
+// con id = "singleton". Almacena los prompts de Gemini que el admin puede editar desde
+// el panel. No tiene FK a ninguna otra entidad porque es configuración de la aplicación,
+// no de un usuario o carrera.
 model AdminConfig {
   id            String   @id @default("singleton")
   systemPrompt  String
