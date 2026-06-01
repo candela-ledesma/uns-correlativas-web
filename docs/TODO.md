@@ -52,6 +52,15 @@
 
 No hay separación formal de capas: la lógica de negocio, el acceso a datos y la orquestación de servicios conviven en los route handlers. Es pragmático y funciona para el volumen actual, pero si el sistema crece podría justificar extraer una capa de servicios.
 
+Existe sin embargo una separación informal que merece describirse:
+
+- **Lógica de dominio pura:** funciones sin efectos de lado que operan sobre los tipos del plan (`Materia`, `Agrupador`, `PlanData`). Pueden ser importadas tanto desde route handlers como desde componentes del cliente. Están completamente testeadas con Vitest.
+- **Acceso a datos:** funciones que encapsulan las consultas a Prisma. Los route handlers no acceden directamente a `prisma.*` salvo en casos simples; las consultas complejas o reutilizadas están en repositorios dedicados.
+- **Route handlers:** orquestación de request/response, validación de sesión, control de roles y llamada a las funciones de dominio o de acceso a datos. No contienen lógica de negocio que pueda reutilizarse.
+- **Componentes:** presentación y estado local de UI. No acceden directamente a la base de datos; se comunican con el backend exclusivamente a través de `fetch` hacia las API Routes.
+
+Si el sistema creciera en complejidad o en equipo, la refactorización natural sería extraer una capa de servicios explícita entre los route handlers y los repositorios de datos. La estimación para esa tarea es de 2 a 3 días, siendo el paso más mecánico (mover lógica a módulos de servicio) completamente independiente del resto.
+
 Estimación: 2-3 días. El Paso 1 es el más mecánico y se puede hacer de forma independiente.
 
 - `baja` [ ] **Paso 1 — `planRepository.ts`** (~2-3h) — extraer operaciones Prisma de `Plan` que hoy están inline en los route handlers (`guardar`, `parsear`, `parsear-local`).
