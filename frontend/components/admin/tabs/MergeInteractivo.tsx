@@ -71,6 +71,12 @@ function buildMergedPlan(
           } catch {}
         }
       }
+
+      if (diff.tipo === "materia_sin_anio") {
+        if (res.lado === "gemini" && gemM) {
+          resultado = { ...resultado, año: gemM.año, cuatrimestre: gemM.cuatrimestre };
+        }
+      }
     }
 
     return resultado;
@@ -135,6 +141,7 @@ const BADGE_CFG: Record<
   agrupador_distinto:   { label: "agrupador distinto",    color: "#4cc9f0", bg: "rgba(76,201,240,0.10)",  border: "rgba(76,201,240,0.35)"  },
   agrupador_faltante:   { label: "agrupador faltante",    color: "#e76f51", bg: "rgba(231,111,81,0.12)",  border: "rgba(231,111,81,0.35)"  },
   requisito_distinto:   { label: "requisito distinto",    color: "#c084fc", bg: "rgba(157,78,221,0.10)",  border: "rgba(157,78,221,0.35)"  },
+  materia_sin_anio:     { label: "año/cuatrimestre",      color: "#4cc9f0", bg: "rgba(76,201,240,0.10)",  border: "rgba(76,201,240,0.35)"  },
 };
 
 // Etiquetas para el lado parser / gemini según el tipo de diff

@@ -34,7 +34,7 @@ export type ParseResult = {
 export type DiffItem = {
   id: string;
   nombre: string;
-  tipo: "correlativa_distinta" | "materia_faltante" | "materia_extra" | "agrupador_distinto" | "agrupador_faltante" | "requisito_distinto";
+  tipo: "correlativa_distinta" | "materia_faltante" | "materia_extra" | "agrupador_distinto" | "agrupador_faltante" | "requisito_distinto" | "materia_sin_anio";
   groundTruth: string;
   gemini: string;
 };
@@ -79,17 +79,30 @@ export function computeDiffs(ground: ParseResult | null, gemini: ParseResult): D
       }
 
       // requisito_especial
-      type ReqItem = { tipo?: string; cantidad?: number; anio?: number; cuatrimestre?: number };
+      type ReqItem = { tipo?: string; cantidad?: number; anio?: number; cuatrimestre?: number; descripcion?: string };
       const gtReqs = (Array.isArray(gm.requisito_especial) ? gm.requisito_especial : gm.requisito_especial ? [gm.requisito_especial] : []) as ReqItem[];
       const gemReqs = (Array.isArray(gem.requisito_especial) ? gem.requisito_especial : gem.requisito_especial ? [gem.requisito_especial] : []) as ReqItem[];
       const serOneReq = (r: ReqItem) =>
-        r.tipo ? `${r.tipo}${r.cantidad != null ? `(min ${r.cantidad})` : r.anio != null ? `(año ${r.anio}${r.cuatrimestre != null ? ` cuatri ${r.cuatrimestre}` : ""})` : ""}` : "";
+        r.tipo
+          ? `${r.tipo}${r.cantidad != null ? `(min ${r.cantidad})` : r.anio != null ? `(año ${r.anio}${r.cuatrimestre != null ? ` cuatri ${r.cuatrimestre}` : ""})` : ""}${r.descripcion ? ` — "${r.descripcion}"` : ""}`
+          : "";
       const serReq = (rs: ReqItem[]) => rs.map(serOneReq).sort().join("|") || "ninguno";
       if (serReq(gtReqs) !== serReq(gemReqs)) {
         diffs.push({
           id, nombre: gm.nombre, tipo: "requisito_distinto",
           groundTruth: serReq(gtReqs),
           gemini: serReq(gemReqs),
+        });
+      }
+
+      // año / cuatrimestre faltante
+      const gtAño = gm.año ?? null;
+      const gemAño = gem.año ?? null;
+      if (gtAño !== gemAño && (gtAño == null || gemAño == null)) {
+        diffs.push({
+          id, nombre: gm.nombre, tipo: "materia_sin_anio",
+          groundTruth: gtAño != null ? `año ${gtAño}${gm.cuatrimestre ? ` · cuatri ${gm.cuatrimestre}` : ""}` : "(sin año)",
+          gemini: gemAño != null ? `año ${gemAño}${gem.cuatrimestre ? ` · cuatri ${gem.cuatrimestre}` : ""}` : "(sin año)",
         });
       }
     }
@@ -129,6 +142,7 @@ const BADGE: Record<DiffItem["tipo"], { label: string; bg: string; border: strin
   agrupador_distinto:   { label: "agrupador distinto",   bg: "rgba(76,201,240,0.12)",  border: "rgba(76,201,240,0.4)",  color: "#4cc9f0" },
   agrupador_faltante:   { label: "agrupador faltante",   bg: "rgba(231,111,81,0.15)",  border: "rgba(231,111,81,0.4)",  color: "#e76f51" },
   requisito_distinto:   { label: "requisito distinto",   bg: "rgba(157,78,221,0.12)",  border: "rgba(157,78,221,0.4)",  color: "#c084fc" },
+  materia_sin_anio:     { label: "año/cuatrimestre",     bg: "rgba(76,201,240,0.12)",  border: "rgba(76,201,240,0.4)",  color: "#4cc9f0" },
 };
 
 function diffKey(d: DiffItem) { return `${d.tipo}:${d.id}`; }
@@ -160,6 +174,9 @@ function buildFewShotBlock(
     } else if (diff.tipo === "requisito_distinto") {
       lines.push(`  Ground truth requisito: ${diff.groundTruth}`);
       lines.push(`  Gemini generated:       ${diff.gemini}`);
+    } else if (diff.tipo === "materia_sin_anio") {
+      lines.push(`  Ground truth año/cuatrimestre: ${diff.groundTruth}`);
+      lines.push(`  Gemini generated:              ${diff.gemini}`);
     } else if (diff.tipo === "materia_faltante") {
       lines.push(`  This materia was missing from Gemini output.`);
       lines.push(`  Expected: ${diff.groundTruth}`);
