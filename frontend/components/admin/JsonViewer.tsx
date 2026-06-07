@@ -127,6 +127,8 @@ function buildTooltip(diff: DiffItem): string {
       return `Parser: ${diff.groundTruth}\nGemini: ${diff.gemini}`;
     case "requisito_distinto":
       return `Requisito — Parser: ${diff.groundTruth}\nGemini: ${diff.gemini}`;
+    case "materia_sin_anio":
+      return `Año/cuatrimestre — Parser: ${diff.groundTruth}\nGemini: ${diff.gemini}`;
   }
 }
 
