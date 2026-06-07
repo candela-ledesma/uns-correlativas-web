@@ -75,7 +75,7 @@ export async function POST(request: Request) {
     };
     const planJsonStr = JSON.stringify(dataToSave, null, 2);
 
-    const fuenteEnum = fuente === "parser" ? "PARSER" : fuente === "gemini" ? "GEMINI" : "PARSER";
+    const fuenteEnum = fuente === "parser" ? "PARSER" : fuente === "gemini" ? "GEMINI" : fuente === "merged" ? "MERGED" : "PARSER";
 
     // Guardar borrador (sin publicar)
     if (!publicar) {
