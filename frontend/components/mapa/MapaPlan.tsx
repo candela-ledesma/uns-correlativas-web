@@ -25,7 +25,7 @@ import { extractOrientaciones } from "@/lib/plan/kanbanUtils";
 
 import {
   buildGraph, hasHorasData, buildAdjacency, getAncestors, getDescendants,
-  transitiveReduction, STATE_STYLE, AMBER,
+  STATE_STYLE, AMBER,
   type VisualEstado, type NodeData, type LayoutMode,
 } from "@/lib/mapa/graphUtils";
 import { calcularMejorCamino, type OptMode, type BestPathResult } from "@/lib/mapa/bestPath";
@@ -174,7 +174,7 @@ function MapaInner({ materias, agrupadores, idsAgrupadores, estados, carreraId, 
   const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
   const [caminoActivo, setCaminoActivo]   = useState(false);
   const [optMode, setOptMode]             = useState<OptMode>("materias");
-  const [simplificarGrafo, setSimplificarGrafo] = useState(false);
+  const [mostrarIndirectas, setMostrarIndirectas] = useState(false);
   const [minimapVisible, setMinimapVisible] = useState<boolean>(() => {
     if (typeof window === "undefined") return true;
     const stored = localStorage.getItem("mapaMinimapVisible");
@@ -255,8 +255,8 @@ function MapaInner({ materias, agrupadores, idsAgrupadores, estados, carreraId, 
 
   const visibleEdges = useMemo<Edge[]>(() => {
     const raw = miVistaActiva ? miVistaEdges : baseEdges;
-    return simplificarGrafo ? transitiveReduction(raw) : raw;
-  }, [miVistaActiva, miVistaEdges, baseEdges, simplificarGrafo]);
+    return mostrarIndirectas ? raw : raw.filter((e) => !e.data?.isTransitive);
+  }, [miVistaActiva, miVistaEdges, baseEdges, mostrarIndirectas]);
 
   const activeNodes = miVistaActiva ? miVistaNodes : displayNodes;
 
@@ -419,7 +419,7 @@ function MapaInner({ materias, agrupadores, idsAgrupadores, estados, carreraId, 
         layoutMode={layoutMode} onToggleLayout={handleToggleLayout}
         miVistaActiva={miVistaActiva} onToggleMiVista={setMiVistaActiva}
         onAbrirEditor={() => setEditorAbierto(true)}
-        simplificarGrafo={simplificarGrafo} onToggleSimplificar={() => setSimplificarGrafo((v) => !v)}
+        mostrarIndirectas={mostrarIndirectas} onToggleMostrarIndirectas={() => setMostrarIndirectas((v) => !v)}
       />
 
       <div style={{
