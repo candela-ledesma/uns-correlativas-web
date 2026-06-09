@@ -24,15 +24,15 @@ type Props = {
   miVistaActiva: boolean;
   onToggleMiVista: (v: boolean) => void;
   onAbrirEditor: () => void;
-  simplificarGrafo: boolean;
-  onToggleSimplificar: () => void;
+  mostrarIndirectas: boolean;
+  onToggleMostrarIndirectas: () => void;
 };
 
 export function Toolbar({
   filtro, onFiltro, busqueda, onBusqueda, contadores, onBuscar,
   layoutMode, onToggleLayout,
   miVistaActiva, onToggleMiVista, onAbrirEditor,
-  simplificarGrafo, onToggleSimplificar,
+  mostrarIndirectas, onToggleMostrarIndirectas,
 }: Props) {
   const chips: { key: FiltroEstado; label: string }[] = [
     { key: "todas",      label: "Todas"      },
@@ -114,15 +114,15 @@ export function Toolbar({
           </button>
 
           <button
-            onClick={onToggleSimplificar}
-            title="Ocultar aristas redundantes (reducción transitiva)"
+            onClick={onToggleMostrarIndirectas}
+            title="Mostrar aristas de dependencias indirectas (caminos transitivos)"
             style={{
               fontSize: 10, fontWeight: 600, padding: "3px 9px", borderRadius: 6, flexShrink: 0,
-              border: simplificarGrafo ? `1px solid ${ACCENT}` : `1px solid ${GLASS.border}`,
-              background: simplificarGrafo ? `${ACCENT}22` : GLASS.base,
-              color: simplificarGrafo ? ACCENT : TEXT_SEC, cursor: "pointer", transition: "all 0.1s",
+              border: mostrarIndirectas ? `1px solid ${ACCENT}` : `1px solid ${GLASS.border}`,
+              background: mostrarIndirectas ? `${ACCENT}22` : GLASS.base,
+              color: mostrarIndirectas ? ACCENT : TEXT_SEC, cursor: "pointer", transition: "all 0.1s",
             }}>
-            Simplificar
+            Caminos indirectos
           </button>
 
           <button
