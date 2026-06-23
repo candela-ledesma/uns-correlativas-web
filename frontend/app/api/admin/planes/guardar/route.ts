@@ -114,7 +114,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ ok: true, slug });
   } catch (err) {
-    const msg = err instanceof Error ? err.message : String(err);
-    return NextResponse.json({ error: msg }, { status: 500 });
+    console.error("[guardar] Error persistiendo plan:", err);
+    return NextResponse.json({ error: "Error interno al guardar el plan" }, { status: 500 });
   }
 }

@@ -30,6 +30,13 @@ export async function POST(request: Request) {
   if (file.size > MAX_UPLOAD_SIZE_MB * 1024 * 1024) {
     return NextResponse.json({ error: `El archivo supera los ${MAX_UPLOAD_SIZE_MB} MB` }, { status: 400 });
   }
+  if (file.type !== "application/pdf") {
+    return NextResponse.json({ error: "Solo se aceptan archivos PDF" }, { status: 400 });
+  }
+  const magic = new Uint8Array(await file.slice(0, 5).arrayBuffer());
+  if (magic[0] !== 0x25 || magic[1] !== 0x50 || magic[2] !== 0x44 || magic[3] !== 0x46 || magic[4] !== 0x2D) {
+    return NextResponse.json({ error: "El archivo no es un PDF válido" }, { status: 400 });
+  }
 
   const stream = new ReadableStream({
     async start(controller) {

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { randomBytes } from "crypto";
 import { requireAuth } from "@/lib/auth/authz";
 import { prisma } from "@/lib/db/prisma";
 import { resolvePlanVersionId } from "@/lib/db/carreraRepository";
@@ -43,6 +44,7 @@ export async function POST(request: Request) {
 
   const share = await prisma.progressShare.create({
     data: {
+      token: randomBytes(32).toString("hex"),
       planVersionId,
       stateJson: progress.stateJson,
       createdBy: session.user.id,
