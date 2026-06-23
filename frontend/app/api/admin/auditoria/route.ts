@@ -42,11 +42,15 @@ export async function GET(request: Request) {
     take: Number.isFinite(limit) ? limit : 50,
   });
 
+  const isAdmin = session.user.role === Role.ADMIN;
+
   return NextResponse.json({
     items: logs.map((log) => ({
       id: log.id,
       actorUserId: log.actorUserId,
-      actorEmail: log.actorEmail,
+      actorEmail: isAdmin
+        ? log.actorEmail
+        : log.actorEmail?.replace(/(.{2}).+(@.+)/, "$1***$2") ?? null,
       actorRole: log.actorRole,
       authProvider: log.authProvider,
       action: log.action,

@@ -9,9 +9,7 @@ export function getAuthProviderFlags() {
     Boolean(process.env.AUTH_GOOGLE_CLIENT_ID) &&
     Boolean(process.env.AUTH_GOOGLE_CLIENT_SECRET);
 
-  const allowDevLogin =
-    process.env.AUTH_ENABLE_DEV_LOGIN === "true" ||
-    (!isProduction && process.env.AUTH_ENABLE_DEV_LOGIN !== "false");
+  const allowDevLogin = process.env.AUTH_ENABLE_DEV_LOGIN === "true";
 
   return { hasGoogleProvider, allowDevLogin, isProduction };
 }

@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { z } from "zod";
 import { requireAdmin } from "@/lib/auth/authz";
 import { createAuditEvent } from "@/lib/db/audit";
 import {
@@ -35,6 +36,9 @@ export async function PUT(req: Request, { params }: Params) {
   let newJson: string;
   try {
     const body = await req.text();
+    if (body.length > 5 * 1024 * 1024) {
+      return NextResponse.json({ error: "JSON demasiado grande" }, { status: 413 });
+    }
     JSON.parse(body); // valida JSON antes de persistir
     newJson = body;
   } catch {
@@ -66,16 +70,23 @@ export async function PATCH(req: Request, { params }: Params) {
   if (session instanceof NextResponse) return session;
 
   const { slug } = await params;
-  const body: { disponible?: boolean; nombre?: string; departamentoId?: string | null } = await req.json();
+
+  const patchSchema = z.object({
+    disponible: z.boolean().optional(),
+    nombre: z.string().min(1).max(500).optional(),
+    departamentoId: z.string().max(200).nullable().optional(),
+  }).refine((d) => Object.keys(d).length > 0, { message: "Sin campos para actualizar" });
+
+  const parsed = patchSchema.safeParse(await req.json().catch(() => null));
+  if (!parsed.success) {
+    return NextResponse.json({ error: "Payload inválido", details: parsed.error.flatten() }, { status: 400 });
+  }
+  const body = parsed.data;
 
   const configData: Record<string, unknown> = {};
   if (body.disponible !== undefined) configData.disponible = body.disponible;
   if (body.nombre !== undefined) configData.nombre = body.nombre;
   if (body.departamentoId !== undefined) configData.departamentoId = body.departamentoId;
-
-  if (Object.keys(configData).length === 0) {
-    return NextResponse.json({ error: "Sin campos para actualizar" }, { status: 400 });
-  }
 
   const updated = await prisma.carrera.updateMany({
     where: { id: slug },

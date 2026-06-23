@@ -15,7 +15,9 @@ export async function POST(req: Request) {
   if (session instanceof NextResponse) return session;
 
   const { slug } = await req.json() as { slug: string };
-  if (!slug) return NextResponse.json({ error: "Falta slug" }, { status: 400 });
+  if (!slug || !/^[a-z0-9_]+$/.test(slug)) {
+    return NextResponse.json({ error: "Slug inválido" }, { status: 400 });
+  }
 
   const refPath  = path.join(DATA_DIR_LOCAL,  `${slug}.json`);
   const candPath = path.join(DATA_DIR_GEMINI, `${slug}_pendiente.json`);
