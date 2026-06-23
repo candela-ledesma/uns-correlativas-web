@@ -1,12 +1,8 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { auth } from "@/auth";
+import { requireAuth } from "@/lib/auth/authz";
 import { prisma } from "@/lib/db/prisma";
 import { validateScheduleBlock, findOverlaps } from "@/lib/schedule/scheduleValidation";
-
-function unauthorized() {
-  return NextResponse.json({ error: "No autenticado" }, { status: 401 });
-}
 
 function notFound() {
   return NextResponse.json({ error: "Bloque no encontrado" }, { status: 404 });
@@ -27,8 +23,8 @@ export async function PUT(
   request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
-  const session = await auth();
-  if (!session?.user?.id) return unauthorized();
+  const session = await requireAuth();
+  if (session instanceof NextResponse) return session;
 
   const { id } = await params;
   const existing = await prisma.scheduleBlock.findUnique({ where: { id } });
@@ -95,8 +91,8 @@ export async function DELETE(
   _request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
-  const session = await auth();
-  if (!session?.user?.id) return unauthorized();
+  const session = await requireAuth();
+  if (session instanceof NextResponse) return session;
 
   const { id } = await params;
   const existing = await prisma.scheduleBlock.findUnique({ where: { id } });
