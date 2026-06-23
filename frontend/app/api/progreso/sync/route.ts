@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { auth } from "@/auth";
+import { requireAuth } from "@/lib/auth/authz";
 import { createAuditEvent } from "@/lib/db/audit";
 import { getProgressSnapshot, upsertProgressSnapshot } from "@/lib/db/progressRepository";
 import {
@@ -18,11 +18,8 @@ const syncSchema = z.object({
 });
 
 export async function POST(request: Request) {
-  const session = await auth();
-
-  if (!session?.user?.id || !session.user.role) {
-    return NextResponse.json({ error: "No autenticado" }, { status: 401 });
-  }
+  const session = await requireAuth();
+  if (session instanceof NextResponse) return session;
 
   const body = await request.json().catch(() => null);
   const parsed = syncSchema.safeParse(body);

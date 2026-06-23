@@ -1,13 +1,9 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { auth } from "@/auth";
+import { requireAuth } from "@/lib/auth/authz";
 import { prisma } from "@/lib/db/prisma";
 import { validateScheduleBlock, findOverlaps } from "@/lib/schedule/scheduleValidation";
 import { resolvePlanVersionId } from "@/lib/db/carreraRepository";
-
-function unauthorized() {
-  return NextResponse.json({ error: "No autenticado" }, { status: 401 });
-}
 
 const createSchema = z.object({
   careerId: z.string().min(1),
@@ -24,8 +20,8 @@ const createSchema = z.object({
 });
 
 export async function GET(request: Request) {
-  const session = await auth();
-  if (!session?.user?.id) return unauthorized();
+  const session = await requireAuth();
+  if (session instanceof NextResponse) return session;
 
   const url = new URL(request.url);
   const careerId = url.searchParams.get("careerId");
@@ -55,8 +51,8 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  const session = await auth();
-  if (!session?.user?.id) return unauthorized();
+  const session = await requireAuth();
+  if (session instanceof NextResponse) return session;
 
   const rawBody = await request.json().catch(() => null);
   const parsed = createSchema.safeParse(rawBody);

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { auth } from "@/auth";
+import { requireAuth } from "@/lib/auth/authz";
 import {
   getUserProductContext,
   updateUserCareerContext,
@@ -11,16 +11,9 @@ const updateContextSchema = z.object({
   activeCareerId: z.string().min(1),
 });
 
-function unauthorized() {
-  return NextResponse.json({ error: "No autenticado" }, { status: 401 });
-}
-
 export async function GET() {
-  const session = await auth();
-
-  if (!session?.user?.id) {
-    return unauthorized();
-  }
+  const session = await requireAuth();
+  if (session instanceof NextResponse) return session;
 
   const context = await getUserProductContext(session.user.id);
 
@@ -28,11 +21,8 @@ export async function GET() {
 }
 
 export async function PUT(request: Request) {
-  const session = await auth();
-
-  if (!session?.user?.id) {
-    return unauthorized();
-  }
+  const session = await requireAuth();
+  if (session instanceof NextResponse) return session;
 
   const body = await request.json().catch(() => null);
   const parsed = updateContextSchema.safeParse(body);

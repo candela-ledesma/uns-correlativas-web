@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { auth } from "@/auth";
+import { requireAuth } from "@/lib/auth/authz";
 import { createAuditEvent } from "@/lib/db/audit";
 import { getProgressSnapshot, upsertProgressSnapshot } from "@/lib/db/progressRepository";
 import {
@@ -23,13 +23,9 @@ const resetSchema = z.object({
   reason: z.string().trim().max(500).optional(),
 });
 
-function unauthorized() {
-  return NextResponse.json({ error: "No autenticado" }, { status: 401 });
-}
-
 export async function GET(request: Request) {
-  const session = await auth();
-  if (!session?.user?.id) return unauthorized();
+  const session = await requireAuth();
+  if (session instanceof NextResponse) return session;
 
   const url = new URL(request.url);
   const planId = url.searchParams.get("planId");
@@ -55,8 +51,8 @@ export async function GET(request: Request) {
 }
 
 export async function PUT(request: Request) {
-  const session = await auth();
-  if (!session?.user?.id || !session.user.role) return unauthorized();
+  const session = await requireAuth();
+  if (session instanceof NextResponse) return session;
 
   const rawBody = await request.json().catch(() => null);
   const parsed = updateSchema.safeParse(rawBody);
@@ -108,7 +104,6 @@ export async function PUT(request: Request) {
       after: resolution.snapshot.state,
       reason: reason ?? "Actualizacion de progreso",
     });
-
   }
 
   return NextResponse.json({
@@ -119,8 +114,8 @@ export async function PUT(request: Request) {
 }
 
 export async function DELETE(request: Request) {
-  const session = await auth();
-  if (!session?.user?.id || !session.user.role) return unauthorized();
+  const session = await requireAuth();
+  if (session instanceof NextResponse) return session;
 
   const rawBody = await request.json().catch(() => null);
   const parsed = resetSchema.safeParse(rawBody);
