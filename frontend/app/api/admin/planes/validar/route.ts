@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/auth";
-import { Role } from "@/lib/auth/roles";
+import { requireAdmin } from "@/lib/auth/authz";
 import path from "path";
 import fs from "fs/promises";
 import { compareAgainstGroundTruth } from "@/lib/services/parserService";
@@ -12,10 +11,8 @@ const DATA_DIR_LOCAL  = path.join(process.cwd(), "data", "local");
 const DATA_DIR_GEMINI = path.join(process.cwd(), "data", "gemini");
 
 export async function POST(req: Request) {
-  const session = await auth();
-  if (!session?.user?.id || session.user.role !== Role.ADMIN) {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  }
+  const session = await requireAdmin();
+  if (session instanceof NextResponse) return session;
 
   const { slug } = await req.json() as { slug: string };
   if (!slug) return NextResponse.json({ error: "Falta slug" }, { status: 400 });

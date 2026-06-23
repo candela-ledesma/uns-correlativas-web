@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/auth";
-import { Role } from "@/lib/auth/roles";
+import { requireAdminOrModerator } from "@/lib/auth/authz";
 import { prisma } from "@/lib/db/prisma";
 import { toSlug } from "@/lib/utils/slug";
+import { diffDaysLabel, parseMateriaCount } from "@/lib/services/planRepository";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -21,14 +21,10 @@ type ExistingInfo =
 function buildInfo(planJson: string, savedAt: Date, fuente: string): ExistingInfo {
   try {
     const json = JSON.parse(planJson);
-    const diffMs = Date.now() - savedAt.getTime();
-    const diffDays = Math.floor(diffMs / 86400000);
-    const fechaLabel =
-      diffDays === 0 ? "hoy" : diffDays === 1 ? "hace 1 día" : `hace ${diffDays} días`;
     return {
       existe: true,
-      materias: (json.materias ?? []).length,
-      fechaCarga: fechaLabel,
+      materias: parseMateriaCount(planJson),
+      fechaCarga: diffDaysLabel(savedAt),
       fuente: String(json._llm_mode ?? json._saved_fuente ?? fuente),
       promptVersion: json._llm_prompt_version ?? null,
       data: json,
@@ -39,10 +35,8 @@ function buildInfo(planJson: string, savedAt: Date, fuente: string): ExistingInf
 }
 
 export async function GET(request: Request) {
-  const session = await auth();
-  if (!session?.user?.id || (session.user.role !== Role.ADMIN && session.user.role !== Role.MODERATOR)) {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  }
+  const session = await requireAdminOrModerator();
+  if (session instanceof NextResponse) return session;
 
   const { searchParams } = new URL(request.url);
   const filename = searchParams.get("filename");

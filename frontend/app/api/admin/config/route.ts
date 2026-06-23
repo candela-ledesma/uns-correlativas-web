@@ -1,16 +1,13 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/auth";
-import { Role } from "@/lib/auth/roles";
+import { requireAdminReal } from "@/lib/auth/authz";
 import { PROMPT_VERSION, GENERIC_SYSTEM_PROMPT } from "@/lib/ai/prompt";
 import { prisma } from "@/lib/db/prisma";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
-  const session = await auth();
-  if (!session?.user?.id || (session.user.role !== Role.ADMIN && session.user.realRole !== Role.ADMIN)) {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  }
+  const session = await requireAdminReal();
+  if (session instanceof NextResponse) return session;
 
   const config = await prisma.adminConfig.findUnique({ where: { id: "singleton" } });
   return NextResponse.json({
@@ -21,10 +18,8 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  const session = await auth();
-  if (!session?.user?.id || (session.user.role !== Role.ADMIN && session.user.realRole !== Role.ADMIN)) {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  }
+  const session = await requireAdminReal();
+  if (session instanceof NextResponse) return session;
 
   let body: unknown;
   try {
@@ -56,10 +51,8 @@ export async function POST(request: Request) {
 }
 
 export async function DELETE() {
-  const session = await auth();
-  if (!session?.user?.id || (session.user.role !== Role.ADMIN && session.user.realRole !== Role.ADMIN)) {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  }
+  const session = await requireAdminReal();
+  if (session instanceof NextResponse) return session;
 
   await prisma.adminConfig.deleteMany({ where: { id: "singleton" } });
   return NextResponse.json({ ok: true });

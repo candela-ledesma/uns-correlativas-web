@@ -8,19 +8,26 @@ export type BorradorConflict = {
   existing: { materias: number; fechaCarga: string; fuente: string };
 };
 
-function diffDaysLabel(date: Date): string {
+export function diffDaysLabel(date: Date): string {
   const diffDays = Math.floor((Date.now() - date.getTime()) / 86400000);
   if (diffDays === 0) return "hoy";
   if (diffDays === 1) return "hace 1 día";
   return `hace ${diffDays} días`;
 }
 
-function parseMateriaCount(planJson: string): number {
+export function parseMateriaCount(planJson: string): number {
   try {
     return ((JSON.parse(planJson) as { materias?: unknown[] }).materias ?? []).length;
   } catch {
     return 0;
   }
+}
+
+export function toFuenteEnum(fuente: string): FuenteEnum {
+  if (fuente === "parser") return "PARSER";
+  if (fuente === "gemini") return "GEMINI";
+  if (fuente === "merged") return "MERGED";
+  return "PARSER";
 }
 
 // ── Borradores ────────────────────────────────────────────────────────────────
