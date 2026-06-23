@@ -3,7 +3,7 @@ import { DEFAULT_GEMINI_MODEL } from "@/lib/ai/models";
 import { DEFAULT_SYSTEM_PROMPT, GENERIC_SYSTEM_PROMPT, PROMPT_VERSION } from "@/lib/ai/prompt";
 import { prisma } from "@/lib/db/prisma";
 
-async function readAdminConfig(): Promise<{ systemPrompt?: string; genericPrompt?: string }> {
+export async function readAdminConfig(): Promise<{ systemPrompt?: string; genericPrompt?: string }> {
   try {
     const config = await prisma.adminConfig.findUnique({ where: { id: "singleton" } });
     if (!config) return {};

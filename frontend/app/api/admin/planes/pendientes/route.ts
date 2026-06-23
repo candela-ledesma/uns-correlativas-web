@@ -1,15 +1,12 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/auth";
-import { Role } from "@/lib/auth/roles";
+import { requireAdmin } from "@/lib/auth/authz";
 import { getPendingPlans } from "@/lib/services/planRepository";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
-  const session = await auth();
-  if (!session?.user?.id || session.user.role !== Role.ADMIN) {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  }
+  const session = await requireAdmin();
+  if (session instanceof NextResponse) return session;
 
   const rows = await getPendingPlans();
 

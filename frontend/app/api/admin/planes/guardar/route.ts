@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/auth";
-import { Role } from "@/lib/auth/roles";
+import { requireAdmin } from "@/lib/auth/authz";
 import { upsertCarrera, upsertPlanVersion } from "@/lib/db/carreraRepository";
 import { createAuditEvent } from "@/lib/db/audit";
 import { toSlug } from "@/lib/utils/slug";
@@ -13,7 +12,7 @@ import {
   backupPublishedPlan,
   publishPlan,
   deletePendingBySlug,
-  type FuenteEnum,
+  toFuenteEnum,
 } from "@/lib/services/planRepository";
 
 export const dynamic = "force-dynamic";
@@ -26,18 +25,9 @@ type ParseResult = {
   [key: string]: unknown;
 };
 
-function toFuenteEnum(fuente: string): FuenteEnum {
-  if (fuente === "parser") return "PARSER";
-  if (fuente === "gemini") return "GEMINI";
-  if (fuente === "merged") return "MERGED";
-  return "PARSER";
-}
-
 export async function POST(request: Request) {
-  const session = await auth();
-  if (!session?.user?.id || session.user.role !== Role.ADMIN) {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  }
+  const session = await requireAdmin();
+  if (session instanceof NextResponse) return session;
 
   let body: {
     plan: ParseResult;

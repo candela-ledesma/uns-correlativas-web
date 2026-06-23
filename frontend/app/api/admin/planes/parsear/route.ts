@@ -1,31 +1,26 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/auth";
-import { Role } from "@/lib/auth/roles";
+import { requireAdminOrModerator } from "@/lib/auth/authz";
 import { DEFAULT_GEMINI_MODEL } from "@/lib/ai/models";
 import { PROMPT_VERSION } from "@/lib/ai/prompt";
 import { getActivePrompt, parsePdfWithGemini } from "@/lib/services/geminiService";
+import { MAX_UPLOAD_SIZE_MB } from "@/lib/config/constants";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 export const maxDuration = 120;
 
-const MAX_SIZE_MB = 20;
 const PARSER_API_URL = process.env.PARSER_API_URL;
 
 export async function GET() {
-  const session = await auth();
-  if (!session?.user?.id || (session.user.role !== Role.ADMIN && session.user.role !== Role.MODERATOR)) {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  }
+  const session = await requireAdminOrModerator();
+  if (session instanceof NextResponse) return session;
   const { system: systemPrompt, generic: genericPrompt, version } = await getActivePrompt();
   return NextResponse.json({ systemPrompt, genericPrompt, version });
 }
 
 export async function POST(request: Request) {
-  const session = await auth();
-  if (!session?.user?.id || (session.user.role !== Role.ADMIN && session.user.role !== Role.MODERATOR)) {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  }
+  const session = await requireAdminOrModerator();
+  if (session instanceof NextResponse) return session;
 
   let formData: FormData;
   try {
@@ -39,8 +34,8 @@ export async function POST(request: Request) {
   if (!(file instanceof File)) {
     return NextResponse.json({ error: "No se recibió ningún archivo" }, { status: 400 });
   }
-  if (file.size > MAX_SIZE_MB * 1024 * 1024) {
-    return NextResponse.json({ error: `El archivo supera los ${MAX_SIZE_MB} MB` }, { status: 400 });
+  if (file.size > MAX_UPLOAD_SIZE_MB * 1024 * 1024) {
+    return NextResponse.json({ error: `El archivo supera los ${MAX_UPLOAD_SIZE_MB} MB` }, { status: 400 });
   }
 
   const model = (formData.get("model") as string) || DEFAULT_GEMINI_MODEL;

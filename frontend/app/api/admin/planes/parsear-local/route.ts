@@ -1,23 +1,19 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/auth";
-import { Role } from "@/lib/auth/roles";
+import { requireAdminOrModerator } from "@/lib/auth/authz";
 import { parsePdfLocal } from "@/lib/services/parserService";
+import { MAX_UPLOAD_SIZE_MB } from "@/lib/config/constants";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 export const maxDuration = 120;
-
-const MAX_SIZE_MB = 20;
 
 function sseEvent(type: string, payload: Record<string, unknown> = {}): string {
   return `data: ${JSON.stringify({ type, ...payload })}\n\n`;
 }
 
 export async function POST(request: Request) {
-  const session = await auth();
-  if (!session?.user?.id || (session.user.role !== Role.ADMIN && session.user.role !== Role.MODERATOR)) {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  }
+  const session = await requireAdminOrModerator();
+  if (session instanceof NextResponse) return session;
 
   let formData: FormData;
   try {
@@ -31,8 +27,8 @@ export async function POST(request: Request) {
   if (!(file instanceof File)) {
     return NextResponse.json({ error: "No se recibió ningún archivo" }, { status: 400 });
   }
-  if (file.size > MAX_SIZE_MB * 1024 * 1024) {
-    return NextResponse.json({ error: `El archivo supera los ${MAX_SIZE_MB} MB` }, { status: 400 });
+  if (file.size > MAX_UPLOAD_SIZE_MB * 1024 * 1024) {
+    return NextResponse.json({ error: `El archivo supera los ${MAX_UPLOAD_SIZE_MB} MB` }, { status: 400 });
   }
 
   const stream = new ReadableStream({

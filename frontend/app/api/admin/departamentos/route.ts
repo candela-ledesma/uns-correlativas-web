@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/auth";
-import { Role } from "@/lib/auth/roles";
+import { requireAdmin } from "@/lib/auth/authz";
 import { prisma } from "@/lib/db/prisma";
 import { toSlug } from "@/lib/utils/slug";
 
@@ -8,10 +7,8 @@ export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 export async function GET() {
-  const session = await auth();
-  if (!session?.user?.id || session.user.role !== Role.ADMIN) {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  }
+  const session = await requireAdmin();
+  if (session instanceof NextResponse) return session;
 
   const departamentos = await prisma.departamento.findMany({ orderBy: { nombre: "asc" } });
   return NextResponse.json(departamentos);
@@ -20,10 +17,8 @@ export async function GET() {
 // PUT: asigna un departamento (por nombre) a una carrera.
 // Crea el departamento si no existe. Mantiene compatibilidad con el frontend actual.
 export async function PUT(req: Request) {
-  const session = await auth();
-  if (!session?.user?.id || session.user.role !== Role.ADMIN) {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  }
+  const session = await requireAdmin();
+  if (session instanceof NextResponse) return session;
 
   const { slug, departamento }: { slug: string; departamento: string } = await req.json();
   if (!slug) return NextResponse.json({ error: "Falta slug" }, { status: 400 });
