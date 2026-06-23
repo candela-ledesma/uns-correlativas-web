@@ -12,7 +12,7 @@ import {
   publishPlan,
   deletePendingBySlug,
   toFuenteEnum,
-} from "@/lib/services/planRepository";
+} from "@/lib/db/planRepository";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";

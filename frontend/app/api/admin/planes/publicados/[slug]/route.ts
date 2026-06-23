@@ -5,7 +5,7 @@ import {
   getPublishedPlan,
   updatePublishedPlanJson,
   deletePublishedPlansBySlug,
-} from "@/lib/services/planRepository";
+} from "@/lib/db/planRepository";
 import { prisma } from "@/lib/db/prisma";
 
 export const dynamic = "force-dynamic";

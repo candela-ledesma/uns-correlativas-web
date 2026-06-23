@@ -4,6 +4,66 @@
 
 ---
 
+## Arquitectura y organización del código
+
+### 1. Unificar `lib/db/` y `lib/services/` en un solo directorio de repositorios
+
+- `baja` [ ] **Mover `planRepository.ts` a `lib/db/`**
+
+  Hoy `carreraRepository.ts`, `progressRepository.ts` y `audit.ts` viven en `lib/db/`, pero `planRepository.ts` quedó en `lib/services/` del refactor anterior. La convención es inconsistente: quien busque queries de `Plan` tiene que saber que están en `services/` y no en `db/`.
+
+  **Lo que hacer:**
+  1. Mover `lib/services/planRepository.ts` → `lib/db/planRepository.ts`
+  2. Actualizar todos los imports (`guardar/route.ts`, `existe/route.ts`, etc.)
+  3. `lib/services/` queda solo para servicios de orquestación: `geminiService.ts`, `parserService.ts`
+
+  **Archivos afectados:** todos los route handlers de `app/api/admin/planes/` que importan de `@/lib/services/planRepository`.
+
+---
+
+### 2. Agregar helpers de auth para rutas de usuario (`/api/perfil/*`, `/api/progreso/*`)
+
+- `baja` [ ] **Extraer `requireAuth()` para rutas de usuario autenticado**
+
+  Los handlers de `/api/perfil/contexto`, `/api/perfil/plan-visit`, `/api/progreso/sync`, etc. validan `session?.user?.id` inline en cada uno. El patrón `requireAdmin()` que existe en `lib/auth/authz.ts` solo cubre roles admin/moderador.
+
+  **Lo que hacer:**
+  1. Agregar `requireAuth(): Promise<AuthedSession | NextResponse>` en `lib/auth/authz.ts`
+  2. Aplicarlo a los handlers de perfil, progreso y planificador que hoy hacen auth inline
+
+---
+
+### 3. Dividir `userProductContext.ts` (275 líneas, demasiados concerns)
+
+- `baja` [ ] **Separar bootstrap de usuario de las consultas de contexto**
+
+  `lib/db/userProductContext.ts` mezcla: inicialización de enrollments (bootstrap), CRUD de preferences, y armado del objeto `UserProductContext`. Es difícil de testear y de razonar.
+
+  **Separación propuesta:**
+  - `lib/db/userRepository.ts` — CRUD de `UserPreference`, `PlanSeleccionado`, `UserRecentPlan`
+  - `userProductContext.ts` — solo orquestación: llama a los repos, arma el objeto de respuesta
+
+---
+
+### 4. ~~Auditar `lib/plan/planStorage.ts`~~ — descartado
+
+  Auditado: `planStorage.ts` está en uso activo. Es el cache localStorage que `usePlanState` usa como buffer offline antes de sincronizar con Neon (carga inicial, guardado en cada cambio, migración de usuarios nuevos). No es código muerto.
+
+---
+
+### 5. Tests unitarios para lógica de plan
+
+- `media` [ ] **Cubrir `lib/plan/` con tests unitarios**
+
+  Los 73 tests actuales son casi todos de route handlers (integración). La lógica pura en `lib/plan/` — `evaluarCorrelativas.ts`, `calcularProgresoPlan.ts`, `filtrarMaterias.ts` — no tiene tests. Es donde viven los bugs más silenciosos.
+
+  **Candidatos iniciales:**
+  - `evaluarCorrelativas` — lógica de habilitación por estado de materias
+  - `calcularProgresoPlan` — porcentajes y conteos
+  - `filtrarMaterias` — filtros por año/cuatrimestre/estado
+
+---
+
 ## Versionado de planes — panel admin
 
 - `media` [ ] **Implementar "Guardar como nueva versión" en el flujo de publicación**

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth/authz";
 import { getCarreras } from "@/lib/db/carreraRepository";
-import { getPublishedPlansRaw } from "@/lib/services/planRepository";
+import { getPublishedPlansRaw } from "@/lib/db/planRepository";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
