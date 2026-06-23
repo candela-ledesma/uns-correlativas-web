@@ -4,28 +4,6 @@
 
 ---
 
-## Reorganización de directorios
-
-- `alta` [x] **Reorganizar el repositorio en 3 directorios** — completado en rama `refactor/estructura-directorios`.
-
-  Estructura final:
-  ```
-  .
-  ├── frontend/    # Next.js completo (antes web/)
-  ├── parser/      # core/ + parser_api/ + scripts/ + tests/
-  └── docs/        # documentación interna e issues por carrera
-  ```
-
-- `baja` [x] **Eliminar doble nesting `parser/core/parser/`** — completado. Archivos movidos a `parser/core/` directamente, imports actualizados, comando ahora es `python3 -m core`.
-
----
-
-## Normalización BD — unificar fuentes de carreras
-
-- `alta` [x] **Fusionar `carreras.ts` + `CarreraConfig` (DB) + `PlanVersion` en dos tablas `Carrera` y `PlanVersion`** — completado. Ver `web/prisma/PLAN_CARRERVERSION_MIGRATION.md`.
-
-- `media` [x] **Crear tabla `Departamento` y normalizar `CarreraConfig.departamento`** — completado. Migración `20260525_add_departamento`.
-
 ## Versionado de planes — panel admin
 
 - `media` [ ] **Implementar "Guardar como nueva versión" en el flujo de publicación**
@@ -48,23 +26,6 @@
 
 ---
 
-## Arquitectura — separación de capas
-
-La separación de capas está implementada en `frontend/lib/`:
-
-- **Lógica de dominio pura:** funciones sin efectos de lado que operan sobre los tipos del plan (`Materia`, `Agrupador`, `PlanData`). Pueden ser importadas tanto desde route handlers como desde componentes del cliente. Están completamente testeadas con Vitest.
-- **Acceso a datos:** `lib/db/` encapsula las consultas a Prisma. `lib/services/planRepository.ts` centraliza las operaciones sobre `Plan`.
-- **Servicios:** `lib/services/` contiene la lógica de orquestación extraída de los handlers: `planRepository.ts`, `parserService.ts`, `geminiService.ts`.
-- **Utilidades:** `lib/utils/slug.ts` y similares — funciones puras sin dependencias de red ni BD.
-- **Route handlers:** coordinadores puros (~20-40 líneas): auth check → parsear input → llamar servicio → devolver respuesta.
-- **Componentes:** presentación y estado local de UI. Se comunican con el backend exclusivamente a través de `fetch` hacia las API Routes.
-
-- `baja` [x] **Paso 1 — `planRepository.ts`** — operaciones Prisma de `Plan` extraídas de los route handlers.
-- `baja` [x] **Paso 2 — `parserService.ts`** — encapsula la decisión prod/local, llamadas a Render y subprocess Python.
-- `baja` [x] **Paso 3 — `geminiService.ts`** — separa la llamada a la API de Google del route handler.
-- `baja` [x] **Paso 4 — route handlers como coordinadores puros** — cada handler en ~20-40 líneas: auth check → llamar servicio → devolver respuesta.
-
----
 
 ## Panel admin
 
@@ -79,17 +40,6 @@ La separación de capas está implementada en `frontend/lib/`:
 - `media` [ ] **UX del mapa** — mejorar centrado inicial, hints de interacción (zoom/drag) y legibilidad.
 - `baja` [ ] **Responsive mobile/tablet** — definir adaptación del grafo o fallback de solo desktop.
 
----
-
-## Google Calendar
-
-- `baja` [x] **Variables de entorno** — documentar `GOOGLE_CLIENT_ID` y `GOOGLE_CLIENT_SECRET` en `web/.env.example`.
-
----
-
-## Autoguardado de borradores en BD
-
-- `media` [x] **Eliminar autoguardado automático de borradores** — se decidió que la BD solo persiste lo que el admin valida explícitamente. Se eliminaron los `prisma.plan.upsert` automáticos de `parsear/route.ts` y `parsear-local/route.ts`. El único camino para guardar es el botón "Guardar borrador".
 
 ---
 
