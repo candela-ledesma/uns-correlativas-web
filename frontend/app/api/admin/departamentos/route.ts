@@ -2,18 +2,10 @@ import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { Role } from "@/lib/auth/roles";
 import { prisma } from "@/lib/db/prisma";
+import { toSlug } from "@/lib/utils/slug";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
-
-function toSlug(nombre: string): string {
-  return nombre
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "")
-    .replace(/[^a-z0-9]+/g, "_")
-    .replace(/^_+|_+$/g, "");
-}
 
 export async function GET() {
   const session = await auth();

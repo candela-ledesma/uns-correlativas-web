@@ -4,6 +4,7 @@ import { Role } from "@/lib/auth/roles";
 import { prisma } from "@/lib/db/prisma";
 import { createAuditEvent } from "@/lib/db/audit";
 import { notificarRevisionPendiente } from "@/lib/email/notificar";
+import { toSlug } from "@/lib/utils/slug";
 
 export const dynamic = "force-dynamic";
 
@@ -13,15 +14,6 @@ type ParseResult = {
   agrupadores: unknown[];
   [key: string]: unknown;
 };
-
-function slugFromPlan(plan: ParseResult["plan"]): string {
-  return plan.carrera
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "")
-    .replace(/[^a-z0-9]+/g, "_")
-    .replace(/^_+|_+$/g, "");
-}
 
 export async function POST(request: Request) {
   const session = await auth();
@@ -46,7 +38,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Datos del plan inválidos" }, { status: 400 });
   }
 
-  const slug = slugFromPlan(plan.plan);
+  const slug = toSlug(plan.plan.carrera);
 
   const dataToSave = {
     ...plan,
