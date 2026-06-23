@@ -52,17 +52,6 @@ export function buildConflict(row: Plan, dateField: "updatedAt" | "createdAt" = 
   };
 }
 
-// ── Borradores ────────────────────────────────────────────────────────────────
-
-export async function getBorradorBySlug(
-  slug: string,
-  fuente: FuenteEnum,
-): Promise<Plan | null> {
-  return prisma.plan.findUnique({
-    where: { slug_fuente_estado: { slug, fuente, estado: "BORRADOR" } },
-  });
-}
-
 export async function upsertBorrador(
   slug: string,
   fuente: FuenteEnum,
