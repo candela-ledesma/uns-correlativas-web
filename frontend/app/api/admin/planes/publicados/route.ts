@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { Role } from "@/lib/auth/roles";
-import { prisma } from "@/lib/db/prisma";
 import { getCarreras } from "@/lib/db/carreraRepository";
+import { getPublishedPlansRaw } from "@/lib/services/planRepository";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -15,10 +15,7 @@ export async function GET() {
 
   const [carreras, dbPlanes] = await Promise.all([
     getCarreras({ soloDisponibles: false }),
-    prisma.plan.findMany({
-      where: { estado: "PUBLICADO", esBackup: false },
-      select: { slug: true, fuente: true, createdAt: true, planJson: true },
-    }),
+    getPublishedPlansRaw(),
   ]);
 
   const planesMap = new Map(dbPlanes.map((p) => [p.slug, p]));

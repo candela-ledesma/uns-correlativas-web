@@ -2,19 +2,10 @@ import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { Role } from "@/lib/auth/roles";
 import { prisma } from "@/lib/db/prisma";
+import { toSlug } from "@/lib/utils/slug";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
-
-function slugFromFilename(filename: string): string {
-  return filename
-    .replace(/\.pdf$/i, "")
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "")
-    .replace(/[^a-z0-9]+/g, "_")
-    .replace(/^_+|_+$/g, "");
-}
 
 type ExistingInfo =
   | {
@@ -59,7 +50,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "Falta parámetro filename" }, { status: 400 });
   }
 
-  const slug = slugFromFilename(filename);
+  const slug = toSlug(filename.replace(/\.pdf$/i, ""));
 
   const [borradorParser, borradorGemini] = await Promise.all([
     prisma.plan.findUnique({ where: { slug_fuente_estado: { slug, fuente: "PARSER", estado: "BORRADOR" } } }),
