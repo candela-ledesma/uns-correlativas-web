@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/auth";
-import { Role } from "@/lib/auth/roles";
+import { requireAdmin } from "@/lib/auth/authz";
 import { createAuditEvent } from "@/lib/db/audit";
 import { getPendingPlanBySlug, deletePendingBySlug } from "@/lib/services/planRepository";
 
@@ -10,10 +9,8 @@ export async function GET(
   _req: Request,
   { params }: { params: Promise<{ slug: string }> }
 ) {
-  const session = await auth();
-  if (!session?.user?.id || session.user.role !== Role.ADMIN) {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  }
+  const session = await requireAdmin();
+  if (session instanceof NextResponse) return session;
 
   const { slug } = await params;
   const row = await getPendingPlanBySlug(slug);
@@ -26,10 +23,8 @@ export async function DELETE(
   req: Request,
   { params }: { params: Promise<{ slug: string }> }
 ) {
-  const session = await auth();
-  if (!session?.user?.id || session.user.role !== Role.ADMIN) {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  }
+  const session = await requireAdmin();
+  if (session instanceof NextResponse) return session;
 
   const { slug } = await params;
   const { motivo } = await req.json().catch(() => ({ motivo: undefined })) as { motivo?: string };

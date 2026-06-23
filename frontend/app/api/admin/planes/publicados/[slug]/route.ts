@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/auth";
-import { Role } from "@/lib/auth/roles";
+import { requireAdmin } from "@/lib/auth/authz";
 import { createAuditEvent } from "@/lib/db/audit";
 import {
   getPublishedPlan,
@@ -14,16 +13,10 @@ export const runtime = "nodejs";
 
 type Params = { params: Promise<{ slug: string }> };
 
-async function requireAdmin() {
-  const session = await auth();
-  if (!session?.user?.id || session.user.role !== Role.ADMIN) return null;
-  return session;
-}
-
 // ── GET: devuelve el JSON completo del plan publicado ─────────────────────────
 export async function GET(_req: Request, { params }: Params) {
   const session = await requireAdmin();
-  if (!session) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  if (session instanceof NextResponse) return session;
 
   const { slug } = await params;
   const row = await getPublishedPlan(slug);
@@ -35,7 +28,7 @@ export async function GET(_req: Request, { params }: Params) {
 // ── PUT: reemplaza el JSON publicado con el body recibido ─────────────────────
 export async function PUT(req: Request, { params }: Params) {
   const session = await requireAdmin();
-  if (!session) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  if (session instanceof NextResponse) return session;
 
   const { slug } = await params;
 
@@ -70,7 +63,7 @@ export async function PUT(req: Request, { params }: Params) {
 // ── PATCH: cambia disponible, nombre, o departamentoId ───────────────────────
 export async function PATCH(req: Request, { params }: Params) {
   const session = await requireAdmin();
-  if (!session) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  if (session instanceof NextResponse) return session;
 
   const { slug } = await params;
   const body: { disponible?: boolean; nombre?: string; departamentoId?: string | null } = await req.json();
@@ -113,7 +106,7 @@ export async function PATCH(req: Request, { params }: Params) {
 
 export async function DELETE(_req: Request, { params }: Params) {
   const session = await requireAdmin();
-  if (!session) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  if (session instanceof NextResponse) return session;
 
   const { slug } = await params;
 

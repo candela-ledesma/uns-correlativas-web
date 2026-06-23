@@ -30,6 +30,17 @@ export function toFuenteEnum(fuente: string): FuenteEnum {
   return "PARSER";
 }
 
+// ── Borradores ────────────────────────────────────────────────────────────────
+
+export async function getBorradorBySlug(
+  slug: string,
+  fuente: FuenteEnum,
+): Promise<Plan | null> {
+  return prisma.plan.findUnique({
+    where: { slug_fuente_estado: { slug, fuente, estado: "BORRADOR" } },
+  });
+}
+
 export function buildConflict(row: Plan, dateField: "updatedAt" | "createdAt" = "updatedAt"): BorradorConflict {
   return {
     conflict: true,

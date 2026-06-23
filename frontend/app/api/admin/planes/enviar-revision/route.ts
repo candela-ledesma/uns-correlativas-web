@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/auth";
-import { Role } from "@/lib/auth/roles";
+import { requireAdminOrModerator } from "@/lib/auth/authz";
 import { prisma } from "@/lib/db/prisma";
 import { createAuditEvent } from "@/lib/db/audit";
 import { notificarRevisionPendiente } from "@/lib/email/notificar";
@@ -16,15 +15,8 @@ type ParseResult = {
 };
 
 export async function POST(request: Request) {
-  const session = await auth();
-
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "No autenticado" }, { status: 401 });
-  }
-
-  if (session.user.role !== Role.ADMIN && session.user.role !== Role.MODERATOR) {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  }
+  const session = await requireAdminOrModerator();
+  if (session instanceof NextResponse) return session;
 
   let body: { plan: ParseResult; fuente: "gemini" | "parser"; nota?: string };
   try {
