@@ -11,6 +11,14 @@ const ROLE_WEIGHT: Record<AppRole, number> = {
 
 type AuthedSession = Session & { user: NonNullable<Session["user"]> & { id: string } };
 
+export async function requireAuth(): Promise<AuthedSession | NextResponse> {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: "No autenticado" }, { status: 401 });
+  }
+  return session as AuthedSession;
+}
+
 export async function requireAdmin(): Promise<AuthedSession | NextResponse> {
   const session = await auth();
   if (!session?.user?.id || session.user.role !== Role.ADMIN) {
