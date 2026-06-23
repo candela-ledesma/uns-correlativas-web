@@ -1,8 +1,13 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { Role } from "@/lib/auth/roles";
-import { prisma } from "@/lib/db/prisma";
 import { createAuditEvent } from "@/lib/db/audit";
+import {
+  getPublishedPlan,
+  updatePublishedPlanJson,
+  deletePublishedPlansBySlug,
+} from "@/lib/services/planRepository";
+import { prisma } from "@/lib/db/prisma";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -21,7 +26,7 @@ export async function GET(_req: Request, { params }: Params) {
   if (!session) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const { slug } = await params;
-  const row = await prisma.plan.findFirst({ where: { slug, estado: "PUBLICADO", esBackup: false } });
+  const row = await getPublishedPlan(slug);
   if (!row) return NextResponse.json({ error: "No encontrado" }, { status: 404 });
 
   return new Response(row.planJson, { headers: { "Content-Type": "application/json; charset=utf-8" } });
@@ -43,13 +48,10 @@ export async function PUT(req: Request, { params }: Params) {
     return NextResponse.json({ error: "JSON inválido" }, { status: 400 });
   }
 
-  const existing = await prisma.plan.findFirst({ where: { slug, estado: "PUBLICADO", esBackup: false } });
+  const existing = await getPublishedPlan(slug);
   if (!existing) return NextResponse.json({ error: "No encontrado" }, { status: 404 });
 
-  await prisma.plan.update({
-    where: { id: existing.id },
-    data: { planJson: newJson, autorId: session.user.id },
-  });
+  await updatePublishedPlanJson(existing.id, newJson, session.user.id);
 
   await createAuditEvent({
     actorUserId: session.user.id,
@@ -115,7 +117,7 @@ export async function DELETE(_req: Request, { params }: Params) {
 
   const { slug } = await params;
 
-  await prisma.plan.deleteMany({ where: { slug, estado: "PUBLICADO" } }).catch(() => {});
+  await deletePublishedPlansBySlug(slug);
 
   await createAuditEvent({
     actorUserId: session.user.id,

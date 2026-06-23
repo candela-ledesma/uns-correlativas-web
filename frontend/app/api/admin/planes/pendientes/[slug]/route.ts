@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { Role } from "@/lib/auth/roles";
-import { prisma } from "@/lib/db/prisma";
 import { createAuditEvent } from "@/lib/db/audit";
+import { getPendingPlanBySlug, deletePendingPlansBySlug } from "@/lib/services/planRepository";
 
 export const dynamic = "force-dynamic";
 
@@ -16,12 +16,10 @@ export async function GET(
   }
 
   const { slug } = await params;
-  const row = await prisma.plan.findFirst({ where: { slug, estado: "PENDIENTE" } });
+  const row = await getPendingPlanBySlug(slug);
   if (!row) return NextResponse.json({ error: "No encontrado" }, { status: 404 });
 
-  return new Response(row.planJson, {
-    headers: { "Content-Type": "application/json; charset=utf-8" },
-  });
+  return new Response(row.planJson, { headers: { "Content-Type": "application/json; charset=utf-8" } });
 }
 
 export async function DELETE(
@@ -36,8 +34,8 @@ export async function DELETE(
   const { slug } = await params;
   const { motivo } = await req.json().catch(() => ({ motivo: undefined })) as { motivo?: string };
 
-  const deleted = await prisma.plan.deleteMany({ where: { slug, estado: "PENDIENTE" } });
-  if (deleted.count === 0) return NextResponse.json({ error: "No encontrado" }, { status: 404 });
+  const count = await deletePendingPlansBySlug(slug);
+  if (count === 0) return NextResponse.json({ error: "No encontrado" }, { status: 404 });
 
   await createAuditEvent({
     actorUserId: session.user.id,

@@ -3,31 +3,13 @@ import { auth } from "@/auth";
 import { Role } from "@/lib/auth/roles";
 import path from "path";
 import fs from "fs/promises";
-import { spawn } from "child_process";
+import { compareAgainstGroundTruth } from "@/lib/services/parserService";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
-const DATA_DIR_LOCAL   = path.join(process.cwd(), "data", "local");
-const DATA_DIR_GEMINI  = path.join(process.cwd(), "data", "gemini");
-const PROJECT_ROOT     = path.join(process.cwd(), "..");
-const PYTHON           = path.join(PROJECT_ROOT, ".venv", "bin", "python3");
-
-function runScript(refPath: string, candPath: string): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const proc = spawn(PYTHON, ["-m", "scripts.comparar_json", refPath, candPath], {
-      cwd: PROJECT_ROOT,
-    });
-    let out = "";
-    let err = "";
-    proc.stdout.on("data", (d) => { out += d.toString(); });
-    proc.stderr.on("data", (d) => { err += d.toString(); });
-    proc.on("close", (code) => {
-      if (code !== 0 && !out) reject(new Error(err || `exit code ${code}`));
-      else resolve(out || err);
-    });
-  });
-}
+const DATA_DIR_LOCAL  = path.join(process.cwd(), "data", "local");
+const DATA_DIR_GEMINI = path.join(process.cwd(), "data", "gemini");
 
 export async function POST(req: Request) {
   const session = await auth();
@@ -46,16 +28,11 @@ export async function POST(req: Request) {
     fs.access(candPath).then(() => true).catch(() => false),
   ]);
 
-  if (!candExists) {
-    return NextResponse.json({ error: "No se encontró el JSON pendiente" }, { status: 404 });
-  }
-
-  if (!refExists) {
-    return NextResponse.json({ sinGroundTruth: true });
-  }
+  if (!candExists) return NextResponse.json({ error: "No se encontró el JSON pendiente" }, { status: 404 });
+  if (!refExists) return NextResponse.json({ sinGroundTruth: true });
 
   try {
-    const output = await runScript(refPath, candPath);
+    const output = await compareAgainstGroundTruth(refPath, candPath);
     return NextResponse.json({ output });
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
