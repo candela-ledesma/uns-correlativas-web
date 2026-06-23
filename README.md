@@ -154,7 +154,6 @@ El servidor aplica unicamente parseo/validacion estructural y metadata:
 - El panel admin incluye la herramienta **"Exportar diff como few-shot"** que genera bloques de correccion para mejorar el prompt manualmente.
 - **v33+**: limpieza del pipeline para vision nativa, reglas de schema/grupos consolidadas y eliminacion de fixups server-side sobre IDs.
 
-
 ## 8) Requisitos
 
 - Node.js 22+
