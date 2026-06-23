@@ -92,6 +92,11 @@ web/
 │   ├── mapa/                   # Lógica del grafo: graphUtils, bestPath
 │   ├── data/                   # Carga y validación de planes
 │   ├── db/                     # Capa de datos: prisma, audit, progreso, carreras
+│   ├── services/               # Servicios de orquestación (entre handlers y repos)
+│   │   ├── planRepository.ts   # Operaciones CRUD sobre Plan
+│   │   ├── parserService.ts    # Parser Python local/remoto + comparar_json
+│   │   └── geminiService.ts    # Google AI SDK + extracción de JSON + prompt activo
+│   ├── utils/                  # Utilidades puras (slug, etc.)
 │   └── auth/                   # Permisos: roles, authz
 ├── hooks/                      # usePlanState, useSchedule, useOnboarding
 └── prisma/                     # Schema, migraciones y documentación de BD
@@ -116,6 +121,17 @@ PDF → Gemini (visión nativa) → Plan.planJson (BORRADOR)
 - `UserPlanProgress` — estado de cada materia por usuario, anclado a una `CarreraVersion` específica. Si se publica una nueva versión del plan, el progreso en la versión anterior no se pierde.
 
 Documentación detallada del schema: `prisma/NORMALIZATION.md` y `prisma/PLAN_CARRERVERSION_MIGRATION.md`.
+
+## Arquitectura de capas
+
+Los route handlers de `app/api/admin/` son coordinadores puros (auth → input → servicio → respuesta). La lógica reside en:
+
+| Capa | Ubicación | Qué hace |
+|---|---|---|
+| Dominio | `lib/plan/`, `lib/data/` | Lógica pura sin efectos de lado, testeada con Vitest |
+| Servicios | `lib/services/` | Orquestación: `planRepository`, `parserService`, `geminiService` |
+| Repositorios | `lib/db/` | Acceso a Prisma: carreras, audit, progreso |
+| Utilidades | `lib/utils/` | Funciones puras (ej. `toSlug`) |
 
 ## Roles y permisos
 
