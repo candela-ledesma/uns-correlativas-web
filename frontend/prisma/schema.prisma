@@ -251,6 +251,7 @@ model Plan {
   @@unique([slug, fuente, estado])
   @@index([slug, estado])
   @@index([slug, esBackup])
+  @@index([slug, estado, esBackup])
 }
 
 

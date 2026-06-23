@@ -8,19 +8,37 @@ export type BorradorConflict = {
   existing: { materias: number; fechaCarga: string; fuente: string };
 };
 
-function diffDaysLabel(date: Date): string {
+export function diffDaysLabel(date: Date): string {
   const diffDays = Math.floor((Date.now() - date.getTime()) / 86400000);
   if (diffDays === 0) return "hoy";
   if (diffDays === 1) return "hace 1 día";
   return `hace ${diffDays} días`;
 }
 
-function parseMateriaCount(planJson: string): number {
+export function parseMateriaCount(planJson: string): number {
   try {
     return ((JSON.parse(planJson) as { materias?: unknown[] }).materias ?? []).length;
   } catch {
     return 0;
   }
+}
+
+export function toFuenteEnum(fuente: string): FuenteEnum {
+  if (fuente === "parser") return "PARSER";
+  if (fuente === "gemini") return "GEMINI";
+  if (fuente === "merged") return "MERGED";
+  return "PARSER";
+}
+
+export function buildConflict(row: Plan, dateField: "updatedAt" | "createdAt" = "updatedAt"): BorradorConflict {
+  return {
+    conflict: true,
+    existing: {
+      materias: parseMateriaCount(row.planJson),
+      fechaCarga: diffDaysLabel(row[dateField]),
+      fuente: row.fuente.toLowerCase(),
+    },
+  };
 }
 
 // ── Borradores ────────────────────────────────────────────────────────────────
@@ -32,17 +50,6 @@ export async function getBorradorBySlug(
   return prisma.plan.findUnique({
     where: { slug_fuente_estado: { slug, fuente, estado: "BORRADOR" } },
   });
-}
-
-export function buildBorradorConflict(row: Plan): BorradorConflict {
-  return {
-    conflict: true,
-    existing: {
-      materias: parseMateriaCount(row.planJson),
-      fechaCarga: diffDaysLabel(row.updatedAt),
-      fuente: row.fuente.toLowerCase(),
-    },
-  };
 }
 
 export async function upsertBorrador(
@@ -62,17 +69,6 @@ export async function upsertBorrador(
 
 export async function getPublishedPlan(slug: string): Promise<Plan | null> {
   return prisma.plan.findFirst({ where: { slug, estado: "PUBLICADO", esBackup: false } });
-}
-
-export function buildPublishedConflict(row: Plan): BorradorConflict {
-  return {
-    conflict: true,
-    existing: {
-      materias: parseMateriaCount(row.planJson),
-      fechaCarga: diffDaysLabel(row.createdAt),
-      fuente: row.fuente.toLowerCase(),
-    },
-  };
 }
 
 export async function backupPublishedPlan(existing: Plan): Promise<void> {
@@ -108,15 +104,22 @@ export async function publishPlan(
   return created.id;
 }
 
-export async function deletePendingBySlug(slug: string): Promise<void> {
-  await prisma.plan.deleteMany({ where: { slug, estado: "PENDIENTE" } }).catch(() => {});
-}
-
-// ── Listas ────────────────────────────────────────────────────────────────────
+// ── Pendientes ────────────────────────────────────────────────────────────────
 
 export async function getPendingPlans(): Promise<Plan[]> {
   return prisma.plan.findMany({ where: { estado: "PENDIENTE" }, orderBy: { createdAt: "desc" } });
 }
+
+export async function getPendingPlanBySlug(slug: string): Promise<Plan | null> {
+  return prisma.plan.findFirst({ where: { slug, estado: "PENDIENTE" } });
+}
+
+export async function deletePendingBySlug(slug: string): Promise<number> {
+  const result = await prisma.plan.deleteMany({ where: { slug, estado: "PENDIENTE" } });
+  return result.count;
+}
+
+// ── Publicados (listas y mutaciones) ─────────────────────────────────────────
 
 export async function getPublishedPlansRaw(): Promise<
   Pick<Plan, "slug" | "fuente" | "createdAt" | "planJson">[]
@@ -125,15 +128,6 @@ export async function getPublishedPlansRaw(): Promise<
     where: { estado: "PUBLICADO", esBackup: false },
     select: { slug: true, fuente: true, createdAt: true, planJson: true },
   });
-}
-
-export async function getPendingPlanBySlug(slug: string): Promise<Plan | null> {
-  return prisma.plan.findFirst({ where: { slug, estado: "PENDIENTE" } });
-}
-
-export async function deletePendingPlansBySlug(slug: string): Promise<number> {
-  const result = await prisma.plan.deleteMany({ where: { slug, estado: "PENDIENTE" } });
-  return result.count;
 }
 
 export async function updatePublishedPlanJson(

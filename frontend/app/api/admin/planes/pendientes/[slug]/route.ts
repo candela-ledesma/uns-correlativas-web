@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { Role } from "@/lib/auth/roles";
 import { createAuditEvent } from "@/lib/db/audit";
-import { getPendingPlanBySlug, deletePendingPlansBySlug } from "@/lib/services/planRepository";
+import { getPendingPlanBySlug, deletePendingBySlug } from "@/lib/services/planRepository";
 
 export const dynamic = "force-dynamic";
 
@@ -34,7 +34,7 @@ export async function DELETE(
   const { slug } = await params;
   const { motivo } = await req.json().catch(() => ({ motivo: undefined })) as { motivo?: string };
 
-  const count = await deletePendingPlansBySlug(slug);
+  const count = await deletePendingBySlug(slug);
   if (count === 0) return NextResponse.json({ error: "No encontrado" }, { status: 404 });
 
   await createAuditEvent({
