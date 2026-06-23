@@ -103,10 +103,6 @@ export async function parsePdfLocal(
   }
 }
 
-export type CompareResult =
-  | { sinGroundTruth: true }
-  | { output: string };
-
 /**
  * Compara un JSON candidato contra el ground truth local usando el script Python.
  * Devuelve `{ sinGroundTruth: true }` si no existe referencia, o `{ output }` con el diff.
