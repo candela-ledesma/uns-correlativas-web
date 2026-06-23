@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { requireAdminOrModerator } from "@/lib/auth/authz";
 import { prisma } from "@/lib/db/prisma";
 import { toSlug } from "@/lib/utils/slug";
-import { diffDaysLabel, parseMateriaCount } from "@/lib/services/planRepository";
+import { diffDaysLabel, parseMateriaCount } from "@/lib/db/planRepository";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";

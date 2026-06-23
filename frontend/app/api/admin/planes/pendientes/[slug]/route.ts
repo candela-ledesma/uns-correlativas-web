@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth/authz";
 import { createAuditEvent } from "@/lib/db/audit";
-import { getPendingPlanBySlug, deletePendingBySlug } from "@/lib/services/planRepository";
+import { getPendingPlanBySlug, deletePendingBySlug } from "@/lib/db/planRepository";
 
 export const dynamic = "force-dynamic";
 

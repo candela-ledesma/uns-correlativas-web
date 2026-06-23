@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth/authz";
-import { getPendingPlans } from "@/lib/services/planRepository";
+import { getPendingPlans } from "@/lib/db/planRepository";
 
 export const dynamic = "force-dynamic";
 
