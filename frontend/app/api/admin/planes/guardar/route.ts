@@ -5,10 +5,9 @@ import { createAuditEvent } from "@/lib/db/audit";
 import { toSlug } from "@/lib/utils/slug";
 import {
   getBorradorBySlug,
-  buildBorradorConflict,
+  buildConflict,
   upsertBorrador,
   getPublishedPlan,
-  buildPublishedConflict,
   backupPublishedPlan,
   publishPlan,
   deletePendingBySlug,
@@ -67,7 +66,7 @@ export async function POST(request: Request) {
     if (!publicar) {
       const existingBorrador = await getBorradorBySlug(slug, fuenteEnum);
       if (existingBorrador && !resolucion) {
-        return NextResponse.json(buildBorradorConflict(existingBorrador));
+        return NextResponse.json(buildConflict(existingBorrador));
       }
       if (resolucion === "conservar") {
         return NextResponse.json({ ok: true, slug, action: "conserved" });
@@ -78,7 +77,7 @@ export async function POST(request: Request) {
 
     const existing = await getPublishedPlan(slug);
     if (existing && !resolucion) {
-      return NextResponse.json(buildPublishedConflict(existing));
+      return NextResponse.json(buildConflict(existing, "createdAt"));
     }
     if (resolucion === "conservar") {
       return NextResponse.json({ ok: true, slug, action: "conserved" });

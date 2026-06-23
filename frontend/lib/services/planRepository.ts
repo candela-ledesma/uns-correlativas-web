@@ -41,12 +41,12 @@ export async function getBorradorBySlug(
   });
 }
 
-export function buildBorradorConflict(row: Plan): BorradorConflict {
+export function buildConflict(row: Plan, dateField: "updatedAt" | "createdAt" = "updatedAt"): BorradorConflict {
   return {
     conflict: true,
     existing: {
       materias: parseMateriaCount(row.planJson),
-      fechaCarga: diffDaysLabel(row.updatedAt),
+      fechaCarga: diffDaysLabel(row[dateField]),
       fuente: row.fuente.toLowerCase(),
     },
   };
@@ -69,17 +69,6 @@ export async function upsertBorrador(
 
 export async function getPublishedPlan(slug: string): Promise<Plan | null> {
   return prisma.plan.findFirst({ where: { slug, estado: "PUBLICADO", esBackup: false } });
-}
-
-export function buildPublishedConflict(row: Plan): BorradorConflict {
-  return {
-    conflict: true,
-    existing: {
-      materias: parseMateriaCount(row.planJson),
-      fechaCarga: diffDaysLabel(row.createdAt),
-      fuente: row.fuente.toLowerCase(),
-    },
-  };
 }
 
 export async function backupPublishedPlan(existing: Plan): Promise<void> {
@@ -115,15 +104,22 @@ export async function publishPlan(
   return created.id;
 }
 
-export async function deletePendingBySlug(slug: string): Promise<void> {
-  await prisma.plan.deleteMany({ where: { slug, estado: "PENDIENTE" } }).catch(() => {});
-}
-
-// ── Listas ────────────────────────────────────────────────────────────────────
+// ── Pendientes ────────────────────────────────────────────────────────────────
 
 export async function getPendingPlans(): Promise<Plan[]> {
   return prisma.plan.findMany({ where: { estado: "PENDIENTE" }, orderBy: { createdAt: "desc" } });
 }
+
+export async function getPendingPlanBySlug(slug: string): Promise<Plan | null> {
+  return prisma.plan.findFirst({ where: { slug, estado: "PENDIENTE" } });
+}
+
+export async function deletePendingBySlug(slug: string): Promise<number> {
+  const result = await prisma.plan.deleteMany({ where: { slug, estado: "PENDIENTE" } });
+  return result.count;
+}
+
+// ── Publicados (listas y mutaciones) ─────────────────────────────────────────
 
 export async function getPublishedPlansRaw(): Promise<
   Pick<Plan, "slug" | "fuente" | "createdAt" | "planJson">[]
@@ -132,15 +128,6 @@ export async function getPublishedPlansRaw(): Promise<
     where: { estado: "PUBLICADO", esBackup: false },
     select: { slug: true, fuente: true, createdAt: true, planJson: true },
   });
-}
-
-export async function getPendingPlanBySlug(slug: string): Promise<Plan | null> {
-  return prisma.plan.findFirst({ where: { slug, estado: "PENDIENTE" } });
-}
-
-export async function deletePendingPlansBySlug(slug: string): Promise<number> {
-  const result = await prisma.plan.deleteMany({ where: { slug, estado: "PENDIENTE" } });
-  return result.count;
 }
 
 export async function updatePublishedPlanJson(
