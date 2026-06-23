@@ -50,23 +50,19 @@
 
 ## Arquitectura — separación de capas
 
-No hay separación formal de capas: la lógica de negocio, el acceso a datos y la orquestación de servicios conviven en los route handlers. Es pragmático y funciona para el volumen actual, pero si el sistema crece podría justificar extraer una capa de servicios.
-
-Existe sin embargo una separación informal que merece describirse:
+La separación de capas está implementada en `frontend/lib/`:
 
 - **Lógica de dominio pura:** funciones sin efectos de lado que operan sobre los tipos del plan (`Materia`, `Agrupador`, `PlanData`). Pueden ser importadas tanto desde route handlers como desde componentes del cliente. Están completamente testeadas con Vitest.
-- **Acceso a datos:** funciones que encapsulan las consultas a Prisma. Los route handlers no acceden directamente a `prisma.*` salvo en casos simples; las consultas complejas o reutilizadas están en repositorios dedicados.
-- **Route handlers:** orquestación de request/response, validación de sesión, control de roles y llamada a las funciones de dominio o de acceso a datos. No contienen lógica de negocio que pueda reutilizarse.
-- **Componentes:** presentación y estado local de UI. No acceden directamente a la base de datos; se comunican con el backend exclusivamente a través de `fetch` hacia las API Routes.
+- **Acceso a datos:** `lib/db/` encapsula las consultas a Prisma. `lib/services/planRepository.ts` centraliza las operaciones sobre `Plan`.
+- **Servicios:** `lib/services/` contiene la lógica de orquestación extraída de los handlers: `planRepository.ts`, `parserService.ts`, `geminiService.ts`.
+- **Utilidades:** `lib/utils/slug.ts` y similares — funciones puras sin dependencias de red ni BD.
+- **Route handlers:** coordinadores puros (~20-40 líneas): auth check → parsear input → llamar servicio → devolver respuesta.
+- **Componentes:** presentación y estado local de UI. Se comunican con el backend exclusivamente a través de `fetch` hacia las API Routes.
 
-Si el sistema creciera en complejidad o en equipo, la refactorización natural sería extraer una capa de servicios explícita entre los route handlers y los repositorios de datos. La estimación para esa tarea es de 2 a 3 días, siendo el paso más mecánico (mover lógica a módulos de servicio) completamente independiente del resto.
-
-Estimación: 2-3 días. El Paso 1 es el más mecánico y se puede hacer de forma independiente.
-
-- `baja` [ ] **Paso 1 — `planRepository.ts`** (~2-3h) — extraer operaciones Prisma de `Plan` que hoy están inline en los route handlers (`guardar`, `parsear`, `parsear-local`).
-- `baja` [ ] **Paso 2 — `parserService.ts`** (~3-4h) — encapsular la decisión prod/local, llamadas a Render y subprocess. Hoy duplicada entre `parsear/route.ts` y `parsear-local/route.ts`.
-- `baja` [ ] **Paso 3 — `geminiService.ts`** (~2-3h) — separar la llamada a la API de Google del route handler.
-- `baja` [ ] **Paso 4 — route handlers como coordinadores puros** (~2-3h) — que cada handler quede en ~20 líneas: auth check → llamar servicio → devolver respuesta.
+- `baja` [x] **Paso 1 — `planRepository.ts`** — operaciones Prisma de `Plan` extraídas de los route handlers.
+- `baja` [x] **Paso 2 — `parserService.ts`** — encapsula la decisión prod/local, llamadas a Render y subprocess Python.
+- `baja` [x] **Paso 3 — `geminiService.ts`** — separa la llamada a la API de Google del route handler.
+- `baja` [x] **Paso 4 — route handlers como coordinadores puros** — cada handler en ~20-40 líneas: auth check → llamar servicio → devolver respuesta.
 
 ---
 
