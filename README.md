@@ -154,27 +154,6 @@ El servidor aplica unicamente parseo/validacion estructural y metadata:
 - El panel admin incluye la herramienta **"Exportar diff como few-shot"** que genera bloques de correccion para mejorar el prompt manualmente.
 - **v33+**: limpieza del pipeline para vision nativa, reglas de schema/grupos consolidadas y eliminacion de fixups server-side sobre IDs.
 
-### Scores Gemini v32 por carrera
-
-| Carrera | Score |
-|---|---|
-| Ingenieria Electricista | 98.9/100 |
-| Ingenieria en Sistemas de Informacion | 98.7/100 |
-| Ingenieria Agronomica | 98.6/100 |
-| Agrimensura | 98.6/100 |
-| Contador Publico | 95.6/100 |
-| Arquitectura | 95.9/100 |
-| Bioquimica | 90.8/100 |
-| Abogacia | 89.5/100 |
-| Farmacia | 86.0/100 |
-| Ingenieria en Computacion | 93.6/100 |
-| Ingenieria Electronica | 97.8/100 |
-| Ingenieria Civil | 23.0/100 (fallo estructural: orientaciones multiples) |
-
-### Limitacion conocida del prompting (boundary cross-page)
-
-El PDF de Farmacia termina la pagina con `1142 FISIOPATOLOGIA HUMANA ... 1149 Cursada Cursada` y la pagina siguiente abre con `1376 Aprobada Aprobada` (correlativa de continuacion de 1142). Gemini interpreta el encabezado de tabla repetido al inicio de la nueva pagina como cierre de materia y asigna `1376` a la materia siguiente (1228). El mismo patron ocurre en Abogacia (9100/9113). Se sigue monitoreando con `parser/scripts/comparar_json.py` y ajustes de prompting. Ver `docs/issues/farmacia.md` e `docs/issues/abogacia.md`.
-
 ## 8) Requisitos
 
 - Node.js 22+
