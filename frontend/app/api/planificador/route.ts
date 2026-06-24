@@ -3,7 +3,7 @@ import { z } from "zod";
 import { requireAuth } from "@/lib/auth/authz";
 import { prisma } from "@/lib/db/prisma";
 import { validateScheduleBlock, findOverlaps } from "@/lib/schedule/scheduleValidation";
-import { resolvePlanVersionId } from "@/lib/db/carreraRepository";
+import { resolveVersionPlanId } from "@/lib/db/carreraRepository";
 
 const createSchema = z.object({
   careerId: z.string().min(1),
@@ -37,12 +37,12 @@ export async function GET(request: Request) {
 
   let planVersionId: string;
   try {
-    planVersionId = await resolvePlanVersionId(planId, versionId);
+    planVersionId = await resolveVersionPlanId(planId, versionId);
   } catch {
     return NextResponse.json({ error: "Plan no encontrado" }, { status: 404 });
   }
 
-  const blocks = await prisma.scheduleBlock.findMany({
+  const blocks = await prisma.bloqueHorario.findMany({
     where: { userId: session.user.id, careerId, planVersionId },
     orderBy: [{ dia: "asc" }, { horaInicio: "asc" }],
   });
@@ -72,12 +72,12 @@ export async function POST(request: Request) {
 
   let planVersionId: string;
   try {
-    planVersionId = await resolvePlanVersionId(data.planId, data.versionId);
+    planVersionId = await resolveVersionPlanId(data.planId, data.versionId);
   } catch {
     return NextResponse.json({ error: "Plan no encontrado" }, { status: 404 });
   }
 
-  const existing = await prisma.scheduleBlock.findMany({
+  const existing = await prisma.bloqueHorario.findMany({
     where: { userId: session.user.id, careerId: data.careerId, planVersionId },
     select: { id: true, dia: true, horaInicio: true, horaFin: true },
   });
@@ -90,7 +90,7 @@ export async function POST(request: Request) {
     );
   }
 
-  const block = await prisma.scheduleBlock.create({
+  const block = await prisma.bloqueHorario.create({
     data: {
       userId: session.user.id,
       careerId: data.careerId,

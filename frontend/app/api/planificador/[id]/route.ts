@@ -27,7 +27,7 @@ export async function PUT(
   if (session instanceof NextResponse) return session;
 
   const { id } = await params;
-  const existing = await prisma.scheduleBlock.findUnique({ where: { id } });
+  const existing = await prisma.bloqueHorario.findUnique({ where: { id } });
   if (!existing || existing.userId !== session.user.id) return notFound();
 
   const rawBody = await request.json().catch(() => null);
@@ -53,7 +53,7 @@ export async function PUT(
     return NextResponse.json({ error: validationError }, { status: 422 });
   }
 
-  const siblings = await prisma.scheduleBlock.findMany({
+  const siblings = await prisma.bloqueHorario.findMany({
     where: {
       userId: session.user.id,
       careerId: existing.careerId,
@@ -70,7 +70,7 @@ export async function PUT(
     );
   }
 
-  const updated = await prisma.scheduleBlock.update({
+  const updated = await prisma.bloqueHorario.update({
     where: { id },
     data: {
       ...(updates.materiaNombre !== undefined && { materiaNombre: updates.materiaNombre }),
@@ -95,10 +95,10 @@ export async function DELETE(
   if (session instanceof NextResponse) return session;
 
   const { id } = await params;
-  const existing = await prisma.scheduleBlock.findUnique({ where: { id } });
+  const existing = await prisma.bloqueHorario.findUnique({ where: { id } });
   if (!existing || existing.userId !== session.user.id) return notFound();
 
-  await prisma.scheduleBlock.delete({ where: { id } });
+  await prisma.bloqueHorario.delete({ where: { id } });
 
   return NextResponse.json({ ok: true });
 }

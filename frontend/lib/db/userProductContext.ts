@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/db/prisma";
-import { getCarreras, getCarreraById, resolvePlanVersionId } from "@/lib/db/carreraRepository";
+import { getCarreras, getCarreraById, resolveVersionPlanId } from "@/lib/db/carreraRepository";
 import {
   getOrBootstrapEnrollments,
   getOrCreatePreference,
@@ -21,16 +21,16 @@ export async function getUserProductContext(
 
   const [carreras, lastPlans, progressRows] = await Promise.all([
     getCarreras({ soloDisponibles: true }),
-    prisma.userRecentPlan.findMany({
+    prisma.planReciente.findMany({
       where: { userId },
       orderBy: { openedAt: "desc" },
-      include: { planVersion: { select: { carreraId: true, versionId: true } } },
+      include: { versionPlan: { select: { carreraId: true, versionId: true } } },
     }),
-    prisma.userPlanProgress.findMany({
+    prisma.progresoPlan.findMany({
       where: { userId },
       select: {
         stateJson: true,
-        planVersion: { select: { carreraId: true } },
+        versionPlan: { select: { carreraId: true } },
       },
     }),
   ]);
@@ -43,15 +43,15 @@ export async function getUserProductContext(
           return typeof s === "object" && s !== null && Object.keys(s).length > 0;
         } catch { return false; }
       })
-      .map((r) => r.planVersion.carreraId)
+      .map((r) => r.versionPlan.carreraId)
   ));
 
   const lastPlanByCareer = Object.fromEntries(
     lastPlans.map((row) => [
       row.careerId,
       {
-        planSlug: row.planVersion.carreraId,
-        versionId: row.planVersion.versionId,
+        planSlug: row.versionPlan.carreraId,
+        versionId: row.versionPlan.versionId,
         openedAt: row.openedAt.toISOString(),
       },
     ])
@@ -122,7 +122,7 @@ export async function recordPlanOpened(input: {
     throw new Error("Carrera invalida");
   }
 
-  const planVersionId = await resolvePlanVersionId(input.planSlug, input.versionId);
+  const planVersionId = await resolveVersionPlanId(input.planSlug, input.versionId);
 
   await upsertRecentPlan(input.userId, resolvedCareerId, planVersionId);
 

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 import { prisma } from "@/lib/db/prisma";
-import { resolvePlanVersionId } from "@/lib/db/carreraRepository";
+import { resolveVersionPlanId } from "@/lib/db/carreraRepository";
 import { z } from "zod";
 
 const GCAL_BASE = "https://www.googleapis.com/calendar/v3/calendars/primary/events";
@@ -169,12 +169,12 @@ export async function POST(request: Request) {
 
   let planVersionId: string;
   try {
-    planVersionId = await resolvePlanVersionId(planId, versionId);
+    planVersionId = await resolveVersionPlanId(planId, versionId);
   } catch {
     return NextResponse.json({ error: "Plan no encontrado" }, { status: 404 });
   }
 
-  const blocks = await prisma.scheduleBlock.findMany({
+  const blocks = await prisma.bloqueHorario.findMany({
     where: { userId: auth.userId, careerId, planVersionId },
   });
 

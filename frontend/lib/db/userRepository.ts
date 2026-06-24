@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/db/prisma";
 import { getCarreras } from "@/lib/db/carreraRepository";
-import type { UserPreference } from "@prisma/client";
+import type { PreferenciaUsuario } from "@prisma/client";
 
 async function getAvailableCarreraIds(): Promise<string[]> {
   const carreras = await getCarreras({ soloDisponibles: true });
@@ -15,7 +15,7 @@ async function sanitizeCarreraIds(carreraIds: string[]): Promise<string[]> {
 }
 
 export async function getOrBootstrapEnrollments(userId: string): Promise<string[]> {
-  const existing = await prisma.planSeleccionado.findMany({
+  const existing = await prisma.carreraSeleccionada.findMany({
     where: { userId },
     select: { careerId: true },
   });
@@ -25,14 +25,14 @@ export async function getOrBootstrapEnrollments(userId: string): Promise<string[
   }
 
   // Primer login: inferir carreras desde el progreso existente
-  const userProgressCareers = await prisma.userPlanProgress.findMany({
+  const userProgressCareers = await prisma.progresoPlan.findMany({
     where: { userId },
-    select: { planVersion: { select: { carreraId: true } } },
+    select: { versionPlan: { select: { carreraId: true } } },
     distinct: ["planVersionId"],
   });
 
   const fromProgress = await sanitizeCarreraIds(
-    userProgressCareers.map((item) => item.planVersion.carreraId)
+    userProgressCareers.map((item) => item.versionPlan.carreraId)
   );
 
   const availableIds = await getAvailableCarreraIds();
@@ -45,7 +45,7 @@ export async function getOrBootstrapEnrollments(userId: string): Promise<string[
 
   if (initialCareers.length === 0) return [];
 
-  await prisma.planSeleccionado.createMany({
+  await prisma.carreraSeleccionada.createMany({
     data: initialCareers.map((careerId) => ({ userId, careerId })),
     skipDuplicates: true,
   });
@@ -56,14 +56,14 @@ export async function getOrBootstrapEnrollments(userId: string): Promise<string[
 export async function getOrCreatePreference(
   userId: string,
   enrolledCareerIds: string[],
-): Promise<UserPreference> {
+): Promise<PreferenciaUsuario> {
   const defaultActiveCareerId = enrolledCareerIds[0] ?? null;
 
-  let preference = await prisma.userPreference.findUnique({ where: { userId } });
+  let preference = await prisma.preferenciaUsuario.findUnique({ where: { userId } });
 
   if (!preference) {
     try {
-      preference = await prisma.userPreference.create({
+      preference = await prisma.preferenciaUsuario.create({
         data: { userId, activeCareerId: defaultActiveCareerId },
       });
     } catch (error) {
@@ -75,7 +75,7 @@ export async function getOrCreatePreference(
 
       if (!isUniqueRace) throw error;
 
-      preference = await prisma.userPreference.findUnique({ where: { userId } });
+      preference = await prisma.preferenciaUsuario.findUnique({ where: { userId } });
     }
   }
 
@@ -90,7 +90,7 @@ export async function getOrCreatePreference(
 
   if (activeExistsInEnrollments || enrolledCareerIds.length === 0) return preference;
 
-  return prisma.userPreference.update({
+  return prisma.preferenciaUsuario.update({
     where: { userId },
     data: { activeCareerId: enrolledCareerIds[0] ?? null },
   });
@@ -102,16 +102,16 @@ export async function updateEnrollments(
   activeCareerId: string,
 ): Promise<void> {
   await prisma.$transaction(async (tx) => {
-    await tx.planSeleccionado.deleteMany({
+    await tx.carreraSeleccionada.deleteMany({
       where: { userId, careerId: { notIn: nextEnrolledCareerIds } },
     });
 
-    await tx.planSeleccionado.createMany({
+    await tx.carreraSeleccionada.createMany({
       data: nextEnrolledCareerIds.map((careerId) => ({ userId, careerId })),
       skipDuplicates: true,
     });
 
-    await tx.userPreference.upsert({
+    await tx.preferenciaUsuario.upsert({
       where: { userId },
       update: { activeCareerId },
       create: { userId, activeCareerId },
@@ -125,19 +125,19 @@ export async function upsertRecentPlan(
   planVersionId: string,
 ): Promise<void> {
   await prisma.$transaction(async (tx) => {
-    await tx.planSeleccionado.upsert({
+    await tx.carreraSeleccionada.upsert({
       where: { userId_careerId: { userId, careerId } },
       update: {},
       create: { userId, careerId },
     });
 
-    await tx.userRecentPlan.upsert({
+    await tx.planReciente.upsert({
       where: { userId_careerId: { userId, careerId } },
       update: { planVersionId, openedAt: new Date() },
       create: { userId, careerId, planVersionId },
     });
 
-    await tx.userPreference.upsert({
+    await tx.preferenciaUsuario.upsert({
       where: { userId },
       update: { activeCareerId: careerId },
       create: { userId, activeCareerId: careerId },
@@ -150,17 +150,17 @@ export async function updateOnboardingPreference(
   action: "dismiss" | "complete" | "reset",
 ): Promise<void> {
   if (action === "dismiss") {
-    await prisma.userPreference.update({
+    await prisma.preferenciaUsuario.update({
       where: { userId },
       data: { onboardingDismissedAt: new Date() },
     });
   } else if (action === "complete") {
-    await prisma.userPreference.update({
+    await prisma.preferenciaUsuario.update({
       where: { userId },
       data: { onboardingCompletedAt: new Date(), onboardingDismissedAt: null },
     });
   } else if (action === "reset") {
-    await prisma.userPreference.update({
+    await prisma.preferenciaUsuario.update({
       where: { userId },
       data: { onboardingCompletedAt: null, onboardingDismissedAt: null },
     });

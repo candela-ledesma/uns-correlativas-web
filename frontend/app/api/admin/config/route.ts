@@ -9,7 +9,7 @@ export async function GET() {
   const session = await requireAdminReal();
   if (session instanceof NextResponse) return session;
 
-  const config = await prisma.adminConfig.findUnique({ where: { id: "singleton" } });
+  const config = await prisma.configAdmin.findUnique({ where: { id: "singleton" } });
   return NextResponse.json({
     config: config
       ? { ...config, version: PROMPT_VERSION, genericPrompt: config.genericPrompt ?? GENERIC_SYSTEM_PROMPT }
@@ -33,7 +33,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Campo requerido: systemPrompt o genericPrompt (string)" }, { status: 400 });
   }
 
-  const config = await prisma.adminConfig.upsert({
+  const config = await prisma.configAdmin.upsert({
     where: { id: "singleton" },
     update: {
       ...(typeof systemPrompt === "string" && { systemPrompt: systemPrompt.trim(), version: PROMPT_VERSION }),
@@ -54,6 +54,6 @@ export async function DELETE() {
   const session = await requireAdminReal();
   if (session instanceof NextResponse) return session;
 
-  await prisma.adminConfig.deleteMany({ where: { id: "singleton" } });
+  await prisma.configAdmin.deleteMany({ where: { id: "singleton" } });
   return NextResponse.json({ ok: true });
 }

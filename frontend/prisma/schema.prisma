@@ -9,18 +9,22 @@ datasource db {
 }
 
 // Estado del ciclo de vida de un plan. Reemplaza las tres tablas PlanBorrador/PlanPendiente/PlanPublicado.
-enum PlanEstado {
+enum EstadoPlan {
   BORRADOR   // generado al parsear un PDF, pendiente de revisión
   PENDIENTE  // enviado por un moderador, esperando aprobación de admin
   PUBLICADO  // visible para los usuarios
   INACTIVO   // publicado pero desactivado temporalmente sin perder el historial
+
+  @@map("PlanEstado")
 }
 
 // Origen del JSON de un plan.
-enum PlanFuente {
+enum FuentePlan {
   PARSER  // generado por el parser local Python
   GEMINI  // generado por Gemini con visión nativa
   MERGED  // resultado de mergear PARSER y GEMINI manualmente en el panel admin
+
+  @@map("PlanFuente")
 }
 
 // Rol de un usuario en el sistema. Controla acceso a rutas /admin y acciones de moderación.
@@ -44,18 +48,18 @@ model User {
   updatedAt     DateTime           @updatedAt
   accounts      Account[]
   sessions      Session[]
-  progresses    UserPlanProgress[]
-  carrerasSeleccionadas PlanSeleccionado[]
-  preference    UserPreference?
-  recentPlans   UserRecentPlan[]
-  auditLogs     AuditLog[]         @relation("AuditActor")
-  scheduleBlocks ScheduleBlock[]
+  progresos     ProgresoPlan[]
+  carrerasSeleccionadas CarreraSeleccionada[]
+  preferencia   PreferenciaUsuario?
+  planesRecientes PlanReciente[]
+  registrosAuditoria RegistroAuditoria[] @relation("AuditActor")
+  bloquesHorario BloqueHorario[]
 }
 
 // Carreras que un usuario seleccionó para hacer seguimiento dentro de la app.
 // No representa inscripción académica formal — es la lista de carreras visibles en su panel.
 // careerId es el slug de la carrera (ej: "ingenieria_civil"). FK a Carrera.
-model PlanSeleccionado {
+model CarreraSeleccionada {
   id        String   @id @default(cuid())
   userId    String
   careerId  String
@@ -65,12 +69,13 @@ model PlanSeleccionado {
 
   @@unique([userId, careerId])
   @@index([userId, createdAt])
+  @@map("PlanSeleccionado")
 }
 
 // Preferencias globales del usuario. Una fila por usuario (1-a-1 con User).
 // activeCareerId indica la carrera seleccionada actualmente en el dashboard.
 // Los timestamps de onboarding controlan si se muestra el wizard de bienvenida.
-model UserPreference {
+model PreferenciaUsuario {
   userId                String    @id
   activeCareerId        String?
   onboardingCompletedAt DateTime?
@@ -78,12 +83,14 @@ model UserPreference {
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
   user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("UserPreference")
 }
 
 // Último plan que cada usuario abrió por carrera. Una fila por (usuario, carrera);
 // se hace upsert cada vez que el usuario navega a un plan. Se usa para mostrar
 // "continuar donde lo dejaste" en el dashboard.
-model UserRecentPlan {
+model PlanReciente {
   id               String         @id @default(cuid())
   userId           String
   careerId         String
@@ -91,12 +98,13 @@ model UserRecentPlan {
   openedAt         DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
   user             User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  planVersion      PlanVersion @relation(fields: [planVersionId], references: [id], onDelete: Cascade)
+  versionPlan      VersionPlan @relation(fields: [planVersionId], references: [id], onDelete: Cascade)
   carrera          Carrera        @relation(fields: [careerId], references: [id])
 
   @@unique([userId, careerId])
   @@index([userId, openedAt])
   @@index([planVersionId])
+  @@map("UserRecentPlan")
 }
 
 // Log append-only de acciones del usuario. Se inserta un registro por cada evento relevante
@@ -152,7 +160,7 @@ model VerificationToken {
 // stateJson es un objeto { [materiaId]: "aprobada" | "cursada" | "no_cursada" } que se
 // sobreescribe completo en cada sync. Se hace upsert desde el cliente cada vez que el
 // usuario cambia el estado de una materia.
-model UserPlanProgress {
+model ProgresoPlan {
   id               String         @id @default(cuid())
   userId           String
   planVersionId String
@@ -160,17 +168,18 @@ model UserPlanProgress {
   updatedAt        DateTime       @default(now())
   createdAt        DateTime       @default(now())
   user             User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  planVersion      PlanVersion @relation(fields: [planVersionId], references: [id], onDelete: Cascade)
+  versionPlan      VersionPlan @relation(fields: [planVersionId], references: [id], onDelete: Cascade)
 
   @@unique([userId, planVersionId])
   @@index([userId, updatedAt])
+  @@map("UserPlanProgress")
 }
 
 // Bloque de horario en el planificador semanal de cuatrimestre. Cada fila representa
 // una materia ubicada en un día y rango horario de la grilla. dia va de 0 (lunes) a 6 (domingo).
 // horaInicio y horaFin son enteros en formato HHMM (ej: 830, 1000).
 // materiaId es opcional porque el usuario puede agregar bloques libres sin materia asociada.
-model ScheduleBlock {
+model BloqueHorario {
   id               String         @id @default(cuid())
   userId           String
   careerId         String
@@ -182,15 +191,16 @@ model ScheduleBlock {
   horaFin          Int
   comision         String?
   notas            String?
-  color            String?        // color hex elegido por el usuario para el bloque
+  color            String?
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
   user             User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  planVersion      PlanVersion @relation(fields: [planVersionId], references: [id], onDelete: Cascade)
+  versionPlan      VersionPlan @relation(fields: [planVersionId], references: [id], onDelete: Cascade)
   carrera          Carrera        @relation(fields: [careerId], references: [id])
 
   @@index([userId, careerId, planVersionId])
   @@index([planVersionId])
+  @@map("ScheduleBlock")
 }
 
 // Snapshot de progreso compartible. Cuando un usuario genera un link para compartir
@@ -198,18 +208,19 @@ model ScheduleBlock {
 // es el identificador público de la URL (/progreso/share/[token]).
 // stateJson se copia en el momento de crear el share — no se actualiza si el usuario
 // modifica su progreso después.
-model ProgressShare {
+model ProgresoCompartido {
   id               String         @id @default(cuid())
   token            String         @unique @default(cuid())
   planVersionId String
   stateJson        String
   createdBy        String?
   createdAt        DateTime       @default(now())
-  planVersion      PlanVersion @relation(fields: [planVersionId], references: [id], onDelete: Cascade)
+  versionPlan      VersionPlan @relation(fields: [planVersionId], references: [id], onDelete: Cascade)
 
   @@index([token])
   @@index([createdBy])
   @@index([planVersionId])
+  @@map("ProgressShare")
 }
 
 // Configuración global editable por admin. Singleton (siempre id = "singleton").
@@ -220,13 +231,15 @@ model ProgressShare {
 // con id = "singleton". Almacena los prompts de Gemini que el admin puede editar desde
 // el panel. No tiene FK a ninguna otra entidad porque es configuración de la aplicación,
 // no de un usuario o carrera.
-model AdminConfig {
+model ConfigAdmin {
   id            String   @id @default("singleton")
   systemPrompt  String
   genericPrompt String?
   version       String?
   updatedAt     DateTime @updatedAt
   createdAt     DateTime @default(now())
+
+  @@map("AdminConfig")
 }
 
 // Tabla unificada de planes. Reemplaza PlanBorrador, PlanPendiente y PlanPublicado.
@@ -235,23 +248,24 @@ model AdminConfig {
 // Solo puede haber un PENDIENTE y un PUBLICADO por slug.
 // esBackup reemplaza el hack de guardar backups con slug "{slug}_v1_backup".
 // autorId unifica createdBy/submittedBy/savedBy de las tres tablas anteriores.
-model Plan {
+model ContenidoPlan {
   id        String     @id @default(cuid())
   slug      String
-  estado    PlanEstado
-  fuente    PlanFuente
+  estado    EstadoPlan
+  fuente    FuentePlan
   planJson  String
-  esBackup  Boolean    @default(false) // true = copia de seguridad del plan anterior al publicar
+  esBackup  Boolean    @default(false)
   autorId   String?
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
 
-  planVersions    PlanVersion[]
+  versionesPlanes VersionPlan[]
 
   @@unique([slug, fuente, estado])
   @@index([slug, estado])
   @@index([slug, esBackup])
   @@index([slug, estado, esBackup])
+  @@map("Plan")
 }
 
 
@@ -277,10 +291,10 @@ model Carrera {
   updatedAt        DateTime @updatedAt
 
   departamento          Departamento?          @relation(fields: [departamentoId], references: [id])
-  versions              PlanVersion[]
-  carrerasSeleccionadas PlanSeleccionado[]
-  recentPlans           UserRecentPlan[]
-  scheduleBlocks        ScheduleBlock[]
+  versiones             VersionPlan[]
+  carrerasSeleccionadas CarreraSeleccionada[]
+  planesRecientes       PlanReciente[]
+  bloquesHorario        BloqueHorario[]
 
   @@index([disponible])
   @@index([departamentoId])
@@ -291,27 +305,28 @@ model Carrera {
 // versionId es el string de versión (ej: "v1", "v2").
 // jsonFile es el nombre del archivo JSON del plan (ej: "ingenieria_civil.json").
 // hidden=true indica versiones de desarrollo/test no visibles en producción.
-model PlanVersion {
+model VersionPlan {
   id         String   @id @default(cuid())
   carreraId  String
-  versionId  String   // ej: "v1", "v2"
-  label      String   // ej: "Plan actual"
-  jsonFile   String   // ej: "ingenieria_civil.json"
-  planId     String?  // FK al Plan publicado que respalda esta versión (nullable: versiones previas a la migración)
+  versionId  String
+  label      String
+  jsonFile   String
+  planId     String?
   disponible Boolean  @default(true)
   hidden     Boolean  @default(false)
   createdAt  DateTime @default(now())
 
-  carrera        Carrera            @relation(fields: [carreraId], references: [id], onDelete: Cascade)
-  plan           Plan?              @relation(fields: [planId], references: [id], onDelete: SetNull)
-  progresses     UserPlanProgress[]
-  recentPlans    UserRecentPlan[]
-  scheduleBlocks ScheduleBlock[]
-  shares         ProgressShare[]
+  carrera           Carrera            @relation(fields: [carreraId], references: [id], onDelete: Cascade)
+  contenidoPlan     ContenidoPlan?     @relation(fields: [planId], references: [id], onDelete: SetNull)
+  progresos         ProgresoPlan[]
+  planesRecientes   PlanReciente[]
+  bloquesHorario    BloqueHorario[]
+  compartidos       ProgresoCompartido[]
 
   @@unique([carreraId, versionId])
   @@index([carreraId])
   @@index([planId])
+  @@map("PlanVersion")
 }
 
 
@@ -323,14 +338,14 @@ model PlanVersion {
 //
 // DECISIÓN: actorEmail y actorRole desnormalizados son correctos para auditoría — deben
 // reflejar el estado en el momento del evento, no el actual. No requieren cambio. Ver NORMALIZATION.md §5.
-model AuditLog {
+model RegistroAuditoria {
   id           String   @id @default(cuid())
   actorUserId  String?
-  actorEmail   String?  // desnormalizado a propósito: preserva la identidad aunque se borre el usuario
-  actorRole    Role?    // idem
+  actorEmail   String?
+  actorRole    Role?
   authProvider String   @default("unknown")
-  action       String   // ej: "PLAN_PUBLISHED", "USER_ROLE_CHANGED", "CONFIG_UPDATED"
-  entityType   String   // ej: "plan", "user", "config"
+  action       String
+  entityType   String
   entityId     String
   beforeJson   String?
   afterJson    String?
@@ -342,4 +357,5 @@ model AuditLog {
   @@index([actorUserId, createdAt])
   @@index([entityType, entityId, createdAt])
   @@index([action, createdAt])
+  @@map("AuditLog")
 }

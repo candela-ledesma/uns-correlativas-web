@@ -6,7 +6,7 @@ import {
 
 vi.mock("@/lib/db/prisma", () => ({
   prisma: {
-    plan: {
+    contenidoPlan: {
       findFirst: vi.fn(),
     },
   },
@@ -17,12 +17,12 @@ vi.mock("@/lib/db/carreraRepository", () => ({
 }));
 
 import { prisma } from "@/lib/db/prisma";
-const mockFindFirst = vi.mocked(prisma.plan.findFirst);
+const mockFindFirst = vi.mocked(prisma.contenidoPlan.findFirst);
 
 type TestCarrera = {
   id: string;
   nombre: string;
-  versions: { versionId: string; label: string; disponible: boolean; hidden?: boolean }[];
+  versiones: { versionId: string; label: string; disponible: boolean; hidden?: boolean }[];
 };
 
 function buildValidPlanJson(options?: { horas?: string }) {
@@ -97,7 +97,7 @@ describe("validateConfiguredPlanData", () => {
       {
         id: "arquitectura",
         nombre: "Arquitectura",
-        versions: [
+        versiones: [
           { versionId: "v1", label: "OK", disponible: true },
           { versionId: "v2", label: "Duplicado", disponible: true },
         ],
@@ -105,7 +105,7 @@ describe("validateConfiguredPlanData", () => {
       {
         id: "lic_computacion",
         nombre: "Lic. Computacion",
-        versions: [{ versionId: "v1", label: "Sin plan", disponible: true }],
+        versiones: [{ versionId: "v1", label: "Sin plan", disponible: true }],
       },
     ];
 
@@ -136,7 +136,7 @@ describe("validateConfiguredPlanData", () => {
       {
         id: "arquitectura",
         nombre: "Arquitectura",
-        versions: [{ versionId: "v1", label: "Duplicado", disponible: true }],
+        versiones: [{ versionId: "v1", label: "Duplicado", disponible: true }],
       },
     ];
 
@@ -157,7 +157,7 @@ describe("validateConfiguredPlanData", () => {
       {
         id: "arquitectura",
         nombre: "Arquitectura",
-        versions: [{ versionId: "v1", label: "Warning", disponible: true }],
+        versiones: [{ versionId: "v1", label: "Warning", disponible: true }],
       },
     ];
 
@@ -177,7 +177,7 @@ describe("validateConfiguredPlanData", () => {
       {
         id: "arquitectura",
         nombre: "Arquitectura",
-        versions: [{ versionId: "v1", label: "OK", disponible: true }],
+        versiones: [{ versionId: "v1", label: "OK", disponible: true }],
       },
     ];
 

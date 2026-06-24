@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/db/prisma";
-import { resolvePlanVersionId } from "@/lib/db/carreraRepository";
+import { resolveVersionPlanId } from "@/lib/db/carreraRepository";
 import {
   sanitizeProgressState,
   type ProgressSnapshot,
@@ -11,9 +11,9 @@ export async function getProgressSnapshot(params: {
   planSlug: string;
   versionId: string;
 }): Promise<ProgressSnapshot> {
-  const planVersionId = await resolvePlanVersionId(params.planSlug, params.versionId);
+  const planVersionId = await resolveVersionPlanId(params.planSlug, params.versionId);
 
-  const row = await prisma.userPlanProgress.findUnique({
+  const row = await prisma.progresoPlan.findUnique({
     where: { userId_planVersionId: { userId: params.userId, planVersionId } },
   });
 
@@ -39,9 +39,9 @@ export async function upsertProgressSnapshot(params: {
   state: ProgressState;
   updatedAt: string;
 }) {
-  const planVersionId = await resolvePlanVersionId(params.planSlug, params.versionId);
+  const planVersionId = await resolveVersionPlanId(params.planSlug, params.versionId);
 
-  return prisma.userPlanProgress.upsert({
+  return prisma.progresoPlan.upsert({
     where: { userId_planVersionId: { userId: params.userId, planVersionId } },
     update: {
       stateJson: JSON.stringify(params.state),

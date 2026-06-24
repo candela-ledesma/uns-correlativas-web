@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/db/prisma";
-import type { Plan } from "@prisma/client";
+import type { ContenidoPlan } from "@prisma/client";
 
 export type FuenteEnum = "PARSER" | "GEMINI" | "MERGED";
 
@@ -35,13 +35,13 @@ export function toFuenteEnum(fuente: string): FuenteEnum {
 export async function getBorradorBySlug(
   slug: string,
   fuente: FuenteEnum,
-): Promise<Plan | null> {
-  return prisma.plan.findUnique({
+): Promise<ContenidoPlan | null> {
+  return prisma.contenidoPlan.findUnique({
     where: { slug_fuente_estado: { slug, fuente, estado: "BORRADOR" } },
   });
 }
 
-export function buildConflict(row: Plan, dateField: "updatedAt" | "createdAt" = "updatedAt"): BorradorConflict {
+export function buildConflict(row: ContenidoPlan, dateField: "updatedAt" | "createdAt" = "updatedAt"): BorradorConflict {
   return {
     conflict: true,
     existing: {
@@ -57,8 +57,8 @@ export async function upsertBorrador(
   fuente: FuenteEnum,
   planJson: string,
   autorId: string,
-): Promise<Plan> {
-  return prisma.plan.upsert({
+): Promise<ContenidoPlan> {
+  return prisma.contenidoPlan.upsert({
     where: { slug_fuente_estado: { slug, fuente, estado: "BORRADOR" } },
     update: { planJson, updatedAt: new Date() },
     create: { slug, fuente, estado: "BORRADOR", planJson, autorId },
@@ -67,12 +67,12 @@ export async function upsertBorrador(
 
 // ── Publicados ────────────────────────────────────────────────────────────────
 
-export async function getPublishedPlan(slug: string): Promise<Plan | null> {
-  return prisma.plan.findFirst({ where: { slug, estado: "PUBLICADO", esBackup: false } });
+export async function getPublishedPlan(slug: string): Promise<ContenidoPlan | null> {
+  return prisma.contenidoPlan.findFirst({ where: { slug, estado: "PUBLICADO", esBackup: false } });
 }
 
-export async function backupPublishedPlan(existing: Plan): Promise<void> {
-  await prisma.plan.create({
+export async function backupPublishedPlan(existing: ContenidoPlan): Promise<void> {
+  await prisma.contenidoPlan.create({
     data: {
       slug: existing.slug,
       estado: "PUBLICADO",
@@ -85,20 +85,20 @@ export async function backupPublishedPlan(existing: Plan): Promise<void> {
 }
 
 export async function publishPlan(
-  existing: Plan | null,
+  existing: ContenidoPlan | null,
   slug: string,
   fuente: FuenteEnum,
   planJson: string,
   autorId: string,
 ): Promise<string> {
   if (existing) {
-    const updated = await prisma.plan.update({
+    const updated = await prisma.contenidoPlan.update({
       where: { id: existing.id },
       data: { planJson, fuente, autorId },
     });
     return updated.id;
   }
-  const created = await prisma.plan.create({
+  const created = await prisma.contenidoPlan.create({
     data: { slug, estado: "PUBLICADO", fuente, planJson, autorId },
   });
   return created.id;
@@ -106,25 +106,25 @@ export async function publishPlan(
 
 // ── Pendientes ────────────────────────────────────────────────────────────────
 
-export async function getPendingPlans(): Promise<Plan[]> {
-  return prisma.plan.findMany({ where: { estado: "PENDIENTE" }, orderBy: { createdAt: "desc" } });
+export async function getPendingPlans(): Promise<ContenidoPlan[]> {
+  return prisma.contenidoPlan.findMany({ where: { estado: "PENDIENTE" }, orderBy: { createdAt: "desc" } });
 }
 
-export async function getPendingPlanBySlug(slug: string): Promise<Plan | null> {
-  return prisma.plan.findFirst({ where: { slug, estado: "PENDIENTE" } });
+export async function getPendingPlanBySlug(slug: string): Promise<ContenidoPlan | null> {
+  return prisma.contenidoPlan.findFirst({ where: { slug, estado: "PENDIENTE" } });
 }
 
 export async function deletePendingBySlug(slug: string): Promise<number> {
-  const result = await prisma.plan.deleteMany({ where: { slug, estado: "PENDIENTE" } });
+  const result = await prisma.contenidoPlan.deleteMany({ where: { slug, estado: "PENDIENTE" } });
   return result.count;
 }
 
 // ── Publicados (listas y mutaciones) ─────────────────────────────────────────
 
 export async function getPublishedPlansRaw(): Promise<
-  Pick<Plan, "slug" | "fuente" | "createdAt" | "planJson">[]
+  Pick<ContenidoPlan, "slug" | "fuente" | "createdAt" | "planJson">[]
 > {
-  return prisma.plan.findMany({
+  return prisma.contenidoPlan.findMany({
     where: { estado: "PUBLICADO", esBackup: false },
     select: { slug: true, fuente: true, createdAt: true, planJson: true },
   });
@@ -135,9 +135,9 @@ export async function updatePublishedPlanJson(
   planJson: string,
   autorId: string,
 ): Promise<void> {
-  await prisma.plan.update({ where: { id }, data: { planJson, autorId } });
+  await prisma.contenidoPlan.update({ where: { id }, data: { planJson, autorId } });
 }
 
 export async function deletePublishedPlansBySlug(slug: string): Promise<void> {
-  await prisma.plan.deleteMany({ where: { slug, estado: "PUBLICADO" } }).catch(() => {});
+  await prisma.contenidoPlan.deleteMany({ where: { slug, estado: "PUBLICADO" } }).catch(() => {});
 }
