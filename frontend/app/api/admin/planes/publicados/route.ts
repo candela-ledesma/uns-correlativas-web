@@ -18,8 +18,8 @@ export async function GET() {
   const planesMap = new Map(dbPlanes.map((p) => [p.slug, p]));
 
   const planes = carreras.map((carrera) => {
-    const version = carrera.versions.find((v) => v.versionId === carrera.defaultVersionId)
-      ?? carrera.versions[0];
+    const version = carrera.versiones.find((v) => v.versionId === carrera.defaultVersionId)
+      ?? carrera.versiones[0];
     const planRow = planesMap.get(carrera.id);
 
     let materias: number | null = null;

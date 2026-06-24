@@ -27,7 +27,7 @@ export async function GET(request: Request) {
   const url = new URL(request.url);
   const limit = Math.min(Number(url.searchParams.get("limit") ?? 50), 200);
 
-  const logs = await prisma.auditLog.findMany({
+  const logs = await prisma.registroAuditoria.findMany({
     where:
       session.user.role === Role.MODERATOR
         ? {

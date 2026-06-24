@@ -3,7 +3,7 @@ import { z } from "zod";
 import { randomBytes } from "crypto";
 import { requireAuth } from "@/lib/auth/authz";
 import { prisma } from "@/lib/db/prisma";
-import { resolvePlanVersionId } from "@/lib/db/carreraRepository";
+import { resolveVersionPlanId } from "@/lib/db/carreraRepository";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -28,12 +28,12 @@ export async function POST(request: Request) {
 
   let planVersionId: string;
   try {
-    planVersionId = await resolvePlanVersionId(planId, versionId);
+    planVersionId = await resolveVersionPlanId(planId, versionId);
   } catch {
     return NextResponse.json({ error: "Plan no encontrado" }, { status: 404 });
   }
 
-  const progress = await prisma.userPlanProgress.findUnique({
+  const progress = await prisma.progresoPlan.findUnique({
     where: { userId_planVersionId: { userId: session.user.id, planVersionId } },
     select: { stateJson: true },
   });
@@ -42,7 +42,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "No hay progreso guardado para este plan" }, { status: 404 });
   }
 
-  const share = await prisma.progressShare.create({
+  const share = await prisma.progresoCompartido.create({
     data: {
       token: randomBytes(32).toString("hex"),
       planVersionId,

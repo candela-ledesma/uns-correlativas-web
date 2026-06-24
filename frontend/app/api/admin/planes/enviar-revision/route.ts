@@ -42,7 +42,7 @@ export async function POST(request: Request) {
     ...(nota ? { _nota_revision: nota } : {}),
   };
 
-  await prisma.plan.upsert({
+  await prisma.contenidoPlan.upsert({
     where: { slug_fuente_estado: { slug, fuente: fuente === "parser" ? "PARSER" : "GEMINI", estado: "PENDIENTE" } },
     update: { planJson: JSON.stringify(dataToSave), autorId: session.user.id },
     create: { slug, estado: "PENDIENTE", fuente: fuente === "parser" ? "PARSER" : "GEMINI", planJson: JSON.stringify(dataToSave), autorId: session.user.id },

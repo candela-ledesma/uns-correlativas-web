@@ -69,7 +69,7 @@ export function formatValidationIssues(
 }
 
 async function readPlanJson(slug: string): Promise<string | null> {
-  const row = await prisma.plan.findFirst({ where: { slug, estado: "PUBLICADO", esBackup: false } }).catch(() => null);
+  const row = await prisma.contenidoPlan.findFirst({ where: { slug, estado: "PUBLICADO", esBackup: false } }).catch(() => null);
   return row?.planJson ?? null;
 }
 
@@ -130,7 +130,7 @@ export async function loadPlanData(
       carrera: {
         ...carreraInfo,
         defaultVersionId: carrera.defaultVersionId,
-        versions: carrera.versions.map((v) => ({
+        versions: carrera.versiones.map((v) => ({
           versionId: v.versionId,
           label: v.label,
           disponible: v.disponible,

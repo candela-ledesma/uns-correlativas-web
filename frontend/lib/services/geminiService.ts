@@ -5,7 +5,7 @@ import { prisma } from "@/lib/db/prisma";
 
 export async function readAdminConfig(): Promise<{ systemPrompt?: string; genericPrompt?: string }> {
   try {
-    const config = await prisma.adminConfig.findUnique({ where: { id: "singleton" } });
+    const config = await prisma.configAdmin.findUnique({ where: { id: "singleton" } });
     if (!config) return {};
     return {
       systemPrompt: config.systemPrompt ?? undefined,

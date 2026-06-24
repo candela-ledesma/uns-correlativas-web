@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth/authz";
-import { upsertCarrera, upsertPlanVersion } from "@/lib/db/carreraRepository";
+import { upsertCarrera, upsertVersionPlan } from "@/lib/db/carreraRepository";
 import { createAuditEvent } from "@/lib/db/audit";
 import { toSlug } from "@/lib/utils/slug";
 import {
@@ -91,7 +91,7 @@ export async function POST(request: Request) {
     await deletePendingBySlug(slug);
 
     await upsertCarrera({ id: slug, nombre: plan.plan.carrera, departamentoId }).catch(() => {});
-    await upsertPlanVersion({ carreraId: slug, versionId: "v1", jsonFile: `${slug}.json`, planId: publishedPlanId }).catch(() => {});
+    await upsertVersionPlan({ carreraId: slug, versionId: "v1", jsonFile: `${slug}.json`, planId: publishedPlanId }).catch(() => {});
 
     await createAuditEvent({
       actorUserId: session.user.id,

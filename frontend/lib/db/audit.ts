@@ -30,7 +30,7 @@ function safeStringify(value: JsonLike | undefined) {
 export async function createAuditEvent(input: AuditInput) {
   const reason = input.reason?.trim() || null;
 
-  await prisma.auditLog.create({
+  await prisma.registroAuditoria.create({
     data: {
       actorUserId: input.actorUserId ?? null,
       actorEmail: input.actorEmail ?? null,

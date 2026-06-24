@@ -6,42 +6,21 @@
 
 ## Arquitectura y organización del código
 
-### 1. Unificar `lib/db/` y `lib/services/` en un solo directorio de repositorios
+### 1. ~~Unificar `lib/db/` y `lib/services/`~~ — completado
 
-- `baja` [ ] **Mover `planRepository.ts` a `lib/db/`**
-
-  Hoy `carreraRepository.ts`, `progressRepository.ts` y `audit.ts` viven en `lib/db/`, pero `planRepository.ts` quedó en `lib/services/` del refactor anterior. La convención es inconsistente: quien busque queries de `Plan` tiene que saber que están en `services/` y no en `db/`.
-
-  **Lo que hacer:**
-  1. Mover `lib/services/planRepository.ts` → `lib/db/planRepository.ts`
-  2. Actualizar todos los imports (`guardar/route.ts`, `existe/route.ts`, etc.)
-  3. `lib/services/` queda solo para servicios de orquestación: `geminiService.ts`, `parserService.ts`
-
-  **Archivos afectados:** todos los route handlers de `app/api/admin/planes/` que importan de `@/lib/services/planRepository`.
+  `planRepository.ts` movido a `lib/db/planRepository.ts`. Imports actualizados en todos los handlers de `app/api/admin/planes/`. `lib/services/` queda solo para `geminiService.ts` y `parserService.ts`.
 
 ---
 
-### 2. Agregar helpers de auth para rutas de usuario (`/api/perfil/*`, `/api/progreso/*`)
+### 2. ~~Agregar helpers de auth para rutas de usuario~~ — completado
 
-- `baja` [ ] **Extraer `requireAuth()` para rutas de usuario autenticado**
-
-  Los handlers de `/api/perfil/contexto`, `/api/perfil/plan-visit`, `/api/progreso/sync`, etc. validan `session?.user?.id` inline en cada uno. El patrón `requireAdmin()` que existe en `lib/auth/authz.ts` solo cubre roles admin/moderador.
-
-  **Lo que hacer:**
-  1. Agregar `requireAuth(): Promise<AuthedSession | NextResponse>` en `lib/auth/authz.ts`
-  2. Aplicarlo a los handlers de perfil, progreso y planificador que hoy hacen auth inline
+  `requireAuth()` agregado en `lib/auth/authz.ts` y aplicado a todos los handlers de `/api/perfil/*`, `/api/progreso/*` y `/api/planificador/*`. Los helpers `requireAdmin()`, `requireAdminOrModerator()` y `requireAdminReal()` se centralizaron en la misma sesión.
 
 ---
 
-### 3. Dividir `userProductContext.ts` (275 líneas, demasiados concerns)
+### 3. ~~Dividir `userProductContext.ts`~~ — completado
 
-- `baja` [ ] **Separar bootstrap de usuario de las consultas de contexto**
-
-  `lib/db/userProductContext.ts` mezcla: inicialización de enrollments (bootstrap), CRUD de preferences, y armado del objeto `UserProductContext`. Es difícil de testear y de razonar.
-
-  **Separación propuesta:**
-  - `lib/db/userRepository.ts` — CRUD de `UserPreference`, `PlanSeleccionado`, `UserRecentPlan`
-  - `userProductContext.ts` — solo orquestación: llama a los repos, arma el objeto de respuesta
+  `lib/db/userRepository.ts` creado con todo el CRUD de `UserPreference`, `PlanSeleccionado`, `UserRecentPlan`. `userProductContext.ts` reducido a ~110 líneas de orquestación pura.
 
 ---
 
@@ -51,16 +30,9 @@
 
 ---
 
-### 5. Tests unitarios para lógica de plan
+### 5. ~~Tests unitarios para lógica de plan~~ — completado
 
-- `media` [ ] **Cubrir `lib/plan/` con tests unitarios**
-
-  Los 73 tests actuales son casi todos de route handlers (integración). La lógica pura en `lib/plan/` — `evaluarCorrelativas.ts`, `calcularProgresoPlan.ts`, `filtrarMaterias.ts` — no tiene tests. Es donde viven los bugs más silenciosos.
-
-  **Candidatos iniciales:**
-  - `evaluarCorrelativas` — lógica de habilitación por estado de materias
-  - `calcularProgresoPlan` — porcentajes y conteos
-  - `filtrarMaterias` — filtros por año/cuatrimestre/estado
+  `frontend/test/calcularProgresoPlan.test.ts` creado con 8 tests de Vitest cubriendo estados vacíos, aprobadas/cursadas, optativas excluidas, agrupadores y plan completo. Suite total: 81 tests.
 
 ---
 

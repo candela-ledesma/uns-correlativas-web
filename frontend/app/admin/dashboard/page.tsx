@@ -89,7 +89,7 @@ export default async function AdminDashboardPage() {
       orderBy: { createdAt: "desc" },
     }),
 
-    prisma.auditLog.findMany({
+    prisma.registroAuditoria.findMany({
       where: {
         action: { in: ["AUTH_SIGNIN", "AUTH_SIGNUP"] },
         actorEmail: { not: { contains: "@uns.local" } },

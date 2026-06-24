@@ -17,7 +17,7 @@ type PlanVersionConfig = {
 type CarreraConfig = {
   id: string;
   nombre: string;
-  versions: PlanVersionConfig[];
+  versiones: PlanVersionConfig[];
 };
 
 export type DataIssueSeverity = "critical" | "medium" | "low";
@@ -333,7 +333,7 @@ async function validateSingleVersion(
   carrera: CarreraConfig,
   version: PlanVersionConfig
 ): Promise<{ status: VersionValidationStatus; issues: DataValidationIssue[] }> {
-  const plan = await prisma.plan
+  const plan = await prisma.contenidoPlan
     .findFirst({ where: { slug: carrera.id, estado: "PUBLICADO", esBackup: false } })
     .catch(() => null);
 
@@ -389,7 +389,7 @@ export async function validateConfiguredPlanData(
   const versions: VersionValidationReport[] = [];
 
   for (const carrera of carreras) {
-    for (const version of carrera.versions) {
+    for (const version of carrera.versiones) {
       const skipReason = shouldSkipVersion(version, {
         includeHidden,
         includeUnavailable,
