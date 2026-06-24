@@ -14,7 +14,7 @@ export async function GET(_req: Request, { params }: Params) {
     include: { versionPlan: { select: { carreraId: true, versionId: true } } },
   });
 
-  if (!share) {
+  if (!share || (share.expiresAt && share.expiresAt < new Date())) {
     return NextResponse.json({ error: "Link no encontrado o expirado" }, { status: 404 });
   }
 
