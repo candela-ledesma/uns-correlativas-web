@@ -42,12 +42,15 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "No hay progreso guardado para este plan" }, { status: 404 });
   }
 
+  const SHARE_TTL_MS = 30 * 24 * 60 * 60 * 1000; // 30 días
+
   const share = await prisma.progresoCompartido.create({
     data: {
       token: randomBytes(32).toString("hex"),
       planVersionId,
       stateJson: progress.stateJson,
       createdBy: session.user.id,
+      expiresAt: new Date(Date.now() + SHARE_TTL_MS),
     },
   });
 

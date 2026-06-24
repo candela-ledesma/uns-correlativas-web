@@ -17,7 +17,7 @@ export default async function Page({ params }: Props) {
     where: { token },
     include: { versionPlan: { select: { versionId: true } } },
   });
-  if (!share) notFound();
+  if (!share || (share.expiresAt && share.expiresAt < new Date())) notFound();
 
   let sharedState: Record<string, EstadoMateria>;
   try {

@@ -59,6 +59,38 @@
 ---
 
 
+## Base de datos — integridad y hardening pre-producción
+
+### 1. Agregar FKs faltantes
+
+- `alta` [ ] **`PreferenciaUsuario.activeCareerId` → FK a `Carrera`** con `onDelete: SetNull`. Hoy es un string suelto que puede apuntar a una carrera eliminada. El código en `userRepository.ts` ya sanitiza el valor, pero la BD no lo garantiza.
+
+- `alta` [ ] **`ContenidoPlan.autorId` → FK a `User`** con `onDelete: SetNull`. Preserva el plan si se borra el autor. Hoy es un string sin constraint.
+
+- `alta` [ ] **`ProgresoCompartido.createdBy` → FK a `User`** con `onDelete: SetNull`. Mismo caso.
+
+### 2. Expiración de tokens de share
+
+- `alta` [ ] **Agregar `expiresAt` a `ProgresoCompartido`** — campo `DateTime?` con default 30 días desde `createdAt`. El endpoint `GET /api/progreso/share/[token]` debe rechazar tokens expirados. Agregar índice `@@index([createdAt])` para facilitar limpieza periódica.
+
+### 3. Tokens de Account con @db.Text
+
+- `media` [ ] **`Account.refresh_token`, `access_token`, `id_token` → `@db.Text`** — los JWTs de Google pueden exceder el varchar default de Postgres (255 chars). El `id_token` de Google suele tener ~1200 chars.
+
+### 4. FK circular Carrera ↔ VersionPlan
+
+- `media` [ ] **`Carrera.defaultVersionId` → FK a `VersionPlan`** con `onDelete: SetNull`. Crea una relación circular (`Carrera` → `VersionPlan` → `Carrera`), manejable con relación nombrada en Prisma. Requiere cuidado en el orden de inserción/seed.
+
+### 5. Singleton constraint en ConfigAdmin
+
+- `baja` [ ] **Agregar check constraint `CHECK (id = 'singleton')` a `ConfigAdmin`** — garantiza a nivel BD que no se cree una segunda fila. Hoy depende de que el código siempre use `id: "singleton"`.
+
+### 6. Convención soft-delete
+
+- `baja` [ ] **Unificar patrón de soft-delete** — `ContenidoPlan` usa estado `INACTIVO`, `Carrera` usa `disponible: false`. No hay convención consistente. Definir una y aplicarla.
+
+---
+
 ## Panel admin
 
 - `media` [ ] **Validación de schema completo** — validar contra el schema completo de `PlanData` además de chequeos estructurales básicos.

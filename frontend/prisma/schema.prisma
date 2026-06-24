@@ -54,6 +54,8 @@ model User {
   planesRecientes PlanReciente[]
   registrosAuditoria RegistroAuditoria[] @relation("AuditActor")
   bloquesHorario BloqueHorario[]
+  planesCreados  ContenidoPlan[]      @relation("autorPlan")
+  compartidos    ProgresoCompartido[] @relation("creadorShare")
 }
 
 // Carreras que un usuario seleccionó para hacer seguimiento dentro de la app.
@@ -83,6 +85,7 @@ model PreferenciaUsuario {
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
   user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  carreraActiva         Carrera?  @relation("carreraActiva", fields: [activeCareerId], references: [id], onDelete: SetNull)
 
   @@map("UserPreference")
 }
@@ -120,12 +123,12 @@ model Account {
   type              String
   provider          String
   providerAccountId String
-  refresh_token     String?
-  access_token      String?
+  refresh_token     String?  @db.Text
+  access_token      String?  @db.Text
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String?
+  id_token          String?  @db.Text
   session_state     String?
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
@@ -215,11 +218,14 @@ model ProgresoCompartido {
   stateJson        String
   createdBy        String?
   createdAt        DateTime       @default(now())
+  expiresAt        DateTime?
   versionPlan      VersionPlan @relation(fields: [planVersionId], references: [id], onDelete: Cascade)
+  creador          User?       @relation("creadorShare", fields: [createdBy], references: [id], onDelete: SetNull)
 
   @@index([token])
   @@index([createdBy])
   @@index([planVersionId])
+  @@index([expiresAt])
   @@map("ProgressShare")
 }
 
@@ -259,6 +265,7 @@ model ContenidoPlan {
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
 
+  autor           User?          @relation("autorPlan", fields: [autorId], references: [id], onDelete: SetNull)
   versionesPlanes VersionPlan[]
 
   @@unique([slug, fuente, estado])
@@ -295,6 +302,7 @@ model Carrera {
   carrerasSeleccionadas CarreraSeleccionada[]
   planesRecientes       PlanReciente[]
   bloquesHorario        BloqueHorario[]
+  preferenciasActivas   PreferenciaUsuario[] @relation("carreraActiva")
 
   @@index([disponible])
   @@index([departamentoId])
