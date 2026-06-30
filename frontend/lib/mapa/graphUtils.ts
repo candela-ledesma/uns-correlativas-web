@@ -5,7 +5,7 @@ import { Agrupador, Materia } from "@/app/types/plan";
 import { EstadoMateria } from "@/lib/plan/evaluarCorrelativas";
 import { getMateriaViewModel } from "@/lib/plan/materiaViewModel";
 import { STATUS_COLORS } from "@/lib/ui/tokens";
-import { passesOrientationFilter } from "@/lib/plan/kanbanUtils";
+import { anioSortKey, passesOrientationFilter } from "@/lib/plan/kanbanUtils";
 
 // ── Layout constants ──────────────────────────────────────────────────────────
 export const NODE_W = 160;
@@ -382,10 +382,25 @@ export function buildGraph(
   // successor within A's own reachable set. This is subsumption: once A⇢Z is
   // drawn, any A⇢mid where mid lies on the path to Z is implied and dropped.
   // Without this, a single chain of length N produces O(N²) edges.
+  //
+  // Subsumption alone only collapses chains, not fan-in (many early nodes
+  // reaching the same late sink, e.g. a thesis). Two extra filters cut that
+  // remaining noise, applied per A⇢Z candidate:
+  //   (1) pipe: every intermediate on the path has exactly one in/out edge in
+  //       the direct graph — i.e. the path is already visible as an unbroken
+  //       row of solid edges, so the dashed shortcut adds nothing.
+  //   (2) no real year jump: año(Z) - año(A) < 2 — too close to surprise.
   const directEdgeSet = new Set(edges.map((e) => `${e.source}->${e.target}`));
   const adjOut = new Map<string, string[]>();
   for (const id of visibleIds) adjOut.set(id, []);
   for (const e of edges) adjOut.get(e.source)?.push(e.target);
+
+  const indeg = new Map<string, number>();
+  const outdeg = new Map<string, number>();
+  for (const e of edges) {
+    outdeg.set(e.source, (outdeg.get(e.source) ?? 0) + 1);
+    indeg.set(e.target, (indeg.get(e.target) ?? 0) + 1);
+  }
 
   const findPath = (from: string, to: string): string[] => {
     const parentMap = new Map<string, string>();
@@ -437,11 +452,17 @@ export function buildGraph(
       if (directEdgeSet.has(`${startId}->${target}`)) continue;
       const edgeId = `transitive:${startId}->${target}`;
       if (directEdgeSet.has(edgeId)) continue;
-      directEdgeSet.add(edgeId);
+
+      const añoStart = anioSortKey(materiaById.get(startId)?.año ?? "");
+      const añoTarget = anioSortKey(materiaById.get(target)?.año ?? "");
+      if (añoTarget - añoStart < 2) continue;
+
       const pathIds = findPath(startId, target);
-      const pathLabel = pathIds
-        .map((id) => materiaById.get(id)?.nombre ?? id)
-        .join(" → ");
+      const mids = pathIds.slice(1, -1);
+      const esTuberia = mids.every((id) => outdeg.get(id) === 1 && indeg.get(id) === 1);
+      if (esTuberia) continue;
+
+      directEdgeSet.add(edgeId);
       edges.push({
         id: edgeId,
         source: startId,
@@ -449,7 +470,7 @@ export function buildGraph(
         type: "transitive",
         style: { ...TRANSITIVE_EDGE_STYLE, strokeDasharray: "4 3" },
         animated: false,
-        data: { isTransitive: true, path: pathLabel },
+        data: { isTransitive: true },
       });
     }
   }
