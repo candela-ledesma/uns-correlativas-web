@@ -16,11 +16,13 @@ type Props = {
   /** Omitted in contexts without a chain-highlight concept (e.g. EditorPanel) — hides the button. */
   caminoVisible?: boolean;
   onToggleCamino?: () => void;
+  /** Ancestor chain for "Ver camino", sorted nearest-first. dist 1 = direct correlativa. */
+  caminoMaterias?: { id: string; nombre: string; dist: number; ve: VisualEstado }[];
 };
 
 export function DetailPanel({
   nodeId, materias, idsAgrupadores, vmById, reglamentoUrl, onClose, onVerEnPlan,
-  caminoVisible, onToggleCamino,
+  caminoVisible, onToggleCamino, caminoMaterias = [],
 }: Props) {
   const materiaById = useMemo(
     () => new Map(materias.map((m) => [String(m.id), m])),
@@ -125,6 +127,30 @@ export function DetailPanel({
           }}>
           {caminoVisible ? "Ocultar camino" : "Ver camino →"}
         </button>
+      )}
+
+      {caminoVisible && caminoMaterias.length > 0 && (
+        <div>
+          <div style={sectionTitle}>Camino completo ({caminoMaterias.length})</div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
+            {caminoMaterias.map((item) => (
+              <div key={item.id} style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                <span style={{
+                  width: 6, height: 6, borderRadius: "50%", flexShrink: 0,
+                  background: item.dist === 1 ? "rgba(157,78,221,0.9)" : AMBER.border,
+                }} />
+                <span style={{ fontSize: 11, color: TEXT_DET, lineHeight: 1.3, flex: 1 }}>{item.nombre}</span>
+                {item.ve === "aprobada" && (
+                  <span style={{ fontSize: 9, color: STATE_STYLE.aprobada.text, flexShrink: 0 }}>✓</span>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {caminoVisible && caminoMaterias.length === 0 && (
+        <span style={emptyText}>Sin requisitos previos</span>
       )}
 
       {onVerEnPlan && (
