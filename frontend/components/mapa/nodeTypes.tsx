@@ -3,13 +3,13 @@
 import { useState } from "react";
 import type { NodeProps, EdgeProps } from "@xyflow/react";
 import type { Node, Edge } from "@xyflow/react";
-import { BaseEdge, getSmoothStepPath, Handle, Position } from "@xyflow/react";
+import { BaseEdge, getBezierPath, Handle, Position } from "@xyflow/react";
 import { TEXT, TEXT_DET, ACCENT } from "@/lib/ui/tokens";
 import { STATE_STYLE, AMBER, getStateLabel, type NodeData, type AgrupadorNodeData } from "@/lib/mapa/graphUtils";
 
 // ── MateriaNode ───────────────────────────────────────────────────────────────
 export function MateriaNode({ data, selected }: NodeProps<Node<NodeData>>) {
-  const { label, horas, visualEstado, highlighted, dimmed, hasAviso } = data;
+  const { label, horas, visualEstado, highlighted, dimmed, hasAviso, pasoCamino } = data;
   const s = STATE_STYLE[visualEstado];
   const baseOpacity = dimmed ? 0.1 : visualEstado === "bloqueada" ? 0.85 : 1;
   const ringBorder = highlighted ? `2px solid ${s.text}` : `1px solid ${s.border}`;
@@ -26,6 +26,17 @@ export function MateriaNode({ data, selected }: NodeProps<Node<NodeData>>) {
       position: "relative",
     }}>
       <Handle type="target" position={Position.Left}  style={{ background: s.text, width: 8, height: 8, border: "none", pointerEvents: "none" }} />
+      {pasoCamino !== undefined && (
+        <span style={{
+          position: "absolute", top: -9, left: -9, width: 20, height: 20,
+          borderRadius: "50%", background: AMBER.border, color: "#1a1a1a",
+          fontSize: 10, fontWeight: 800, display: "flex", alignItems: "center",
+          justifyContent: "center", boxShadow: "0 1px 4px rgba(0,0,0,0.4)",
+          pointerEvents: "none", zIndex: 1,
+        }}>
+          {pasoCamino}
+        </span>
+      )}
       {hasAviso && (
         <span style={{ position: "absolute", top: 5, right: 6, fontSize: 9, color: AMBER.text }}>⚠</span>
       )}
@@ -70,7 +81,12 @@ export function TransitiveEdge({
   id, sourceX, sourceY, targetX, targetY, sourcePosition, targetPosition, style, data,
 }: EdgeProps<Edge<{ path?: string }>>) {
   const [hovered, setHovered] = useState(false);
-  const [edgePath] = getSmoothStepPath({ sourceX, sourceY, sourcePosition, targetX, targetY, targetPosition });
+  // Bezier with extra curvature, not smoothstep — keeps transitive edges from
+  // tracing the same orthogonal routes as direct edges, where they'd be
+  // visually indistinguishable from one another.
+  const [edgePath] = getBezierPath({
+    sourceX, sourceY, sourcePosition, targetX, targetY, targetPosition, curvature: 0.6,
+  });
 
   const midX = (sourceX + targetX) / 2;
   const midY = (sourceY + targetY) / 2;
@@ -89,13 +105,13 @@ export function TransitiveEdge({
         onMouseLeave={() => setHovered(false)}
       />
       {hovered && data?.path && (
-        <foreignObject x={midX - 80} y={midY - 20} width={160} height={40} style={{ overflow: "visible", pointerEvents: "none" }}>
+        <foreignObject x={midX - 100} y={midY - 20} width={200} height={1} style={{ overflow: "visible", pointerEvents: "none" }}>
           <div style={{
             background: "rgba(10,14,40,0.95)",
             border: "1px solid rgba(251,146,60,0.45)",
             borderRadius: 7, padding: "5px 9px", fontSize: 10,
             color: "rgba(251,146,60,0.9)", lineHeight: 1.4,
-            whiteSpace: "nowrap", backdropFilter: "blur(8px)",
+            width: 200, whiteSpace: "normal", wordBreak: "break-word", backdropFilter: "blur(8px)",
           }}>
             {data.path}
           </div>

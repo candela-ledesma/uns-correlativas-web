@@ -8,6 +8,7 @@ export type BestPathResult = {
   camino: string[];
   pendientes: string[];
   cuatrimestresEstimados: number;
+  nivelById: Record<string, number>;
 };
 
 export function calcularMejorCamino(
@@ -152,5 +153,6 @@ export function calcularMejorCamino(
     camino: ordenTopologico,
     pendientes,
     cuatrimestresEstimados: maxNivel + 1,
+    nivelById: nivel,
   };
 }
