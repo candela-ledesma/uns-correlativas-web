@@ -16,8 +16,12 @@ type Props = {
   /** Omitted in contexts without a chain-highlight concept (e.g. EditorPanel) — hides the button. */
   caminoVisible?: boolean;
   onToggleCamino?: () => void;
-  /** Ancestor chain for "Ver camino", sorted nearest-first. dist 1 = direct correlativa. */
-  caminoMaterias?: { id: string; nombre: string; dist: number; ve: VisualEstado }[];
+  /**
+   * Ancestor chain for "Ver camino", sorted farthest-first (the order
+   * you'd actually take them). dist 1 = direct correlativa; paso groups
+   * materias by step in that sequence (1 = furthest back / earliest).
+   */
+  caminoMaterias?: { id: string; nombre: string; dist: number; paso: number; ve: VisualEstado }[];
 };
 
 export function DetailPanel({
@@ -129,25 +133,55 @@ export function DetailPanel({
         </button>
       )}
 
-      {caminoVisible && caminoMaterias.length > 0 && (
-        <div>
-          <div style={sectionTitle}>Camino completo ({caminoMaterias.length})</div>
-          <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
-            {caminoMaterias.map((item) => (
-              <div key={item.id} style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                <span style={{
-                  width: 6, height: 6, borderRadius: "50%", flexShrink: 0,
-                  background: item.dist === 1 ? "rgba(157,78,221,0.9)" : AMBER.border,
-                }} />
-                <span style={{ fontSize: 11, color: TEXT_DET, lineHeight: 1.3, flex: 1 }}>{item.nombre}</span>
-                {item.ve === "aprobada" && (
-                  <span style={{ fontSize: 9, color: STATE_STYLE.aprobada.text, flexShrink: 0 }}>✓</span>
-                )}
-              </div>
-            ))}
+      {caminoVisible && caminoMaterias.length > 0 && (() => {
+        const hechas = caminoMaterias.filter((m) => m.ve === "aprobada").length;
+        const porPaso = new Map<number, typeof caminoMaterias>();
+        for (const item of caminoMaterias) {
+          if (!porPaso.has(item.paso)) porPaso.set(item.paso, []);
+          porPaso.get(item.paso)!.push(item);
+        }
+        const pasos = Array.from(porPaso.keys()).sort((a, b) => a - b);
+        let contador = 0;
+        return (
+          <div>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 6 }}>
+              <span style={sectionTitle}>Camino completo</span>
+              <span style={{ fontSize: 10, color: TEXT_SEC }}>{hechas}/{caminoMaterias.length} hechas</span>
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              {pasos.map((paso) => (
+                <div key={paso}>
+                  <div style={{ fontSize: 9, color: TEXT_SEC, opacity: 0.7, marginBottom: 3, textTransform: "uppercase", letterSpacing: "0.04em" }}>
+                    Paso {paso}
+                  </div>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
+                    {porPaso.get(paso)!.map((item) => {
+                      contador++;
+                      const itemStyle = STATE_STYLE[item.ve];
+                      return (
+                        <div key={item.id} style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                          <span style={{ fontSize: 9, color: TEXT_SEC, width: 14, flexShrink: 0, textAlign: "right" }}>{contador}.</span>
+                          <span style={{ fontSize: 11, color: TEXT_DET, lineHeight: 1.3, flex: 1 }}>{item.nombre}</span>
+                          {item.dist > 1 && (
+                            <span style={{
+                              fontSize: 8, fontWeight: 600, color: AMBER.text, background: AMBER.bg,
+                              border: `1px solid ${AMBER.border}66`, borderRadius: 4, padding: "1px 4px", flexShrink: 0,
+                            }}>indirecta</span>
+                          )}
+                          <span style={{
+                            fontSize: 9, fontWeight: 600, color: itemStyle.text, background: itemStyle.bg,
+                            border: `1px solid ${itemStyle.border}`, borderRadius: 4, padding: "1px 5px", flexShrink: 0,
+                          }}>{getStateLabel(item.ve)}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {caminoVisible && caminoMaterias.length === 0 && (
         <span style={emptyText}>Sin requisitos previos</span>

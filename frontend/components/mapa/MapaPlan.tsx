@@ -289,15 +289,21 @@ function MapaInner({ materias, agrupadores, idsAgrupadores, estados, carreraId, 
     [caminoDistById],
   );
 
+  // Sorted farthest-first: the order you'd actually take them in, base of the
+  // chain first, building up toward the pinned node. dist doubles as a step
+  // grouping — it's derived from correlativa structure, not the curricular
+  // año field, so it stays correct even when same-año materias sit at
+  // different depths in the dependency chain.
   const caminoMaterias = useMemo(() => {
     if (!caminoDistById) return [];
+    const maxDist = Math.max(...caminoDistById.values());
     return Array.from(caminoDistById.entries())
       .map(([id, dist]) => ({
-        id, dist,
+        id, dist, paso: maxDist - dist + 1,
         nombre: materiaById.get(id)?.nombre ?? id,
         ve: vmById.get(id) ?? ("bloqueada" as VisualEstado),
       }))
-      .sort((a, b) => a.dist - b.dist || a.nombre.localeCompare(b.nombre));
+      .sort((a, b) => b.dist - a.dist || a.nombre.localeCompare(b.nombre));
   }, [caminoDistById, materiaById, vmById]);
 
   const displayNodes = useMemo<Node[]>(() => {
