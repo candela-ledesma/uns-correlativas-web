@@ -86,10 +86,15 @@ function HoverStyleInjector({
 }
 
 // ── CaminoIndirectoInjector ──────────────────────────────────────────────────
-// Highlights the ancestor chain of a pinned node ("Ver camino"): edges that
-// land directly on the focal node stay violet (direct correlativa); every
-// other edge in the chain — i.e. one more hop back — turns amber, marking
-// the indirect/transitive portion of the path.
+// Highlights the ancestor chain of a pinned node ("Ver camino") leg by leg:
+// each real correlativa edge that lands on the focal node is violet (direct),
+// every other real edge further back in the chain is amber (indirect — only
+// reachable through an intermediate). Decorative isTransitive shortcut edges
+// (the global "Caminos indirectos" toggle) are excluded entirely here — they'd
+// duplicate the same information as a single A→Z line overlapping the real
+// per-leg path. Keyed by e.data.isTransitive, not "target === focus": a
+// decorative edge can also point straight at the focal node and would
+// otherwise be misclassified as the direct correlativa.
 function CaminoIndirectoInjector({
   focusNodeId, chainSet, setEdges, baseEdges,
 }: {
@@ -110,6 +115,9 @@ function CaminoIndirectoInjector({
   useEffect(() => {
     if (!focusNodeId || !chainSet) return;
     setEdges(baseEdges.map((e) => {
+      if (e.data?.isTransitive) {
+        return { ...e, style: { stroke: "rgba(157,78,221,0.08)", strokeWidth: 1.5, opacity: 0.04 } };
+      }
       const targetInChain = e.target === focusNodeId || chainSet.has(e.target);
       const sourceInChain = e.source === focusNodeId || chainSet.has(e.source);
       if (!sourceInChain || !targetInChain) {
@@ -277,8 +285,11 @@ function MapaInner({ materias, agrupadores, idsAgrupadores, estados, carreraId, 
   }, [hoveredNodeId, pinnedNodeId, adjIn, baseAdjOut, caminoActivo]);
 
   // "Ver camino": pinned node from DetailPanel. Ancestors only — "what do I
-  // need to get here" — using direct-edge distance to tell a direct
-  // correlativa (1 hop) apart from an indirect one (≥2 hops).
+  // need to get here". dist is longest-path (take-order, see
+  // getAncestorsWithDistance) — it answers "which step", not "is this
+  // direct". Directness is a separate question, answered by direct-edge
+  // membership in adjInDirect, so a direct correlativa that also has a
+  // longer indirect path elsewhere doesn't get mislabeled.
   const caminoDistById = useMemo<Map<string, number> | null>(() => {
     if (!pinnedNodeId || caminoActivo) return null;
     return getAncestorsWithDistance(pinnedNodeId, adjInDirect);
@@ -289,22 +300,29 @@ function MapaInner({ materias, agrupadores, idsAgrupadores, estados, carreraId, 
     [caminoDistById],
   );
 
+  const caminoDirectas = useMemo<Set<string>>(
+    () => new Set(pinnedNodeId ? adjInDirect.get(pinnedNodeId) ?? [] : []),
+    [pinnedNodeId, adjInDirect],
+  );
+
   // Sorted farthest-first: the order you'd actually take them in, base of the
-  // chain first, building up toward the pinned node. dist doubles as a step
-  // grouping — it's derived from correlativa structure, not the curricular
-  // año field, so it stays correct even when same-año materias sit at
-  // different depths in the dependency chain.
+  // chain first, building up toward the pinned node. paso groups by take-order
+  // step (longest-path distance) — derived from correlativa structure, not
+  // the curricular año field, so same-año materias at different dependency
+  // depths still land in the right step, and no materia shares a step with
+  // its own prerequisite (see getAncestorsWithDistance for the diamond case).
   const caminoMaterias = useMemo(() => {
     if (!caminoDistById) return [];
     const maxDist = Math.max(...caminoDistById.values());
     return Array.from(caminoDistById.entries())
       .map(([id, dist]) => ({
         id, dist, paso: maxDist - dist + 1,
+        directa: caminoDirectas.has(id),
         nombre: materiaById.get(id)?.nombre ?? id,
         ve: vmById.get(id) ?? ("bloqueada" as VisualEstado),
       }))
       .sort((a, b) => b.dist - a.dist || a.nombre.localeCompare(b.nombre));
-  }, [caminoDistById, materiaById, vmById]);
+  }, [caminoDistById, caminoDirectas, materiaById, vmById]);
 
   const displayNodes = useMemo<Node[]>(() => {
     return baseNodes.map((n) => {
