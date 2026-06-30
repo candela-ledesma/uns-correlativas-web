@@ -45,32 +45,60 @@ async function refreshAccessToken(refreshToken: string): Promise<string | null> 
     }),
   });
   if (!res.ok) return null;
-  const data = (await res.json()) as { access_token?: string };
+  const data = (await res.json()) as { access_token?: string; expires_in?: number };
   return data.access_token ?? null;
 }
 
 async function getValidAccessToken(
-  accessToken: string | undefined,
-  refreshToken: string | undefined,
-  expiresAt: number | undefined,
+  accessToken: string | null | undefined,
+  refreshToken: string | null | undefined,
+  expiresAt: number | null | undefined,
 ): Promise<string | null> {
   const nowSecs = Math.floor(Date.now() / 1000);
-  const isExpired = expiresAt !== undefined && nowSecs >= expiresAt - 60;
+  const isExpired = expiresAt != null && nowSecs >= expiresAt - 60;
   if (accessToken && !isExpired) return accessToken;
   if (refreshToken) return refreshAccessToken(refreshToken);
   return null;
 }
 
-function getAuthToken(token: Awaited<ReturnType<typeof getToken>>) {
-  if (!token || typeof token === "string" || !token.sub) return null;
-  const sub = typeof token.sub === "string" ? token.sub : null;
-  if (!sub) return null;
-  return {
-    userId: sub,
-    accessToken: (token as Record<string, unknown>).googleAccessToken as string | undefined,
-    refreshToken: (token as Record<string, unknown>).googleRefreshToken as string | undefined,
-    expiresAt: (token as Record<string, unknown>).googleTokenExpiresAt as number | undefined,
-  };
+async function getCalendarAccount(userId: string) {
+  return prisma.account.findFirst({
+    where: { userId, provider: "google-calendar" },
+  });
+}
+
+async function updateCalendarAccessToken(userId: string, accessToken: string, expiresAt: number | null) {
+  await prisma.account.update({
+    where: {
+      provider_providerAccountId: {
+        provider: "google-calendar",
+        providerAccountId: userId,
+      },
+    },
+    data: { access_token: accessToken, expires_at: expiresAt },
+  });
+}
+
+async function resolveAccessToken(userId: string): Promise<{ token: string; refreshed: boolean; newExpiresAt?: number } | null> {
+  const account = await getCalendarAccount(userId);
+  if (!account) return null;
+
+  const nowSecs = Math.floor(Date.now() / 1000);
+  const isExpired = account.expires_at != null && nowSecs >= account.expires_at - 60;
+
+  if (account.access_token && !isExpired) {
+    return { token: account.access_token, refreshed: false };
+  }
+
+  if (!account.refresh_token) return null;
+
+  const newToken = await refreshAccessToken(account.refresh_token);
+  if (!newToken) return null;
+
+  // expires_in not returned here, use a default 1h
+  const newExpiresAt = nowSecs + 3600;
+  await updateCalendarAccessToken(userId, newToken, newExpiresAt);
+  return { token: newToken, refreshed: true, newExpiresAt };
 }
 
 // Busca todos los eventos exportados por esta app para una carrera específica.
@@ -103,26 +131,28 @@ async function findAllExportedEvents(accessToken: string, careerId: string): Pro
   return ids;
 }
 
-// ── GET: verificar si hay eventos exportados para esta carrera ────────────
-
-export async function GET(request: Request) {
-  const rawToken = await getToken({
+function getUserId(request: Request) {
+  return getToken({
     req: request as Parameters<typeof getToken>[0]["req"],
     secret: process.env.NEXTAUTH_SECRET ?? process.env.AUTH_SECRET,
   });
+}
 
-  const auth = getAuthToken(rawToken);
-  if (!auth) return unauthorized();
+// ── GET: verificar si hay eventos exportados para esta carrera ────────────
 
-  const accessToken = await getValidAccessToken(auth.accessToken, auth.refreshToken, auth.expiresAt);
-  if (!accessToken) {
-    return NextResponse.json({ linked: false, noToken: true });
-  }
+export async function GET(request: Request) {
+  const rawToken = await getUserId(request);
+  if (!rawToken?.sub) return unauthorized();
 
   const url = new URL(request.url);
   const careerId = url.searchParams.get("careerId") ?? "";
   if (!careerId) {
     return NextResponse.json({ error: "Falta careerId" }, { status: 400 });
+  }
+
+  const resolved = await resolveAccessToken(rawToken.sub);
+  if (!resolved) {
+    return NextResponse.json({ linked: false, noToken: true });
   }
 
   const params = new URLSearchParams({
@@ -131,7 +161,7 @@ export async function GET(request: Request) {
     showDeleted: "false",
   });
   const res = await fetch(`${GCAL_BASE}?${params}`, {
-    headers: { Authorization: `Bearer ${accessToken}` },
+    headers: { Authorization: `Bearer ${resolved.token}` },
   });
 
   if (!res.ok) return NextResponse.json({ linked: false });
@@ -143,18 +173,13 @@ export async function GET(request: Request) {
 // ── POST: exportar (upsert) ────────────────────────────────────────────────
 
 export async function POST(request: Request) {
-  const rawToken = await getToken({
-    req: request as Parameters<typeof getToken>[0]["req"],
-    secret: process.env.NEXTAUTH_SECRET ?? process.env.AUTH_SECRET,
-  });
+  const rawToken = await getUserId(request);
+  if (!rawToken?.sub) return unauthorized();
 
-  const auth = getAuthToken(rawToken);
-  if (!auth) return unauthorized();
-
-  const accessToken = await getValidAccessToken(auth.accessToken, auth.refreshToken, auth.expiresAt);
-  if (!accessToken) {
+  const resolved = await resolveAccessToken(rawToken.sub);
+  if (!resolved) {
     return NextResponse.json(
-      { error: "No hay token de Google Calendar. Iniciá sesión con Google para exportar." },
+      { error: "No hay token de Google Calendar. Conectá tu cuenta desde el planificador." },
       { status: 403 },
     );
   }
@@ -179,7 +204,7 @@ export async function POST(request: Request) {
   }
 
   const blocks = await prisma.bloqueHorario.findMany({
-    where: { userId: auth.userId, careerId, planVersionId },
+    where: { userId: rawToken.sub, careerId, planVersionId },
   });
 
   if (blocks.length === 0) {
@@ -187,11 +212,11 @@ export async function POST(request: Request) {
   }
 
   // Eliminar eventos anteriores de esta carrera antes de crear los nuevos
-  const existingIds = await findAllExportedEvents(accessToken, careerId);
+  const existingIds = await findAllExportedEvents(resolved.token, careerId);
   for (const eventId of existingIds) {
     await fetch(`${GCAL_BASE}/${eventId}`, {
       method: "DELETE",
-      headers: { Authorization: `Bearer ${accessToken}` },
+      headers: { Authorization: `Bearer ${resolved.token}` },
     });
   }
 
@@ -218,7 +243,7 @@ export async function POST(request: Request) {
 
     const gcalRes = await fetch(GCAL_BASE, {
       method: "POST",
-      headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" },
+      headers: { Authorization: `Bearer ${resolved.token}`, "Content-Type": "application/json" },
       body: JSON.stringify(eventBody),
     });
 
@@ -227,7 +252,6 @@ export async function POST(request: Request) {
       results.push({ id: block.id, gcalEventId: data.id });
     } else {
       const errBody = await gcalRes.text().catch(() => "");
-      // Log without exposing full error body in production
       console.error("[exportar-gcal] Google API error", { status: gcalRes.status, body: errBody });
       results.push({ id: block.id, error: `Google Calendar error ${gcalRes.status}` });
     }
@@ -251,18 +275,13 @@ export async function POST(request: Request) {
 // ── DELETE: desvincular (eliminar todos los eventos exportados) ────────────
 
 export async function DELETE(request: Request) {
-  const rawToken = await getToken({
-    req: request as Parameters<typeof getToken>[0]["req"],
-    secret: process.env.NEXTAUTH_SECRET ?? process.env.AUTH_SECRET,
-  });
+  const rawToken = await getUserId(request);
+  if (!rawToken?.sub) return unauthorized();
 
-  const auth = getAuthToken(rawToken);
-  if (!auth) return unauthorized();
-
-  const accessToken = await getValidAccessToken(auth.accessToken, auth.refreshToken, auth.expiresAt);
-  if (!accessToken) {
+  const resolved = await resolveAccessToken(rawToken.sub);
+  if (!resolved) {
     return NextResponse.json(
-      { error: "No hay token de Google Calendar. Iniciá sesión con Google para desvincular." },
+      { error: "No hay token de Google Calendar. Conectá tu cuenta desde el planificador." },
       { status: 403 },
     );
   }
@@ -273,7 +292,7 @@ export async function DELETE(request: Request) {
     return NextResponse.json({ error: "Falta careerId" }, { status: 400 });
   }
 
-  const eventIds = await findAllExportedEvents(accessToken, careerId);
+  const eventIds = await findAllExportedEvents(resolved.token, careerId);
 
   if (eventIds.length === 0) {
     return NextResponse.json({ deleted: 0 });
@@ -285,15 +304,12 @@ export async function DELETE(request: Request) {
   for (const eventId of eventIds) {
     const res = await fetch(`${GCAL_BASE}/${eventId}`, {
       method: "DELETE",
-      headers: { Authorization: `Bearer ${accessToken}` },
+      headers: { Authorization: `Bearer ${resolved.token}` },
     });
     if (res.ok || res.status === 404) {
       deleted++;
     } else {
-      console.error("[exportar-gcal] Event deletion failed", { 
-        status: res.status,
-        ...(process.env.NODE_ENV === "development" && { eventId })
-      });
+      console.error("[exportar-gcal] Event deletion failed", { status: res.status });
       failedCount++;
     }
   }

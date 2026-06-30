@@ -155,11 +155,8 @@ export const authOptions: NextAuthOptions = {
         if (user.image) token.picture = user.image;
       }
 
-      if (account?.provider === "google" && account.access_token) {
-        token.googleAccessToken = account.access_token;
-        token.googleRefreshToken = account.refresh_token;
-        token.googleTokenExpiresAt = account.expires_at;
-        if (!token.picture && user?.image) token.picture = user.image;
+      if (account?.provider === "google" && user?.image) {
+        if (!token.picture) token.picture = user.image;
       }
 
       if (token.sub && !token.role) {

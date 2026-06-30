@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useSession, signIn } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import {
   DIAS_SEMANA,
   minutesToTimeString,
@@ -389,13 +389,9 @@ export default function WeeklySchedule({ careerId, carreraSlug, versionId, mater
                     <button
                       type="button"
                       style={{ ...BTN, width: "100%", textAlign: "left", justifyContent: "flex-start" }}
-                      onClick={() => void signIn("google", {
-                        callbackUrl: window.location.href,
-                      }, {
-                        scope: "openid email profile https://www.googleapis.com/auth/calendar.events",
-                        access_type: "offline",
-                        prompt: "select_account consent",
-                      })}
+                      onClick={() => {
+                        window.location.href = `/api/auth/google-calendar/connect?callbackUrl=${encodeURIComponent(window.location.href)}`;
+                      }}
                     >
                       Conectar con Google →
                     </button>
