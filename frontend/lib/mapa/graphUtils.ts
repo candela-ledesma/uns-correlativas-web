@@ -123,6 +123,29 @@ export function getAncestors(nodeId: string, adjIn: Map<string, string[]>): Set<
   return result;
 }
 
+// BFS by levels — returns each ancestor's shortest distance (in direct-edge
+// hops) to nodeId. Distance 1 = direct correlativa; ≥2 = only reachable
+// through an intermediate, i.e. an indirect dependency.
+export function getAncestorsWithDistance(
+  nodeId: string,
+  adjIn: Map<string, string[]>,
+): Map<string, number> {
+  const dist = new Map<string, number>();
+  let frontier = [nodeId];
+  let level = 0;
+  while (frontier.length > 0) {
+    const next: string[] = [];
+    for (const cur of frontier) {
+      for (const src of adjIn.get(cur) ?? []) {
+        if (!dist.has(src)) { dist.set(src, level + 1); next.push(src); }
+      }
+    }
+    frontier = next;
+    level++;
+  }
+  return dist;
+}
+
 export function getDescendants(nodeId: string, adjOut: Map<string, string[]>): Set<string> {
   const result = new Set<string>();
   const queue = [nodeId];

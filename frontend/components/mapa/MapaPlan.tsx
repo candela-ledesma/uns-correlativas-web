@@ -24,7 +24,7 @@ import { GLASS, TEXT_SEC, ACCENT } from "@/lib/ui/tokens";
 import { extractOrientaciones } from "@/lib/plan/kanbanUtils";
 
 import {
-  buildGraph, hasHorasData, buildAdjacency, getAncestors, getDescendants,
+  buildGraph, hasHorasData, buildAdjacency, getAncestors, getDescendants, getAncestorsWithDistance,
   STATE_STYLE, AMBER,
   type VisualEstado, type NodeData, type LayoutMode,
 } from "@/lib/mapa/graphUtils";
@@ -80,6 +80,50 @@ function HoverStyleInjector({
       };
     }));
   }, [focusNodeId, activeChain, caminoActivo, baseEdges, setEdges]);
+
+  if (!css) return null;
+  return <style>{css}</style>;
+}
+
+// ── CaminoIndirectoInjector ──────────────────────────────────────────────────
+// Highlights the ancestor chain of a pinned node ("Ver camino"): edges that
+// land directly on the focal node stay violet (direct correlativa); every
+// other edge in the chain — i.e. one more hop back — turns amber, marking
+// the indirect/transitive portion of the path.
+function CaminoIndirectoInjector({
+  focusNodeId, chainSet, setEdges, baseEdges,
+}: {
+  focusNodeId: string | null;
+  chainSet: Set<string> | null;
+  setEdges: (edges: Edge[]) => void;
+  baseEdges: Edge[];
+}) {
+  const css = useMemo(() => {
+    if (!focusNodeId || !chainSet) return "";
+    const all = [focusNodeId, ...Array.from(chainSet)];
+    const dimmed = `.react-flow__node:not([data-id="${all.join('"]):not([data-id="')}"]) { opacity: 0.06 !important; transition: opacity 0.12s; }`;
+    const active = all.map((id) => `.react-flow__node[data-id="${id}"] { opacity: 1 !important; transition: opacity 0.12s; }`).join("");
+    const focal = `.react-flow__node[data-id="${focusNodeId}"] > div { box-shadow: 0 0 0 3px ${AMBER.border} !important; }`;
+    return dimmed + active + focal;
+  }, [focusNodeId, chainSet]);
+
+  useEffect(() => {
+    if (!focusNodeId || !chainSet) return;
+    setEdges(baseEdges.map((e) => {
+      const targetInChain = e.target === focusNodeId || chainSet.has(e.target);
+      const sourceInChain = e.source === focusNodeId || chainSet.has(e.source);
+      if (!sourceInChain || !targetInChain) {
+        return { ...e, style: { stroke: "rgba(157,78,221,0.08)", strokeWidth: 1.5, opacity: 0.04 } };
+      }
+      const isDirectToFocus = e.target === focusNodeId;
+      return {
+        ...e,
+        style: isDirectToFocus
+          ? { stroke: "rgba(157,78,221,0.9)", strokeWidth: 2, opacity: 1 }
+          : { stroke: AMBER.border, strokeWidth: 2, opacity: 1 },
+      };
+    }));
+  }, [focusNodeId, chainSet, baseEdges, setEdges]);
 
   if (!css) return null;
   return <style>{css}</style>;
@@ -166,6 +210,14 @@ function MapaInner({ materias, agrupadores, idsAgrupadores, estados, carreraId, 
     [baseEdges],
   );
 
+  // Direct-only adjacency (excludes decorative transitive edges) — needed to
+  // tell apart a direct correlativa (1 hop) from an indirect one (≥2 hops)
+  // for the "Ver camino" highlight.
+  const { adjIn: adjInDirect } = useMemo(
+    () => buildAdjacency(baseEdges.filter((e) => !e.data?.isTransitive)),
+    [baseEdges],
+  );
+
   const hasHoras = useMemo(() => hasHorasData(materiaById), [materiaById]);
 
   const [filtro, setFiltro]               = useState<FiltroEstado>("todas");
@@ -214,17 +266,39 @@ function MapaInner({ materias, agrupadores, idsAgrupadores, estados, carreraId, 
     return () => clearTimeout(id);
   }, [caminoSet, getNodes, fitView]);
 
-  // A pinned node (from "Ver camino" in DetailPanel) takes priority over a
-  // transient hover — it stays highlighted while the mouse moves elsewhere.
-  const focusNodeId = pinnedNodeId ?? hoveredNodeId;
-
+  // Transient hover: highlights ancestors + descendants (both directions).
+  // Suppressed while a node is pinned — the pin's own highlight takes over.
   const activeChain = useMemo<Set<string> | null>(() => {
-    if (!focusNodeId || caminoActivo) return null;
-    const chain = new Set<string>([focusNodeId]);
-    for (const id of getAncestors(focusNodeId, adjIn)) chain.add(id);
-    for (const id of getDescendants(focusNodeId, baseAdjOut)) chain.add(id);
+    if (!hoveredNodeId || pinnedNodeId || caminoActivo) return null;
+    const chain = new Set<string>([hoveredNodeId]);
+    for (const id of getAncestors(hoveredNodeId, adjIn)) chain.add(id);
+    for (const id of getDescendants(hoveredNodeId, baseAdjOut)) chain.add(id);
     return chain;
-  }, [focusNodeId, adjIn, baseAdjOut, caminoActivo]);
+  }, [hoveredNodeId, pinnedNodeId, adjIn, baseAdjOut, caminoActivo]);
+
+  // "Ver camino": pinned node from DetailPanel. Ancestors only — "what do I
+  // need to get here" — using direct-edge distance to tell a direct
+  // correlativa (1 hop) apart from an indirect one (≥2 hops).
+  const caminoDistById = useMemo<Map<string, number> | null>(() => {
+    if (!pinnedNodeId || caminoActivo) return null;
+    return getAncestorsWithDistance(pinnedNodeId, adjInDirect);
+  }, [pinnedNodeId, adjInDirect, caminoActivo]);
+
+  const caminoChain = useMemo<Set<string> | null>(
+    () => (caminoDistById ? new Set(caminoDistById.keys()) : null),
+    [caminoDistById],
+  );
+
+  const caminoMaterias = useMemo(() => {
+    if (!caminoDistById) return [];
+    return Array.from(caminoDistById.entries())
+      .map(([id, dist]) => ({
+        id, dist,
+        nombre: materiaById.get(id)?.nombre ?? id,
+        ve: vmById.get(id) ?? ("bloqueada" as VisualEstado),
+      }))
+      .sort((a, b) => a.dist - b.dist || a.nombre.localeCompare(b.nombre));
+  }, [caminoDistById, materiaById, vmById]);
 
   const displayNodes = useMemo<Node[]>(() => {
     return baseNodes.map((n) => {
@@ -485,8 +559,12 @@ function MapaInner({ materias, agrupadores, idsAgrupadores, estados, carreraId, 
           panOnDrag
         >
           <HoverStyleInjector
-            focusNodeId={focusNodeId} activeChain={activeChain}
+            focusNodeId={hoveredNodeId} activeChain={activeChain}
             setEdges={setEdges} baseEdges={visibleEdges} caminoActivo={caminoActivo}
+          />
+          <CaminoIndirectoInjector
+            focusNodeId={pinnedNodeId} chainSet={caminoChain}
+            setEdges={setEdges} baseEdges={visibleEdges}
           />
           <CaminoStyleInjector
             caminoSet={caminoSet} vmById={vmById}
@@ -523,6 +601,7 @@ function MapaInner({ materias, agrupadores, idsAgrupadores, estados, carreraId, 
                 onClose={() => { setSelectedNodeId(null); setPinnedNodeId(null); }} onVerEnPlan={onVerEnPlan}
                 caminoVisible={pinnedNodeId === selectedNodeId}
                 onToggleCamino={() => setPinnedNodeId((prev) => (prev === selectedNodeId ? null : selectedNodeId))}
+                caminoMaterias={pinnedNodeId === selectedNodeId ? caminoMaterias : []}
               />
             </Panel>
           )}
