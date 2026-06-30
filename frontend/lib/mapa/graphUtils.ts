@@ -123,26 +123,36 @@ export function getAncestors(nodeId: string, adjIn: Map<string, string[]>): Set<
   return result;
 }
 
-// BFS by levels — returns each ancestor's shortest distance (in direct-edge
-// hops) to nodeId. Distance 1 = direct correlativa; ≥2 = only reachable
-// through an intermediate, i.e. an indirect dependency.
+// Longest-path distance from each ancestor to nodeId, over the correlativa
+// DAG (acyclic by construction, so this terminates). Shortest-path would
+// break on a diamond — e.g. X→F and Y→F both direct, plus X→Y — by giving
+// both X and Y distance 1 even though X must be taken before Y. Longest-path
+// guarantees dist(X) > dist(Y) for every edge X→Y, so no ancestor ever
+// shares a "paso" with one of its own prerequisites.
+//
+// This distance answers "how many steps back in the take-order", not "is
+// this a direct correlativa" — a direct correlativa can still have a longer
+// indirect path elsewhere and end up with dist > 1. Callers needing
+// directness should check direct-edge membership instead (e.g. via the
+// adjacency map), not dist === 1.
 export function getAncestorsWithDistance(
   nodeId: string,
   adjIn: Map<string, string[]>,
 ): Map<string, number> {
-  const dist = new Map<string, number>();
-  let frontier = [nodeId];
-  let level = 0;
-  while (frontier.length > 0) {
-    const next: string[] = [];
-    for (const cur of frontier) {
-      for (const src of adjIn.get(cur) ?? []) {
-        if (!dist.has(src)) { dist.set(src, level + 1); next.push(src); }
+  const dist = new Map<string, number>([[nodeId, 0]]);
+  const queue = [nodeId];
+  let head = 0;
+  while (head < queue.length) {
+    const cur = queue[head++];
+    const d = dist.get(cur)!;
+    for (const src of adjIn.get(cur) ?? []) {
+      if (d + 1 > (dist.get(src) ?? -1)) {
+        dist.set(src, d + 1);
+        queue.push(src);
       }
     }
-    frontier = next;
-    level++;
   }
+  dist.delete(nodeId);
   return dist;
 }
 
