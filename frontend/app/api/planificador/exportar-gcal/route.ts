@@ -89,7 +89,11 @@ async function findAllExportedEvents(accessToken: string, careerId: string): Pro
     const res = await fetch(`${GCAL_BASE}?${params}`, {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
-    if (!res.ok) break;
+    if (!res.ok) {
+      const errBody = await res.text().catch(() => "");
+      console.error("[exportar-gcal] findAllExportedEvents error", { status: res.status, body: errBody });
+      break;
+    }
 
     const data = (await res.json()) as { items?: { id: string }[]; nextPageToken?: string };
     for (const item of data.items ?? []) ids.push(item.id);
@@ -224,10 +228,7 @@ export async function POST(request: Request) {
     } else {
       const errBody = await gcalRes.text().catch(() => "");
       // Log without exposing full error body in production
-      console.error("[exportar-gcal] Google API error", { 
-        status: gcalRes.status,
-        ...(process.env.NODE_ENV === "development" && { body: errBody })
-      });
+      console.error("[exportar-gcal] Google API error", { status: gcalRes.status, body: errBody });
       results.push({ id: block.id, error: `Google Calendar error ${gcalRes.status}` });
     }
   }
