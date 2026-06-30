@@ -394,7 +394,7 @@ export default function WeeklySchedule({ careerId, carreraSlug, versionId, mater
                       }, {
                         scope: "openid email profile https://www.googleapis.com/auth/calendar.events",
                         access_type: "offline",
-                        prompt: "consent",
+                        prompt: "select_account consent",
                       })}
                     >
                       Conectar con Google →
