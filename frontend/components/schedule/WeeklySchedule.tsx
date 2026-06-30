@@ -391,10 +391,11 @@ export default function WeeklySchedule({ careerId, carreraSlug, versionId, mater
                       style={{ ...BTN, width: "100%", textAlign: "left", justifyContent: "flex-start" }}
                       onClick={() => void signIn("google", {
                         callbackUrl: window.location.href,
+                      }, {
                         scope: "openid email profile https://www.googleapis.com/auth/calendar.events",
                         access_type: "offline",
                         prompt: "consent",
-                      } as Record<string, string>)}
+                      })}
                     >
                       Conectar con Google →
                     </button>
