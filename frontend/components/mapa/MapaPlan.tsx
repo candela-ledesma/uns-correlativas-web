@@ -49,25 +49,27 @@ type Props = {
 };
 
 // ── HoverStyleInjector ────────────────────────────────────────────────────────
+// focusNodeId comes from either a transient hover or a pinned "Ver camino"
+// selection (MapaPlan resolves which one wins before passing it down).
 function HoverStyleInjector({
-  hoveredNodeId, activeChain, setEdges, baseEdges, caminoActivo,
+  focusNodeId, activeChain, setEdges, baseEdges, caminoActivo,
 }: {
-  hoveredNodeId: string | null;
+  focusNodeId: string | null;
   activeChain: Set<string> | null;
   setEdges: (edges: Edge[]) => void;
   baseEdges: Edge[];
   caminoActivo: boolean;
 }) {
   const css = useMemo(() => {
-    if (caminoActivo || !hoveredNodeId || !activeChain) return "";
+    if (caminoActivo || !focusNodeId || !activeChain) return "";
     const dimmed = `.react-flow__node:not([data-id="${Array.from(activeChain).join('"]):not([data-id="')}"]) { opacity: 0.06 !important; transition: opacity 0.12s; }`;
     const active = Array.from(activeChain).map((id) => `.react-flow__node[data-id="${id}"] { opacity: 1 !important; transition: opacity 0.12s; }`).join("");
-    const hovered = `.react-flow__node[data-id="${hoveredNodeId}"] > div { box-shadow: 0 0 0 3px rgba(200,200,255,0.5) !important; }`;
+    const hovered = `.react-flow__node[data-id="${focusNodeId}"] > div { box-shadow: 0 0 0 3px rgba(200,200,255,0.5) !important; }`;
     return dimmed + active + hovered;
-  }, [hoveredNodeId, activeChain, caminoActivo]);
+  }, [focusNodeId, activeChain, caminoActivo]);
 
   useEffect(() => {
-    if (caminoActivo || !hoveredNodeId || !activeChain) return;
+    if (caminoActivo || !focusNodeId || !activeChain) return;
     setEdges(baseEdges.map((e) => {
       const inChain = activeChain.has(e.source) && activeChain.has(e.target);
       return {
@@ -77,7 +79,7 @@ function HoverStyleInjector({
           : { stroke: "rgba(157,78,221,0.08)", strokeWidth: 1.5, opacity: 0.04 },
       };
     }));
-  }, [hoveredNodeId, activeChain, caminoActivo, baseEdges, setEdges]);
+  }, [focusNodeId, activeChain, caminoActivo, baseEdges, setEdges]);
 
   if (!css) return null;
   return <style>{css}</style>;
@@ -172,6 +174,7 @@ function MapaInner({ materias, agrupadores, idsAgrupadores, estados, carreraId, 
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const [panelSide, setPanelSide]         = useState<"left" | "right">("right");
   const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
+  const [pinnedNodeId, setPinnedNodeId]   = useState<string | null>(null);
   const [caminoActivo, setCaminoActivo]   = useState(false);
   const [optMode, setOptMode]             = useState<OptMode>("materias");
   const [mostrarIndirectas, setMostrarIndirectas] = useState(false);
@@ -211,13 +214,17 @@ function MapaInner({ materias, agrupadores, idsAgrupadores, estados, carreraId, 
     return () => clearTimeout(id);
   }, [caminoSet, getNodes, fitView]);
 
+  // A pinned node (from "Ver camino" in DetailPanel) takes priority over a
+  // transient hover — it stays highlighted while the mouse moves elsewhere.
+  const focusNodeId = pinnedNodeId ?? hoveredNodeId;
+
   const activeChain = useMemo<Set<string> | null>(() => {
-    if (!hoveredNodeId || caminoActivo) return null;
-    const chain = new Set<string>([hoveredNodeId]);
-    for (const id of getAncestors(hoveredNodeId, adjIn)) chain.add(id);
-    for (const id of getDescendants(hoveredNodeId, baseAdjOut)) chain.add(id);
+    if (!focusNodeId || caminoActivo) return null;
+    const chain = new Set<string>([focusNodeId]);
+    for (const id of getAncestors(focusNodeId, adjIn)) chain.add(id);
+    for (const id of getDescendants(focusNodeId, baseAdjOut)) chain.add(id);
     return chain;
-  }, [hoveredNodeId, adjIn, baseAdjOut, caminoActivo]);
+  }, [focusNodeId, adjIn, baseAdjOut, caminoActivo]);
 
   const displayNodes = useMemo<Node[]>(() => {
     return baseNodes.map((n) => {
@@ -332,6 +339,7 @@ function MapaInner({ materias, agrupadores, idsAgrupadores, estados, carreraId, 
       }
       if (e.key === "Escape") {
         setSelectedNodeId(null);
+        setPinnedNodeId(null);
         setCaminoActivo(false);
         setEditorAbierto(false);
       }
@@ -367,6 +375,7 @@ function MapaInner({ materias, agrupadores, idsAgrupadores, estados, carreraId, 
 
   const handleNodeClick = useCallback((_: React.MouseEvent, node: Node) => {
     if (node.type !== "materia" || caminoActivo) return;
+    setPinnedNodeId(null);
     setSelectedNodeId((prev) => {
       if (prev === node.id) return null;
       const flowNode = getNode(node.id);
@@ -464,7 +473,7 @@ function MapaInner({ materias, agrupadores, idsAgrupadores, estados, carreraId, 
           onNodeMouseEnter={handleNodeMouseEnter}
           onNodeMouseLeave={handleNodeMouseLeave}
           onNodeClick={handleNodeClick}
-          onPaneClick={() => setSelectedNodeId(null)}
+          onPaneClick={() => { setSelectedNodeId(null); setPinnedNodeId(null); }}
           onNodeDragStop={handleNodeDragStop}
           nodesDraggable selectionOnDrag multiSelectionKeyCode="Shift"
           defaultViewport={{ x: 0, y: 0, zoom: 0.85 }}
@@ -476,7 +485,7 @@ function MapaInner({ materias, agrupadores, idsAgrupadores, estados, carreraId, 
           panOnDrag
         >
           <HoverStyleInjector
-            hoveredNodeId={hoveredNodeId} activeChain={activeChain}
+            focusNodeId={focusNodeId} activeChain={activeChain}
             setEdges={setEdges} baseEdges={visibleEdges} caminoActivo={caminoActivo}
           />
           <CaminoStyleInjector
@@ -511,7 +520,9 @@ function MapaInner({ materias, agrupadores, idsAgrupadores, estados, carreraId, 
                 nodeId={selectedNodeId} materias={materias}
                 idsAgrupadores={idsAgrupadores} vmById={vmById}
                 reglamentoUrl={reglamentoUrl}
-                onClose={() => setSelectedNodeId(null)} onVerEnPlan={onVerEnPlan}
+                onClose={() => { setSelectedNodeId(null); setPinnedNodeId(null); }} onVerEnPlan={onVerEnPlan}
+                caminoVisible={pinnedNodeId === selectedNodeId}
+                onToggleCamino={() => setPinnedNodeId((prev) => (prev === selectedNodeId ? null : selectedNodeId))}
               />
             </Panel>
           )}
