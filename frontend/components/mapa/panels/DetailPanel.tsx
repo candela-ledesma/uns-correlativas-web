@@ -13,9 +13,15 @@ type Props = {
   reglamentoUrl?: string | null;
   onClose: () => void;
   onVerEnPlan?: (materiaId: string) => void;
+  /** Omitted in contexts without a chain-highlight concept (e.g. EditorPanel) — hides the button. */
+  caminoVisible?: boolean;
+  onToggleCamino?: () => void;
 };
 
-export function DetailPanel({ nodeId, materias, idsAgrupadores, vmById, reglamentoUrl, onClose, onVerEnPlan }: Props) {
+export function DetailPanel({
+  nodeId, materias, idsAgrupadores, vmById, reglamentoUrl, onClose, onVerEnPlan,
+  caminoVisible, onToggleCamino,
+}: Props) {
   const materiaById = useMemo(
     () => new Map(materias.map((m) => [String(m.id), m])),
     [materias],
@@ -106,6 +112,19 @@ export function DetailPanel({ nodeId, materias, idsAgrupadores, vmById, reglamen
             </a>
           )}
         </div>
+      )}
+
+      {onToggleCamino && (
+        <button
+          onClick={onToggleCamino}
+          style={{
+            background: caminoVisible ? AMBER.bg : "rgba(157,78,221,0.15)",
+            border: caminoVisible ? `1px solid ${AMBER.border}` : "1px solid rgba(157,78,221,0.4)",
+            borderRadius: 7, color: caminoVisible ? AMBER.text : "#c4a0f0",
+            fontSize: 11, fontWeight: 600, padding: "6px 10px", cursor: "pointer", textAlign: "center",
+          }}>
+          {caminoVisible ? "Ocultar camino" : "Ver camino →"}
+        </button>
       )}
 
       {onVerEnPlan && (
