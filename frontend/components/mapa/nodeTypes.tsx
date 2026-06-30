@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import type { NodeProps, EdgeProps } from "@xyflow/react";
 import type { Node, Edge } from "@xyflow/react";
 import { BaseEdge, getBezierPath, Handle, Position } from "@xyflow/react";
@@ -77,10 +76,13 @@ export function AgrupadorNode({ data }: NodeProps<Node<AgrupadorNodeData>>) {
 }
 
 // ── TransitiveEdge ────────────────────────────────────────────────────────────
+// Decorative only — no hover affordance. Edges render in a layer below nodes,
+// so a hit-area here would only fire in the gaps between them. The same
+// dependency info is already surfaced reliably by node hover (ancestors +
+// descendants chain), so this edge doesn't duplicate it.
 export function TransitiveEdge({
-  id, sourceX, sourceY, targetX, targetY, sourcePosition, targetPosition, style, data,
-}: EdgeProps<Edge<{ path?: string }>>) {
-  const [hovered, setHovered] = useState(false);
+  sourceX, sourceY, targetX, targetY, sourcePosition, targetPosition, style,
+}: EdgeProps<Edge>) {
   // Bezier with extra curvature, not smoothstep — keeps transitive edges from
   // tracing the same orthogonal routes as direct edges, where they'd be
   // visually indistinguishable from one another.
@@ -88,37 +90,7 @@ export function TransitiveEdge({
     sourceX, sourceY, sourcePosition, targetX, targetY, targetPosition, curvature: 0.6,
   });
 
-  const midX = (sourceX + targetX) / 2;
-  const midY = (sourceY + targetY) / 2;
-
-  return (
-    <>
-      <BaseEdge id={id} path={edgePath} style={style} />
-      {/* Invisible wider hit area to make hover easier to trigger */}
-      <path
-        d={edgePath}
-        stroke="transparent"
-        strokeWidth={12}
-        fill="none"
-        style={{ cursor: "default" }}
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
-      />
-      {hovered && data?.path && (
-        <foreignObject x={midX - 100} y={midY - 20} width={200} height={1} style={{ overflow: "visible", pointerEvents: "none" }}>
-          <div style={{
-            background: "rgba(10,14,40,0.95)",
-            border: "1px solid rgba(251,146,60,0.45)",
-            borderRadius: 7, padding: "5px 9px", fontSize: 10,
-            color: "rgba(251,146,60,0.9)", lineHeight: 1.4,
-            width: 200, whiteSpace: "normal", wordBreak: "break-word", backdropFilter: "blur(8px)",
-          }}>
-            {data.path}
-          </div>
-        </foreignObject>
-      )}
-    </>
-  );
+  return <BaseEdge path={edgePath} style={style} />;
 }
 
 export const nodeTypes = { materia: MateriaNode, agrupador: AgrupadorNode };
