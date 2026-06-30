@@ -53,9 +53,8 @@ if (hasGoogleProvider) {
       clientSecret: process.env.AUTH_GOOGLE_CLIENT_SECRET as string,
       authorization: {
         params: {
-          scope: "openid email profile https://www.googleapis.com/auth/calendar.events",
+          scope: "openid email profile",
           access_type: "offline",
-          prompt: "consent",
         },
       },
     }),
