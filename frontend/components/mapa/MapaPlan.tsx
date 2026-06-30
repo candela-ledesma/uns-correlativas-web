@@ -202,6 +202,15 @@ function MapaInner({ materias, agrupadores, idsAgrupadores, estados, carreraId, 
     [bestPath],
   );
 
+  useEffect(() => {
+    if (!caminoSet) return;
+    const id = setTimeout(() => {
+      const caminoNodes = getNodes().filter((n) => caminoSet.has(n.id));
+      if (caminoNodes.length > 0) fitView({ nodes: caminoNodes, padding: 0.3, duration: 450 });
+    }, 60);
+    return () => clearTimeout(id);
+  }, [caminoSet, getNodes, fitView]);
+
   const activeChain = useMemo<Set<string> | null>(() => {
     if (!hoveredNodeId || caminoActivo) return null;
     const chain = new Set<string>([hoveredNodeId]);
@@ -219,13 +228,17 @@ function MapaInner({ materias, agrupadores, idsAgrupadores, estados, carreraId, 
       }
       const ve = vmById.get(n.id) ?? "bloqueada";
       const dimmed = filtro !== "todas" && ve !== filtro && !caminoActivo;
+      const pasoCamino = caminoActivo ? bestPath?.nivelById[n.id] : undefined;
       return {
         ...n, position,
-        data: { ...n.data, dimmed, highlighted: n.id === highlightedId },
+        data: {
+          ...n.data, dimmed, highlighted: n.id === highlightedId,
+          pasoCamino: pasoCamino !== undefined ? pasoCamino + 1 : undefined,
+        },
         selected: n.id === selectedNodeId,
       };
     });
-  }, [baseNodes, filtro, highlightedId, selectedNodeId, vmById, caminoActivo, customPositions]);
+  }, [baseNodes, filtro, highlightedId, selectedNodeId, vmById, caminoActivo, bestPath, customPositions]);
 
   const miVistaNodes = useMemo<Node[]>(() => {
     if (!miVistaData) return [];

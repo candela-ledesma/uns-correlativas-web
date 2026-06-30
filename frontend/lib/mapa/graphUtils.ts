@@ -55,6 +55,7 @@ export type NodeData = {
   highlighted: boolean;
   dimmed: boolean;
   hasAviso: boolean;
+  pasoCamino?: number;
 };
 
 export type AgrupadorNodeData = { nombre: string; cantidad: number; dimmed: boolean };
@@ -75,7 +76,7 @@ const EDGE_COLOR = {
 } as const;
 
 const TRANSITIVE_EDGE_STYLE = {
-  stroke: "rgba(251,146,60,0.70)", strokeWidth: 1, opacity: 1,
+  stroke: "rgba(251,146,60,0.55)", strokeWidth: 1, opacity: 0.4,
 } as const;
 
 const REDUCED_EDGE_STYLE = {
@@ -377,7 +378,10 @@ export function buildGraph(
     }
   }
 
-  // Transitive (decorative) edges: A→C where the direct path is A→…→C
+  // Transitive (decorative) edges: A⇢Z, kept only for "sinks" — nodes with no
+  // successor within A's own reachable set. This is subsumption: once A⇢Z is
+  // drawn, any A⇢mid where mid lies on the path to Z is implied and dropped.
+  // Without this, a single chain of length N produces O(N²) edges.
   const directEdgeSet = new Set(edges.map((e) => `${e.source}->${e.target}`));
   const adjOut = new Map<string, string[]>();
   for (const id of visibleIds) adjOut.set(id, []);
@@ -407,38 +411,46 @@ export function buildGraph(
 
   for (const startId of visibleIds) {
     const directNeighbors = new Set(adjOut.get(startId) ?? []);
-    const visited = new Set<string>([startId]);
-    const queue: string[] = Array.from(directNeighbors);
-    for (const dn of directNeighbors) visited.add(dn);
 
+    // Reachable set from startId, excluding startId itself and direct neighbors.
+    const reachable = new Set<string>();
+    const queue: string[] = Array.from(directNeighbors);
+    const seen = new Set<string>([startId, ...directNeighbors]);
     while (queue.length > 0) {
       const cur = queue.shift()!;
       for (const next of adjOut.get(cur) ?? []) {
-        if (
-          !directNeighbors.has(next) &&
-          !directEdgeSet.has(`${startId}->${next}`) &&
-          next !== startId
-        ) {
-          const edgeId = `transitive:${startId}->${next}`;
-          if (!directEdgeSet.has(edgeId)) {
-            directEdgeSet.add(edgeId);
-            const pathIds = findPath(startId, next);
-            const pathLabel = pathIds
-              .map((id) => materiaById.get(id)?.nombre ?? id)
-              .join(" → ");
-            edges.push({
-              id: edgeId,
-              source: startId,
-              target: next,
-              type: "transitive",
-              style: { ...TRANSITIVE_EDGE_STYLE, strokeDasharray: "4 3" },
-              animated: false,
-              data: { isTransitive: true, path: pathLabel },
-            });
-          }
-        }
-        if (!visited.has(next)) { visited.add(next); queue.push(next); }
+        if (seen.has(next)) continue;
+        seen.add(next);
+        reachable.add(next);
+        queue.push(next);
       }
+    }
+
+    // Sinks: reachable nodes with no successor that is itself in `reachable`.
+    // These are the maximal reaches of startId — drawing only these subsumes
+    // every shorter transitive edge to an intermediate node.
+    const sinks = Array.from(reachable).filter(
+      (id) => !(adjOut.get(id) ?? []).some((next) => reachable.has(next)),
+    );
+
+    for (const target of sinks) {
+      if (directEdgeSet.has(`${startId}->${target}`)) continue;
+      const edgeId = `transitive:${startId}->${target}`;
+      if (directEdgeSet.has(edgeId)) continue;
+      directEdgeSet.add(edgeId);
+      const pathIds = findPath(startId, target);
+      const pathLabel = pathIds
+        .map((id) => materiaById.get(id)?.nombre ?? id)
+        .join(" → ");
+      edges.push({
+        id: edgeId,
+        source: startId,
+        target,
+        type: "transitive",
+        style: { ...TRANSITIVE_EDGE_STYLE, strokeDasharray: "4 3" },
+        animated: false,
+        data: { isTransitive: true, path: pathLabel },
+      });
     }
   }
 
