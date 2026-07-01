@@ -5,7 +5,7 @@ import { Agrupador, Materia } from "@/app/types/plan";
 import { EstadoMateria } from "@/lib/plan/evaluarCorrelativas";
 import { getMateriaViewModel } from "@/lib/plan/materiaViewModel";
 import { STATUS_COLORS } from "@/lib/ui/tokens";
-import { passesOrientationFilter } from "@/lib/plan/kanbanUtils";
+import { anioSortKey, passesOrientationFilter } from "@/lib/plan/kanbanUtils";
 
 // ── Layout constants ──────────────────────────────────────────────────────────
 export const NODE_W = 160;
@@ -55,6 +55,7 @@ export type NodeData = {
   highlighted: boolean;
   dimmed: boolean;
   hasAviso: boolean;
+  pasoCamino?: number;
 };
 
 export type AgrupadorNodeData = { nombre: string; cantidad: number; dimmed: boolean };
@@ -75,7 +76,7 @@ const EDGE_COLOR = {
 } as const;
 
 const TRANSITIVE_EDGE_STYLE = {
-  stroke: "rgba(251,146,60,0.70)", strokeWidth: 1, opacity: 1,
+  stroke: "rgba(251,146,60,0.55)", strokeWidth: 1, opacity: 0.4,
 } as const;
 
 const REDUCED_EDGE_STYLE = {
@@ -120,6 +121,39 @@ export function getAncestors(nodeId: string, adjIn: Map<string, string[]>): Set<
     }
   }
   return result;
+}
+
+// Longest-path distance from each ancestor to nodeId, over the correlativa
+// DAG (acyclic by construction, so this terminates). Shortest-path would
+// break on a diamond — e.g. X→F and Y→F both direct, plus X→Y — by giving
+// both X and Y distance 1 even though X must be taken before Y. Longest-path
+// guarantees dist(X) > dist(Y) for every edge X→Y, so no ancestor ever
+// shares a "paso" with one of its own prerequisites.
+//
+// This distance answers "how many steps back in the take-order", not "is
+// this a direct correlativa" — a direct correlativa can still have a longer
+// indirect path elsewhere and end up with dist > 1. Callers needing
+// directness should check direct-edge membership instead (e.g. via the
+// adjacency map), not dist === 1.
+export function getAncestorsWithDistance(
+  nodeId: string,
+  adjIn: Map<string, string[]>,
+): Map<string, number> {
+  const dist = new Map<string, number>([[nodeId, 0]]);
+  const queue = [nodeId];
+  let head = 0;
+  while (head < queue.length) {
+    const cur = queue[head++];
+    const d = dist.get(cur)!;
+    for (const src of adjIn.get(cur) ?? []) {
+      if (d + 1 > (dist.get(src) ?? -1)) {
+        dist.set(src, d + 1);
+        queue.push(src);
+      }
+    }
+  }
+  dist.delete(nodeId);
+  return dist;
 }
 
 export function getDescendants(nodeId: string, adjOut: Map<string, string[]>): Set<string> {
@@ -377,11 +411,29 @@ export function buildGraph(
     }
   }
 
-  // Transitive (decorative) edges: A→C where the direct path is A→…→C
+  // Transitive (decorative) edges: A⇢Z, kept only for "sinks" — nodes with no
+  // successor within A's own reachable set. This is subsumption: once A⇢Z is
+  // drawn, any A⇢mid where mid lies on the path to Z is implied and dropped.
+  // Without this, a single chain of length N produces O(N²) edges.
+  //
+  // Subsumption alone only collapses chains, not fan-in (many early nodes
+  // reaching the same late sink, e.g. a thesis). Two extra filters cut that
+  // remaining noise, applied per A⇢Z candidate:
+  //   (1) pipe: every intermediate on the path has exactly one in/out edge in
+  //       the direct graph — i.e. the path is already visible as an unbroken
+  //       row of solid edges, so the dashed shortcut adds nothing.
+  //   (2) no real year jump: año(Z) - año(A) < 2 — too close to surprise.
   const directEdgeSet = new Set(edges.map((e) => `${e.source}->${e.target}`));
   const adjOut = new Map<string, string[]>();
   for (const id of visibleIds) adjOut.set(id, []);
   for (const e of edges) adjOut.get(e.source)?.push(e.target);
+
+  const indeg = new Map<string, number>();
+  const outdeg = new Map<string, number>();
+  for (const e of edges) {
+    outdeg.set(e.source, (outdeg.get(e.source) ?? 0) + 1);
+    indeg.set(e.target, (indeg.get(e.target) ?? 0) + 1);
+  }
 
   const findPath = (from: string, to: string): string[] => {
     const parentMap = new Map<string, string>();
@@ -407,38 +459,52 @@ export function buildGraph(
 
   for (const startId of visibleIds) {
     const directNeighbors = new Set(adjOut.get(startId) ?? []);
-    const visited = new Set<string>([startId]);
-    const queue: string[] = Array.from(directNeighbors);
-    for (const dn of directNeighbors) visited.add(dn);
 
+    // Reachable set from startId, excluding startId itself and direct neighbors.
+    const reachable = new Set<string>();
+    const queue: string[] = Array.from(directNeighbors);
+    const seen = new Set<string>([startId, ...directNeighbors]);
     while (queue.length > 0) {
       const cur = queue.shift()!;
       for (const next of adjOut.get(cur) ?? []) {
-        if (
-          !directNeighbors.has(next) &&
-          !directEdgeSet.has(`${startId}->${next}`) &&
-          next !== startId
-        ) {
-          const edgeId = `transitive:${startId}->${next}`;
-          if (!directEdgeSet.has(edgeId)) {
-            directEdgeSet.add(edgeId);
-            const pathIds = findPath(startId, next);
-            const pathLabel = pathIds
-              .map((id) => materiaById.get(id)?.nombre ?? id)
-              .join(" → ");
-            edges.push({
-              id: edgeId,
-              source: startId,
-              target: next,
-              type: "transitive",
-              style: { ...TRANSITIVE_EDGE_STYLE, strokeDasharray: "4 3" },
-              animated: false,
-              data: { isTransitive: true, path: pathLabel },
-            });
-          }
-        }
-        if (!visited.has(next)) { visited.add(next); queue.push(next); }
+        if (seen.has(next)) continue;
+        seen.add(next);
+        reachable.add(next);
+        queue.push(next);
       }
+    }
+
+    // Sinks: reachable nodes with no successor that is itself in `reachable`.
+    // These are the maximal reaches of startId — drawing only these subsumes
+    // every shorter transitive edge to an intermediate node.
+    const sinks = Array.from(reachable).filter(
+      (id) => !(adjOut.get(id) ?? []).some((next) => reachable.has(next)),
+    );
+
+    for (const target of sinks) {
+      if (directEdgeSet.has(`${startId}->${target}`)) continue;
+      const edgeId = `transitive:${startId}->${target}`;
+      if (directEdgeSet.has(edgeId)) continue;
+
+      const añoStart = anioSortKey(materiaById.get(startId)?.año ?? "");
+      const añoTarget = anioSortKey(materiaById.get(target)?.año ?? "");
+      if (añoTarget - añoStart < 2) continue;
+
+      const pathIds = findPath(startId, target);
+      const mids = pathIds.slice(1, -1);
+      const esTuberia = mids.every((id) => outdeg.get(id) === 1 && indeg.get(id) === 1);
+      if (esTuberia) continue;
+
+      directEdgeSet.add(edgeId);
+      edges.push({
+        id: edgeId,
+        source: startId,
+        target,
+        type: "transitive",
+        style: { ...TRANSITIVE_EDGE_STYLE, strokeDasharray: "4 3" },
+        animated: false,
+        data: { isTransitive: true },
+      });
     }
   }
 

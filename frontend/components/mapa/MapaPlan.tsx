@@ -24,7 +24,7 @@ import { GLASS, TEXT_SEC, ACCENT } from "@/lib/ui/tokens";
 import { extractOrientaciones } from "@/lib/plan/kanbanUtils";
 
 import {
-  buildGraph, hasHorasData, buildAdjacency, getAncestors, getDescendants,
+  buildGraph, hasHorasData, buildAdjacency, getAncestors, getDescendants, getAncestorsWithDistance,
   STATE_STYLE, AMBER,
   type VisualEstado, type NodeData, type LayoutMode,
 } from "@/lib/mapa/graphUtils";
@@ -49,25 +49,27 @@ type Props = {
 };
 
 // ── HoverStyleInjector ────────────────────────────────────────────────────────
+// focusNodeId comes from either a transient hover or a pinned "Ver camino"
+// selection (MapaPlan resolves which one wins before passing it down).
 function HoverStyleInjector({
-  hoveredNodeId, activeChain, setEdges, baseEdges, caminoActivo,
+  focusNodeId, activeChain, setEdges, baseEdges, caminoActivo,
 }: {
-  hoveredNodeId: string | null;
+  focusNodeId: string | null;
   activeChain: Set<string> | null;
   setEdges: (edges: Edge[]) => void;
   baseEdges: Edge[];
   caminoActivo: boolean;
 }) {
   const css = useMemo(() => {
-    if (caminoActivo || !hoveredNodeId || !activeChain) return "";
+    if (caminoActivo || !focusNodeId || !activeChain) return "";
     const dimmed = `.react-flow__node:not([data-id="${Array.from(activeChain).join('"]):not([data-id="')}"]) { opacity: 0.06 !important; transition: opacity 0.12s; }`;
     const active = Array.from(activeChain).map((id) => `.react-flow__node[data-id="${id}"] { opacity: 1 !important; transition: opacity 0.12s; }`).join("");
-    const hovered = `.react-flow__node[data-id="${hoveredNodeId}"] > div { box-shadow: 0 0 0 3px rgba(200,200,255,0.5) !important; }`;
+    const hovered = `.react-flow__node[data-id="${focusNodeId}"] > div { box-shadow: 0 0 0 3px rgba(200,200,255,0.5) !important; }`;
     return dimmed + active + hovered;
-  }, [hoveredNodeId, activeChain, caminoActivo]);
+  }, [focusNodeId, activeChain, caminoActivo]);
 
   useEffect(() => {
-    if (caminoActivo || !hoveredNodeId || !activeChain) return;
+    if (caminoActivo || !focusNodeId || !activeChain) return;
     setEdges(baseEdges.map((e) => {
       const inChain = activeChain.has(e.source) && activeChain.has(e.target);
       return {
@@ -77,7 +79,59 @@ function HoverStyleInjector({
           : { stroke: "rgba(157,78,221,0.08)", strokeWidth: 1.5, opacity: 0.04 },
       };
     }));
-  }, [hoveredNodeId, activeChain, caminoActivo, baseEdges, setEdges]);
+  }, [focusNodeId, activeChain, caminoActivo, baseEdges, setEdges]);
+
+  if (!css) return null;
+  return <style>{css}</style>;
+}
+
+// ── CaminoIndirectoInjector ──────────────────────────────────────────────────
+// Highlights the ancestor chain of a pinned node ("Ver camino") leg by leg:
+// each real correlativa edge that lands on the focal node is violet (direct),
+// every other real edge further back in the chain is amber (indirect — only
+// reachable through an intermediate). Decorative isTransitive shortcut edges
+// (the global "Caminos indirectos" toggle) are excluded entirely here — they'd
+// duplicate the same information as a single A→Z line overlapping the real
+// per-leg path. Keyed by e.data.isTransitive, not "target === focus": a
+// decorative edge can also point straight at the focal node and would
+// otherwise be misclassified as the direct correlativa.
+function CaminoIndirectoInjector({
+  focusNodeId, chainSet, setEdges, baseEdges,
+}: {
+  focusNodeId: string | null;
+  chainSet: Set<string> | null;
+  setEdges: (edges: Edge[]) => void;
+  baseEdges: Edge[];
+}) {
+  const css = useMemo(() => {
+    if (!focusNodeId || !chainSet) return "";
+    const all = [focusNodeId, ...Array.from(chainSet)];
+    const dimmed = `.react-flow__node:not([data-id="${all.join('"]):not([data-id="')}"]) { opacity: 0.06 !important; transition: opacity 0.12s; }`;
+    const active = all.map((id) => `.react-flow__node[data-id="${id}"] { opacity: 1 !important; transition: opacity 0.12s; }`).join("");
+    const focal = `.react-flow__node[data-id="${focusNodeId}"] > div { box-shadow: 0 0 0 3px ${AMBER.border} !important; }`;
+    return dimmed + active + focal;
+  }, [focusNodeId, chainSet]);
+
+  useEffect(() => {
+    if (!focusNodeId || !chainSet) return;
+    setEdges(baseEdges.map((e) => {
+      if (e.data?.isTransitive) {
+        return { ...e, style: { stroke: "rgba(157,78,221,0.08)", strokeWidth: 1.5, opacity: 0.04 } };
+      }
+      const targetInChain = e.target === focusNodeId || chainSet.has(e.target);
+      const sourceInChain = e.source === focusNodeId || chainSet.has(e.source);
+      if (!sourceInChain || !targetInChain) {
+        return { ...e, style: { stroke: "rgba(157,78,221,0.08)", strokeWidth: 1.5, opacity: 0.04 } };
+      }
+      const isDirectToFocus = e.target === focusNodeId;
+      return {
+        ...e,
+        style: isDirectToFocus
+          ? { stroke: "rgba(157,78,221,0.9)", strokeWidth: 2, opacity: 1 }
+          : { stroke: AMBER.border, strokeWidth: 2, opacity: 1 },
+      };
+    }));
+  }, [focusNodeId, chainSet, baseEdges, setEdges]);
 
   if (!css) return null;
   return <style>{css}</style>;
@@ -164,6 +218,14 @@ function MapaInner({ materias, agrupadores, idsAgrupadores, estados, carreraId, 
     [baseEdges],
   );
 
+  // Direct-only adjacency (excludes decorative transitive edges) — needed to
+  // tell apart a direct correlativa (1 hop) from an indirect one (≥2 hops)
+  // for the "Ver camino" highlight.
+  const { adjIn: adjInDirect } = useMemo(
+    () => buildAdjacency(baseEdges.filter((e) => !e.data?.isTransitive)),
+    [baseEdges],
+  );
+
   const hasHoras = useMemo(() => hasHorasData(materiaById), [materiaById]);
 
   const [filtro, setFiltro]               = useState<FiltroEstado>("todas");
@@ -172,6 +234,7 @@ function MapaInner({ materias, agrupadores, idsAgrupadores, estados, carreraId, 
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const [panelSide, setPanelSide]         = useState<"left" | "right">("right");
   const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
+  const [pinnedNodeId, setPinnedNodeId]   = useState<string | null>(null);
   const [caminoActivo, setCaminoActivo]   = useState(false);
   const [optMode, setOptMode]             = useState<OptMode>("materias");
   const [mostrarIndirectas, setMostrarIndirectas] = useState(false);
@@ -202,13 +265,64 @@ function MapaInner({ materias, agrupadores, idsAgrupadores, estados, carreraId, 
     [bestPath],
   );
 
+  useEffect(() => {
+    if (!caminoSet) return;
+    const id = setTimeout(() => {
+      const caminoNodes = getNodes().filter((n) => caminoSet.has(n.id));
+      if (caminoNodes.length > 0) fitView({ nodes: caminoNodes, padding: 0.3, duration: 450 });
+    }, 60);
+    return () => clearTimeout(id);
+  }, [caminoSet, getNodes, fitView]);
+
+  // Transient hover: highlights ancestors + descendants (both directions).
+  // Suppressed while a node is pinned — the pin's own highlight takes over.
   const activeChain = useMemo<Set<string> | null>(() => {
-    if (!hoveredNodeId || caminoActivo) return null;
+    if (!hoveredNodeId || pinnedNodeId || caminoActivo) return null;
     const chain = new Set<string>([hoveredNodeId]);
     for (const id of getAncestors(hoveredNodeId, adjIn)) chain.add(id);
     for (const id of getDescendants(hoveredNodeId, baseAdjOut)) chain.add(id);
     return chain;
-  }, [hoveredNodeId, adjIn, baseAdjOut, caminoActivo]);
+  }, [hoveredNodeId, pinnedNodeId, adjIn, baseAdjOut, caminoActivo]);
+
+  // "Ver camino": pinned node from DetailPanel. Ancestors only — "what do I
+  // need to get here". dist is longest-path (take-order, see
+  // getAncestorsWithDistance) — it answers "which step", not "is this
+  // direct". Directness is a separate question, answered by direct-edge
+  // membership in adjInDirect, so a direct correlativa that also has a
+  // longer indirect path elsewhere doesn't get mislabeled.
+  const caminoDistById = useMemo<Map<string, number> | null>(() => {
+    if (!pinnedNodeId || caminoActivo) return null;
+    return getAncestorsWithDistance(pinnedNodeId, adjInDirect);
+  }, [pinnedNodeId, adjInDirect, caminoActivo]);
+
+  const caminoChain = useMemo<Set<string> | null>(
+    () => (caminoDistById ? new Set(caminoDistById.keys()) : null),
+    [caminoDistById],
+  );
+
+  const caminoDirectas = useMemo<Set<string>>(
+    () => new Set(pinnedNodeId ? adjInDirect.get(pinnedNodeId) ?? [] : []),
+    [pinnedNodeId, adjInDirect],
+  );
+
+  // Sorted farthest-first: the order you'd actually take them in, base of the
+  // chain first, building up toward the pinned node. paso groups by take-order
+  // step (longest-path distance) — derived from correlativa structure, not
+  // the curricular año field, so same-año materias at different dependency
+  // depths still land in the right step, and no materia shares a step with
+  // its own prerequisite (see getAncestorsWithDistance for the diamond case).
+  const caminoMaterias = useMemo(() => {
+    if (!caminoDistById) return [];
+    const maxDist = Math.max(...caminoDistById.values());
+    return Array.from(caminoDistById.entries())
+      .map(([id, dist]) => ({
+        id, dist, paso: maxDist - dist + 1,
+        directa: caminoDirectas.has(id),
+        nombre: materiaById.get(id)?.nombre ?? id,
+        ve: vmById.get(id) ?? ("bloqueada" as VisualEstado),
+      }))
+      .sort((a, b) => b.dist - a.dist || a.nombre.localeCompare(b.nombre));
+  }, [caminoDistById, caminoDirectas, materiaById, vmById]);
 
   const displayNodes = useMemo<Node[]>(() => {
     return baseNodes.map((n) => {
@@ -219,13 +333,17 @@ function MapaInner({ materias, agrupadores, idsAgrupadores, estados, carreraId, 
       }
       const ve = vmById.get(n.id) ?? "bloqueada";
       const dimmed = filtro !== "todas" && ve !== filtro && !caminoActivo;
+      const pasoCamino = caminoActivo ? bestPath?.nivelById[n.id] : undefined;
       return {
         ...n, position,
-        data: { ...n.data, dimmed, highlighted: n.id === highlightedId },
+        data: {
+          ...n.data, dimmed, highlighted: n.id === highlightedId,
+          pasoCamino: pasoCamino !== undefined ? pasoCamino + 1 : undefined,
+        },
         selected: n.id === selectedNodeId,
       };
     });
-  }, [baseNodes, filtro, highlightedId, selectedNodeId, vmById, caminoActivo, customPositions]);
+  }, [baseNodes, filtro, highlightedId, selectedNodeId, vmById, caminoActivo, bestPath, customPositions]);
 
   const miVistaNodes = useMemo<Node[]>(() => {
     if (!miVistaData) return [];
@@ -319,6 +437,7 @@ function MapaInner({ materias, agrupadores, idsAgrupadores, estados, carreraId, 
       }
       if (e.key === "Escape") {
         setSelectedNodeId(null);
+        setPinnedNodeId(null);
         setCaminoActivo(false);
         setEditorAbierto(false);
       }
@@ -354,6 +473,7 @@ function MapaInner({ materias, agrupadores, idsAgrupadores, estados, carreraId, 
 
   const handleNodeClick = useCallback((_: React.MouseEvent, node: Node) => {
     if (node.type !== "materia" || caminoActivo) return;
+    setPinnedNodeId(null);
     setSelectedNodeId((prev) => {
       if (prev === node.id) return null;
       const flowNode = getNode(node.id);
@@ -451,7 +571,7 @@ function MapaInner({ materias, agrupadores, idsAgrupadores, estados, carreraId, 
           onNodeMouseEnter={handleNodeMouseEnter}
           onNodeMouseLeave={handleNodeMouseLeave}
           onNodeClick={handleNodeClick}
-          onPaneClick={() => setSelectedNodeId(null)}
+          onPaneClick={() => { setSelectedNodeId(null); setPinnedNodeId(null); }}
           onNodeDragStop={handleNodeDragStop}
           nodesDraggable selectionOnDrag multiSelectionKeyCode="Shift"
           defaultViewport={{ x: 0, y: 0, zoom: 0.85 }}
@@ -463,8 +583,12 @@ function MapaInner({ materias, agrupadores, idsAgrupadores, estados, carreraId, 
           panOnDrag
         >
           <HoverStyleInjector
-            hoveredNodeId={hoveredNodeId} activeChain={activeChain}
+            focusNodeId={hoveredNodeId} activeChain={activeChain}
             setEdges={setEdges} baseEdges={visibleEdges} caminoActivo={caminoActivo}
+          />
+          <CaminoIndirectoInjector
+            focusNodeId={pinnedNodeId} chainSet={caminoChain}
+            setEdges={setEdges} baseEdges={visibleEdges}
           />
           <CaminoStyleInjector
             caminoSet={caminoSet} vmById={vmById}
@@ -498,7 +622,10 @@ function MapaInner({ materias, agrupadores, idsAgrupadores, estados, carreraId, 
                 nodeId={selectedNodeId} materias={materias}
                 idsAgrupadores={idsAgrupadores} vmById={vmById}
                 reglamentoUrl={reglamentoUrl}
-                onClose={() => setSelectedNodeId(null)} onVerEnPlan={onVerEnPlan}
+                onClose={() => { setSelectedNodeId(null); setPinnedNodeId(null); }} onVerEnPlan={onVerEnPlan}
+                caminoVisible={pinnedNodeId === selectedNodeId}
+                onToggleCamino={() => setPinnedNodeId((prev) => (prev === selectedNodeId ? null : selectedNodeId))}
+                caminoMaterias={pinnedNodeId === selectedNodeId ? caminoMaterias : []}
               />
             </Panel>
           )}
