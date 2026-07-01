@@ -21,8 +21,5 @@ declare module "next-auth/jwt" {
     role?: AppRole;
     /** Rol simulado temporalmente por el admin — no persiste en DB */
     effectiveRole?: AppRole;
-    googleAccessToken?: string;
-    googleRefreshToken?: string;
-    googleTokenExpiresAt?: number;
   }
 }
