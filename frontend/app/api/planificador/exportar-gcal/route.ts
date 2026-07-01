@@ -49,18 +49,6 @@ async function refreshAccessToken(refreshToken: string): Promise<string | null> 
   return data.access_token ?? null;
 }
 
-async function getValidAccessToken(
-  accessToken: string | null | undefined,
-  refreshToken: string | null | undefined,
-  expiresAt: number | null | undefined,
-): Promise<string | null> {
-  const nowSecs = Math.floor(Date.now() / 1000);
-  const isExpired = expiresAt != null && nowSecs >= expiresAt - 60;
-  if (accessToken && !isExpired) return accessToken;
-  if (refreshToken) return refreshAccessToken(refreshToken);
-  return null;
-}
-
 async function getCalendarAccount(userId: string) {
   return prisma.account.findFirst({
     where: { userId, provider: "google-calendar" },
@@ -118,8 +106,7 @@ async function findAllExportedEvents(accessToken: string, careerId: string): Pro
       headers: { Authorization: `Bearer ${accessToken}` },
     });
     if (!res.ok) {
-      const errBody = await res.text().catch(() => "");
-      console.error("[exportar-gcal] findAllExportedEvents error", { status: res.status, body: errBody });
+      console.error("[exportar-gcal] findAllExportedEvents error", { status: res.status });
       break;
     }
 
@@ -251,8 +238,7 @@ export async function POST(request: Request) {
       const data = (await gcalRes.json()) as { id: string };
       results.push({ id: block.id, gcalEventId: data.id });
     } else {
-      const errBody = await gcalRes.text().catch(() => "");
-      console.error("[exportar-gcal] Google API error", { status: gcalRes.status, body: errBody });
+      console.error("[exportar-gcal] Google API error", { status: gcalRes.status });
       results.push({ id: block.id, error: `Google Calendar error ${gcalRes.status}` });
     }
   }

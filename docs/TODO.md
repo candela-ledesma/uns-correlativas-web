@@ -91,6 +91,36 @@
 
 ---
 
+## Google Calendar — OAuth incremental
+
+- `alta` [ ] **Implementar OAuth incremental para el scope de Calendar**
+
+  **Contexto:** El scope `calendar.events` se pide al momento de exportar, no al login. El enfoque actual (signOut + signIn con `prompt: consent`) es un hack: interrumpe la sesión y Google puede ignorar el consent si el usuario ya tenía permisos parciales.
+
+  **Problema raíz:** NextAuth guarda el `googleAccessToken` en el JWT de sesión, que solo se actualiza al hacer login. El JWT no está diseñado para guardar tokens de APIs externas — es para identidad.
+
+  **Solución correcta — OAuth incremental:**
+  1. Login normal → sesión sin Calendar (solo `openid email profile`)
+  2. Usuario toca "Conectar con Google →" → redirect a Google con:
+     - `scope`: solo `calendar.events`
+     - `include_granted_scopes: true` (Google combina con scopes anteriores)
+     - `prompt: consent`
+     - `redirect_uri`: endpoint propio (no el callback de NextAuth)
+  3. Google redirige al callback propio con el `code`
+  4. El callback intercambia el `code` por `access_token` + `refresh_token` y los guarda en la tabla `Account` de Prisma (ya existe por PrismaAdapter), ligado al `userId`
+  5. El endpoint `exportar-gcal` lee el token desde la DB, no desde el JWT
+
+  **Archivos a crear/modificar:**
+  - `frontend/app/api/auth/google-calendar/connect/route.ts` — genera la URL de autorización incremental
+  - `frontend/app/api/auth/google-calendar/callback/route.ts` — recibe el code, intercambia por tokens, guarda en DB
+  - `frontend/app/api/planificador/exportar-gcal/route.ts` — leer token desde DB en vez del JWT
+  - `frontend/components/schedule/WeeklySchedule.tsx` — botón llama al endpoint `/connect` en vez de `signIn`
+  - `frontend/auth.ts` — sacar el guardado de `googleAccessToken` del JWT (ya no es necesario)
+
+  **Prerequisito:** verificar que la tabla `Account` de PrismaAdapter tenga `@db.Text` en `access_token`, `refresh_token` e `id_token` (ver sección "Base de datos §3").
+
+---
+
 ## Panel admin
 
 - `media` [ ] **Validación de schema completo** — validar contra el schema completo de `PlanData` además de chequeos estructurales básicos.
