@@ -13,22 +13,13 @@ type Props = {
   reglamentoUrl?: string | null;
   onClose: () => void;
   onVerEnPlan?: (materiaId: string) => void;
-  /** Omitted in contexts without a chain-highlight concept (e.g. EditorPanel) — hides the button. */
-  caminoVisible?: boolean;
-  onToggleCamino?: () => void;
-  /**
-   * Ancestor chain for "Ver camino", sorted farthest-first (the order
-   * you'd actually take them). paso groups materias by take-order step
-   * (1 = furthest back / earliest). directa = true only for materias in
-   * the focal node's own direct-edge adjacency — not inferred from dist,
-   * which answers ordering, not directness (see MapaPlan for why).
-   */
-  caminoMaterias?: { id: string; nombre: string; dist: number; paso: number; directa: boolean; ve: VisualEstado }[];
+  /** Omitted in contexts without a chain-graph popup (e.g. EditorPanel) — hides the button. */
+  onVerCamino?: () => void;
 };
 
 export function DetailPanel({
   nodeId, materias, idsAgrupadores, vmById, reglamentoUrl, onClose, onVerEnPlan,
-  caminoVisible, onToggleCamino, caminoMaterias = [],
+  onVerCamino,
 }: Props) {
   const materiaById = useMemo(
     () => new Map(materias.map((m) => [String(m.id), m])),
@@ -122,121 +113,16 @@ export function DetailPanel({
         </div>
       )}
 
-      {onToggleCamino && (
+      {onVerCamino && (
         <button
-          onClick={onToggleCamino}
+          onClick={onVerCamino}
           style={{
-            background: caminoVisible ? AMBER.bg : "rgba(157,78,221,0.15)",
-            border: caminoVisible ? `1px solid ${AMBER.border}` : "1px solid rgba(157,78,221,0.4)",
-            borderRadius: 7, color: caminoVisible ? AMBER.text : "#c4a0f0",
-            fontSize: 11, fontWeight: 600, padding: "6px 10px", cursor: "pointer", textAlign: "center",
+            background: "rgba(157,78,221,0.15)", border: "1px solid rgba(157,78,221,0.4)",
+            borderRadius: 7, color: "#c4a0f0", fontSize: 11, fontWeight: 600,
+            padding: "6px 10px", cursor: "pointer", textAlign: "center",
           }}>
-          {caminoVisible ? "Ocultar camino" : "Ver camino →"}
+          Ver camino →
         </button>
-      )}
-
-      {caminoVisible && caminoMaterias.length > 0 && (() => {
-        const breakdown = (items: typeof caminoMaterias) => {
-          const c: Record<VisualEstado, number> = { aprobada: 0, cursada: 0, disponible: 0, bloqueada: 0 };
-          for (const item of items) c[item.ve]++;
-          return c;
-        };
-        const totalBreakdown = breakdown(caminoMaterias);
-        const cursablesAhora = caminoMaterias.filter((m) => m.ve === "disponible");
-
-        const porPaso = new Map<number, typeof caminoMaterias>();
-        for (const item of caminoMaterias) {
-          if (!porPaso.has(item.paso)) porPaso.set(item.paso, []);
-          porPaso.get(item.paso)!.push(item);
-        }
-        const pasos = Array.from(porPaso.keys()).sort((a, b) => a - b);
-        const maxPaso = pasos[pasos.length - 1];
-        const directas = caminoMaterias.filter((m) => m.directa);
-        let contador = 0;
-
-        return (
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            {cursablesAhora.length > 0 && (
-              <div style={{
-                background: STATE_STYLE.disponible.bg, border: `1px solid ${STATE_STYLE.disponible.border}`,
-                borderRadius: 7, padding: "6px 9px",
-              }}>
-                <div style={{ fontSize: 9, fontWeight: 700, color: STATE_STYLE.disponible.text, textTransform: "uppercase", letterSpacing: "0.04em", marginBottom: 2 }}>
-                  Cursables ahora
-                </div>
-                <div style={{ fontSize: 11, color: TEXT_DET, lineHeight: 1.4 }}>
-                  {cursablesAhora.map((m) => m.nombre).join(", ")}
-                </div>
-              </div>
-            )}
-
-            <div>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 6 }}>
-                <span style={sectionTitle}>Camino completo</span>
-              </div>
-              <div style={{ fontSize: 10, color: TEXT_SEC, marginBottom: 6 }}>
-                {totalBreakdown.aprobada} hechas · {totalBreakdown.cursada} cursando · {totalBreakdown.disponible} disponibles · {totalBreakdown.bloqueada} bloqueadas
-              </div>
-
-              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                {pasos.map((paso) => {
-                  const items = porPaso.get(paso)!;
-                  const pasoHechas = items.filter((m) => m.ve === "aprobada").length;
-                  return (
-                    <div key={paso}>
-                      <div style={{ fontSize: 9, color: TEXT_SEC, opacity: 0.7, marginBottom: 3, textTransform: "uppercase", letterSpacing: "0.04em" }}>
-                        Paso {paso}{paso === 1 ? " · primero a cursar" : paso === maxPaso ? " · justo antes" : ""} · {pasoHechas}/{items.length}
-                      </div>
-                      <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
-                        {items.map((item) => {
-                          contador++;
-                          const itemStyle = STATE_STYLE[item.ve];
-                          return (
-                            <div key={item.id} style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                              <span style={{ fontSize: 9, color: TEXT_SEC, width: 14, flexShrink: 0, textAlign: "right" }}>{contador}.</span>
-                              <span style={{ fontSize: 11, color: TEXT_DET, lineHeight: 1.3, flex: 1 }}>{item.nombre}</span>
-                              <span style={{
-                                fontSize: 9, fontWeight: 600, color: itemStyle.text, background: itemStyle.bg,
-                                border: `1px solid ${itemStyle.border}`, borderRadius: 4, padding: "1px 5px", flexShrink: 0,
-                              }}>{getStateLabel(item.ve)}</span>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-
-              {directas.length > 0 && (
-                <div style={{ marginTop: 8, paddingTop: 8, borderTop: `1px dashed ${GLASS.border}` }}>
-                  <div style={{ fontSize: 9, color: "#c4a0f0", opacity: 0.85, marginBottom: 3, textTransform: "uppercase", letterSpacing: "0.04em" }}>
-                    Habilitan {materia.nombre} directamente
-                  </div>
-                  <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
-                    {directas.map((item) => {
-                      const itemStyle = STATE_STYLE[item.ve];
-                      return (
-                        <div key={item.id} style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                          <span style={{ width: 6, height: 6, borderRadius: "50%", background: "rgba(157,78,221,0.9)", flexShrink: 0 }} />
-                          <span style={{ fontSize: 11, color: TEXT_DET, lineHeight: 1.3, flex: 1 }}>{item.nombre}</span>
-                          <span style={{
-                            fontSize: 9, fontWeight: 600, color: itemStyle.text, background: itemStyle.bg,
-                            border: `1px solid ${itemStyle.border}`, borderRadius: 4, padding: "1px 5px", flexShrink: 0,
-                          }}>{getStateLabel(item.ve)}</span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        );
-      })()}
-
-      {caminoVisible && caminoMaterias.length === 0 && (
-        <span style={emptyText}>Sin requisitos previos</span>
       )}
 
       {onVerEnPlan && (

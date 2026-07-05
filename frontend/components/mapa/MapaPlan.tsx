@@ -33,6 +33,7 @@ import { nodeTypes, edgeTypes } from "./nodeTypes";
 import { Toolbar, type FiltroEstado } from "./Toolbar";
 import { DetailPanel } from "./panels/DetailPanel";
 import { BestPathPanel } from "./panels/BestPathPanel";
+import { CaminoPopup } from "./panels/CaminoPopup";
 import {
   EditorPanel, loadMiVista, type MiVistaData,
 } from "./panels/EditorPanel";
@@ -80,58 +81,6 @@ function HoverStyleInjector({
       };
     }));
   }, [focusNodeId, activeChain, caminoActivo, baseEdges, setEdges]);
-
-  if (!css) return null;
-  return <style>{css}</style>;
-}
-
-// ── CaminoIndirectoInjector ──────────────────────────────────────────────────
-// Highlights the ancestor chain of a pinned node ("Ver camino") leg by leg:
-// each real correlativa edge that lands on the focal node is violet (direct),
-// every other real edge further back in the chain is amber (indirect — only
-// reachable through an intermediate). Decorative isTransitive shortcut edges
-// (the global "Caminos indirectos" toggle) are excluded entirely here — they'd
-// duplicate the same information as a single A→Z line overlapping the real
-// per-leg path. Keyed by e.data.isTransitive, not "target === focus": a
-// decorative edge can also point straight at the focal node and would
-// otherwise be misclassified as the direct correlativa.
-function CaminoIndirectoInjector({
-  focusNodeId, chainSet, setEdges, baseEdges,
-}: {
-  focusNodeId: string | null;
-  chainSet: Set<string> | null;
-  setEdges: (edges: Edge[]) => void;
-  baseEdges: Edge[];
-}) {
-  const css = useMemo(() => {
-    if (!focusNodeId || !chainSet) return "";
-    const all = [focusNodeId, ...Array.from(chainSet)];
-    const dimmed = `.react-flow__node:not([data-id="${all.join('"]):not([data-id="')}"]) { opacity: 0.06 !important; transition: opacity 0.12s; }`;
-    const active = all.map((id) => `.react-flow__node[data-id="${id}"] { opacity: 1 !important; transition: opacity 0.12s; }`).join("");
-    const focal = `.react-flow__node[data-id="${focusNodeId}"] > div { box-shadow: 0 0 0 3px ${AMBER.border} !important; }`;
-    return dimmed + active + focal;
-  }, [focusNodeId, chainSet]);
-
-  useEffect(() => {
-    if (!focusNodeId || !chainSet) return;
-    setEdges(baseEdges.map((e) => {
-      if (e.data?.isTransitive) {
-        return { ...e, style: { stroke: "rgba(157,78,221,0.08)", strokeWidth: 1.5, opacity: 0.04 } };
-      }
-      const targetInChain = e.target === focusNodeId || chainSet.has(e.target);
-      const sourceInChain = e.source === focusNodeId || chainSet.has(e.source);
-      if (!sourceInChain || !targetInChain) {
-        return { ...e, style: { stroke: "rgba(157,78,221,0.08)", strokeWidth: 1.5, opacity: 0.04 } };
-      }
-      const isDirectToFocus = e.target === focusNodeId;
-      return {
-        ...e,
-        style: isDirectToFocus
-          ? { stroke: "rgba(157,78,221,0.9)", strokeWidth: 2, opacity: 1 }
-          : { stroke: AMBER.border, strokeWidth: 2, opacity: 1 },
-      };
-    }));
-  }, [focusNodeId, chainSet, baseEdges, setEdges]);
 
   if (!css) return null;
   return <style>{css}</style>;
@@ -294,11 +243,6 @@ function MapaInner({ materias, agrupadores, idsAgrupadores, estados, carreraId, 
     if (!pinnedNodeId || caminoActivo) return null;
     return getAncestorsWithDistance(pinnedNodeId, adjInDirect);
   }, [pinnedNodeId, adjInDirect, caminoActivo]);
-
-  const caminoChain = useMemo<Set<string> | null>(
-    () => (caminoDistById ? new Set(caminoDistById.keys()) : null),
-    [caminoDistById],
-  );
 
   const caminoDirectas = useMemo<Set<string>>(
     () => new Set(pinnedNodeId ? adjInDirect.get(pinnedNodeId) ?? [] : []),
@@ -586,10 +530,6 @@ function MapaInner({ materias, agrupadores, idsAgrupadores, estados, carreraId, 
             focusNodeId={hoveredNodeId} activeChain={activeChain}
             setEdges={setEdges} baseEdges={visibleEdges} caminoActivo={caminoActivo}
           />
-          <CaminoIndirectoInjector
-            focusNodeId={pinnedNodeId} chainSet={caminoChain}
-            setEdges={setEdges} baseEdges={visibleEdges}
-          />
           <CaminoStyleInjector
             caminoSet={caminoSet} vmById={vmById}
             setEdges={setEdges} baseEdges={visibleEdges}
@@ -623,9 +563,7 @@ function MapaInner({ materias, agrupadores, idsAgrupadores, estados, carreraId, 
                 idsAgrupadores={idsAgrupadores} vmById={vmById}
                 reglamentoUrl={reglamentoUrl}
                 onClose={() => { setSelectedNodeId(null); setPinnedNodeId(null); }} onVerEnPlan={onVerEnPlan}
-                caminoVisible={pinnedNodeId === selectedNodeId}
-                onToggleCamino={() => setPinnedNodeId((prev) => (prev === selectedNodeId ? null : selectedNodeId))}
-                caminoMaterias={pinnedNodeId === selectedNodeId ? caminoMaterias : []}
+                onVerCamino={() => setPinnedNodeId(selectedNodeId)}
               />
             </Panel>
           )}
@@ -655,6 +593,16 @@ function MapaInner({ materias, agrupadores, idsAgrupadores, estados, carreraId, 
             onCerrar={() => setEditorAbierto(false)}
           />
         </ReactFlowProvider>
+      )}
+
+      {pinnedNodeId && caminoMaterias.length > 0 && (
+        <CaminoPopup
+          focalId={pinnedNodeId}
+          focalNombre={materiaById.get(pinnedNodeId)?.nombre ?? pinnedNodeId}
+          caminoMaterias={caminoMaterias}
+          baseEdges={baseEdges}
+          onClose={() => setPinnedNodeId(null)}
+        />
       )}
     </div>
   );
